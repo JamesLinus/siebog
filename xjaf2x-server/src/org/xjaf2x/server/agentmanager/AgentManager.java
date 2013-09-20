@@ -20,13 +20,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xjaf2x.server.Global;
 import org.xjaf2x.server.JndiManager;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 
 /**
- * Agent manager.
+ * Default agent manager implementation.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -56,7 +55,7 @@ public class AgentManager implements AgentManagerI
 				reloadDeployedAgents();
 		} catch (Exception ex)
 		{
-			logger.log(Level.SEVERE, "AgentManager Initialization error", ex);
+			logger.log(Level.SEVERE, "AgentManager initialization error", ex);
 		}
 	}
 	
@@ -113,26 +112,6 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will NOT wait for
-	 * any of the agents to process the message.
-	 * 
-	 * @param message ACLMessage instance.
-	 */
-	@Override
-	public void post(ACLMessage message)
-	{
-		final boolean info = logger.isLoggable(Level.INFO);
-		for (AID aid : message.getReceivers())
-		{
-			AgentI agent = runningAgents.get(aid);
-			if (agent != null)
-				agent.onMessage(message);
-			else if (info)
-				logger.info("Agent not running: [" + aid + "]");
-		}
-	}
-	
 	private AgentI createNew(String jndiName, AID aid)
 	{
 		try
@@ -202,5 +181,13 @@ public class AgentManager implements AgentManagerI
 	{
 		Node node = map.getNamedItem(name);
 		return node != null ? node.getNodeValue() : null;
+	}
+
+	@Override
+	public Set<AID> getRunning()
+	{
+		Set<AID> aids = new HashSet<>(runningAgents.keySet().size());
+		aids.addAll(runningAgents.keySet());
+		return aids;
 	}
 }

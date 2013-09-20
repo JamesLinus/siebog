@@ -7,15 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Asynchronous;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
-import org.xjaf2x.server.agentmanager.acl.Performative;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 
 @Stateful
 @Remote(AgentI.class)
@@ -38,7 +37,6 @@ public class CNetStarter extends Agent
 	private AID manager;
 
 	@Override
-	@Asynchronous
 	public void onMessage(ACLMessage message)
 	{
 		switch (message.getPerformative())
@@ -101,7 +99,7 @@ public class CNetStarter extends Agent
 		msg.setSender(aid);
 		msg.addReceiver(manager);
 		msg.setContent(numContr + " " + CONTENT_SIZE);
-		agentManager.post(msg);
+		messageManager.post(msg);
 	}
 	
 	private void stop(long time)

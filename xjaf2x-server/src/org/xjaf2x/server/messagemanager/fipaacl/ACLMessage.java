@@ -1,4 +1,4 @@
-package org.xjaf2x.server.agentmanager.acl;
+package org.xjaf2x.server.messagemanager.fipaacl;
 
 import java.io.Serializable;
 import java.util.HashSet;

@@ -3,9 +3,9 @@ package org.xjaf2x.server.agents.aco.tsp;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 @Stateless
 @Remote(AgentI.class)

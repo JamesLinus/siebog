@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
+import org.xjaf2x.server.messagemanager.MessageManagerI;
 
 /**
  * Base class for all agents. Provides default implementations for some methods
@@ -18,15 +19,17 @@ public abstract class Agent implements AgentI
 	private static final Logger logger = Logger.getLogger(Agent.class.getName());
 	protected AID aid;
 	protected AgentManagerI agentManager;
+	protected MessageManagerI messageManager;
 
 	public Agent()
 	{
 		try
 		{
 			agentManager = JndiManager.getAgentManager();
+			messageManager = JndiManager.getMessageManager();
 		} catch (Exception ex)
 		{
-			logger.log(Level.SEVERE, "Unable to connect to AgentManager", ex);
+			logger.log(Level.SEVERE, "Unable to initialize the base Agent class", ex);
 		}
 	}
 

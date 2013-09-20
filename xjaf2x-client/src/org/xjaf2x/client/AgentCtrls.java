@@ -1,6 +1,7 @@
-package org.xjaf2x.client.gui;
+package org.xjaf2x.client;
 
 import javax.swing.JPanel;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
@@ -10,10 +11,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import org.xjaf2x.server.JndiManager;
-import org.xjaf2x.server.agentmanager.AgentManagerI;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
-import org.xjaf2x.server.agentmanager.acl.Performative;
 import org.xjaf2x.server.agentmanager.agent.AID;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 import javax.swing.DefaultListModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -29,7 +29,6 @@ public class AgentCtrls extends JPanel
 	private JTextField txtContent;
 	private JComboBox<Performative> cbxPerf;
 	private JTextField txtNewName;
-	private AgentManagerI agentManager;
 	private DefaultListModel<String> mdlFamilies;
 	private JList<String> lstFamilies;
 	private JList<AID> lstRunning;
@@ -37,17 +36,8 @@ public class AgentCtrls extends JPanel
 	private JSpinner spnNumMsgs;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public AgentCtrls(String address)
+	public AgentCtrls()
 	{
-		try
-		{
-			agentManager = JndiManager.getAgentManager();
-		} catch (Exception ex)
-		{
-			logger.log(Level.WARNING, "Unable to connect to AgentManager", ex);
-			return;
-		}
-
 		setLayout(null);
 
 		JPanel pnlPostMsg = new JPanel();
@@ -97,7 +87,13 @@ public class AgentCtrls extends JPanel
 							msg.addReceiver(aid);
 							msg.setContent(content);
 							// go!
-							agentManager.post(msg);
+							try
+							{
+								JndiManager.getMessageManager().post(msg);
+							} catch (Exception ex)
+							{
+								logger.log(Level.WARNING, "Error while sending a message", ex);
+							}
 						}
 					}.start();
 					Thread.yield();
@@ -115,18 +111,34 @@ public class AgentCtrls extends JPanel
 		lstRunning = new JList(mdlRunning);
 		spRunning.setViewportView(lstRunning);
 
-		JButton btnReloadRunning = new JButton("Reload");
+		final JButton btnReloadRunning = new JButton("Reload");
 		btnReloadRunning.setBounds(302, 20, 76, 23);
+		btnReloadRunning.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					mdlRunning.clear();
+					Set<AID> aids = JndiManager.getAgentManager().getRunning();
+					for (AID aid : aids)
+						mdlRunning.addElement(aid);
+				} catch (Exception ex)
+				{
+					logger.log(Level.WARNING, "Error while reloading running agents", ex);
+				}
+			}
+		});
 		pnlPostMsg.add(btnReloadRunning);
-		
+
 		JLabel lblSend = new JLabel("Send");
 		lblSend.setBounds(16, 235, 46, 14);
 		pnlPostMsg.add(lblSend);
-		
+
 		spnNumMsgs = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
 		spnNumMsgs.setBounds(45, 232, 60, 20);
 		pnlPostMsg.add(spnNumMsgs);
-		
+
 		JLabel lblMessagesInParallel = new JLabel("messages in parallel");
 		lblMessagesInParallel.setBounds(115, 235, 95, 14);
 		pnlPostMsg.add(lblMessagesInParallel);
@@ -159,11 +171,20 @@ public class AgentCtrls extends JPanel
 		lstFamilies = new JList(mdlFamilies);
 		scrollPane.setViewportView(lstFamilies);
 
-		JButton btnReloadFamilies = new JButton("Reload");
+		final JButton btnReloadFamilies = new JButton("Reload");
 		btnReloadFamilies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
-				reloadFamilies();
+				mdlFamilies.clear();
+				try
+				{
+					Set<String> families = JndiManager.getAgentManager().getFamilies();
+					for (String str : families)
+						mdlFamilies.addElement(str);
+				} catch (Exception ex)
+				{
+					logger.log(Level.WARNING, "Error while reloading agent families", ex);
+				}
 			}
 		});
 		btnReloadFamilies.setBounds(302, 20, 76, 23);
@@ -173,24 +194,36 @@ public class AgentCtrls extends JPanel
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
-				String runtimeName = txtNewName.getText();
-				String family = (String) lstFamilies.getSelectedValue();
-				if (family == null)
-					return;
-				AID aid = agentManager.startAgent(family, runtimeName);
-				if (aid != null)
-					mdlRunning.addElement(aid);
+				try
+				{
+					String runtimeName = txtNewName.getText();
+					String family = (String) lstFamilies.getSelectedValue();
+					if (family == null)
+						return;
+					JndiManager.getAgentManager().startAgent(family, runtimeName);
+				} catch (Exception ex)
+				{
+					logger.log(Level.WARNING, "Error while starting an agent", ex);
+				} finally
+				{
+					EventQueue.invokeLater(new Runnable() {
+						public void run()
+						{
+							btnReloadRunning.doClick();
+						}
+					});
+				}
 			}
 		});
 		btnRun.setBounds(289, 178, 89, 23);
 		pnlRun.add(btnRun);
-	}
-	
-	public void reloadFamilies()
-	{
-		Set<String> families = agentManager.getFamilies();
-		mdlFamilies.clear();
-		for (String str : families)
-			mdlFamilies.addElement(str);
+
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run()
+			{
+				btnReloadFamilies.doClick();
+			}
+		});
 	}
 }

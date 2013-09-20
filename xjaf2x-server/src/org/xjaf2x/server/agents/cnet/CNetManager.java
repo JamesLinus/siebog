@@ -2,15 +2,14 @@ package org.xjaf2x.server.agents.cnet;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Asynchronous;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
-import org.xjaf2x.server.agentmanager.acl.Performative;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 
 @Stateful
 @Remote(AgentI.class)
@@ -26,7 +25,6 @@ public class CNetManager extends Agent
 	private int received;
 
 	@Override
-	@Asynchronous
 	public void onMessage(ACLMessage message)
 	{
 		switch (message.getPerformative())
@@ -51,7 +49,7 @@ public class CNetManager extends Agent
 			accept.setSender(aid);
 			accept.setContent(content);
 			accept.setReplyWith(message.getInReplyTo());
-			agentManager.post(accept);
+			messageManager.post(accept);
 			break;
 		case INFORM:
 			long time = System.nanoTime() - Long.parseLong(message.getInReplyTo());
@@ -67,7 +65,7 @@ public class CNetManager extends Agent
 				reply.setSender(aid);
 				reply.addReceiver(starter);
 				reply.setContent(total);
-				agentManager.post(reply);
+				messageManager.post(reply);
 			}
 			break;
 		default:
@@ -92,7 +90,7 @@ public class CNetManager extends Agent
 					cfp.setProtocol("fipa-contract-net");
 					cfp.setLanguage("fipa-sl");
 					cfp.setReplyWith(System.nanoTime() + "");
-					agentManager.post(cfp);
+					messageManager.post(cfp);
 				}
 			}
 		}.start();

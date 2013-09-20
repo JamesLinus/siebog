@@ -1,7 +1,7 @@
 package org.xjaf2x.server.agentmanager.agent;
 
 import java.io.Serializable;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
  * Base interface for all agents.

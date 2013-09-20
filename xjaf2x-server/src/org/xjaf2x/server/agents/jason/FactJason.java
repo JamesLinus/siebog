@@ -10,10 +10,10 @@ import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.JndiManager;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 @Stateful
 @Remote(JasonAgentI.class)

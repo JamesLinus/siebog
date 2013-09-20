@@ -5,9 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +13,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import org.xjaf2x.client.gui.AgentCtrls;
-import org.xjaf2x.client.gui.StartDlg;
-import org.xjaf2x.client.jboss.CLI;
+import org.xjaf2x.server.ClusterManager;
 import javax.swing.JTextField;
 
 public class XJAF2x extends JFrame
@@ -28,12 +26,8 @@ public class XJAF2x extends JFrame
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(XJAF2x.class.getName());
 	private JTextField txtMas2j;
-	private JButton btnRedeployServer;
-	private JButton btnStart;
-	private AgentCtrls agentCtrls;
-	private CLI cli;
 
-	public XJAF2x() throws Exception
+	public XJAF2x(List<String> addresses) throws Exception
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("XJAF 2.x");
@@ -56,61 +50,11 @@ public class XJAF2x extends JFrame
 			}
 		});
 
-		cli = new CLI();
+		ClusterManager.init(addresses);
+		getContentPane().add(new AgentCtrls());
 
 		JPanel pnlCtrls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
 		getContentPane().add(pnlCtrls, BorderLayout.NORTH);
-
-		btnStart = new JButton("Start");
-		btnStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e)
-			{
-				StartDlg dlg = new StartDlg(XJAF2x.this, cli);
-				Point pt = btnStart.getLocationOnScreen();
-				dlg.setLocation(pt.x + 8, pt.y + btnStart.getHeight() + 8);
-				dlg.setVisible(true);
-				// --> on close
-				if (dlg.isOk())
-				{
-					agentCtrls = new AgentCtrls(cli.getMasterAddr());
-					getContentPane().add(agentCtrls);
-					revalidate();
-					repaint();
-					EventQueue.invokeLater(new Runnable() {
-						@Override
-						public void run()
-						{
-							btnRedeployServer.doClick();
-						}
-					});
-				}
-			}
-		});
-		pnlCtrls.add(btnStart);
-
-		btnRedeployServer = new JButton("Redeploy server");
-		btnRedeployServer.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				try
-				{
-					redeployServer();
-					if (agentCtrls != null)
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run()
-							{
-								agentCtrls.reloadFamilies();
-							}
-						});
-				} catch (Exception ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-		});
-		pnlCtrls.add(btnRedeployServer);
 
 		txtMas2j = new JTextField();
 		txtMas2j.setText(Settings.instance().get("mas2j", ""));
@@ -158,13 +102,6 @@ public class XJAF2x extends JFrame
 
 		updateControls();
 		setVisible(true);
-	}
-
-	
-
-	private void redeployServer() throws Exception
-	{
-		cli.redeployServer();
 	}
 
 	private void updateControls()
@@ -218,6 +155,16 @@ public class XJAF2x extends JFrame
 		{
 		}
 		
+		StartDlg dlg = new StartDlg();
+		dlg.setVisible(true);
+		// --> on close
+		if (!dlg.isOk())
+			return;
+		List<String> addresses = new ArrayList<>();
+		addresses.add(dlg.getMaster());
+		if (dlg.getSlave().length() > 0)
+			addresses.add(dlg.getSlave());
+		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable ex)
@@ -234,18 +181,12 @@ public class XJAF2x extends JFrame
 			}
 		});
 		
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run()
-			{
-				try
-				{
-					new XJAF2x();
-				} catch (Exception ex)
-				{
-					logger.log(Level.SEVERE, "Error while initializing XJAF 2.x", ex);
-				}
-			}
-		});
+		try
+		{
+			new XJAF2x(addresses);
+		} catch (Exception ex)
+		{
+			logger.log(Level.SEVERE, "Error while initializing XJAF 2.x", ex);
+		}
 	}
 }

@@ -3,15 +3,14 @@ package org.xjaf2x.server.agents.cnet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.Asynchronous;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
-import org.xjaf2x.server.agentmanager.acl.Performative;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 
 @Stateful
 @Remote(AgentI.class)
@@ -29,7 +28,6 @@ public class CNetContractor extends Agent
 	}
 	
 	@Override
-	@Asynchronous
 	public void onMessage(ACLMessage message)
 	{		
 		byte[] content = (byte[]) message.getContent();
@@ -41,7 +39,7 @@ public class CNetContractor extends Agent
 		ACLMessage reply = message.makeReply(p);
 		reply.setSender(aid);
 		reply.setContent(sum);
-		agentManager.post(reply);
+		messageManager.post(reply);
 	}
 	
 	@Override

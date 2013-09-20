@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.acl.ACLMessage;
-import org.xjaf2x.server.agentmanager.acl.Performative;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
+import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 
 @Stateful
 @Remote(AgentI.class)
@@ -82,7 +82,7 @@ public class MapAgent extends Agent
 					Integer.parseInt(parts[2]))));
 		}
 
-		agentManager.post(reply);
+		messageManager.post(reply);
 	}
 
 	private void handleInform(ACLMessage message)
