@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server"
+	xmlns:tns="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server" elementFormDefault="qualified">
+
+	<element name="xjaf2x-server">
+		<complexType>
+			<sequence>
+				<element name="relay" minOccurs="0" maxOccurs="1">
+					<complexType>
+						<attribute name="address" type="string" use="required" />
+						<attribute name="site" type="string" use="required" />
+					</complexType>
+				</element>
+
+				<element name="agents" minOccurs="0" maxOccurs="1">
+					<complexType>
+						<sequence>
+							<element name="agent" minOccurs="0" maxOccurs="unbounded">
+								<complexType>
+									<attribute name="family" type="string" use="required" />
+									<attribute name="stateful" type="string" use="optional" />
+									<attribute name="jason" type="string" use="optional" />
+								</complexType>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

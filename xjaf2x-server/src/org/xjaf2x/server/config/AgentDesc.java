@@ -1,10 +1,15 @@
-package org.xjaf2x.server.agentmanager;
+package org.xjaf2x.server.config;
 
 import java.io.Serializable;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 
-public final class AgentRec implements Serializable
+/**
+ * Description of a deployed agent.
+ * 
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ */
+public final class AgentDesc implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	private static final String viewName = AgentI.class.getName();
@@ -13,7 +18,7 @@ public final class AgentRec implements Serializable
 	private final boolean stateful;
 	private final String jndiName;
 
-	public AgentRec(String family, boolean stateful, String appName, boolean isJason)
+	public AgentDesc(String family, boolean stateful, String appName, boolean isJason)
 	{
 		this.family = family;
 		this.stateful = stateful;

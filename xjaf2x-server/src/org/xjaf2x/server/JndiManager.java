@@ -5,8 +5,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.xjaf2x.server.agentmanager.AgentManager;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
-import org.xjaf2x.server.messagemanager.MessageManagerI;
 import org.xjaf2x.server.messagemanager.MessageManager;
+import org.xjaf2x.server.messagemanager.MessageManagerI;
 
 public class JndiManager
 {

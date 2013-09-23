@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xjaf2x-server xmlns="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server xjaf2x-server.xsd ">
+	<relay address="192.168.8.1" site="site1" />
+	<agents>
+		<agent family="org.xjaf2x.server.agents.ping.PingAgent" stateful="false" />
+		<agent family="org.xjaf2x.server.agents.ping.PingLoadTest" stateful="false" />
+		<agent family="org.xjaf2x.server.agents.aco.tsp.MapAgent" />
+		<agent family="org.xjaf2x.server.agents.aco.tsp.StarterAgent" stateful="false" />
+		<agent family="org.xjaf2x.server.agents.cnet.CNetManager" />
+		<agent family="org.xjaf2x.server.agents.cnet.CNetStarter" />
+		<agent family="org.xjaf2x.server.agents.cnet.CNetContractor" />
+		<agent family="org.xjaf2x.server.agents.jason.HelloJason" jason="true" />
+		<agent family="org.xjaf2x.server.agents.jason.FactJason" jason="true" />
+	</agents>
+</xjaf2x-server>

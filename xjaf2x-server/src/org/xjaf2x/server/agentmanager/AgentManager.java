@@ -1,6 +1,5 @@
 package org.xjaf2x.server.agentmanager;
 
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -9,12 +8,9 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.naming.Context;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -23,6 +19,8 @@ import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import org.xjaf2x.server.config.AgentDesc;
+import org.xjaf2x.server.config.ServerConfig;
 
 /**
  * Default agent manager implementation.
@@ -39,7 +37,7 @@ public class AgentManager implements AgentManagerI
 	private static final Logger logger = Logger.getLogger(AgentManager.class.getName());
 	private Context jndiContext;
 	private Cache<AID, AgentI> runningAgents;
-	private Cache<String, AgentRec> deployedAgents;
+	private Cache<String, AgentDesc> deployedAgents;
 	
 	@PostConstruct
 	public void postConstruct()
@@ -71,7 +69,7 @@ public class AgentManager implements AgentManagerI
 			return aid;
 		}
 		
-		AgentRec rec = deployedAgents.get(family);
+		AgentDesc rec = deployedAgents.get(family);
 		if (rec == null)
 		{
 			if (logger.isLoggable(Level.INFO))
@@ -139,41 +137,32 @@ public class AgentManager implements AgentManagerI
 	
 	private void reloadDeployedAgents()
 	{
-		try
+		NodeList agentNodeList = ServerConfig.getAgents();
+		if (agentNodeList == null)
+			return;
+		for (int i = 0; i < agentNodeList.getLength(); i++)
 		{
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			try (InputStream is = getClass().getResourceAsStream("/org/xjaf2x/server/agents/xjaf2x-agents.xml"))
+			Node agentNode = agentNodeList.item(i);
+			NamedNodeMap attrib = agentNode.getAttributes();
+			// family
+			String family = getNodeValue(attrib, "family");
+			// jason?
+			boolean jason = "true".equalsIgnoreCase(getNodeValue(attrib, "jason"));
+			// stateful or stateless?
+			boolean stateless;
+			if (jason)
+				stateless = false;
+			else
+				stateless = "false".equalsIgnoreCase(getNodeValue(attrib, "stateful"));
+			
+			// ok?
+			if (family != null)
 			{
-				Document doc = builder.parse(is);
-				NodeList agentNodeList = doc.getElementsByTagName("agent");
-				for (int i = 0; i < agentNodeList.getLength(); i++)
-				{
-					Node agentNode = agentNodeList.item(i);
-					NamedNodeMap attrib = agentNode.getAttributes();
-					// family
-					String family = getNodeValue(attrib, "family");
-					// jason?
-					boolean jason = "true".equalsIgnoreCase(getNodeValue(attrib, "jason"));
-					// stateful or stateless?
-					boolean stateless;
-					if (jason)
-						stateless = false;
-					else
-						stateless = "false".equalsIgnoreCase(getNodeValue(attrib, "stateful"));
-					
-					// ok?
-					if (family != null)
-					{
-						AgentRec rec = new AgentRec(family, !stateless, Global.SERVER, jason);
-						deployedAgents.put(family, rec);
-					}
-				}
+				AgentDesc rec = new AgentDesc(family, !stateless, Global.SERVER, jason);
+				deployedAgents.put(family, rec);
 			}
 			if (logger.isLoggable(Level.INFO))
 				logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
-		} catch (Exception ex)
-		{
-			logger.log(Level.WARNING, "Error while reloading deployed agents", ex);
 		}
 	}
 	
