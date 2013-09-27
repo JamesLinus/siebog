@@ -64,8 +64,7 @@ public class Settings
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private String getRootFolder()
+	public static String getRootFolder()
 	{		
 		String root = "";
 		java.security.CodeSource codeSource = Settings.class.getProtectionDomain().getCodeSource();
@@ -76,7 +75,8 @@ public class Settings
 			if (path.lastIndexOf(".jar") > 0)
 				root = jarFile.getParentFile().getPath();
 			else
-				root = jarFile.getParentFile().getParentFile().getPath(); // get out of build/classes
+				// get out of xjaf2x-client/build/classes
+				root = jarFile.getParentFile().getParentFile().getParentFile().getPath(); 
 		} catch (Exception ex)
 		{
 		}
@@ -86,7 +86,7 @@ public class Settings
 		return root;
 	}
 	
-	public static boolean isJar()
+	/*public static boolean isJar()
 	{
 		java.security.CodeSource codeSource = Settings.class.getProtectionDomain().getCodeSource();
 		String path = "";
@@ -97,5 +97,5 @@ public class Settings
 		{
 		}
 		return path.lastIndexOf(".jar") > 0;
-	}
+	}*/
 }

@@ -1,4 +1,4 @@
-package org.xjaf2x.server.agents.ping;
+package org.xjaf2x.server.agents;
 
 import java.util.logging.Logger;
 import javax.ejb.Lock;

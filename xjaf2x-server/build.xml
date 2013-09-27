@@ -5,6 +5,7 @@
 	<fail if="${env.JBOSS_HOME}" message="Environment variable JBOSS_HOME not defined" />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}"/>
 	<property name="dest.file" value="../xjaf2x-server.jar" />
+	<property name="controller" value="169.254.11.79" />
 		
 	<target name="clean">
 		<delete file="${dest.file}" />
@@ -25,7 +26,7 @@
 	<target name="undeploy">
 		<exec executable="${env.JBOSS_HOME}/bin/jboss-cli.bat">
 			<arg value="--connect" />
-			<arg value="--controller=${env.HOSTNAME}" />
+			<arg value="--controller=${controller}" />
 			<arg value='"undeploy xjaf2x-server --server-groups=xjaf2x-group"' />
 		</exec>
 	</target>
@@ -33,7 +34,7 @@
 	<target name="deploy" depends="package, undeploy">
 		<exec executable="${env.JBOSS_HOME}/bin/jboss-cli.bat">
 			<arg value="--connect" />
-			<arg value="--controller=${env.HOSTNAME}" />
+			<arg value="--controller=${controller}" />
 			<arg value='"deploy ${dest.file} --name=xjaf2x-server --server-groups=xjaf2x-group"' />
 		</exec>
 	</target>

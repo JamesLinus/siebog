@@ -17,6 +17,8 @@ public class ClusterManager
 		p.put("endpoint.name", "client-endpoint");
 		p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 		p.put("remote.clusters", "ejb");
+		p.put("remote.cluster.ejb.username", Global.USERNAME);
+		p.put("remote.cluster.ejb.password", Global.PASSWORD);
 		//p.put("remote.cluster.ejb.clusternode.selector", "org.jboss.ejb.client.RandomClusterNodeSelector");
 		p.put("remote.cluster.ejb.clusternode.selector", "org.xjaf2x.server.MyClusterNodeSelector");
 		

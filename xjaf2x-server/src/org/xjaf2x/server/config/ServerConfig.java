@@ -1,5 +1,7 @@
 package org.xjaf2x.server.config;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +28,7 @@ public class ServerConfig
 		try
 		{
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			try (InputStream is = ServerConfig.class.getResourceAsStream("xjaf2x-server.xml"))
+			try (InputStream is = new FileInputStream(getRootFolder() + "xjaf2x-server.xml"))
 			{
 				doc = builder.parse(is);
 			}
@@ -34,6 +36,29 @@ public class ServerConfig
 		{
 			logger.log(Level.WARNING, "Error while reading server configuration", ex);
 		}
+	}
+
+	private static String getRootFolder()
+	{
+		String root = "";
+		java.security.CodeSource codeSource = ServerConfig.class.getProtectionDomain()
+				.getCodeSource();
+		try
+		{
+			String path = codeSource.getLocation().toURI().getPath();
+			File jarFile = new File(path);
+			if (path.lastIndexOf(".jar") > 0)
+				root = jarFile.getParentFile().getPath();
+			else
+				// get out of xjaf2x-server/build/classes
+				root = jarFile.getParentFile().getParentFile().getParentFile().getPath();
+		} catch (Exception ex)
+		{
+		}
+		root = root.replace('\\', '/');
+		if (!root.endsWith("/"))
+			root += "/";
+		return root;
 	}
 
 	public static NodeList getAgents()

@@ -161,9 +161,9 @@ public class AgentManager implements AgentManagerI
 				AgentDesc rec = new AgentDesc(family, !stateless, Global.SERVER, jason);
 				deployedAgents.put(family, rec);
 			}
-			if (logger.isLoggable(Level.INFO))
-				logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
 		}
+		if (logger.isLoggable(Level.INFO))
+			logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
 	}
 	
 	private String getNodeValue(NamedNodeMap map, String name)

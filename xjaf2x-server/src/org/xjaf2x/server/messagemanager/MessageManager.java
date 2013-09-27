@@ -69,7 +69,5 @@ public class MessageManager implements MessageManagerI
 			else if (info)
 				logger.info("Agent not running: [" + aid + "]");
 		}
-		if (info)
-			logger.info("Pool size: " + executor.getPoolSize());
 	}
 }

@@ -5,6 +5,23 @@
 	<element name="xjaf2x-server">
 		<complexType>
 			<sequence>
+				<element name="server" minOccurs="1" maxOccurs="1">
+					<complexType>
+						<attribute name="mode" type="string" use="required" />
+						<attribute name="address" type="string" use="required" />
+						<attribute name="name" type="string" use="optional" />
+						<attribute name="master" type="string" use="optional" />
+					</complexType>
+				</element>
+				
+				<element name="cluster" minOccurs="0" maxOccurs="1">
+					<complexType>
+						<sequence>
+							<element name="slave" type="string" minOccurs="0" maxOccurs="unbounded" />	
+						</sequence>
+					</complexType>
+				</element>
+				
 				<element name="relay" minOccurs="0" maxOccurs="1">
 					<complexType>
 						<attribute name="address" type="string" use="required" />

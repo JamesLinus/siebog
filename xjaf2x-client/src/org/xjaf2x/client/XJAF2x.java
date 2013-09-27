@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,16 +19,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xjaf2x.server.ClusterManager;
+import org.xml.sax.SAXException;
 import javax.swing.JTextField;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class XJAF2x extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(XJAF2x.class.getName());
 	private JTextField txtMas2j;
+	private static List<String> addresses;
 
-	public XJAF2x(List<String> addresses) throws Exception
+	public XJAF2x() throws Exception
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("XJAF 2.x");
@@ -146,6 +156,44 @@ public class XJAF2x extends JFrame
 		}
 	}
 	
+	private static void loadConfig() throws IOException, ParserConfigurationException, SAXException
+	{
+		// load configuration
+		File cfgFile = new File(Settings.getRootFolder() + "xjaf2x-server.xml");
+		if (!cfgFile.exists())
+			throw new IOException("Configuration file 'xjaf2x-server.xml' not found");
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document doc = builder.parse(cfgFile);
+		NodeList list = doc.getElementsByTagName("server");
+		if ((list == null) || (list.getLength() != 1))
+			throw new SAXException(
+					"Invalid format of the configuration file: expected exactly 1 'server' node");
+
+		Element elem = (Element) list.item(0);
+		// mode
+		String mode = elem.getAttribute("mode");
+		if ((mode == null) || !mode.equalsIgnoreCase("master"))
+			throw new IOException("The client application only be run on the master node");
+		// master address
+		String master = elem.getAttribute("address");
+		if ((master == null) || (master.length() == 0))
+			throw new IOException("Configuration node 'server' requires an attribute 'address'");
+		addresses.add(master);
+		
+		// collect all the slave nodes
+		list = doc.getElementsByTagName("cluster");
+		if ((list == null) || (list.getLength() == 0))
+			return;
+		Node node = list.item(0).getFirstChild();
+		while (node != null)
+		{
+			String addr = node.getNodeValue();
+			if ((addr != null) && (addr.length() > 0))
+				addresses.add(addr);
+			node = node.getNextSibling();
+		}
+	}
+	
 	public static void main(String[] args)
 	{
 		try
@@ -155,15 +203,15 @@ public class XJAF2x extends JFrame
 		{
 		}
 		
-		StartDlg dlg = new StartDlg();
-		dlg.setVisible(true);
-		// --> on close
-		if (!dlg.isOk())
-			return;
-		List<String> addresses = new ArrayList<>();
-		addresses.add(dlg.getMaster());
-		if (dlg.getSlave().length() > 0)
-			addresses.add(dlg.getSlave());
+		addresses = new ArrayList<>();
+		try
+		{
+			loadConfig();
+		} catch (Exception ex)
+		{
+			logger.log(Level.SEVERE, "Error while reading the configuration file", ex);
+			System.exit(-1);
+		}
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
@@ -183,10 +231,11 @@ public class XJAF2x extends JFrame
 		
 		try
 		{
-			new XJAF2x(addresses);
+			new XJAF2x();
 		} catch (Exception ex)
 		{
 			logger.log(Level.SEVERE, "Error while initializing XJAF 2.x", ex);
+			System.exit(-1);
 		}
 	}
 }
