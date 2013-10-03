@@ -37,7 +37,7 @@ public class ConnectionManager implements ConnectionManagerI
 		{
 			try
 			{
-				channel = new JChannel(ServerConfig.class.getResource("site-config.xml"));
+				channel = new JChannel(ServerConfig.class.getResource("/site-config.xml"));
 				channel.connect("xjaf2x-global-cluster");
 				channel.setReceiver(new ReceiverAdapter() {
 					

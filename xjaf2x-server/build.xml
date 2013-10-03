@@ -5,7 +5,7 @@
 	<fail if="${env.JBOSS_HOME}" message="Environment variable JBOSS_HOME not defined" />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}"/>
 	<property name="dest.file" value="../xjaf2x-server.jar" />
-	<property name="controller" value="169.254.11.79" />
+	<property name="controller" value="localhost" />
 		
 	<target name="clean">
 		<delete file="${dest.file}" />
