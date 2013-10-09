@@ -11,7 +11,7 @@ import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
-@Stateful
+@Stateful(name = "org_xjaf2x_server_agents_jason_HelloJason")
 @Remote(JasonAgentI.class)
 @Clustered
 public class HelloJason extends Agent implements JasonAgentI

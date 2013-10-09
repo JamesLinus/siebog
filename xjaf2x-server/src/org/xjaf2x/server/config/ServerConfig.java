@@ -36,7 +36,6 @@ public class ServerConfig
 
 	private static final Logger logger = Logger.getLogger(ServerConfig.class.getName());
 	private static Document doc;
-	private static NodeList agents;
 	private static RelayInfo relay;
 	private static Mode mode = Mode.UNKNOWN;
 	private static String address;
@@ -106,8 +105,6 @@ public class ServerConfig
 
 	private static void loadConfig() throws SAXException
 	{
-		agents = doc.getElementsByTagName("agent");
-
 		// relay
 		NodeList list = doc.getElementsByTagName("relay");
 		if ((list != null) && (list.getLength() == 1))
@@ -172,11 +169,6 @@ public class ServerConfig
 				}
 			}
 		}
-	}
-
-	public static NodeList getAgents()
-	{
-		return agents;
 	}
 
 	public static RelayInfo getRelay()

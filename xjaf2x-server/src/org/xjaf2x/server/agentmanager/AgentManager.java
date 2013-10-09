@@ -6,21 +6,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.naming.Context;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xjaf2x.server.Global;
 import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import org.xjaf2x.server.config.AgentDesc;
-import org.xjaf2x.server.config.ServerConfig;
 
 /**
  * Default agent manager implementation.
@@ -48,8 +48,7 @@ public class AgentManager implements AgentManagerI
 			CacheContainer container = (CacheContainer) jndiContext.lookup("java:jboss/infinispan/container/xjaf2x-cache");
 			runningAgents = container.getCache("running-agents");
 			deployedAgents = container.getCache("deployed-agents");
-			// TODO : reload should be done only the first time; can the container return 'null' if the map is not found
-			//if (deployedAgents.size() == 0)
+			if (deployedAgents.size() == 0)
 				reloadDeployedAgents();
 		} catch (Exception ex)
 		{
@@ -61,6 +60,7 @@ public class AgentManager implements AgentManagerI
 	public AID startAgent(String family, String runtimeName)
 	{
 		AID aid = new AID(runtimeName, family);
+		// is it running already?
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
@@ -137,39 +137,41 @@ public class AgentManager implements AgentManagerI
 	
 	private void reloadDeployedAgents()
 	{
-		NodeList agentNodeList = ServerConfig.getAgents();
-		if (agentNodeList == null)
-			return;
-		for (int i = 0; i < agentNodeList.getLength(); i++)
+		try
 		{
-			Node agentNode = agentNodeList.item(i);
-			NamedNodeMap attrib = agentNode.getAttributes();
-			// family
-			String family = getNodeValue(attrib, "family");
-			// jason?
-			boolean jason = "true".equalsIgnoreCase(getNodeValue(attrib, "jason"));
-			// stateful or stateless?
-			boolean stateless;
-			if (jason)
-				stateless = false;
-			else
-				stateless = "false".equalsIgnoreCase(getNodeValue(attrib, "stateful"));
-			
-			// ok?
-			if (family != null)
+			final String INTF = "!" + AgentI.class.getName();
+			NamingEnumeration<NameClassPair> list = jndiContext.list("java:jboss/exported/xjaf2x-server");
+			while (list.hasMore())
 			{
-				AgentDesc rec = new AgentDesc(family, !stateless, Global.SERVER, jason);
-				deployedAgents.put(family, rec);
+				NameClassPair ncp = list.next();
+				final String name = ncp.getName();
+				if (name.endsWith(INTF))
+				{
+					String family = name.substring(0, name.indexOf('!'));
+					try
+					{
+						Class<?> cls = Class.forName(family.replace('_', '.'));
+						// stateful or stateless?
+						boolean stateful = cls.getAnnotation(Stateful.class) != null;
+						// jason?
+						boolean jason = false; // TODO : include search for Jason agents
+						// ok, store
+						AgentDesc desc = new AgentDesc(family, stateful, Global.SERVER, jason);
+						deployedAgents.put(family, desc);
+						
+					} catch (ClassNotFoundException ex)
+					{
+						logger.log(Level.WARNING, "Error while performing a class lookup for [" + family + "]", ex);
+						continue;
+					}
+				}
 			}
+			if (logger.isLoggable(Level.INFO))
+				logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
+		} catch (NamingException ex)
+		{
+			logger.log(Level.WARNING, "Error while reloading deployed agents", ex);
 		}
-		if (logger.isLoggable(Level.INFO))
-			logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
-	}
-	
-	private String getNodeValue(NamedNodeMap map, String name)
-	{
-		Node node = map.getNamedItem(name);
-		return node != null ? node.getNodeValue() : null;
 	}
 
 	@Override

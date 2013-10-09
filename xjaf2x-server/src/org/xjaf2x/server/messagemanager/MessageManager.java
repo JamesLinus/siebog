@@ -57,6 +57,8 @@ public class MessageManager implements MessageManagerI
 		final boolean info = logger.isLoggable(Level.INFO);
 		for (AID aid : message.getReceivers())
 		{
+			if (aid == null)
+				continue;
 			final AgentI agent = runningAgents.get(aid);
 			if (agent != null)
 				executor.execute(new Runnable() {

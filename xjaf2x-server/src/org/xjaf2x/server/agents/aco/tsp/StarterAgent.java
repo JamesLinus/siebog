@@ -7,7 +7,7 @@ import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
-@Stateless
+@Stateless(name = "org_xjaf2x_server_agents_aco_tsp_StarterAgent")
 @Remote(AgentI.class)
 @Clustered
 public class StarterAgent extends Agent

@@ -22,12 +22,8 @@ public final class AgentDesc implements Serializable
 	{
 		this.family = family;
 		this.stateful = stateful;
-
-		int n = family.lastIndexOf('.');
-		String beanName = n < 0 ? family : family.substring(n + 1);
-		
 		final String view = isJason ? jasonViewName : viewName;
-		final String str = String.format("ejb:/%s//%s!%s", appName, beanName, view);
+		final String str = String.format("ejb:/%s//%s!%s", appName, family, view);
 		if (stateful)
 			jndiName = str + "?stateful";
 		else

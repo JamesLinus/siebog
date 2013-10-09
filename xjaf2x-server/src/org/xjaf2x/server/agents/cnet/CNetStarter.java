@@ -16,7 +16,7 @@ import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 
-@Stateful
+@Stateful(name = "org_xjaf2x_server_agents_cnet_CNetStarter")
 @Remote(AgentI.class)
 @Clustered
 public class CNetStarter extends Agent
