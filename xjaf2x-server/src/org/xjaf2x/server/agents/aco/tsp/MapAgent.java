@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.agent.Agent;
+import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -17,7 +17,7 @@ import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 @Stateful(name = "org_xjaf2x_server_agents_aco_tsp_MapAgent")
 @Remote(AgentI.class)
 @Clustered
-public class MapAgent extends Agent
+public class MapAgent extends AgentAdapter
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(MapAgent.class.getName());

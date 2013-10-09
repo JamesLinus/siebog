@@ -11,7 +11,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.agentmanager.agent.AID;
-import org.xjaf2x.server.agentmanager.agent.Agent;
+import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -19,7 +19,7 @@ import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 @Stateful(name = "org_xjaf2x_server_agents_cnet_CNetStarter")
 @Remote(AgentI.class)
 @Clustered
-public class CNetStarter extends Agent
+public class CNetStarter extends AgentAdapter
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(CNetStarter.class.getName());
@@ -96,7 +96,7 @@ public class CNetStarter extends Agent
 		
 		// go!
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.setSender(aid);
+		msg.setSender(getAid());
 		msg.addReceiver(manager);
 		msg.setContent(numContr + " " + CONTENT_SIZE);
 		messageManager.post(msg);

@@ -6,7 +6,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.agentmanager.agent.AID;
-import org.xjaf2x.server.agentmanager.agent.Agent;
+import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -14,7 +14,7 @@ import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 @Stateful(name = "org_xjaf2x_server_agents_cnet_CNetManager")
 @Remote(AgentI.class)
 @Clustered
-public class CNetManager extends Agent
+public class CNetManager extends AgentAdapter
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(CNetManager.class.getName());
@@ -46,7 +46,7 @@ public class CNetManager extends Agent
 			break;
 		case PROPOSE:
 			ACLMessage accept = message.makeReply(Performative.ACCEPT_PROPOSAL);
-			accept.setSender(aid);
+			accept.setSender(getAid());
 			accept.setContent(content);
 			accept.setReplyWith(message.getInReplyTo());
 			messageManager.post(accept);
@@ -62,7 +62,7 @@ public class CNetManager extends Agent
 					logger.info(String.format("Average time per message: [%d ms]", total));
 				// send results to receiver
 				ACLMessage reply = new ACLMessage(Performative.INFORM);
-				reply.setSender(aid);
+				reply.setSender(getAid());
 				reply.addReceiver(starter);
 				reply.setContent(total);
 				messageManager.post(reply);
@@ -84,7 +84,7 @@ public class CNetManager extends Agent
 				for (int i = 0; i < numContr; i++)
 				{
 					ACLMessage cfp = new ACLMessage(Performative.CALL_FOR_PROPOSAL);
-					cfp.setSender(aid);
+					cfp.setSender(getAid());
 					cfp.addReceiver(new AID("C" + i, "org.xjaf2x.examples.cnet.CNetContractor"));
 					cfp.setContent(content);
 					cfp.setProtocol("fipa-contract-net");

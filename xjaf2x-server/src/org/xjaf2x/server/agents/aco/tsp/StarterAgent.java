@@ -3,14 +3,14 @@ package org.xjaf2x.server.agents.aco.tsp;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.agent.Agent;
+import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 @Stateless(name = "org_xjaf2x_server_agents_aco_tsp_StarterAgent")
 @Remote(AgentI.class)
 @Clustered
-public class StarterAgent extends Agent
+public class StarterAgent extends AgentAdapter
 {
 	private static final long serialVersionUID = 1L;
 

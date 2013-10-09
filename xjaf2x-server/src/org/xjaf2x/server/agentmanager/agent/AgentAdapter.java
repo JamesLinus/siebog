@@ -7,21 +7,21 @@ import org.xjaf2x.server.agentmanager.AgentManagerI;
 import org.xjaf2x.server.messagemanager.MessageManagerI;
 
 /**
- * Base class for all agents. Provides default implementations for some methods
- * of {@link AgentI}.
+ * Adapter agent class, provides default implementations for some methods of
+ * {@link AgentI}.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class Agent implements AgentI
+public abstract class AgentAdapter implements AgentI
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(Agent.class.getName());
-	protected AID aid;
+	private static final Logger logger = Logger.getLogger(AgentAdapter.class.getName());
+	private AID aid;
 	protected AgentManagerI agentManager;
 	protected MessageManagerI messageManager;
 
-	public Agent()
+	public AgentAdapter()
 	{
 		try
 		{
@@ -59,7 +59,7 @@ public abstract class Agent implements AgentI
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Agent other = (Agent) obj;
+		AgentAdapter other = (AgentAdapter) obj;
 		if (aid == null)
 		{
 			if (other.aid != null)
