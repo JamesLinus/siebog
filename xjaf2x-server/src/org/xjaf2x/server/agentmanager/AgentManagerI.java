@@ -12,11 +12,12 @@ public interface AgentManagerI extends Serializable
 	 * 
 	 * @param family Agent family name.
 	 * @param runtimeName Runtime name of this agent.
+	 * @param args Optional initialization arguments to pass to the agent.
 	 * @return AID instance on success, null otherwise.
 	 */
-	AID startAgent(String family, String runtimeName);
-	
-	JasonAgentI startJasonAgent(String family, String runtimeName);
+	AID startAgent(String family, String runtimeName, Serializable[] args);
+
+	JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args);
 
 	/**
 	 * Terminates an active agent.
@@ -24,9 +25,9 @@ public interface AgentManagerI extends Serializable
 	 * @param aid AID object.
 	 */
 	void stopAgent(AID aid);
-	
+
 	Set<AID> getRunning();
-	
+
 	/**
 	 * Returns the set of deployed agent families.
 	 * 

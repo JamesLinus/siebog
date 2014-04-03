@@ -11,7 +11,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.agentmanager.agent.AID;
-import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
+import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -19,7 +19,7 @@ import org.xjaf2x.server.messagemanager.fipaacl.Performative;
 @Stateful(name = "org_xjaf2x_server_agents_cnet_CNetStarter")
 @Remote(AgentI.class)
 @Clustered
-public class CNetStarter extends AgentAdapter
+public class CNetStarter extends Agent
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(CNetStarter.class.getName());
@@ -59,9 +59,9 @@ public class CNetStarter extends AgentAdapter
 						logger.info("Done!");
 					// stop agents
 					for (AID aid : contractors)
-						agentManager.stopAgent(aid);
+						agMngr().stopAgent(aid);
 					contractors.clear();
-					agentManager.stopAgent(manager);
+					agMngr().stopAgent(manager);
 					return;
 				}
 				iteration = 1;
@@ -83,7 +83,7 @@ public class CNetStarter extends AgentAdapter
 		// create new contractors
 		for (int i = contractors.size(); i < numContr; i++)
 		{
-			AID aid = agentManager.startAgent("org.xjaf2x.examples.cnet.CNetContractor", "C" + i);
+			AID aid = agMngr().startAgent("org.xjaf2x.examples.cnet.CNetContractor", "C" + i, null);
 			contractors.add(aid);
 		}
 		
@@ -91,7 +91,7 @@ public class CNetStarter extends AgentAdapter
 		{
 			if (logger.isLoggable(Level.INFO))
 				logger.info("Starting manager");
-			manager = agentManager.startAgent("org.xjaf2x.examples.cnet.CNetManager", "Manager");
+			manager = agMngr().startAgent("org.xjaf2x.examples.cnet.CNetManager", "Manager", null);
 		}
 		
 		// go!
@@ -99,7 +99,7 @@ public class CNetStarter extends AgentAdapter
 		msg.setSender(getAid());
 		msg.addReceiver(manager);
 		msg.setContent(numContr + " " + CONTENT_SIZE);
-		messageManager.post(msg);
+		msgMngr().post(msg);
 	}
 	
 	private void stop(long time)

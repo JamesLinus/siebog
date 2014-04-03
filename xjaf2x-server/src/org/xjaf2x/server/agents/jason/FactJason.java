@@ -11,14 +11,14 @@ import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.agent.AID;
-import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
+import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 @Stateful(name = "org_xjaf2x_server_agents_jason_FactJason")
 @Remote(JasonAgentI.class)
 @Clustered
-public class FactJason extends AgentAdapter implements JasonAgentI
+public class FactJason extends Agent implements JasonAgentI
 {
 	private static final long serialVersionUID = 1L;
 	private int numAgents;

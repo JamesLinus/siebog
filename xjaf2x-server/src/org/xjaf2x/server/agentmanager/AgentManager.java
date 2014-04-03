@@ -1,5 +1,6 @@
 package org.xjaf2x.server.agentmanager;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -57,7 +58,7 @@ public class AgentManager implements AgentManagerI
 	}
 	
 	@Override
-	public AID startAgent(String family, String runtimeName)
+	public AID startAgent(String family, String runtimeName, Serializable[] args)
 	{
 		AID aid = new AID(runtimeName, family);
 		// is it running already?
@@ -77,7 +78,7 @@ public class AgentManager implements AgentManagerI
 			return null;
 		}
 		
-		agent = createNew(rec.getJndiName(), aid);
+		agent = createNew(rec.getJndiName(), aid, args);
 		if (agent == null)
 			return null;
 		if (logger.isLoggable(Level.FINE))
@@ -86,9 +87,9 @@ public class AgentManager implements AgentManagerI
 	}
 	
 	@Override
-	public JasonAgentI startJasonAgent(String family, String runtimeName)
+	public JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args)
 	{
-		AID aid = startAgent(family, runtimeName);
+		AID aid = startAgent(family, runtimeName, args);
 		if (aid == null)
 			return null;
 		return (JasonAgentI) runningAgents.get(aid);
@@ -110,12 +111,13 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	private AgentI createNew(String jndiName, AID aid)
+	private AgentI createNew(String jndiName, AID aid, Serializable[] args)
 	{
 		try
 		{
 			AgentI agent = (AgentI) jndiContext.lookup(jndiName);
 			agent.setAid(aid);
+			agent.init(args);
 			runningAgents.put(aid, agent);
 			return agent;
 		} catch (Exception ex)

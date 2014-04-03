@@ -18,7 +18,7 @@ public class Xjaf2xAgArch extends AgArch
 	{
 		final Settings stts = getTS().getSettings();
 		AgentManagerI agentManager = JndiManager.getAgentManager();
-		remote = agentManager.startJasonAgent(stts.getUserParameter("family"), getAgName());
+		remote = agentManager.startJasonAgent(stts.getUserParameter("family"), getAgName(), null);
 		remote.init(stts.getUserParameters());
 	}
 	

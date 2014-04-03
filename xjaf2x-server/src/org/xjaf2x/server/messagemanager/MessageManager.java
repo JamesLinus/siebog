@@ -59,15 +59,9 @@ public class MessageManager implements MessageManagerI
 		{
 			if (aid == null)
 				continue;
-			final AgentI agent = runningAgents.get(aid);
+			AgentI agent = runningAgents.get(aid);
 			if (agent != null)
-				executor.execute(new Runnable() {
-					@Override
-					public void run()
-					{
-						agent.onMessage(message);
-					}
-				});
+				agent.handleMessage(message);
 			else if (info)
 				logger.info("Agent not running: [" + aid + "]");
 		}

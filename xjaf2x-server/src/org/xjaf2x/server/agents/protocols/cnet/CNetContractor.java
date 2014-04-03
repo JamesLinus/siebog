@@ -1,6 +1,6 @@
 package org.xjaf2x.server.agents.protocols.cnet;
 
-import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
+import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
@@ -10,7 +10,7 @@ import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class CNetContractor extends AgentAdapter
+public abstract class CNetContractor extends Agent
 {
 	private static final long serialVersionUID = 1L;
 
@@ -22,12 +22,12 @@ public abstract class CNetContractor extends AgentAdapter
 		case CALL_FOR_PROPOSAL:
 			ACLMessage reply = getProposal(message);
 			if (reply != null)
-				messageManager.post(reply);
+				msgMngr().post(reply);
 			break;
 		case ACCEPT_PROPOSAL:
 			ACLMessage result = onAcceptProposal(message);
 			if (result != null)
-				messageManager.post(result);
+				msgMngr().post(result);
 			break;
 		case REJECT_PROPOSAL:
 			onRejectProposal(message);

@@ -102,6 +102,22 @@ public class AgentCtrls extends JPanel
 		});
 		btnSend.setBounds(16, 260, 89, 23);
 		pnlPostMsg.add(btnSend);
+		
+		JButton test = new JButton("Proba");
+		test.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+				} catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		});
+		test.setBounds(120, 260, 89, 23);
+		pnlPostMsg.add(test);
 
 		JScrollPane spRunning = new JScrollPane();
 		spRunning.setBounds(16, 44, 362, 133);
@@ -200,7 +216,8 @@ public class AgentCtrls extends JPanel
 					String family = (String) lstFamilies.getSelectedValue();
 					if (family == null)
 						return;
-					JndiManager.getAgentManager().startAgent(family, runtimeName);
+					// TODO : need an option to pass initialization arguments instead of null here
+					JndiManager.getAgentManager().startAgent(family, runtimeName, null);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);

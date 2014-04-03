@@ -7,14 +7,14 @@ import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.agentmanager.agent.AgentAdapter;
+import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 @Stateful(name = "org_xjaf2x_server_agents_jason_HelloJason")
 @Remote(JasonAgentI.class)
 @Clustered
-public class HelloJason extends AgentAdapter implements JasonAgentI
+public class HelloJason extends Agent implements JasonAgentI
 {
 	private static final long serialVersionUID = 1L;
 
