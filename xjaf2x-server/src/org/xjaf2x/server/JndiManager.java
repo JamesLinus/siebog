@@ -23,6 +23,7 @@ package org.xjaf2x.server;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.xjaf2x.server.agentmanager.AgentManager;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
 import org.xjaf2x.server.messagemanager.MessageManager;
@@ -46,17 +47,17 @@ public class JndiManager
 		jndiProps.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
 	}
 
-	public static Context getContext() throws Exception
+	public static Context getContext() throws NamingException
 	{
 		return new InitialContext(jndiProps);
 	}
 
-	public static AgentManagerI getAgentManager() throws Exception
+	public static AgentManagerI getAgentManager() throws NamingException
 	{
 		return (AgentManagerI) getContext().lookup(AgentManagerLookup);
 	}
 	
-	public static MessageManagerI getMessageManager() throws Exception
+	public static MessageManagerI getMessageManager() throws NamingException
 	{
 		return (MessageManagerI) getContext().lookup(MessageManagerLookup);
 	}

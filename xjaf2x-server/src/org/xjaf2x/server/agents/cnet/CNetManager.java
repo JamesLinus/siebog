@@ -74,7 +74,7 @@ public class CNetManager extends Agent
 			accept.setSender(getAid());
 			accept.setContent(content);
 			accept.setReplyWith(message.getInReplyTo());
-			msgMngr().post(accept);
+			msm.post(accept);
 			break;
 		case INFORM:
 			long time = System.nanoTime() - Long.parseLong(message.getInReplyTo());
@@ -90,7 +90,7 @@ public class CNetManager extends Agent
 				reply.setSender(getAid());
 				reply.addReceiver(starter);
 				reply.setContent(total);
-				msgMngr().post(reply);
+				msm.post(reply);
 			}
 			break;
 		default:
@@ -110,12 +110,12 @@ public class CNetManager extends Agent
 				{
 					ACLMessage cfp = new ACLMessage(Performative.CALL_FOR_PROPOSAL);
 					cfp.setSender(getAid());
-					cfp.addReceiver(new AID("C" + i, "org.xjaf2x.examples.cnet.CNetContractor"));
+					cfp.addReceiver(new AID("org.xjaf2x.examples.cnet.CNetContractor", "C" + i));
 					cfp.setContent(content);
 					cfp.setProtocol("fipa-contract-net");
 					cfp.setLanguage("fipa-sl");
 					cfp.setReplyWith(System.nanoTime() + "");
-					msgMngr().post(cfp);
+					msm.post(cfp);
 				}
 			}
 		}.start();

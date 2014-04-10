@@ -42,12 +42,12 @@ public abstract class CNetContractor extends Agent
 		case CALL_FOR_PROPOSAL:
 			ACLMessage reply = getProposal(message);
 			if (reply != null)
-				msgMngr().post(reply);
+				msm.post(reply);
 			break;
 		case ACCEPT_PROPOSAL:
 			ACLMessage result = onAcceptProposal(message);
 			if (result != null)
-				msgMngr().post(result);
+				msm.post(result);
 			break;
 		case REJECT_PROPOSAL:
 			onRejectProposal(message);

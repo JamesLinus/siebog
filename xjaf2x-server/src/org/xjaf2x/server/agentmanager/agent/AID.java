@@ -21,6 +21,7 @@
 package org.xjaf2x.server.agentmanager.agent;
 
 import java.io.Serializable;
+import org.xjaf2x.server.Matchable;
 
 // @formatter:off
 /**
@@ -34,20 +35,21 @@ import java.io.Serializable;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 // @formatter:on
-public final class AID implements Serializable
+public final class AID implements Serializable, Matchable<AID>
 {
 	private static final long serialVersionUID = 1L;
-	private final String runtimeName;
 	private final String family;
+	private final String runtimeName;
 	private final String str; // string representation
 
-	public AID(String runtimeName, String family)
+	
+	public AID(String family, String runtimeName)
 	{
-		this.runtimeName = runtimeName;
 		this.family = family;
+		this.runtimeName = runtimeName;
 		str = family + "/" + runtimeName;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -65,6 +67,21 @@ public final class AID implements Serializable
 			return false;
 		AID other = (AID) obj;
 		return str.equals(other.str);
+	}
+
+	public boolean matches(AID aid)
+	{
+		if (aid.family != null)
+		{
+			if (!family.matches(aid.family))
+				return false;
+		}
+		if (aid.runtimeName != null)
+		{
+			if (!runtimeName.matches(aid.runtimeName))
+				return false;
+		}
+		return true;
 	}
 
 	@Override

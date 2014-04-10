@@ -21,7 +21,9 @@
 package org.xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,7 +82,7 @@ public class AgentManager implements AgentManagerI
 	@Override
 	public AID startAgent(String family, String runtimeName, Serializable[] args)
 	{
-		AID aid = new AID(runtimeName, family);
+		AID aid = new AID(family, runtimeName);
 		// is it running already?
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
@@ -144,17 +146,40 @@ public class AgentManager implements AgentManagerI
 		{
 			if (logger.isLoggable(Level.INFO))
 				logger.log(Level.INFO, "Error while performing a lookup of [" + jndiName + "]", ex);
-			deployedAgents.remove(aid.getFamily());
 			return null;
 		}
 	}
 	
 	@Override
-	public Set<String> getFamilies()
+	public List<String> getFamilies()
 	{
-		Set<String> result = new HashSet<>();
-		result.addAll(deployedAgents.keySet());
+		final Set<String> keys = deployedAgents.keySet();
+		List<String> result = new ArrayList<>(keys.size());
+		result.addAll(keys);
 		return result;
+	}
+	
+	@Override
+	public List<AID> getRunning()
+	{
+		final Set<AID> keys = runningAgents.keySet();
+		List<AID> aids = new ArrayList<>(keys.size());
+		aids.addAll(keys);
+		return aids;
+	}
+	
+	@Override
+	public List<AID> getRunning(AID pattern)
+	{
+		List<AID> aids = new ArrayList<>();
+		Iterator<AID> i = runningAgents.keySet().iterator();
+		while (i.hasNext())
+		{
+			AID aid = i.next();
+			if (aid.matches(pattern))
+				aids.add(aid);
+		}
+		return aids;
 	}
 	
 	private void reloadDeployedAgents()
@@ -194,13 +219,5 @@ public class AgentManager implements AgentManagerI
 		{
 			logger.log(Level.WARNING, "Error while reloading deployed agents", ex);
 		}
-	}
-
-	@Override
-	public Set<AID> getRunning()
-	{
-		Set<AID> aids = new HashSet<>(runningAgents.keySet().size());
-		aids.addAll(runningAgents.keySet());
-		return aids;
 	}
 }

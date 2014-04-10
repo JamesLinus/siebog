@@ -21,7 +21,7 @@
 package org.xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 
@@ -51,13 +51,25 @@ public interface AgentManagerI extends Serializable
 	 */
 	void stopAgent(AID aid);
 
-	Set<AID> getRunning();
+	/**
+	 * Returns the list of running agents.
+	 * 
+	 * @return List of agent AIDs.
+	 */
+	List<AID> getRunning();
 
 	/**
-	 * Returns the set of deployed agent families.
+	 * Returns the list of running agents whose AIDs match the provided pattern.
 	 * 
-	 * @param reload true if the list of deployed agents should be reloaded.
+	 * @param pattern
 	 * @return
 	 */
-	Set<String> getFamilies();
+	List<AID> getRunning(AID pattern);
+
+	/**
+	 * Returns the list of deployed agent families.
+	 * 
+	 * @return List of available agent family names.
+	 */
+	List<String> getFamilies();
 }

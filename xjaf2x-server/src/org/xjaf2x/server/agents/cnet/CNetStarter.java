@@ -84,9 +84,9 @@ public class CNetStarter extends Agent
 						logger.info("Done!");
 					// stop agents
 					for (AID aid : contractors)
-						agMngr().stopAgent(aid);
+						agm.stopAgent(aid);
 					contractors.clear();
-					agMngr().stopAgent(manager);
+					agm.stopAgent(manager);
 					return;
 				}
 				iteration = 1;
@@ -108,7 +108,7 @@ public class CNetStarter extends Agent
 		// create new contractors
 		for (int i = contractors.size(); i < numContr; i++)
 		{
-			AID aid = agMngr().startAgent("org.xjaf2x.examples.cnet.CNetContractor", "C" + i, null);
+			AID aid = agm.startAgent("org.xjaf2x.examples.cnet.CNetContractor", "C" + i, null);
 			contractors.add(aid);
 		}
 		
@@ -116,7 +116,7 @@ public class CNetStarter extends Agent
 		{
 			if (logger.isLoggable(Level.INFO))
 				logger.info("Starting manager");
-			manager = agMngr().startAgent("org.xjaf2x.examples.cnet.CNetManager", "Manager", null);
+			manager = agm.startAgent("org.xjaf2x.examples.cnet.CNetManager", "Manager", null);
 		}
 		
 		// go!
@@ -124,7 +124,7 @@ public class CNetStarter extends Agent
 		msg.setSender(getAid());
 		msg.addReceiver(manager);
 		msg.setContent(numContr + " " + CONTENT_SIZE);
-		msgMngr().post(msg);
+		msm.post(msg);
 	}
 	
 	private void stop(long time)

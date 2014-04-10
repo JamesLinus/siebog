@@ -26,12 +26,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.SessionContext;
+import javax.naming.NamingException;
 import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
 import org.xjaf2x.server.messagemanager.MessageManagerI;
@@ -49,15 +49,15 @@ public abstract class Agent implements AgentI
 	private static final long serialVersionUID = 1L;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
 	protected AID myAid;
-	private AgentManagerI agentManager;
-	private MessageManagerI messageManager;
+	protected AgentManagerI agm;
+	protected MessageManagerI msm;
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
 	// TODO : replace with the managed executor service of Java EE 7
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	@Resource
 	private SessionContext context;
-
+	
 	@Override
 	public void init(Serializable[] args)
 	{
@@ -77,7 +77,7 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
-	public void handleMessage(ACLMessage msg)
+	public final void handleMessage(ACLMessage msg)
 	{
 		queue.add(msg);
 		if (!processing)
@@ -86,7 +86,7 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
-	public void processNextMessage()
+	public final void processNextMessage()
 	{
 		final ACLMessage next = receive();
 		if (next == null)
@@ -151,43 +151,10 @@ public abstract class Agent implements AgentI
 		return msg;
 	}
 
-	protected AgentManagerI agMngr()
-	{
-		if (agentManager == null)
-		{
-			try
-			{
-				agentManager = JndiManager.getAgentManager();
-			} catch (Exception ex)
-			{
-				logger.log(Level.SEVERE, "Unable to obtain a reference to AgentManager", ex);
-			}
-		}
-		return agentManager;
-	}
-
-	protected MessageManagerI msgMngr()
-	{
-		if (messageManager == null)
-		{
-			try
-			{
-				messageManager = JndiManager.getMessageManager();
-			} catch (Exception ex)
-			{
-				logger.log(Level.SEVERE, "Unable to obtain a reference to MessageManager", ex);
-			}
-		}
-		return messageManager;
-	}
-
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((myAid == null) ? 0 : myAid.hashCode());
-		return result;
+		return myAid.hashCode();
 	}
 
 	@Override
@@ -199,23 +166,25 @@ public abstract class Agent implements AgentI
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Agent other = (Agent) obj;
-		if (myAid == null)
-		{
-			if (other.myAid != null)
-				return false;
-		} else if (!myAid.equals(other.myAid))
-			return false;
-		return true;
+		return myAid.equals(((Agent)obj).myAid);
 	}
 
+	@Override
 	public AID getAid()
 	{
 		return myAid;
 	}
-
-	public void setAid(AID aid)
+	
+	@Override
+	public String getNodeName()
+	{
+		return System.getProperty("jboss.node.name");
+	}
+	
+	public final void setAid(AID aid) throws NamingException
 	{
 		this.myAid = aid;
+		agm = JndiManager.getAgentManager();
+		msm = JndiManager.getMessageManager();
 	}
 }

@@ -22,6 +22,7 @@ package org.xjaf2x.server.agentmanager.agent;
 
 import java.io.Serializable;
 import javax.ejb.Remote;
+import javax.naming.NamingException;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
@@ -39,12 +40,19 @@ public interface AgentI extends Serializable
 	AID getAid();
 
 	/**
-	 * The remaining methods are for internal purposes only. You should never
-	 * directly call or override any of them.
+	 * Returns the name of the agent's host node.
+	 * 
+	 * @return
+	 */
+	String getNodeName();
+
+	/**
+	 * The remaining methods are for internal purposes only. You should never directly call or
+	 * override any of them.
 	 */
 
-	void setAid(AID aid);
-
+	void setAid(AID aid) throws NamingException;
+	
 	void handleMessage(ACLMessage msg);
 
 	void processNextMessage();

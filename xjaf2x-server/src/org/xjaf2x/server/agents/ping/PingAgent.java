@@ -44,13 +44,13 @@ public class PingAgent extends Agent
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
-		logger.info("Ping @ [" + System.getProperty("jboss.node.name") + "]");
+		logger.info("Ping @ [" + getNodeName() + "]");
 		
-		AID pongAid = agMngr().startAgent("org_xjaf2x_server_agents_ping_PongAgent", "Pong", null);
+		AID pongAid = agm.startAgent("org_xjaf2x_server_agents_ping_PongAgent", "Pong", null);
 		ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 		pongMsg.setSender(myAid);
 		pongMsg.addReceiver(pongAid);
-		msgMngr().post(pongMsg);
+		msm.post(pongMsg);
 		
 		ACLMessage reply = receive(0);
 		logger.info("Pong says: " + reply.getContent());

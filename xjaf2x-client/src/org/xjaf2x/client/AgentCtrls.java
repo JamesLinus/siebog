@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.border.TitledBorder;
@@ -136,7 +136,7 @@ public class AgentCtrls extends JPanel
 				try
 				{
 					mdlRunning.clear();
-					Set<AID> aids = JndiManager.getAgentManager().getRunning();
+					List<AID> aids = JndiManager.getAgentManager().getRunning();
 					for (AID aid : aids)
 						mdlRunning.addElement(aid);
 				} catch (Exception ex)
@@ -194,7 +194,7 @@ public class AgentCtrls extends JPanel
 				mdlFamilies.clear();
 				try
 				{
-					Set<String> families = JndiManager.getAgentManager().getFamilies();
+					List<String> families = JndiManager.getAgentManager().getFamilies();
 					for (String str : families)
 						mdlFamilies.addElement(str);
 				} catch (Exception ex)
