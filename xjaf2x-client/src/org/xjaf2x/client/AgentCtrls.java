@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
-import org.xjaf2x.server.JndiManager;
+import org.xjaf2x.server.Global;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import org.xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -89,7 +89,7 @@ public class AgentCtrls extends JPanel
 							// go!
 							try
 							{
-								JndiManager.getMessageManager().post(msg);
+								Global.getMessageManager().post(msg);
 							} catch (Exception ex)
 							{
 								logger.log(Level.WARNING, "Error while sending a message", ex);
@@ -136,7 +136,7 @@ public class AgentCtrls extends JPanel
 				try
 				{
 					mdlRunning.clear();
-					List<AID> aids = JndiManager.getAgentManager().getRunning();
+					List<AID> aids = Global.getAgentManager().getRunning();
 					for (AID aid : aids)
 						mdlRunning.addElement(aid);
 				} catch (Exception ex)
@@ -194,7 +194,7 @@ public class AgentCtrls extends JPanel
 				mdlFamilies.clear();
 				try
 				{
-					List<String> families = JndiManager.getAgentManager().getFamilies();
+					List<String> families = Global.getAgentManager().getFamilies();
 					for (String str : families)
 						mdlFamilies.addElement(str);
 				} catch (Exception ex)
@@ -217,7 +217,7 @@ public class AgentCtrls extends JPanel
 					if (family == null)
 						return;
 					// TODO : need an option to pass initialization arguments instead of null here
-					JndiManager.getAgentManager().startAgent(family, runtimeName, null);
+					Global.getAgentManager().startAgent(family, runtimeName, null);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);

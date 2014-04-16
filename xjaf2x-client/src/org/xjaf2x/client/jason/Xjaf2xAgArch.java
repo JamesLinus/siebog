@@ -1,7 +1,7 @@
 package org.xjaf2x.client.jason;
 
 import java.util.List;
-import org.xjaf2x.server.JndiManager;
+import org.xjaf2x.server.Global;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import jason.architecture.AgArch;
@@ -17,7 +17,7 @@ public class Xjaf2xAgArch extends AgArch
 	public void init() throws Exception
 	{
 		final Settings stts = getTS().getSettings();
-		AgentManagerI agentManager = JndiManager.getAgentManager();
+		AgentManagerI agentManager = Global.getAgentManager();
 		remote = agentManager.startJasonAgent(stts.getUserParameter("family"), getAgName(), null);
 		remote.init(stts.getUserParameters());
 	}
