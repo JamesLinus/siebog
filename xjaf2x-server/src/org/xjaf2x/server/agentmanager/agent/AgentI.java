@@ -22,7 +22,6 @@ package org.xjaf2x.server.agentmanager.agent;
 
 import java.io.Serializable;
 import javax.ejb.Remote;
-import javax.naming.NamingException;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
@@ -51,7 +50,7 @@ public interface AgentI extends Serializable
 	 * override any of them.
 	 */
 
-	void setAid(AID aid) throws NamingException;
+	void setAid(AID aid) throws Exception;
 	
 	void handleMessage(ACLMessage msg);
 

@@ -36,14 +36,11 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
 import org.xjaf2x.server.Global;
-import org.xjaf2x.server.JndiManager;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
-import org.xjaf2x.server.config.AgentDesc;
 
 /**
  * Default agent manager implementation.
@@ -60,25 +57,20 @@ public class AgentManager implements AgentManagerI
 	private static final Logger logger = Logger.getLogger(AgentManager.class.getName());
 	private Context jndiContext;
 	private Cache<AID, AgentI> runningAgents;
-	private Cache<String, AgentDesc> deployedAgents;
-	
+
 	@PostConstruct
 	public void postConstruct()
 	{
 		try
-		{	
-			jndiContext = JndiManager.getContext();
-			CacheContainer container = (CacheContainer) jndiContext.lookup("java:jboss/infinispan/container/xjaf2x-cache");
-			runningAgents = container.getCache("running-agents");
-			deployedAgents = container.getCache("deployed-agents");
-			if (deployedAgents.size() == 0)
-				reloadDeployedAgents();
+		{
+			jndiContext = Global.getContext();
+			runningAgents = Global.getRunningAgents();
 		} catch (Exception ex)
 		{
 			logger.log(Level.SEVERE, "AgentManager initialization error", ex);
 		}
 	}
-	
+
 	@Override
 	public AID startAgent(String family, String runtimeName, Serializable[] args)
 	{
@@ -91,23 +83,15 @@ public class AgentManager implements AgentManagerI
 				logger.info("Already running: [" + aid + "]");
 			return aid;
 		}
-		
-		AgentDesc rec = deployedAgents.get(family);
-		if (rec == null)
-		{
-			if (logger.isLoggable(Level.INFO))
-				logger.info("No such family name: [" + family + "]");
-			return null;
-		}
-		
-		agent = createNew(rec.getJndiName(), aid, args);
+
+		agent = createNew(family, aid, args);
 		if (agent == null)
 			return null;
 		if (logger.isLoggable(Level.FINE))
 			logger.fine("Agent [" + aid + "] running.");
 		return aid;
 	}
-	
+
 	@Override
 	public JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args)
 	{
@@ -116,7 +100,7 @@ public class AgentManager implements AgentManagerI
 			return null;
 		return (JasonAgentI) runningAgents.get(aid);
 	}
-	
+
 	/**
 	 * Terminates an active agent.
 	 * 
@@ -133,10 +117,16 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	private AgentI createNew(String jndiName, AID aid, Serializable[] args)
+	private AgentI createNew(String family, AID aid, Serializable[] args)
 	{
 		try
 		{
+			Class<?> cls = Class.forName(family.replace('_', '.'));
+			// build the JNDI lookup string
+			final String view = AgentI.class.getName();
+			String jndiName = String.format("ejb:/%s//%s!%s", Global.SERVER, family, view);
+			if (cls.getAnnotation(Stateful.class) != null) // stateful EJB
+				jndiName += "?stateful";
 			AgentI agent = (AgentI) jndiContext.lookup(jndiName);
 			agent.setAid(aid);
 			agent.init(args);
@@ -145,17 +135,35 @@ public class AgentManager implements AgentManagerI
 		} catch (Exception ex)
 		{
 			if (logger.isLoggable(Level.INFO))
-				logger.log(Level.INFO, "Error while performing a lookup of [" + jndiName + "]", ex);
+				logger.log(Level.INFO, "Error while performing a lookup of [" + family + "]", ex);
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<String> getFamilies()
 	{
-		final Set<String> keys = deployedAgents.keySet();
-		List<String> result = new ArrayList<>(keys.size());
-		result.addAll(keys);
+		List<String> result = new ArrayList<>();
+		final String intf = "!" + AgentI.class.getName();
+		try
+		{
+			NamingEnumeration<NameClassPair> list = jndiContext.list("java:jboss/exported/"
+					+ Global.SERVER);
+			while (list.hasMore())
+			{
+				NameClassPair ncp = list.next();
+				final String name = ncp.getName();
+				if (name.endsWith(intf))
+				{
+					String family = name.substring(0, name.lastIndexOf('!'));
+					result.add(family);
+			
+				}
+			}
+		} catch (NamingException ex)
+		{
+			logger.log(Level.WARNING, "Error while loading agent families", ex);
+		}
 		return result;
 	}
 	
@@ -180,44 +188,5 @@ public class AgentManager implements AgentManagerI
 				aids.add(aid);
 		}
 		return aids;
-	}
-	
-	private void reloadDeployedAgents()
-	{
-		try
-		{
-			final String INTF = "!" + AgentI.class.getName();
-			NamingEnumeration<NameClassPair> list = jndiContext.list("java:jboss/exported/xjaf2x-server");
-			while (list.hasMore())
-			{
-				NameClassPair ncp = list.next();
-				final String name = ncp.getName();
-				if (name.endsWith(INTF))
-				{
-					String family = name.substring(0, name.indexOf('!'));
-					try
-					{
-						Class<?> cls = Class.forName(family.replace('_', '.'));
-						// stateful or stateless?
-						boolean stateful = cls.getAnnotation(Stateful.class) != null;
-						// jason?
-						boolean jason = false; // TODO : include search for Jason agents
-						// ok, store
-						AgentDesc desc = new AgentDesc(family, stateful, Global.SERVER, jason);
-						deployedAgents.put(family, desc);
-						
-					} catch (ClassNotFoundException ex)
-					{
-						logger.log(Level.WARNING, "Error while performing a class lookup for [" + family + "]", ex);
-						continue;
-					}
-				}
-			}
-			if (logger.isLoggable(Level.INFO))
-				logger.info("Successfully reloaded [" + deployedAgents.size() + "] agents");
-		} catch (NamingException ex)
-		{
-			logger.log(Level.WARNING, "Error while reloading deployed agents", ex);
-		}
 	}
 }

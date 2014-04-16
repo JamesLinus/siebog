@@ -31,8 +31,7 @@ import javax.annotation.Resource;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.SessionContext;
-import javax.naming.NamingException;
-import org.xjaf2x.server.JndiManager;
+import org.xjaf2x.server.Global;
 import org.xjaf2x.server.agentmanager.AgentManagerI;
 import org.xjaf2x.server.messagemanager.MessageManagerI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
@@ -150,7 +149,7 @@ public abstract class Agent implements AgentI
 		}
 		return msg;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -181,10 +180,10 @@ public abstract class Agent implements AgentI
 		return System.getProperty("jboss.node.name");
 	}
 	
-	public final void setAid(AID aid) throws NamingException
+	public final void setAid(AID aid) throws Exception
 	{
 		this.myAid = aid;
-		agm = JndiManager.getAgentManager();
-		msm = JndiManager.getMessageManager();
+		agm = Global.getAgentManager();
+		msm = Global.getMessageManager();
 	}
 }

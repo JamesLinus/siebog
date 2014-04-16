@@ -20,18 +20,14 @@
 
 package org.xjaf2x.server.messagemanager;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.naming.Context;
 import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.JndiManager;
+import org.xjaf2x.server.Global;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.AgentI;
 import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
@@ -46,25 +42,15 @@ import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 @Clustered
 public class MessageManager implements MessageManagerI
 {
-	private static final Logger logger;
-	private static final ThreadPoolExecutor executor;
+	private static final Logger logger = Logger.getLogger(MessageManager.class.getName());
 	private Cache<AID, AgentI> runningAgents;
-	
-	static
-	{
-		logger = Logger.getLogger(MessageManager.class.getName());
-		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-		executor.setMaximumPoolSize(16);
-	}
 	
 	@PostConstruct
 	public void postConstruct()
 	{
 		try
 		{	
-			Context jndiContext = JndiManager.getContext();
-			CacheContainer container = (CacheContainer) jndiContext.lookup("java:jboss/infinispan/container/xjaf2x-cache");
-			runningAgents = container.getCache("running-agents");
+			runningAgents = Global.getRunningAgents();
 		} catch (Exception ex)
 		{
 			logger.log(Level.SEVERE, "MessageManager initialization error", ex);

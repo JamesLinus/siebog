@@ -29,7 +29,7 @@ import jason.asSyntax.Literal;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
-import org.xjaf2x.server.JndiManager;
+import org.xjaf2x.server.Global;
 import org.xjaf2x.server.agentmanager.agent.AID;
 import org.xjaf2x.server.agentmanager.agent.Agent;
 import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
@@ -85,8 +85,8 @@ public class FactJason extends Agent implements JasonAgentI
 			long total = (System.nanoTime() - startTime) / 1000000;
 			try
 			{
-				CacheContainer container = (CacheContainer) JndiManager.getContext().lookup(
-						"java:jboss/infinispan/container/xjaf2x-cache");
+				CacheContainer container = (CacheContainer) Global.getContext().lookup(
+						"java:jboss/infinispan/container/ejb");
 				Cache<AID, Long> cache = container.getCache("factJason");
 				cache.put(getAid(), total);
 				if (cache.size() == numAgents)
