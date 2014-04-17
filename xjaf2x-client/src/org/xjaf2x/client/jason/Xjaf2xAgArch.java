@@ -1,9 +1,9 @@
 package org.xjaf2x.client.jason;
 
 import java.util.List;
-import org.xjaf2x.server.Global;
-import org.xjaf2x.server.agentmanager.AgentManagerI;
-import org.xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import xjaf2x.server.Global;
+import xjaf2x.server.agentmanager.AgentManagerI;
+import xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;

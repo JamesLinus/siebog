@@ -1,8 +1,7 @@
-package org.xjaf2x.client;
+package xjaf2x.start;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xjaf2x.server.config.ServerConfig;
@@ -27,7 +26,7 @@ public class JBossCLI
 
 		if (logger.isLoggable(Level.INFO))
 			logger.info("Starting master node xjaf2x-master@" + ADDR);
-		String hostMaster = FileUtils.read(JBossCLI.class.getResourceAsStream("/host-master.txt"));
+		String hostMaster = FileUtils.read(JBossCLI.class.getResourceAsStream("host-master.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostMaster = hostMaster.replace("<!-- interface-def -->", intfDef);
@@ -37,20 +36,20 @@ public class JBossCLI
 
 		// @formatter:off
 		String[] jbossArgs = {
-			"-jboss-home", "\"" + jbossHome + "\"",
-			"-mp", "\"" + jbossHome + "modules\"",
-			"-jar", "\"" + jbossHome + "jboss-modules.jar\"",
+			"-jboss-home", jbossHome,
+			"-mp", jbossHome + "modules",
+			"-jar", jbossHome + "jboss-modules.jar",
 			"--",
-			"\"-Dorg.jboss.boot.log.file=" + jbossHome + "domain/log/xjaf2x.log\"",
-			"\"-Dlogging.configuration=file:" + jbossHome + "domain/configuration/logging.properties\"",
+			"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf2x.log",
+			"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
 			"-server",
 			"--",
 			// 
 			"--host-config=host-master.xml",
-			"\"-Djboss.bind.address.management=" + ADDR + "\"",
+			"-Djboss.bind.address.management=" + ADDR
 		};
 		// @formatter:on
-
+		
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
 
@@ -63,7 +62,7 @@ public class JBossCLI
 		if (logger.isLoggable(Level.INFO))
 			logger.info(String.format("Starting slave node %s@%s, with xjaf2x-master@%s", NAME,
 					ADDR, MASTER));
-		String hostSlave = FileUtils.read(JBossCLI.class.getResourceAsStream("/host-slave.txt"));
+		String hostSlave = FileUtils.read(JBossCLI.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostSlave = hostSlave.replace("<!-- interface-def -->", intfDef);
@@ -76,21 +75,22 @@ public class JBossCLI
 
 		// @formatter:off
 		String[] jbossArgs = {
-			"-jboss-home", "\"" + jbossHome + "\"",
-			"-mp", "\"" + jbossHome + "modules\"",
-			"-jar", "\"" + jbossHome + "jboss-modules.jar\"",
+			"-jboss-home", jbossHome,
+			"-mp", jbossHome + "modules",
+			"-jar", jbossHome + "jboss-modules.jar",
 			"--",
-			"\"-Dorg.jboss.boot.log.file=" + jbossHome + "domain/log/host-controller.log\"",
-			"\"-Dlogging.configuration=file:" + jbossHome + "domain/configuration/logging.properties\"",
+			"-Dorg.jboss.boot.log.file=" + jbossHome + "domain/log/host-controller.log",
+			"-Dlogging.configuration=file:" + jbossHome + "domain/configuration/logging.properties",
 			"-server",
 			"--",
 			// 
 			"--host-config=host-slave.xml",
-			"\"-Djboss.domain.master.address=" + MASTER + "\"",
-			"\"-Djboss.bind.address=" + ADDR + "\"",
-			"\"-Djboss.bind.address.management=" + MASTER + "\"",
+			"-Djboss.domain.master.address=" + MASTER,
+			"-Djboss.bind.address=" + ADDR,
+			"-Djboss.bind.address.management=" + MASTER
 		};
 		// @formatter:on
+
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
 
@@ -98,21 +98,15 @@ public class JBossCLI
 	{
 		try
 		{
+			// TODO : make sure it works if there are spaces in the path
 			jbossHome = System.getenv("JBOSS_HOME");
 			if ((jbossHome == null) || (jbossHome.length() == 0)
 					|| !new File(jbossHome).isDirectory())
-				throw new IOException("Environment variable JBOSS_HOME not set");
+				throw new IOException("Environment variable JBOSS_HOME not set.");
 			jbossHome = jbossHome.replace('\\', '/');
 			if (!jbossHome.endsWith("/"))
 				jbossHome += "/";
-
-			// overwrite "domain.xml"
-			String domain = FileUtils.read(JBossCLI.class.getResourceAsStream("/domain.txt"));
-			try (PrintWriter out = new PrintWriter(jbossHome + "domain/configuration/domain.xml"))
-			{
-				out.print(domain);
-			}
-
+			
 			switch (ServerConfig.getMode())
 			{
 			case MASTER:

@@ -10,10 +10,10 @@ import java.util.logging.Logger;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
-import org.xjaf2x.server.Global;
-import org.xjaf2x.server.agentmanager.agent.AID;
-import org.xjaf2x.server.messagemanager.fipaacl.ACLMessage;
-import org.xjaf2x.server.messagemanager.fipaacl.Performative;
+import xjaf2x.server.Global;
+import xjaf2x.server.agentmanager.agent.AID;
+import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.messagemanager.fipaacl.Performative;
 import javax.swing.DefaultListModel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -213,11 +213,13 @@ public class AgentCtrls extends JPanel
 				try
 				{
 					String runtimeName = txtNewName.getText();
+					if (runtimeName.length() == 0)
+						runtimeName = "a" + System.currentTimeMillis();
 					String family = (String) lstFamilies.getSelectedValue();
 					if (family == null)
 						return;
 					// TODO : need an option to pass initialization arguments instead of null here
-					Global.getAgentManager().startAgent(family, runtimeName, null);
+					Global.getAgentManager().startAgent(family, runtimeName, "2", "eil51.tsp");
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);

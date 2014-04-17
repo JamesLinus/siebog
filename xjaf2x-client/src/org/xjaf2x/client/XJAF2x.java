@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import org.xjaf2x.server.config.ServerConfig;
-import org.xjaf2x.server.config.ServerConfig.Mode;
+import xjaf2x.server.config.ServerConfig;
+import xjaf2x.server.config.ServerConfig.Mode;
 
 public class XJAF2x extends JFrame
 {
