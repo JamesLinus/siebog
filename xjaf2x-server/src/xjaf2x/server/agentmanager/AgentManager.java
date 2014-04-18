@@ -72,30 +72,28 @@ public class AgentManager implements AgentManagerI
 	}
 
 	@Override
-	public AID startAgent(String family, String runtimeName, Serializable... args)
+	public AID start(String family, String runtimeName, Serializable... args)
 	{
 		AID aid = new AID(family, runtimeName);
 		// is it running already?
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
-			if (logger.isLoggable(Level.FINE))
-				logger.info("Already running: [" + aid + "]");
+			logger.fine("Already running: [" + aid + "]");
 			return aid;
 		}
 
 		agent = createNew(family, aid, args);
 		if (agent == null)
 			return null;
-		if (logger.isLoggable(Level.FINE))
-			logger.fine("Agent [" + aid + "] running.");
+		logger.fine("Agent [" + aid + "] running.");
 		return aid;
 	}
 
 	@Override
 	public JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args)
 	{
-		AID aid = startAgent(family, runtimeName, args);
+		AID aid = start(family, runtimeName, args);
 		if (aid == null)
 			return null;
 		return (JasonAgentI) runningAgents.get(aid);
@@ -107,7 +105,7 @@ public class AgentManager implements AgentManagerI
 	 * @param aid AID object.
 	 */
 	@Override
-	public void stopAgent(AID aid)
+	public void stop(AID aid)
 	{
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
@@ -128,9 +126,11 @@ public class AgentManager implements AgentManagerI
 			if (cls.getAnnotation(Stateful.class) != null) // stateful EJB
 				jndiName += "?stateful";
 			AgentI agent = (AgentI) jndiContext.lookup(jndiName);
-			agent.setAid(aid);
+			// the order of the next two statements matters. if we call init first and the agent
+			// sends a message from there, it sometimes happens that the reply arrives before we
+			// register the AID. also some agents might wish to terminate themselves inside init.
 			runningAgents.put(aid, agent);
-			agent.init(args);
+			agent.init(aid, args);
 			return agent;
 		} catch (Exception ex)
 		{
@@ -157,7 +157,7 @@ public class AgentManager implements AgentManagerI
 				{
 					String family = name.substring(0, name.lastIndexOf('!'));
 					result.add(family);
-			
+
 				}
 			}
 		} catch (NamingException ex)
@@ -166,7 +166,7 @@ public class AgentManager implements AgentManagerI
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<AID> getRunning()
 	{
@@ -175,7 +175,7 @@ public class AgentManager implements AgentManagerI
 		aids.addAll(keys);
 		return aids;
 	}
-	
+
 	@Override
 	public List<AID> getRunning(AID pattern)
 	{

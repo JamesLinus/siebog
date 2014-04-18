@@ -40,7 +40,7 @@ public class Starter extends Agent
 	private static final long serialVersionUID = -4972585393971070318L;
 	
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		int numPairs = Integer.parseInt(args[0].toString());
 		int numIterations = Integer.parseInt(args[1].toString());
@@ -52,12 +52,13 @@ public class Starter extends Agent
 		
 		for (int i = 0; i < numPairs; i++)
 		{
-			agm.startAgent("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit);
-			AID aid = agm.startAgent("xjaf2x_server_agents_pairs_Sender", "S" + i, i, numIterations);
+			agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit);
+			AID aid = agm.start("xjaf2x_server_agents_pairs_Sender", "S" + i, i, numIterations);
 			msg.addReceiver(aid);
 		}
 		
 		msm.post(msg);
+		agm.stop(myAid);
 	}
 
 	@Override

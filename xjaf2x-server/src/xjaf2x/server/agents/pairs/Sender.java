@@ -44,12 +44,14 @@ public class Sender extends Agent
 	private int numIterations;
 	private int iterationIndex;
 	private Serializable content;
+	private AID receiver;
 	
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		myIndex = Integer.parseInt(args[0].toString());
 		numIterations = Integer.parseInt(args[1].toString());
+		receiver = new AID("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex);
 	}
 
 	@Override
@@ -71,6 +73,8 @@ public class Sender extends Agent
 				long avg = System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
 				avg /= numIterations;
 				logger.warning("S" + myIndex + ": " + avg);
+				agm.stop(myAid);
+				agm.stop(receiver);
 			}
 		}
 	}
@@ -79,10 +83,9 @@ public class Sender extends Agent
 	{
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.setSender(myAid);
-		msg.addReceiver(new AID("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex));
+		msg.addReceiver(receiver);
 		msg.setContent(content);
 		msg.setReplyWith(time);
 		msm.post(msg);		
 	}
-
 }

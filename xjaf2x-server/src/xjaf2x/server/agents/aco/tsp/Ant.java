@@ -70,7 +70,7 @@ public class Ant extends Agent
 	private final Random rnd = new Random();
 
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		AID mapAidPattern = new AID("xjaf2x_server_agents_aco_tsp_Map", null);
 		mapAID = agm.getRunning(mapAidPattern).get(0);
@@ -239,7 +239,7 @@ public class Ant extends Agent
 			{
 				phase = 6;
 				// when this ant is done, create another one
-				agm.startAgent("xjaf2x_server_agents_aco_tsp_Ant",
+				agm.start("xjaf2x_server_agents_aco_tsp_Ant",
 						"Ant" + myAid.hashCode() + System.currentTimeMillis());
 				//agm.stopAgent(myAid);
 				return;

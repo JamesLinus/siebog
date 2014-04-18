@@ -46,7 +46,7 @@ public class PingAgent extends Agent
 	{
 		logger.info("Ping @ [" + getNodeName() + "]");
 		
-		AID pongAid = agm.startAgent("xjaf2x_server_agents_ping_PongAgent", "Pong");
+		AID pongAid = agm.start("xjaf2x_server_agents_ping_PongAgent", "Pong");
 		ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 		pongMsg.setSender(myAid);
 		pongMsg.addReceiver(pongAid);

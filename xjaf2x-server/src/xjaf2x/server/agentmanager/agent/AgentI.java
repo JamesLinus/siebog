@@ -32,8 +32,6 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 @Remote
 public interface AgentI extends Serializable
 {
-	void init(Serializable... args);
-
 	void terminate();
 
 	AID getAid();
@@ -49,8 +47,8 @@ public interface AgentI extends Serializable
 	 * The remaining methods are for internal purposes only. You should never directly call or
 	 * override any of them.
 	 */
-
-	void setAid(AID aid) throws Exception;
+	
+	void init(AID aid, Serializable... args) throws Exception;
 	
 	void handleMessage(ACLMessage msg);
 

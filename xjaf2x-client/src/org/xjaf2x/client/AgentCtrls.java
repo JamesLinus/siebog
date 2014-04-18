@@ -224,7 +224,7 @@ public class AgentCtrls extends JPanel
 					Serializable[] argss = new Serializable[args.length];
 					for (int i = 0; i < args.length; i++)
 						argss[i] = args[i];
-					Global.getAgentManager().startAgent(family, runtimeName, argss);
+					Global.getAgentManager().start(family, runtimeName, argss);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);

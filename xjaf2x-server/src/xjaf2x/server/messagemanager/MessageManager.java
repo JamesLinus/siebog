@@ -23,6 +23,8 @@ package xjaf2x.server.messagemanager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.infinispan.Cache;
@@ -40,6 +42,7 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 @Stateless
 @Remote(MessageManagerI.class)
 @Clustered
+@Lock(LockType.READ)
 public class MessageManager implements MessageManagerI
 {
 	private static final Logger logger = Logger.getLogger(MessageManager.class.getName());
@@ -60,7 +63,6 @@ public class MessageManager implements MessageManagerI
 	@Override
 	public void post(final ACLMessage message)
 	{
-		final boolean info = logger.isLoggable(Level.INFO);
 		for (AID aid : message.getReceivers())
 		{
 			if (aid == null)
@@ -68,7 +70,7 @@ public class MessageManager implements MessageManagerI
 			AgentI agent = runningAgents.get(aid);
 			if (agent != null)
 				agent.handleMessage(message);
-			else if (info)
+			else
 				logger.info("Agent not running: [" + aid + "]");
 		}
 	}

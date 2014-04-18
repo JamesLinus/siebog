@@ -44,7 +44,7 @@ public class Map extends Agent
 	private static final int MAX_STATIONARY_ITERATIONS = 500;
 
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		logger.fine("Map opened.");
 		loadMap(args[0].toString());

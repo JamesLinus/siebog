@@ -28,6 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
@@ -48,13 +49,13 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 public abstract class Agent implements AgentI
 {
 	private static final long serialVersionUID = 1L;
+	private static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
 	protected AID myAid;
 	protected AgentManagerI agm;
 	protected MessageManagerI msm;
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
-	@SuppressWarnings("unused")
 	private boolean terminated;
 	// TODO : replace with the managed executor service of Java EE 7
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
@@ -62,7 +63,16 @@ public abstract class Agent implements AgentI
 	private SessionContext context;
 	
 	@Override
-	public void init(Serializable... args)
+	@Lock(LockType.WRITE)
+	public final void init(AID aid, Serializable... args) throws Exception
+	{
+		myAid = aid;
+		agm = Global.getAgentManager();
+		msm = Global.getMessageManager();
+		onInit(args);
+	}
+	
+	protected void onInit(Serializable... args)
 	{
 	}
 
@@ -79,9 +89,15 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
+	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void handleMessage(ACLMessage msg)
 	{
-		// TODO : implement termination
+		if (terminated)
+		{
+			if (!processing)
+				doTerminate();
+			return;
+		}
 		
 		queue.add(msg);
 		if (!processing)
@@ -90,9 +106,14 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
+	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void processNextMessage()
 	{
-		// TODO : implement termination
+		if (terminated)
+		{
+			doTerminate();
+			return;
+		}
 		
 		final ACLMessage msg = receive();
 		if (msg == null)
@@ -113,7 +134,10 @@ public abstract class Agent implements AgentI
 					 * "processing" flag
 					 */
 					onMessage(msg);
-					me.processNextMessage(); // will acquire lock
+					if (terminated)
+						doTerminate();
+					else
+						me.processNextMessage(); // will acquire lock
 				}
 			});
 		}
@@ -121,6 +145,7 @@ public abstract class Agent implements AgentI
 	
 	@Override
 	@Lock(LockType.WRITE)
+	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void terminate()
 	{
 		terminated = true;
@@ -201,13 +226,6 @@ public abstract class Agent implements AgentI
 	public String getNodeName()
 	{
 		return System.getProperty("jboss.node.name");
-	}
-	
-	public final void setAid(AID aid) throws Exception
-	{
-		this.myAid = aid;
-		agm = Global.getAgentManager();
-		msm = Global.getMessageManager();
 	}
 	
 	@Override

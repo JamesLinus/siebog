@@ -42,7 +42,7 @@ public class Receiver extends Agent
 	private int primeLimit;
 
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		primeLimit = Integer.parseInt(args[0].toString());
 	}
@@ -52,7 +52,7 @@ public class Receiver extends Agent
 	{
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setSender(myAid);
-		reply.setContent(process());
+		reply.setContent(msg.getContent() + "" + process());
 		msm.post(reply);
 	}
 	

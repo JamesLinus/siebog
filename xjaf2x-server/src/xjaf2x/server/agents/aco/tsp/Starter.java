@@ -22,15 +22,15 @@ public class Starter extends Agent
 	private static final Logger logger = Logger.getLogger(Starter.class.getName());
 
 	@Override
-	public void init(Serializable... args)
+	protected void onInit(Serializable... args)
 	{
 		logger.fine("Starter agent running.");
 
-		agm.startAgent("xjaf2x_server_agents_aco_tsp_Map", "Map", args[1]);
+		agm.start("xjaf2x_server_agents_aco_tsp_Map", "Map", args[1]);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i)
-			agm.startAgent("xjaf2x_server_agents_aco_tsp_Ant", "Ant" + i);
+			agm.start("xjaf2x_server_agents_aco_tsp_Ant", "Ant" + i);
 
 		logger.fine("Starter done.");
 	}
