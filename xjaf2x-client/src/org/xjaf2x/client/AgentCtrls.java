@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +35,7 @@ public class AgentCtrls extends JPanel
 	private JList<AID> lstRunning;
 	private DefaultListModel<AID> mdlRunning;
 	private JSpinner spnNumMsgs;
+	private JTextField txtArgs;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public AgentCtrls()
@@ -218,8 +220,11 @@ public class AgentCtrls extends JPanel
 					String family = (String) lstFamilies.getSelectedValue();
 					if (family == null)
 						return;
-					// TODO : need an option to pass initialization arguments instead of null here
-					Global.getAgentManager().startAgent(family, runtimeName, "2", "eil51.tsp");
+					String[] args = txtArgs.getText().split(";");
+					Serializable[] argss = new Serializable[args.length];
+					for (int i = 0; i < args.length; i++)
+						argss[i] = args[i];
+					Global.getAgentManager().startAgent(family, runtimeName, argss);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);
@@ -236,6 +241,15 @@ public class AgentCtrls extends JPanel
 		});
 		btnRun.setBounds(289, 178, 89, 23);
 		pnlRun.add(btnRun);
+		
+		JLabel lblArgs = new JLabel("Args:");
+		lblArgs.setBounds(16, 208, 70, 15);
+		pnlRun.add(lblArgs);
+		
+		txtArgs = new JTextField();
+		txtArgs.setBounds(123, 206, 160, 19);
+		pnlRun.add(txtArgs);
+		txtArgs.setColumns(10);
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override

@@ -55,4 +55,6 @@ public interface AgentI extends Serializable
 	void handleMessage(ACLMessage msg);
 
 	void processNextMessage();
+	
+	void remove();
 }

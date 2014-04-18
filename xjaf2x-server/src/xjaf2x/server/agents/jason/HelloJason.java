@@ -24,7 +24,6 @@ import jason.asSyntax.Literal;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.agentmanager.agent.Agent;
@@ -50,12 +49,6 @@ public class HelloJason extends Agent implements JasonAgentI
 	
 	@Override
 	public void onMessage(ACLMessage message)
-	{
-	}
-	
-	@Override
-	@Remove
-	public void terminate()
 	{
 	}
 

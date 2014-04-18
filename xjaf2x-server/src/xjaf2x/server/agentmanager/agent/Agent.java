@@ -30,7 +30,9 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.Remove;
 import javax.ejb.SessionContext;
+import javax.ejb.Stateful;
 import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.AgentManagerI;
 import xjaf2x.server.messagemanager.MessageManagerI;
@@ -52,6 +54,8 @@ public abstract class Agent implements AgentI
 	protected MessageManagerI msm;
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
+	@SuppressWarnings("unused")
+	private boolean terminated;
 	// TODO : replace with the managed executor service of Java EE 7
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	@Resource
@@ -62,22 +66,23 @@ public abstract class Agent implements AgentI
 	{
 	}
 
-	@Override
-	public void terminate()
-	{
-	}
-
 	/**
 	 * Override this method to handle incoming messages.
 	 * 
 	 * @param msg
 	 */
 	protected abstract void onMessage(ACLMessage msg);
+	
+	protected void onTerminate()
+	{
+	}
 
 	@Override
 	@Lock(LockType.WRITE)
 	public final void handleMessage(ACLMessage msg)
 	{
+		// TODO : implement termination
+		
 		queue.add(msg);
 		if (!processing)
 			processNextMessage();
@@ -87,6 +92,8 @@ public abstract class Agent implements AgentI
 	@Lock(LockType.WRITE)
 	public final void processNextMessage()
 	{
+		// TODO : implement termination
+		
 		final ACLMessage msg = receive();
 		if (msg == null)
 			processing = false;
@@ -110,6 +117,22 @@ public abstract class Agent implements AgentI
 				}
 			});
 		}
+	}
+	
+	@Override
+	@Lock(LockType.WRITE)
+	public final void terminate()
+	{
+		terminated = true;
+		if (!processing)
+			doTerminate();
+	}
+	
+	private void doTerminate()
+	{
+		onTerminate();
+		if (getClass().getAnnotation(Stateful.class) != null)
+			context.getBusinessObject(AgentI.class).remove();
 	}
 
 	/**
@@ -185,5 +208,11 @@ public abstract class Agent implements AgentI
 		this.myAid = aid;
 		agm = Global.getAgentManager();
 		msm = Global.getMessageManager();
+	}
+	
+	@Override
+	@Remove
+	public final void remove()
+	{
 	}
 }

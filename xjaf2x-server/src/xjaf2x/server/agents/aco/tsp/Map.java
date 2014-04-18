@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import xjaf2x.server.agentmanager.agent.Agent;
 import xjaf2x.server.agentmanager.agent.AgentI;
@@ -217,8 +216,7 @@ public class Map extends Agent
 	}
 
 	@Override
-	@Remove
-	public void terminate()
+	protected void onTerminate()
 	{
 		logger.fine("Map closed.");
 	}

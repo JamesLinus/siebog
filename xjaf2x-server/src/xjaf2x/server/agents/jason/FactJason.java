@@ -23,7 +23,6 @@ package xjaf2x.server.agents.jason;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import jason.asSyntax.Literal;
 import org.infinispan.Cache;
@@ -56,12 +55,6 @@ public class FactJason extends Agent implements JasonAgentI
 		String str = (String) args.get("numAgents");
 		str = str.substring(1, str.length() - 1);
 		numAgents = Integer.parseInt(str);
-	}
-
-	@Override
-	@Remove
-	public void terminate()
-	{
 	}
 
 	@Override

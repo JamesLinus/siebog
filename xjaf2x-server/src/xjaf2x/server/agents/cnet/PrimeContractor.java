@@ -24,7 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.agentmanager.agent.AgentI;
@@ -78,12 +77,6 @@ public class PrimeContractor extends CNetContractor
 
 	@Override
 	protected void onRejectProposal(ACLMessage proposal)
-	{
-	}
-	
-	@Override
-	@Remove
-	public void terminate()
 	{
 	}
 }

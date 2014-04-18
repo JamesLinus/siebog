@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.agentmanager.agent.AID;
@@ -364,8 +363,7 @@ public class Ant extends Agent
 	 * Agent clean-up.
 	 */
 	@Override
-	@Remove
-	public void terminate()
+	protected void onTerminate()
 	{
 		logger.fine("Ant terminated.");
 	}
