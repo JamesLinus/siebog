@@ -1,6 +1,5 @@
 package xjaf2x.start;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,15 +97,7 @@ public class JBossCLI
 	{
 		try
 		{
-			// TODO : make sure it works if there are spaces in the path
-			jbossHome = System.getenv("JBOSS_HOME");
-			if ((jbossHome == null) || (jbossHome.length() == 0)
-					|| !new File(jbossHome).isDirectory())
-				throw new IOException("Environment variable JBOSS_HOME not set.");
-			jbossHome = jbossHome.replace('\\', '/');
-			if (!jbossHome.endsWith("/"))
-				jbossHome += "/";
-			
+			jbossHome = ServerConfig.getJBossHome();
 			switch (ServerConfig.getMode())
 			{
 			case MASTER:

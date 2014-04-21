@@ -21,6 +21,8 @@
 package xjaf2x.server.config;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,6 @@ import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import xjaf2x.server.Global;
@@ -66,19 +67,36 @@ public class ServerConfig
 
 	static
 	{
+		InputStream is = null;
 		try
 		{
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			try (InputStream is = ServerConfig.class.getResourceAsStream("/xjaf2x-server.xml"))
+			try
 			{
-				doc = builder.parse(is);
-				// TODO : validate against the schema
-				loadConfig();
+				is = new FileInputStream(getXjaf2xRoot() + "xjaf2x-server.xml");
+				logger.info("Using custom configuration file xjaf2x-server.xml");
+			} catch (IOException ex)
+			{
+				is = ServerConfig.class.getResourceAsStream("/xjaf2x-server.xml");
 			}
+			
+			doc = builder.parse(is);
+			// TODO : validate against the schema
+			loadConfig();
 		} catch (Exception ex)
 		{
 			logger.log(Level.WARNING, "Error while reading server configuration", ex);
+		} finally
+		{
+			if (is != null)
+				try
+				{
+					is.close();
+				} catch (IOException e)
+				{
+				}
 		}
+		
 	}
 
 	public static void initCluster() throws NamingException
@@ -122,6 +140,8 @@ public class ServerConfig
 		EJBClientConfiguration cc = new PropertiesBasedEJBClientConfiguration(p);
 		ContextSelector<EJBClientContext> selector = new ConfigBasedEJBClientContextSelector(cc);
 		EJBClientContext.setSelector(selector);
+		
+		logger.info("Initialized cluster " + clusterNodes);
 	}
 
 	private static void loadConfig() throws SAXException
@@ -177,18 +197,12 @@ public class ServerConfig
 			clusterNodes = new ArrayList<>();
 			clusterNodes.add(address);
 			// collect all slave nodes
-			list = doc.getElementsByTagName("cluster");
-			if ((list != null) && (list.getLength() > 0))
-			{
-				Node node = list.item(0).getFirstChild();
-				while (node != null)
-				{
-					String addr = node.getNodeValue();
-					if ((addr != null) && (addr.length() > 0))
-						clusterNodes.add(addr);
-					node = node.getNextSibling();
-				}
-			}
+			NodeList slaves = doc.getElementsByTagName("slave");
+			if (slaves == null || slaves.getLength() == 0)
+				clusterNodes.add(address);
+			else
+				for (int i = 0; i < slaves.getLength(); i++)
+					clusterNodes.add(((Element)slaves.item(i)).getAttribute("address"));
 		}
 	}
 
@@ -215,6 +229,24 @@ public class ServerConfig
 	public static String getName()
 	{
 		return name;
+	}
+	
+	public static String getJBossHome() throws IOException
+	{
+		// TODO : make sure it works if there are spaces in the path
+		String jbossHome = System.getenv("JBOSS_HOME");
+		if ((jbossHome == null) || (jbossHome.length() == 0)
+				|| !new File(jbossHome).isDirectory())
+			throw new IOException("Environment variable JBOSS_HOME not set.");
+		jbossHome = jbossHome.replace('\\', '/');
+		if (!jbossHome.endsWith("/"))
+			jbossHome += "/";
+		return jbossHome;
+	}
+	
+	public static String getXjaf2xRoot() throws IOException
+	{
+		return getJBossHome() + "xjaf2x/";
 	}
 
 	@SuppressWarnings("unused")

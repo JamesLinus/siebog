@@ -15,7 +15,7 @@
 		if mode = master, specify network address of at least one slave node 
 	-->
 	<cluster>
-		<slave>ultrabook</slave>
+		<slave address="192.168.56.101" />
 	</cluster>
 	
 	<!-- 
