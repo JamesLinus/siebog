@@ -20,14 +20,17 @@
 
 package xjaf2x.server.rest;
 
-import javax.naming.NamingException;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import java.util.List;
 
 import xjaf2x.server.Global;
+import xjaf2x.server.agentmanager.agent.AID;
+
 /**
  *
  * @author <a href="rade.milovanovic@hotmail.com">Rade Milovanovic</a>
@@ -55,8 +58,49 @@ public class RESTws {
 		}		
 		int i = lista.lastIndexOf(",");
 		int k = lista.length();
-		lista.replace(i,k, " ]");
+		lista.replace(i,k, "]");
 		return lista.toString();
 	}
+	
+	
+	@GET
+	@Produces("application/json")
+	@Path("/getrunning")
+	public String getRunning(){
+		StringBuilder lista = new StringBuilder();
+		lista.append("\"running agents\":[");
+		try {
+			List<AID> aids = Global.getAgentManager().getRunning();		
+			if(!aids.isEmpty()){
+				for (AID aid : aids){
+					lista.append("\"" + aid.getFamily() + "/" + aid.getRuntimeName() + "\", ");
+				}
+				int i = lista.lastIndexOf(",");
+				int k = lista.length();
+				lista.replace(i,k, "]");
+				return lista.toString();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		return "";
+	}
+	
+	
+	@DELETE
+	@Path("/remove/{fullname}")		
+	public void delete(@PathParam("fullname") String fullname) {
+		int split = fullname.indexOf("/");
+        String family = fullname.substring(0, split);	        
+        String runtimeName = fullname.substring(split+1); 
+        AID aid = new AID(family, runtimeName);		
+        try {
+			Global.getAgentManager().stop(aid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}        
+    }
 	
 }
