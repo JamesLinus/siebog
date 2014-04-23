@@ -22,12 +22,12 @@ package xjaf2x.server.rest;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
+import java.io.Serializable;
 import java.util.List;
-
 import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.agent.AID;
 
@@ -46,19 +46,19 @@ public class RESTws {
 	{
 		
 		StringBuilder lista = new StringBuilder();
-		lista.append("\"families\":[");
+		lista.append("{\"families\":[");
 		List<String> families;		
 		try {
 			families =  Global.getAgentManager().getFamilies();
 			for (String str : families)
-				lista.append("\"" + str + "\", ");
+				lista.append("\"" + str + "\",");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 		int i = lista.lastIndexOf(",");
 		int k = lista.length();
-		lista.replace(i,k, "]");
+		lista.replace(i,k, "]}");
 		return lista.toString();
 	}
 	
@@ -89,11 +89,8 @@ public class RESTws {
 	
 	
 	@DELETE
-	@Path("/remove/{fullname}")		
-	public void delete(@PathParam("fullname") String fullname) {
-		int split = fullname.indexOf("/");
-        String family = fullname.substring(0, split);	        
-        String runtimeName = fullname.substring(split+1); 
+	@Path("/remove/{family}/{runtimeName}")		
+	public void deleteAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {		    
         AID aid = new AID(family, runtimeName);		
         try {
 			Global.getAgentManager().stop(aid);
@@ -102,5 +99,23 @@ public class RESTws {
 			e.printStackTrace();
 		}        
     }
+	
+	@POST
+	@Path("/create/{family}/{runtimeName}")		
+    public void createAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {        
+		Serializable[] args = null; //argumenti ??
+		AID aid;
+		try {
+			aid = Global.getAgentManager().start(family,runtimeName, args);		
+			if(aid != null){
+				//throw new WebApplicationException(Response.Status.CREATED);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+    }
+	
 	
 }
