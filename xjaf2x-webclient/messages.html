@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Messages - XJAF2x Admin</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">    
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+	<link href="css/font-awesome.css" rel="stylesheet">
+	<link href="js/chosen/chosen.css" rel="stylesheet">
+	<link href="css/jquery-ui.css" rel="stylesheet">
+	<link href="js/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" /> 
+	<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+		<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> </a><a class="brand" href="index.html">XJAF2x Admin</a>
+    </div>
+  </div>
+</div>
+   
+<div class="subnavbar">
+  <div class="subnavbar-inner">
+    <div class="container">
+      <ul class="mainnav">
+        <li><a href="index.html"><i class="icon-dashboard"></i><span>Dashboard</span></a></li>
+		<li class="active"><a href="messages.html"><i class="icon-rss"></i><span>Messages</span></a></li>
+        <li><a href="stats.html"><i class="icon-bar-chart"></i><span>Stats</span></a></li>
+		<li><a href="settings.html"><i class="icon-cog"></i><span>Settings</span></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="main">
+	
+	<div class="main-inner">
+
+	    <div class="container">
+	
+	      <div class="row">
+	      	
+	      	<div class="span12">      		
+	      		
+	      		<div class="widget ">
+	      			
+	      			<div class="widget-header">
+	      				<i class="icon-rss"></i>
+	      				<h3>Send Message</h3>
+	  				</div> <!-- /widget-header -->
+					
+					<div class="widget-content">
+						
+						
+						
+						<div class="tabbable">						
+						<br>
+						
+							<div class="tab-content">
+								
+								<form id="edit-profile" class="form-horizontal">
+								
+	
+									<fieldset>
+									
+									
+										<div class="control-group">											
+											<label class="control-label">Choose agent</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody>
+														  <tr>
+															<td colspan="2"><img src="img/package.png" style="margin-right:5px;" />org.xjaf2x.server.agents</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:20px">
+																<input type="radio" name="available_agent" style="margin-right:5px;"/>
+																PingAgent
+																<i style="padding-left:5px;">[Pinger One]</i>
+															</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:20px">
+																<input type="radio" name="available_agent" style="margin-right:5px;"/>
+																PingAgent
+																<i style="padding-left:5px;">[My Pinger]</i>
+															</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:20px"><img src="img/package.png" style="margin-right:5px;" />cnet</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:40px"><input type="radio" name="available_agent" style="margin-right:5px;"/>CNetManager</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:40px"><input type="radio" name="available_agent" style="margin-right:5px;"/>PrimeContractor</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:40px"><input type="radio" name="available_agent" style="margin-right:5px;"/>CNetStarter</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:20px"><img src="img/package.png" style="margin-right:5px;" />aco.tsp</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:40px"><input type="radio" name="available_agent" style="margin-right:5px;"/>MapAgent</td>
+														  </tr>
+														  <tr>
+															<td colspan="2" style="padding-left:40px"><input type="radio" name="available_agent" style="margin-right:5px;"/>StarterAgent</td>
+														  </tr>
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										
+										<div class="control-group">											
+											<label class="control-label" for="performative">Performative</label>
+											<div class="controls">
+												<select class="chosen-select" id="performative">
+												  <option value="ACCEPT_PROPOSAL">ACCEPT_PROPOSAL</option>
+												  <option value="AGREE">AGREE</option>
+												  <option value="CANCEL">CANCEL</option>
+												  <option value="CALL_FOR_PROPOSAL">CALL_FOR_PROPOSAL</option>
+												  <option value="CONFIRM">CONFIRM</option>
+												  <option value="DISCONFIRM">DISCONFIRM</option>
+												  <option value="FAILURE">FAILURE</option>
+												  <option value="INFORM">INFORM</option>
+												  <option value="INFORM_IF">INFORM_IF</option>
+												  <option value="INFORM_REF">INFORM_REF</option>
+												  <option value="NOT_UNDERSTOOD">NOT_UNDERSTOOD</option>
+												  <option value="PROPAGATE">PROPAGATE</option>
+												  <option value="PROPOSE">PROPOSE</option>
+												  <option value="PROXY">PROXY</option>	
+												  <option value="QUERY_IF">QUERY_IF</option>
+												  <option value="QUERY_REF">QUERY_REF</option>
+												  <option value="REFUSE">REFUSE</option>
+												  <option value="REJECT_PROPOSAL">REJECT_PROPOSAL</option>
+												  <option value="REQUEST">REQUEST</option>
+												  <option value="REQUEST_WHEN">REQUEST_WHEN</option>
+												  <option value="REQUEST_WHENEVER">REQUEST_WHENEVER</option>
+												  <option value="SUBSCRIBE">SUBSCRIBE</option>
+												</select>
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label" for="content">Content</label>
+											<div class="controls">
+												<textarea class="span6" rows="14" id="content"></textarea> 
+												<p class="help-block">Denotes the content of the message; equivalently denotes the object of the action</p>
+											</div>		
+										</div> 
+										
+										<div class="control-group">											
+											<label class="control-label" for="language">Language</label>
+											<div class="controls">
+												<input type="text" class="span6" id="language" value="">
+												<p class="help-block">Denotes the language in which the content parameter is expressed.</p>
+											</div>		
+										</div> 
+										
+										<div class="control-group">											
+											<label class="control-label" for="encoding">Encoding</label>
+											<div class="controls">
+												<input type="text" class="span6" id="encoding" value="">
+												<p class="help-block">Denotes the specific encoding of the content language expression.</p>
+											</div> 		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="ontology">Ontology</label>
+											<div class="controls">
+												<input type="text" class="span6" id="ontology" value="">
+												<p class="help-block">Denotes the ontology(s) used to give a meaning to the symbols in the content expression.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="protocol">Protocol</label>
+											<div class="controls">
+												<input type="text" class="span6" id="protocol" value="">
+												<p class="help-block">Denotes the interaction protocol that the sending agent is employing with this ACL message.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="conversationId">Conversation ID</label>
+											<div class="controls">
+												<input type="text" class="span6" id="conversationId" value="">
+												<p class="help-block">Used to identify the ongoing sequence of communicative acts that together form a conversation.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="replyWith">Reply With</label>
+											<div class="controls">
+												<input type="text" class="span6" id="replyWith" value="">
+												<p class="help-block">Introduces an expression that will be used by the responding agent to identify this message.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="inReplyTo">In Reply To</label>
+											<div class="controls">
+												<input type="text" class="span6" id="inReplyTo" value="">
+												<p class="help-block">Denotes an expression that references an earlier action to which this message is a reply.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="replyBy">Reply By</label>
+											<div class="controls">
+												<input id="datetimepicker" type="text" class="span6" id="replyBy">
+												<p class="help-block">Indicates the latest time by which the sending agent would like to receive a reply.</p>
+											</div>		
+										</div>
+
+										
+                                        <div class="control-group">											
+											<label class="control-label">Checkboxes</label>
+											
+                                            
+                                            <div class="controls">
+                                            <label class="checkbox inline">
+                                              <input type="checkbox"> Option 01
+                                            </label>
+                                            
+                                            <label class="checkbox inline">
+                                              <input type="checkbox"> Option 02
+                                            </label>
+                                          </div>		<!-- /controls -->		
+										</div> <!-- /control-group -->
+                                        
+                                        
+                                        
+                                        <div class="control-group">											
+											<label class="control-label">Radio Buttons</label>
+											
+                                            
+                                            <div class="controls">
+                                            <label class="radio inline">
+                                              <input type="radio"  name="radiobtns"> Option 01
+                                            </label>
+                                            
+                                            <label class="radio inline">
+                                              <input type="radio" name="radiobtns"> Option 02
+                                            </label>
+                                          </div>	<!-- /controls -->			
+										</div> <!-- /control-group -->
+	
+										 <br />
+										
+											
+										<div class="form-actions">
+											<button type="submit" class="btn btn-primary">SEND MESSAGE</button> 
+											<button class="btn">Reset</button>
+										</div> <!-- /form-actions -->
+									</fieldset>
+								</form>
+							</div>
+						  
+						  
+						</div>
+						
+						
+						
+						
+						
+					</div> <!-- /widget-content -->
+						
+				</div> <!-- /widget -->
+	      		
+		    </div> <!-- /span8 -->
+	      	
+	      	
+	      	
+	      	
+	      </div> <!-- /row -->
+	
+	    </div> <!-- /container -->
+	    
+	</div> <!-- /main-inner -->
+    
+</div> <!-- /main -->
+    
+    
+<!-- Placed at the end of the document so the pages load faster --> 
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/datetimepicker/jquery.datetimepicker.js"></script>
+<script src="js/chosen/chosen.jquery.js"></script>
+	
+<script src="js/bootstrap.js"></script>
+<script src="js/base.js"></script>
+
+<script type="text/javascript">
+	 $(".chosen-select").chosen({width: "40%"});
+	 $('#datetimepicker').datetimepicker({format:'unixtime', inline:true});
+</script>
+
+
+ </body>
+
+</html>
