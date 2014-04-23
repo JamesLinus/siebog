@@ -20,16 +20,20 @@
 
 package xjaf2x.server.rest;
 
-import javax.ws.rs.DELETE;
+
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+
 import java.io.Serializable;
 import java.util.List;
+
+
 import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.agent.AID;
+import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.messagemanager.fipaacl.Performative;
 
 /**
  *
@@ -38,7 +42,7 @@ import xjaf2x.server.agentmanager.agent.AID;
 
 @Path("/rest")
 public class RESTws {
-
+	
 	@GET
 	@Produces("application/json")
 	@Path("/getfamilies")
@@ -46,7 +50,7 @@ public class RESTws {
 	{
 		
 		StringBuilder lista = new StringBuilder();
-		lista.append("{\"families\":[");
+		lista.append("getFamilies({\"families\":[");
 		List<String> families;		
 		try {
 			families =  Global.getAgentManager().getFamilies();
@@ -58,17 +62,16 @@ public class RESTws {
 		}		
 		int i = lista.lastIndexOf(",");
 		int k = lista.length();
-		lista.replace(i,k, "]}");
+		lista.replace(i,k, "]})");
 		return lista.toString();
 	}
-	
 	
 	@GET
 	@Produces("application/json")
 	@Path("/getrunning")
 	public String getRunning(){
 		StringBuilder lista = new StringBuilder();
-		lista.append("\"running agents\":[");
+		lista.append("getRunning({\"running\":[");
 		try {
 			List<AID> aids = Global.getAgentManager().getRunning();		
 			if(!aids.isEmpty()){
@@ -77,43 +80,84 @@ public class RESTws {
 				}
 				int i = lista.lastIndexOf(",");
 				int k = lista.length();
-				lista.replace(i,k, "]");
+				lista.replace(i,k, "]})");
 				return lista.toString();
+			}else{
+				lista.append("]})");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		return "";
+		return lista.toString();
 	}
 	
 	
-	@DELETE
+	@GET
 	@Path("/remove/{family}/{runtimeName}")		
-	public void deleteAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {		    
+	public String deleteAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {		    
         AID aid = new AID(family, runtimeName);		
         try {
 			Global.getAgentManager().stop(aid);
+			return "deleteAgent({\"success\": true})";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "deleteAgent({\"success\": false})";
 		}        
     }
 	
-	@POST
+	@GET
+	@Produces("application/json")
+	@Path("/getperformatives")
+	public String getPerformatives()
+	{		
+		StringBuilder lista = new StringBuilder();
+		Performative[] performatives = Performative.values();
+		lista.append("getPerformatives({\"performatives\":[");
+		for(Performative p : performatives){
+			lista.append("\"" + p.toString() + "\",");
+		}
+		int i = lista.lastIndexOf(",");
+		int k = lista.length();
+		lista.replace(i,k, "]})");
+		return lista.toString();
+	}
+	
+	@GET
 	@Path("/create/{family}/{runtimeName}")		
-    public void createAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {        
+    public String createAgent(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName) {        
 		Serializable[] args = null; //argumenti ??
 		AID aid;
 		try {
 			aid = Global.getAgentManager().start(family,runtimeName, args);		
-			if(aid != null){
-				//throw new WebApplicationException(Response.Status.CREATED);
-			}
+			return "createAgent({\"success\": true})";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "createAgent({\"success\": false})";
 		}
+		
+    }
+	
+	
+
+	@GET
+	@Produces("application/json")
+	@Path("/sendmsg/{family}/{runtimeName}/{performative}/{content}")		
+    public String sendMessage(@PathParam("family") String family, @PathParam("runtimeName") String runtimeName,
+    		@PathParam("performative") String performative, @PathParam("content") String content) {        
+		
+		AID aid = new AID(family,runtimeName);
+		Performative p = Performative.valueOf(performative);
+		
+		ACLMessage msg = new ACLMessage(p); 
+		msg.addReceiver(aid);
+		msg.setContent(content);
+				
+		try {
+			Global.getMessageManager().post(msg);
+		} catch (Exception e) {
+			return "sendMessage({\"success\": false})";
+		}		
+		
+		return "sendMessage({\"success\": true})";
 		
     }
 	
