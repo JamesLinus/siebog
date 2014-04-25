@@ -18,30 +18,24 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.rest;
+package xjaf2x.server.config;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import org.jboss.ejb.client.DeploymentNodeSelector;
 
 /**
- *
+ * Round-robin deployment node selector for distributing agents accross cluster nodes.
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Path("/myrest")
-public class MyRest
+public class RRDeploymentNodeSelector implements DeploymentNodeSelector
 {
-	@GET
-	@Produces("text/plain")
-	public String hello()
+	private int index;
+
+	@Override
+	public String selectNode(String[] eligibleNodes, String appName, String moduleName,
+			String distinctName)
 	{
-		return "Hello, World!";
+		return eligibleNodes[index++ % eligibleNodes.length]; 
 	}
-	
-	@GET
-	@Produces("text/plain")
-	public String hello2()
-	{
-		return "Hello, World!";
-	}
+
 }

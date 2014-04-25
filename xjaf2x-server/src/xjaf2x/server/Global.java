@@ -23,6 +23,7 @@ package xjaf2x.server;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import xjaf2x.server.agentmanager.AgentManager;
@@ -51,15 +52,23 @@ public abstract class Global
 			+ AgentManager.class.getSimpleName() + "!" + AgentManagerI.class.getName();
 	private static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ MessageManager.class.getSimpleName() + "!" + MessageManagerI.class.getName();
+	private static Context context;
 
 	static
 	{
 		jndiProps.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+		try
+		{
+			context = new InitialContext(jndiProps);
+		} catch (NamingException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public static Context getContext() throws Exception
 	{
-		return new InitialContext(jndiProps);
+		return context; // new InitialContext(jndiProps);
 	}
 
 	public static AgentManagerI getAgentManager() throws Exception
@@ -75,7 +84,7 @@ public abstract class Global
 	public static Cache<AID, AgentI> getRunningAgents() throws Exception
 	{
 		CacheContainer container = (CacheContainer) getContext().lookup(
-				"java:jboss/infinispan/container/xjaf2x-cache");
+				"java:jboss/infinispan/container/ejb");
 		Cache<AID, AgentI> cache = container.getCache("running-agents");
 		if (cache == null)
 			throw new Exception("Cannot load cache running-agents");

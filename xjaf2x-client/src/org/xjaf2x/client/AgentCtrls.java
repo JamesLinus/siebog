@@ -12,6 +12,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import xjaf2x.server.Global;
+import xjaf2x.server.agentmanager.AgentManagerI;
 import xjaf2x.server.agentmanager.agent.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
@@ -112,6 +113,19 @@ public class AgentCtrls extends JPanel
 			{
 				try
 				{
+					ACLMessage msg = new ACLMessage(Performative.REQUEST);
+					msg.setContent("aaaaaaaa");
+					
+					for (int i = 0; i < 4; i++)
+					{
+						AgentManagerI agm = Global.getAgentManager();
+						int primeLimit = 1, numIterations = 1;
+						agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit);
+						AID aid = agm.start("xjaf2x_server_agents_pairs_Sender", "S" + i, i, numIterations);
+						msg.addReceiver(aid);
+					}
+					
+					Global.getMessageManager().post(msg);
 				} catch (Exception ex)
 				{
 					ex.printStackTrace();

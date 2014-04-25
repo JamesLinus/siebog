@@ -18,30 +18,23 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server;
+package xjaf2x.server.config;
 
-import java.util.Arrays;
-import java.util.logging.Logger;
 import org.jboss.ejb.client.ClusterNodeSelector;
 
 /**
- * Round-robin cluster node selector (work in progress).
+ * Round-robin cluster node selector.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class MyClusterNodeSelector implements ClusterNodeSelector
+public class RRClusterNodeSelector implements ClusterNodeSelector
 {
-	private static final Logger logger = Logger.getLogger(MyClusterNodeSelector.class.getName());
-	private static int index = -1;
+	private int index = 0;
 	
 	@Override
 	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes)
 	{
-		logger.warning("=================================== HERE ====================================");
-		logger.warning(String.format("%s\n%s\n%s", clusterName, Arrays.toString(connectedNodes), Arrays.toString(availableNodes)));
-		logger.warning("=============================================================================");
-		index = (index + 1) % availableNodes.length;
-		return availableNodes[index];
+		return availableNodes[index++ % availableNodes.length];
 	}
 
 }

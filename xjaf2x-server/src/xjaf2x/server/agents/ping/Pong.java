@@ -33,10 +33,10 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_ping_PongAgent")
+@Stateful(name = "xjaf2x_server_agents_ping_Pong")
 @Remote(AgentI.class)
 @Clustered
-public class PongAgent extends Agent
+public class Pong extends Agent
 {
 	private static final long serialVersionUID = 1L;
 	private int number = 0;

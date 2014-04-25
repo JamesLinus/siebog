@@ -34,10 +34,10 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_ping_PingAgent")
+@Stateful(name = "xjaf2x_server_agents_ping_Ping")
 @Remote(AgentI.class)
 @Clustered
-public class PingAgent extends Agent 
+public class Ping extends Agent 
 {
 	private static final long serialVersionUID = 1L;
 
@@ -46,9 +46,9 @@ public class PingAgent extends Agent
 	{
 		logger.info("Ping @ [" + getNodeName() + "]");
 		
-		//AID pongAid = agm.start("xjaf2x_server_agents_ping_PongAgent", "Pong");
+		//AID pongAid = agm.start("xjaf2x_server_agents_ping_Pong", "Pong");
+		AID pongAid = agm.start("xjaf2x_server_agents_ping_Pong", msg.getContent().toString());
 		ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
-		AID pongAid = new AID("xjaf2x_server_agents_ping_PongAgent", msg.getContent().toString());
 		pongMsg.setSender(myAid);
 		pongMsg.addReceiver(pongAid);
 		msm.post(pongMsg);

@@ -45,11 +45,13 @@ public class Receiver extends Agent
 	protected void onInit(Serializable... args)
 	{
 		primeLimit = Integer.parseInt(args[0].toString());
+		logger.info("Receiver " + myAid.getRuntimeName() + " ready.");
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
+		logger.info("Receiver " + myAid.getRuntimeName() + " working");
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setSender(myAid);
 		reply.setContent(msg.getContent() + "" + process());

@@ -42,7 +42,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import xjaf2x.server.Global;
-import xjaf2x.server.MyClusterNodeSelector;
 
 /**
  * Helper class for reading global server configuration.
@@ -109,13 +108,13 @@ public class ServerConfig
 
 		Properties p = new Properties();
 		p.put("endpoint.name", "client-endpoint");
+		p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
+		
 		p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 		p.put("remote.clusters", "ejb");
 		p.put("remote.cluster.ejb.username", Global.USERNAME);
 		p.put("remote.cluster.ejb.password", Global.PASSWORD);
-		// p.put("remote.cluster.ejb.clusternode.selector",
-		// "org.jboss.ejb.client.RandomClusterNodeSelector");
-		p.put("remote.cluster.ejb.clusternode.selector", MyClusterNodeSelector.class.getName());
+		p.put("remote.cluster.ejb.clusternode.selector", RRClusterNodeSelector.class.getName());
 
 		StringBuilder connections = new StringBuilder();
 		String sep = "";
