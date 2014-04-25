@@ -24,8 +24,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.Serializable;
 import java.util.List;
+
 import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.agent.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
@@ -39,62 +44,54 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
 @Path("/")
 public class RESTws
 {
-
+	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getfamilies")
 	public String getFamilies()
-	{
-
-		StringBuilder lista = new StringBuilder();
-		lista.append("getFamilies({\"families\":[");
+	{		
+		JSONObject obj = new JSONObject();
+		JSONArray list = new JSONArray();
 		List<String> families;
 		try
 		{
 			families = Global.getAgentManager().getFamilies();
 			for (String str : families)
-				lista.append("\"" + str + "\",");
+				list.add(str);
 		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
+		{			
 			e.printStackTrace();
-		}
-		int i = lista.lastIndexOf(",");
-		int k = lista.length();
-		lista.replace(i, k, "]})");
-		return lista.toString();
+		}		
+		obj.put("families", list);
+		return obj.toJSONString();
 	}
 
+	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getrunning")
 	public String getRunning()
 	{
-		StringBuilder lista = new StringBuilder();
-		lista.append("getRunning({\"running\":[");
+		JSONObject obj = new JSONObject();
+		JSONArray list = new JSONArray();	
 		try
 		{
 			List<AID> aids = Global.getAgentManager().getRunning();
 			if (!aids.isEmpty())
 			{
 				for (AID aid : aids)
-				{
-					lista.append("\"" + aid.getFamily() + "/" + aid.getRuntimeName() + "\", ");
-				}
-				int i = lista.lastIndexOf(",");
-				int k = lista.length();
-				lista.replace(i, k, "]})");
-				return lista.toString();
-			} else
-			{
-				lista.append("]})");
-			}
+				{					
+					list.add(aid.getFamily()+ "/" + aid.getRuntimeName());
+				}		
+				obj.put("running", list);
+				return obj.toJSONString();
+			} 
 		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
+		{			
 			e.printStackTrace();
 		}
-		return lista.toString();
+		obj.put("running", list);
+		return obj.toJSONString();
 	}
 
 	@GET
@@ -106,31 +103,31 @@ public class RESTws
 		try
 		{
 			Global.getAgentManager().stop(aid);
-			return "deleteAgent({\"success\": true})";
+			return "{\"success\": true}";
 		} catch (Exception e)
 		{
-			return "deleteAgent({\"success\": false})";
+			return "{\"success\": false}";
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getperformatives")
 	public String getPerformatives()
 	{
-		StringBuilder lista = new StringBuilder();
-		Performative[] performatives = Performative.values();
-		lista.append("getPerformatives({\"performatives\":[");
-		for (Performative p : performatives)
-		{
-			lista.append("\"" + p.toString() + "\",");
+		JSONObject obj = new JSONObject();
+		JSONArray list = new JSONArray();			
+		Performative[] performatives = Performative.values();		
+		for (Performative p : performatives)		{
+			
+			list.add(p.toString());
 		}
-		int i = lista.lastIndexOf(",");
-		int k = lista.length();
-		lista.replace(i, k, "]})");
-		return lista.toString();
+		obj.put("performatives", list);
+		return obj.toJSONString();
 	}
 
+	
 	@GET
 	@Path("/create/{family}/{runtimeName}")
 	public String createAgent(@PathParam("family") String family,
@@ -141,39 +138,86 @@ public class RESTws
 		try
 		{
 			aid = Global.getAgentManager().start(family, runtimeName, args);
-			return "createAgent({\"success\": true})";
+			return "{\"success\": true}";
 		} catch (Exception e)
 		{
-			return "createAgent({\"success\": false})";
+			return "{\"success\": false}";
 		}
 
 	}
 
 	@GET
 	@Produces("application/json")
-	@Path("/sendmsg/{family}/{runtimeName}/{performative}/{content}")
-	public String sendMessage(@PathParam("family") String family,
+	@Path("/sendquickmsg/{family}/{runtimeName}/{performative}/{content}")
+	public String sendQuickMessage(@PathParam("family") String family,
 			@PathParam("runtimeName") String runtimeName,
 			@PathParam("performative") String performative, @PathParam("content") String content)
 	{
 
 		AID aid = new AID(family, runtimeName);
 		Performative p = Performative.valueOf(performative);
-
 		ACLMessage msg = new ACLMessage(p);
 		msg.addReceiver(aid);
 		msg.setContent(content);
-
 		try
 		{
 			Global.getMessageManager().post(msg);
 		} catch (Exception e)
 		{
-			return "sendMessage({\"success\": false})";
+			return "{\"success\": false}";
 		}
 
-		return "sendMessage({\"success\": true})";
+		return "{\"success\": true}";
+	}
+	
+	
+	@GET
+	@Produces("application/json")
+	@Path("/sendmsg/{performative}/{senderFam}/{senderName}/{recieverFam}/{recieverName}/{replyToFam}/{replyToName}/{content}/{language}/{encoding}/{ontology}/{protocol}/{conversationId}/{replyWith}/{replyBy}")
+	public String sendMessage(@PathParam("performative") String performative,
+						      @PathParam("senderFam") String senderFam,
+						      @PathParam("senderName") String senderName,
+						      @PathParam("recieverFam") String recieverFam,
+						      @PathParam("recieverName") String recieverName,
+						      @PathParam("replyToFam") String replyToFam,
+						      @PathParam("replyToName") String replyToName,
+						      @PathParam("content") String content,
+						      @PathParam("language") String language,
+						      @PathParam("encoding") String encoding,
+						      @PathParam("ontology") String ontology,
+						      @PathParam("protocol") String protocol,
+						      @PathParam("conversationId") String conversationId,
+						      @PathParam("replyWith") String replyWith,
+						      @PathParam("replyBy") long replyBy)
+	{
 
+		
+		Performative p = Performative.valueOf(performative);
+		ACLMessage msg = new ACLMessage(p); 	
+		AID sender = new AID(senderFam, senderName);
+		msg.setSender(sender);
+		AID reciever = new AID(recieverFam, recieverName);
+		msg.addReceiver(reciever);
+		AID replyTo = new AID(replyToFam, replyToName);
+		msg.setReplyTo(replyTo);
+		msg.setContent(content);
+		msg.setLanguage(language);
+		msg.setEncoding(encoding);
+		msg.setOntology(ontology);
+		msg.setProtocol(protocol);
+		msg.setConversationId(conversationId);
+		msg.setReplyWith(replyWith);
+		msg.setReplyBy(replyBy);
+		
+		try
+		{
+			Global.getMessageManager().post(msg);
+		} catch (Exception e)
+		{
+			return "{\"success\": false}";
+		}
+
+		return "{\"success\": true}";
 	}
 
 }
