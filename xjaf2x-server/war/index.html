@@ -28,8 +28,8 @@
       <ul class="mainnav">
         <li class="active"><a href="index.html"><i class="icon-dashboard"></i><span>Dashboard</span></a></li>
 		<li><a href="messages.html"><i class="icon-rss"></i><span>Messages</span></a></li>
-        <li><a href="stats.html"><i class="icon-bar-chart"></i><span>Stats</span></a></li>
-		<li><a href="settings.html"><i class="icon-cog"></i><span>Settings</span></a></li>
+        <li><a href="deployagents.html"><i class="icon-upload-alt"></i><span>Deploy Agents</span></a></li>
+		<li><a href="cluster.html"><i class="icon-sitemap"></i><span>Cluster</span></a></li>
       </ul>
     </div>
   </div>
@@ -91,12 +91,119 @@
   </div>
 </div>
 
+<!-- console -->
+<div id="menuDiv">
+	<div id="menuInfo">
+		<div id="menuInfoWrapper" class="menuWrapper">
+			<div id='menuInfoFormDiv'>
+				<div id="menuInfoForm1" class="menuForm">
+					XJAF2X<br>
+					<table>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+					</table>
+				</div>
+				<div id="menuInfoForm2" class="menuForm hidden">
+					JBoss<br>
+					<table>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div id="menuInfoTabs" class="menuTabs">
+				<div id="menuInfoTabShow" class="clickable tab showHide inActive hidden" onclick="tab(this.id);">Show Logs</div>
+				<div id="menuInfoTabHide" class="clickable tab showHide inActive" onclick="tab(this.id);">Hide Logs</div>
+				<div id="menuInfoTab1" class="clickable tab secondary  active" onclick="tab(this.id);">XJAF2X Log</div>
+				<div id="menuInfoTab2" class="clickable tab secondary inActive" onclick="tab(this.id);">JBoss Log</div>
+			</div>
+		</div>
+	</div>
+</div>
+		
 <!-- Placed at the end of the document so the pages load faster --> 
 <script src="js/jquery-1.7.2.min.js"></script> 
 <script src="js/excanvas.min.js"></script> 
 <script src="js/chart.min.js" type="text/javascript"></script> 
 <script src="js/bootstrap.js"></script>
-<script src="js/base.js"></script> 
+<script src="js/base.js"></script>
+<script src="js/toggle.js"></script> 
 
 <script type="text/javascript">
 
@@ -105,7 +212,7 @@
 		$("#families-table").empty();
 		jQuery.ajax({
 			 type: "GET",
-			 url: "http://localhost:8080/xjaf2x-server/rest/getfamilies",
+			 url: "rest/getfamilies",
 			 dataType: "jsonp",
 			 contentType: "application/javascript",
 			 jsonpCallback: 'getFamilies',
@@ -124,7 +231,7 @@
 		
 		jQuery.ajax({
 			 type: "GET",
-			 url: "http://localhost:8080/xjaf2x-server/rest/getrunning",
+			 url: "rest/getrunning",
 			 dataType: "jsonp",
 			 contentType: "application/javascript",
 			 jsonpCallback: 'getRunning',
@@ -142,7 +249,7 @@
 		$("#performatives-list").empty();
 		jQuery.ajax({
 			 type: "GET",
-			 url: "http://localhost:8080/xjaf2x-server/rest/getperformatives",
+			 url: "rest/getperformatives",
 			 dataType: "jsonp",
 			 contentType: "application/javascript",
 			 jsonpCallback: 'getPerformatives',
@@ -159,7 +266,7 @@
 	{
 		jQuery.ajax({
 			type: "GET",
-			url: "http://localhost:8080/xjaf2x-server/rest/remove/" + agent,
+			url: "rest/remove/" + agent,
 			dataType: "jsonp",
 			contentType: "application/javascript",
 			jsonpCallback: 'deleteAgent',
@@ -176,7 +283,7 @@
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "http://localhost:8080/xjaf2x-server/rest/create/" + $('input[name=selectedfamily]:checked').val() + "/" + $('#agentnameinput').val(),
+				url: "rest/create/" + $('input[name=selectedfamily]:checked').val() + "/" + $('#agentnameinput').val(),
 				dataType: "jsonp",
 				contentType: "application/javascript",
 				jsonpCallback: 'createAgent',
@@ -199,7 +306,7 @@
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "http://localhost:8080/xjaf2x-server/rest/sendmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
+				url: "rest/sendmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
 				dataType: "jsonp",
 				contentType: "application/javascript",
 				jsonpCallback: 'sendMessage',

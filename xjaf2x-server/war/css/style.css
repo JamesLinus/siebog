@@ -57,7 +57,102 @@ textarea {
 
 
 
+/* console */
 
+#menuInfo {
+    position: absolute;
+    bottom: 0 !important;
+    right: 15px;
+	width: 50%;
+}
+
+.menuWrapper {
+	width: 100%;
+}
+
+.menuForm {
+    float: left;
+    margin-top: 22px;
+    padding: 5px;
+    background-color: white;
+    border: 1px solid black;
+    box-shadow: 1px 1px 1px #333;
+	width: 100%;
+	height: 150px;
+	overflow: -moz-scrollbars-vertical; 
+	overflow-y: scroll;
+}
+
+.menuForm table {
+    padding-top: 3px;
+}
+.menuForm td, th {
+    white-space: nowrap;
+}
+.menuForm th {
+    text-align: left;
+}
+
+.menuTabs {
+    position: absolute;
+    white-space: nowrap;
+    top: 0;
+}
+
+.menuTabs div.tab {
+    float: left;
+    height: 20px;
+    min-width: 20px;
+    margin: 0;
+    padding: 0 10px 0 10px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid black;
+}
+.menuTabs div.secondary {
+    border-left: 0px;
+}
+.menuTabs div.active {
+    opacity: 1;
+    border-bottom: 1px solid white;
+}
+.menuTabs div.active.showHide {
+    border-bottom: 1px solid black;
+}
+.menuTabs div.inActive {
+    opacity: .75;
+    border-bottom: 1px solid black;
+}
+
+.clickable {
+    cursor: pointer;
+}
+.visible {
+    text-decoration: underline;
+    text-decoration-color: black;
+}
+.invisible {
+    text-decoration: line-through;
+    text-decoration-color: red;
+}
+.hidden {
+    display: none;
+}
+#menuInfoWrapper.hidden {
+    display: block;
+}
+#menuInfoWrapper.hidden #menuInfoTabs {
+    top: auto;
+    bottom: 0;
+    right: 0;
+	visibility: visible;
+}
+
+
+.main-inner
+{
+	padding-top:35px;
+}
 
 
 
@@ -116,7 +211,8 @@ textarea {
 */
 
 .subnavbar {
-    	margin-bottom: 2.5em;
+    	margin-bottom: 2.
+5em;
     }
     
 .subnavbar-inner {
