@@ -27,7 +27,7 @@ import javax.ws.rs.core.Application;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@ApplicationPath("/")
+@ApplicationPath("/rest")
 public class Xjaf2xRestApp extends Application
 {
 
