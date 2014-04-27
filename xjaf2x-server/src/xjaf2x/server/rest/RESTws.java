@@ -46,6 +46,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
@@ -244,16 +245,18 @@ public class RESTws
 		String output;
 		try
 		{
-			final String SERVER_UPLOAD_LOCATION_FOLDER = "tmp/";
+			URL location = RESTws.class.getProtectionDomain().getCodeSource().getLocation();
+	        System.out.println(location.getFile());
 			
-			String fileName = SERVER_UPLOAD_LOCATION_FOLDER + form.getMasternodeaddress() + "_" + form.getApplicationname() + ".jar";
+			String folderurl = location.toString().substring(5) + "/tmp/";
+			
+			String fileName = folderurl + form.getMasternodeaddress() + "_" + form.getApplicationname() + ".jar";
 	
-			saveFile(form.getFile_input(), fileName);
+			saveFile(form.getFile_input(), folderurl, fileName);
 	
 			output = "File saved to server location : " + fileName;
 			
 			File file = new File(fileName);
-	
 			
 			Deployment deployment = new Deployment(form.getMasternodeaddress());
 			deployment.deploy(form.getApplicationname(), file);
@@ -261,7 +264,7 @@ public class RESTws
 			return Response.status(200).entity(output).build();
 		} catch (Exception e)
 		{
-			output = "ERROR!";
+			output = "Error";
 			return Response.status(400).entity(output).build();
 		}
 
@@ -269,9 +272,11 @@ public class RESTws
 	}
 	
 	
-	private void saveFile(InputStream uploadedInputStream, String serverLocation) {
+	private void saveFile(InputStream uploadedInputStream, String folderurl, String serverLocation) {
 
 		try {
+			new File(folderurl).mkdirs();
+			
 			OutputStream outpuStream = new FileOutputStream(new File(
 					serverLocation));
 			int read = 0;
