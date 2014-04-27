@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/jboss-ejb3-ext-api-2.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/resteasy-multipart-provider-3.0.8.Final.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
