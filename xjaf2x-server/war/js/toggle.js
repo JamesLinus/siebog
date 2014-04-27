@@ -1,28 +1,12 @@
 function tab(id)
 { 
-	if(id == 'menuInfoTab1') {
-		toggle('menuInfoTab1');
-		toggle('menuInfoTab2');
-		hide('menuInfoForm2');
-		show('menuInfoForm1');
-	}
-	else if(id == 'menuInfoTab2') {
-		toggle('menuInfoTab1');
-		toggle('menuInfoTab2');
-		hide('menuInfoForm1');
-		show('menuInfoForm2');
-	}
-	else if(id == 'menuInfoTabHide') {
-		hide('menuInfoTab1');
-		hide('menuInfoTab2');
+	if( id == 'menuInfoTabHide') {
 		hide('menuInfoFormDiv');
 		hide('menuInfoWrapper');
 		hide('menuInfoTabHide');
 		show('menuInfoTabShow');
 	}
 	else if(id == 'menuInfoTabShow') {
-		show('menuInfoTab1');
-		show('menuInfoTab2');
 		show('menuInfoFormDiv');
 		show('menuInfoWrapper');
 		hide('menuInfoTabShow');

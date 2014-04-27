@@ -91,7 +91,7 @@
   </div>
 </div>
 
-<!-- console -->
+<!-- log console -->
 <div id="menuDiv">
 	<div id="menuInfo">
 		<div id="menuInfoWrapper" class="menuWrapper">
@@ -141,57 +141,11 @@
 						</tr>
 					</table>
 				</div>
-				<div id="menuInfoForm2" class="menuForm hidden">
-					JBoss<br>
-					<table>
-						<tr>
-							<td>13:16:27,436</td>
-							<td>INFO</td>
-							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
-						</tr>
-						<tr>
-							<td>13:16:27,849</td>
-							<td>INFO</td>
-							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
-						</tr>
-						<tr>
-							<td>13:16:28,053 </td>
-							<td>INFO</td>
-							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
-						</tr>
-						<tr>
-							<td>13:17:52,088</td>
-							<td>INFO</td>
-							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
-						</tr>
-						<tr>
-							<td>13:16:27,436</td>
-							<td>INFO</td>
-							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
-						</tr>
-						<tr>
-							<td>13:16:27,849</td>
-							<td>INFO</td>
-							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
-						</tr>
-						<tr>
-							<td>13:16:28,053 </td>
-							<td>INFO</td>
-							<td>[xjaf2x.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
-						</tr>
-						<tr>
-							<td>13:17:52,088</td>
-							<td>INFO</td>
-							<td>[xjaf2x.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf2x_server_agents_ping_PongAgent/fdf]</td>
-						</tr>
-					</table>
-				</div>
+				
 			</div>
 			<div id="menuInfoTabs" class="menuTabs">
 				<div id="menuInfoTabShow" class="clickable tab showHide inActive hidden" onclick="tab(this.id);">Show Logs</div>
 				<div id="menuInfoTabHide" class="clickable tab showHide inActive" onclick="tab(this.id);">Hide Logs</div>
-				<div id="menuInfoTab1" class="clickable tab secondary  active" onclick="tab(this.id);">XJAF2X Log</div>
-				<div id="menuInfoTab2" class="clickable tab secondary inActive" onclick="tab(this.id);">JBoss Log</div>
 			</div>
 		</div>
 	</div>
@@ -213,9 +167,7 @@
 		jQuery.ajax({
 			 type: "GET",
 			 url: "rest/getfamilies",
-			 dataType: "jsonp",
-			 contentType: "application/javascript",
-			 jsonpCallback: 'getFamilies',
+			 dataType: "json",
 			 success: function (data)
 			 {
 				$.each(data.families, function(i, family) {
@@ -232,13 +184,11 @@
 		jQuery.ajax({
 			 type: "GET",
 			 url: "rest/getrunning",
-			 dataType: "jsonp",
-			 contentType: "application/javascript",
-			 jsonpCallback: 'getRunning',
+			 dataType: "json",
 			 success: function (data)
 			 {
 				$.each(data.running, function(i, runningagent) {
-					$("#running-table").append('<tr><td colspan="2"><input type="radio" name="selectedagent" value="' + runningagent + '" style="margin-right:5px;"/>' + runningagent + '<a href="javascript:stopAgent(\'' + runningagent  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
+					$("#running-table").append('<tr><td colspan="2"><input type="checkbox" name="selectedagent" value="' + runningagent + '" style="margin-right:5px;"/>' + runningagent + '<a href="javascript:stopAgent(\'' + runningagent  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
 				});	 
 			 }
 		});
@@ -250,13 +200,11 @@
 		jQuery.ajax({
 			 type: "GET",
 			 url: "rest/getperformatives",
-			 dataType: "jsonp",
-			 contentType: "application/javascript",
-			 jsonpCallback: 'getPerformatives',
+			 dataType: "json",
 			 success: function (data)
 			 {
 				$.each(data.performatives, function(i, performative) {
-					$("#performatives-list").append('<option>' + performative + '</option>');
+					$("#performatives-list").append('<option value="' + performative + '">' + performative + '</option>');
 				});		 
 			 }
 		});
@@ -267,9 +215,7 @@
 		jQuery.ajax({
 			type: "GET",
 			url: "rest/remove/" + agent,
-			dataType: "jsonp",
-			contentType: "application/javascript",
-			jsonpCallback: 'deleteAgent',
+			dataType: "json",
 			success: function (data) 
 			{;
 				getRunningAgents();
@@ -278,15 +224,13 @@
 	}
 	
 	function startAgent()
-	{
+	{	
 		if (($('input[name=selectedfamily]:checked').val() != null) && ($('#agentnameinput').val() != ""))
 		{
 			jQuery.ajax({
 				type: "GET",
 				url: "rest/create/" + $('input[name=selectedfamily]:checked').val() + "/" + $('#agentnameinput').val(),
-				dataType: "jsonp",
-				contentType: "application/javascript",
-				jsonpCallback: 'createAgent',
+				dataType: "json",
 				success: function (data)
 				{
 					$('#agentnameinput').val("");
@@ -298,6 +242,7 @@
 		{
 			alert("Please select Family and enter Agent name.");
 		}
+		
 	}
 	
 	function sendQuickMessage()
@@ -306,10 +251,8 @@
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "rest/sendmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
-				dataType: "jsonp",
-				contentType: "application/javascript",
-				jsonpCallback: 'sendMessage',
+				url: "rest/sendquickmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
+				dataType: "json",
 				success: function (data)
 				{
 					$('#contentmessageinput').val("");
