@@ -238,7 +238,7 @@ public class RESTws
 	
 	@POST
 	@Consumes("multipart/form-data")
-	@Path("/deployagent/{masternodeaddress}/{applicationname}/{file}")
+	@Path("/deployagent")
 	public Response deployAgent(@MultipartForm MyMultipartForm form)
 	{		
 		String output;
