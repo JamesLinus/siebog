@@ -21,6 +21,7 @@
 package xjaf2x.server.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,9 +29,11 @@ import javax.ws.rs.Produces;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
+import xjaf2x.server.Deployment;
 import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.agent.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
@@ -212,6 +215,26 @@ public class RESTws
 		try
 		{
 			Global.getMessageManager().post(msg);
+		} catch (Exception e)
+		{
+			return "{\"success\": false}";
+		}
+
+		return "{\"success\": true}";
+	}
+	
+	
+	@POST
+	@Produces("application/json")
+	@Path("/deployagent/{masternodeaddress}/{applicationname}/{file}")
+	public String deployAgent(@PathParam("masternodeaddress") String masternodeaddress,
+			@PathParam("applicationname") String applicationname,
+			@PathParam("file") File file)
+	{		
+		try
+		{
+			Deployment deployment = new Deployment(masternodeaddress);
+			deployment.deploy(applicationname, file);
 		} catch (Exception e)
 		{
 			return "{\"success\": false}";
