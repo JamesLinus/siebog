@@ -20,11 +20,13 @@
 
 package xjaf2x.server.rest;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,6 +40,16 @@ import xjaf2x.server.Global;
 import xjaf2x.server.agentmanager.agent.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+
+
 
 /**
  *
@@ -225,22 +237,56 @@ public class RESTws
 	
 	
 	@POST
-	@Produces("application/json")
+	@Consumes("multipart/form-data")
 	@Path("/deployagent/{masternodeaddress}/{applicationname}/{file}")
-	public String deployAgent(@PathParam("masternodeaddress") String masternodeaddress,
-			@PathParam("applicationname") String applicationname,
-			@PathParam("file") File file)
+	public Response deployAgent(@MultipartForm MyMultipartForm form)
 	{		
+		String output;
 		try
 		{
-			Deployment deployment = new Deployment(masternodeaddress);
-			deployment.deploy(applicationname, file);
+			final String SERVER_UPLOAD_LOCATION_FOLDER = "tmp/";
+			
+			String fileName = SERVER_UPLOAD_LOCATION_FOLDER + form.getMasternodeaddress() + "_" + form.getApplicationname() + ".jar";
+	
+			saveFile(form.getFile_input(), fileName);
+	
+			output = "File saved to server location : " + fileName;
+			
+			File file = new File(fileName);
+	
+			
+			Deployment deployment = new Deployment(form.getMasternodeaddress());
+			deployment.deploy(form.getApplicationname(), file);
+			
+			return Response.status(200).entity(output).build();
 		} catch (Exception e)
 		{
-			return "{\"success\": false}";
+			output = "ERROR!";
+			return Response.status(400).entity(output).build();
 		}
 
-		return "{\"success\": true}";
+		
 	}
+	
+	
+	private void saveFile(InputStream uploadedInputStream, String serverLocation) {
 
+		try {
+			OutputStream outpuStream = new FileOutputStream(new File(
+					serverLocation));
+			int read = 0;
+			byte[] bytes = new byte[1024];
+
+			outpuStream = new FileOutputStream(new File(serverLocation));
+			while ((read = uploadedInputStream.read(bytes)) != -1) {
+				outpuStream.write(bytes, 0, read);
+			}
+			outpuStream.flush();
+			outpuStream.close();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
+	
 }
