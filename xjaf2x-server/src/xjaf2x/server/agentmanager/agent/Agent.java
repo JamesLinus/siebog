@@ -49,19 +49,21 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 public abstract class Agent implements AgentI
 {
 	private static final long serialVersionUID = 1L;
-	private static final long ACCESS_TIMEOUT = 60000;
+	// the access timeout is needed only when the system is under a heavy load.
+	// under normal circumstances, all methods return as quickly as possible
+	public static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
 	protected AID myAid;
 	protected AgentManagerI agm;
 	protected MessageManagerI msm;
 	private boolean processing;
-	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
+	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
 	// TODO : replace with the managed executor service of Java EE 7
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	@Resource
 	private SessionContext context;
-	
+
 	@Override
 	@Lock(LockType.WRITE)
 	public final void init(AID aid, Serializable... args) throws Exception
@@ -69,9 +71,10 @@ public abstract class Agent implements AgentI
 		myAid = aid;
 		agm = Global.getAgentManager();
 		msm = Global.getMessageManager();
+		queue = new LinkedBlockingQueue<>();
 		onInit(args);
 	}
-	
+
 	protected void onInit(Serializable... args)
 	{
 	}
@@ -82,7 +85,7 @@ public abstract class Agent implements AgentI
 	 * @param msg
 	 */
 	protected abstract void onMessage(ACLMessage msg);
-	
+
 	protected void onTerminate()
 	{
 	}
@@ -92,13 +95,6 @@ public abstract class Agent implements AgentI
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void handleMessage(ACLMessage msg)
 	{
-		if (terminated)
-		{
-			if (!processing)
-				doTerminate();
-			return;
-		}
-		
 		queue.add(msg);
 		if (!processing)
 			processNextMessage();
@@ -109,40 +105,35 @@ public abstract class Agent implements AgentI
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void processNextMessage()
 	{
+		final AgentI me = context.getBusinessObject(AgentI.class);
+
 		if (terminated)
 		{
-			doTerminate();
+			onTerminate();
+			// remove statful beans
+			if (getClass().getAnnotation(Stateful.class) != null)
+				me.remove();
 			return;
 		}
-		
-		final ACLMessage msg = receive();
+
+		final ACLMessage msg = receiveNoWait();
 		if (msg == null)
 			processing = false;
 		else
 		{
 			processing = true;
-			final AgentI me = context.getBusinessObject(AgentI.class);
 			executor.submit(new Runnable() {
 				@Override
 				public void run()
 				{
-					/*
-					 * TODO : double-check if this holds. onMessage is not protected BUT (1) it is
-					 * called only by processNextMessage (2) processNextMessage is called only by
-					 * itself after executing onMessage, and by handleMessage (3) handleMessage will
-					 * not call processNextMessage while onMessage is running, because of the
-					 * "processing" flag
-					 */
+					// TODO : check if the access to onMessage is protected
 					onMessage(msg);
-					if (terminated)
-						doTerminate();
-					else
-						me.processNextMessage(); // will acquire lock
+					me.processNextMessage(); // will acquire lock
 				}
 			});
 		}
 	}
-	
+
 	@Override
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
@@ -150,46 +141,38 @@ public abstract class Agent implements AgentI
 	{
 		terminated = true;
 		if (!processing)
-			doTerminate();
-	}
-	
-	private void doTerminate()
-	{
-		onTerminate();
-		if (getClass().getAnnotation(Stateful.class) != null)
-			context.getBusinessObject(AgentI.class).remove();
+			processNextMessage();
 	}
 
 	/**
-	 * Retrieves the next message from the queue, or null if the queue is empty. Equivalent to
-	 * receive(-1).
+	 * Retrieves the next message from the queue, or null if the queue is empty.
 	 * 
 	 * @return ACLMessage object, or null if the queue is empty.
 	 */
-	protected ACLMessage receive()
+	protected ACLMessage receiveNoWait()
 	{
-		return receive(-1);
+		return queue.poll();
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
-	 * for the message to become available.
+	 * Retrieves the next message from the queue, waiting up to the specified
+	 * wait time if necessary for the message to become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
-	 *            account and the method simply waits until a message is available. A negative
-	 *            value will cause the method to return immediately, returning null if the queue was
-	 *            empty.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
-	 *         is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time
+	 *            is not taken into account and the method simply waits until a
+	 *            message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses
+	 *         before the message is available.
+	 * @throws IllegalArgumentException if timeout < 0.
 	 */
-	protected ACLMessage receive(long timeout)
+	protected ACLMessage receiveWait(long timeout)
 	{
+		if (timeout < 0)
+			throw new IllegalArgumentException("The timeout value cannot be negative.");
 		ACLMessage msg = null;
 		try
 		{
-			if (timeout < 0)
-				timeout = 0;
-			else if (timeout == 0)
+			if (timeout == 0)
 				timeout = Long.MAX_VALUE;
 			msg = queue.poll(timeout, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException ex)
@@ -197,7 +180,7 @@ public abstract class Agent implements AgentI
 		}
 		return msg;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
@@ -213,7 +196,7 @@ public abstract class Agent implements AgentI
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		return myAid.equals(((Agent)obj).myAid);
+		return myAid.equals(((Agent) obj).myAid);
 	}
 
 	@Override
@@ -221,24 +204,16 @@ public abstract class Agent implements AgentI
 	{
 		return myAid;
 	}
-	
+
 	@Override
 	public String getNodeName()
 	{
 		return System.getProperty("jboss.node.name");
 	}
-	
+
 	@Override
 	@Remove
 	public final void remove()
 	{
-	}
-	
-	@Override
-	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT)
-	public void dodoMessage(ACLMessage msg)
-	{
-		onMessage(msg);
 	}
 }

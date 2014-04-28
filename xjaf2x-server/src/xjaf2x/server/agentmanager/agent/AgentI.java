@@ -32,8 +32,6 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 @Remote
 public interface AgentI extends Serializable
 {
-	void terminate();
-
 	AID getAid();
 
 	/**
@@ -54,7 +52,7 @@ public interface AgentI extends Serializable
 
 	void processNextMessage();
 	
-	void dodoMessage(ACLMessage msg);
+	void terminate();
 	
 	void remove();
 }

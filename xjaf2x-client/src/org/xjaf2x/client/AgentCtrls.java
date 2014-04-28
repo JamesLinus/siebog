@@ -113,19 +113,12 @@ public class AgentCtrls extends JPanel
 			{
 				try
 				{
-					ACLMessage msg = new ACLMessage(Performative.REQUEST);
-					msg.setContent("aaaaaaaa");
-					
-					for (int i = 0; i < 4; i++)
-					{
-						AgentManagerI agm = Global.getAgentManager();
-						int primeLimit = 1, numIterations = 1;
-						agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit);
-						AID aid = agm.start("xjaf2x_server_agents_pairs_Sender", "S" + i, i, numIterations);
-						msg.addReceiver(aid);
-					}
-					
+					System.out.println("Pre");
+					AID aid = (AID) lstRunning.getSelectedValue();
+					ACLMessage msg = new ACLMessage(Performative.INFORM);
+					msg.addReceiver(aid);
 					Global.getMessageManager().post(msg);
+					System.out.println("Posle");
 				} catch (Exception ex)
 				{
 					ex.printStackTrace();
