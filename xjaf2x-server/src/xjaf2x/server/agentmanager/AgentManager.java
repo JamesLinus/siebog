@@ -67,7 +67,7 @@ public class AgentManager implements AgentManagerI
 			runningAgents = Global.getRunningAgents();
 		} catch (Exception ex)
 		{
-			logger.log(Level.SEVERE, "AgentManager initialization error", ex);
+			logger.log(Level.SEVERE, "AgentManager initialization error.", ex);
 		}
 	}
 

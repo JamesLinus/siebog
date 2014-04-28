@@ -24,9 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -62,7 +62,7 @@ public class ServerConfig
 	private static String address;
 	private static String master;
 	private static String name;
-	private static List<String> clusterNodes;
+	private static Set<String> clusterNodes;
 
 	static
 	{
@@ -78,7 +78,7 @@ public class ServerConfig
 			{
 				is = ServerConfig.class.getResourceAsStream("/xjaf2x-server.xml");
 			}
-			
+
 			doc = builder.parse(is);
 			// TODO : validate against the schema
 			loadConfig();
@@ -95,7 +95,7 @@ public class ServerConfig
 				{
 				}
 		}
-		
+
 	}
 
 	public static void initCluster() throws NamingException
@@ -109,7 +109,7 @@ public class ServerConfig
 		Properties p = new Properties();
 		p.put("endpoint.name", "client-endpoint");
 		p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
-		
+
 		p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 		p.put("remote.clusters", "ejb");
 		p.put("remote.cluster.ejb.username", Global.USERNAME);
@@ -139,7 +139,7 @@ public class ServerConfig
 		EJBClientConfiguration cc = new PropertiesBasedEJBClientConfiguration(p);
 		ContextSelector<EJBClientContext> selector = new ConfigBasedEJBClientContextSelector(cc);
 		EJBClientContext.setSelector(selector);
-		
+
 		logger.info("Initialized cluster " + clusterNodes);
 	}
 
@@ -193,7 +193,7 @@ public class ServerConfig
 						+ "attributes 'name' and 'master'");
 		} else if (mode == Mode.MASTER)
 		{
-			clusterNodes = new ArrayList<>();
+			clusterNodes = new HashSet<>();
 			clusterNodes.add(address);
 			// collect all slave nodes
 			NodeList slaves = doc.getElementsByTagName("slave");
@@ -201,7 +201,7 @@ public class ServerConfig
 				clusterNodes.add(address);
 			else
 				for (int i = 0; i < slaves.getLength(); i++)
-					clusterNodes.add(((Element)slaves.item(i)).getAttribute("address"));
+					clusterNodes.add(((Element) slaves.item(i)).getAttribute("address"));
 		}
 	}
 
@@ -229,20 +229,19 @@ public class ServerConfig
 	{
 		return name;
 	}
-	
+
 	public static String getJBossHome() throws IOException
 	{
 		// TODO : make sure it works if there are spaces in the path
 		String jbossHome = System.getenv("JBOSS_HOME");
-		if ((jbossHome == null) || (jbossHome.length() == 0)
-				|| !new File(jbossHome).isDirectory())
+		if ((jbossHome == null) || (jbossHome.length() == 0) || !new File(jbossHome).isDirectory())
 			throw new IOException("Environment variable JBOSS_HOME not set.");
 		jbossHome = jbossHome.replace('\\', '/');
 		if (!jbossHome.endsWith("/"))
 			jbossHome += "/";
 		return jbossHome;
 	}
-	
+
 	public static String getXjaf2xRoot() throws IOException
 	{
 		return getJBossHome() + "xjaf2x/";

@@ -54,5 +54,7 @@ public interface AgentI extends Serializable
 
 	void processNextMessage();
 	
+	void dodoMessage(ACLMessage msg);
+	
 	void remove();
 }

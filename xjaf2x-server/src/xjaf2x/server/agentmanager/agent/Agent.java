@@ -233,4 +233,12 @@ public abstract class Agent implements AgentI
 	public final void remove()
 	{
 	}
+	
+	@Override
+	@Lock(LockType.WRITE)
+	@AccessTimeout(value = ACCESS_TIMEOUT)
+	public void dodoMessage(ACLMessage msg)
+	{
+		onMessage(msg);
+	}
 }

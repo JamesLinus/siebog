@@ -52,13 +52,11 @@ public class Sender extends Agent
 		myIndex = Integer.parseInt(args[0].toString());
 		numIterations = Integer.parseInt(args[1].toString());
 		receiver = new AID("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex);
-		logger.info("Sender " + myAid.getRuntimeName() + " ready.");
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
-		logger.info("Receiver " + myAid.getRuntimeName() + " working");
 		if (msg.getPerformative() == Performative.REQUEST)
 		{
 			iterationIndex = 0;

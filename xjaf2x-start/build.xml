@@ -11,23 +11,22 @@
                 <attribute name="Main-Class" value="xjaf2x.start.JBossCLI"/>
                 <attribute name="Class-Path" value=". jason-1.3.9.jar jgroups-3.3.5.Final.jar xjaf2x-start_lib/infinispan-core-5.2.6.Final-redhat-1.jar xjaf2x-start_lib/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar xjaf2x-start_lib/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar xjaf2x-start_lib/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar xjaf2x-start_lib/jboss-client.jar xjaf2x-start_lib/jboss-ejb-client-1.0.16.Final.jar xjaf2x-start_lib/jboss-ejb3-ext-api-2.0.0.jar xjaf2x-start_lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar xjaf2x-start_lib/jboss-cli-client.jar xjaf2x-start_lib/jboss-client.jar xjaf2x-start_lib/jboss-msc-1.0.4.GA.jar xjaf2x-start_lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar"/>
             </manifest>
+            <fileset dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/bin"/>
             <fileset dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/build/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jason-1.3.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jgroups-3.3.5.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/infinispan-core-5.2.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-client.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb-client-1.0.16.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb3-ext-api-2.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-cli-client.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-client.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-msc-1.0.4.GA.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar"/>
         </jar>
-        <delete dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <mkdir dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jason-1.3.9.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jgroups-3.3.5.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/infinispan-core-5.2.1.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-client.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb-client-1.0.16.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb3-ext-api-2.0.0.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-cli-client.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-client.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-msc-1.0.4.GA.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
-        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/xjaf2x-start_lib"/>
     </target>
 </project>

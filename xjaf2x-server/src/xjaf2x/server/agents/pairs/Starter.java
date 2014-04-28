@@ -23,6 +23,7 @@ package xjaf2x.server.agents.pairs;
 import java.io.Serializable;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.agentmanager.agent.AID;
 import xjaf2x.server.agentmanager.agent.Agent;
 import xjaf2x.server.agentmanager.agent.AgentI;
@@ -35,6 +36,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  */
 @Stateless(name = "xjaf2x_server_agents_pairs_Starter")
 @Remote(AgentI.class)
+@Clustered
 public class Starter extends Agent
 {
 	private static final long serialVersionUID = -4972585393971070318L;
