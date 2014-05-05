@@ -1,10 +1,15 @@
 package xjaf2x.start;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xjaf2x.server.config.ServerConfig;
-import xjaf2x.server.config.ServerConfig.Mode;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import xjaf2x.server.config.Xjaf2xCluster;
+import xjaf2x.server.config.Xjaf2xCluster.Mode;
 
 public class JBossCLI
 {
@@ -22,16 +27,15 @@ public class JBossCLI
 
 	private static void runMaster() throws IOException
 	{
-		final String ADDR = ServerConfig.getAddress();
+		final String ADDR = Xjaf2xCluster.get().getAddress();
 
-		if (logger.isLoggable(Level.INFO))
-			logger.info("Starting master node xjaf2x-master@" + ADDR);
+		logger.info("Starting master node xjaf2x-master@" + ADDR);
 		String hostMaster = FileUtils.read(JBossCLI.class.getResourceAsStream("host-master.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostMaster = hostMaster.replace("<!-- interface-def -->", intfDef);
 
-		final String hostConfig = jbossHome + "domain/configuration/host-master.xml";
+		File hostConfig = new File(jbossHome + "domain/configuration/host-master.xml");
 		FileUtils.write(hostConfig, hostMaster);
 
 		// @formatter:off
@@ -49,19 +53,18 @@ public class JBossCLI
 			"-Djboss.bind.address.management=" + ADDR
 		};
 		// @formatter:on
-		
+
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
 
 	public static void runSlave() throws IOException
 	{
-		final String ADDR = ServerConfig.getAddress();
-		final String NAME = ServerConfig.getName();
-		final String MASTER = ServerConfig.getMaster();
+		final String ADDR = Xjaf2xCluster.get().getAddress();
+		final String NAME = Xjaf2xCluster.get().getName();
+		final String MASTER = Xjaf2xCluster.get().getMaster();
 
-		if (logger.isLoggable(Level.INFO))
-			logger.info(String.format("Starting slave node %s@%s, with xjaf2x-master@%s", NAME,
-					ADDR, MASTER));
+		logger.info(String.format("Starting slave node %s@%s, with xjaf2x-master@%s", NAME, ADDR,
+				MASTER));
 		String hostSlave = FileUtils.read(JBossCLI.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
@@ -70,7 +73,7 @@ public class JBossCLI
 		String serverDef = SLAVE_SERVER_DEF.replace("NAME", NAME);
 		hostSlave = hostSlave.replace("<!-- server-def -->", serverDef);
 
-		final String hostConfig = jbossHome + "domain/configuration/host-slave.xml";
+		File hostConfig = new File(jbossHome + "domain/configuration/host-slave.xml");
 		FileUtils.write(hostConfig, hostSlave);
 
 		// @formatter:off
@@ -93,101 +96,130 @@ public class JBossCLI
 
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
-	
-	private static void parseArgs(String[] args)
+
+	private static void createConfigFile(String[] args, File configFile) throws IOException, SAXException,
+			ParserConfigurationException
 	{
+		logger.info("Loading configuration from the program arguments.");
 		Mode mode = null;
 		String address = null, master = null, myName = null;
-		String[] cluster = new String[0];
-		try
+		Set<String> slaveNodes = new HashSet<>();
+		boolean hasSlaveNodes = false;
+		for (int i = 0; i < args.length; i++)
 		{
-			for (int i = 0; i < args.length - 1; i += 2)
+			String arg = args[i];
+			int n = arg.indexOf('=');
+			if (n <= 0 || n >= arg.length() - 1)
+				throw new IllegalArgumentException("Invalid argument: " + arg);
+			String name = arg.substring(0, n).toLowerCase();
+			String value = arg.substring(n + 1);
+
+			switch (name)
 			{
-				String arg = args[i];
-				int n = arg.indexOf('=');
-				if (n <= 0 || n >= arg.length() - 1)
-					throw new IllegalArgumentException("Invalid argument: " + arg);
-				String name = arg.substring(0, n).toLowerCase();
-				String value = arg.substring(n + 1);
-				
-				switch (name)
+			case "--mode":
+				try
 				{
-				case "--mode":
-					try
-					{
-						mode = Mode.valueOf(value.toUpperCase());
-					} catch (IllegalArgumentException ex) 
-					{
-						throw new IllegalArgumentException("Unsupported mode: " + value);
-					}
-					break;
-				case "--address":
-					address = value;
-					break;
-				case "--master":
-					master = value;
-					break;
-				case "--name":
-					myName = value;
-					break;
-				case "--cluster":
-					cluster = value.split(",");
-					break;
-				case "--help":
-					printUsage();
-					return;
+					mode = Mode.valueOf(value.toUpperCase());
+				} catch (IllegalArgumentException ex)
+				{
+					throw new IllegalArgumentException("Unsupported mode: " + value);
 				}
+				break;
+			case "--address":
+				address = value;
+				break;
+			case "--master":
+				master = value;
+				break;
+			case "--name":
+				myName = value;
+				break;
+			case "--slaves":
+				hasSlaveNodes = true;
+				String[] cc = value.split(",");
+				for (String s : cc)
+					slaveNodes.add(s);
+				break;
+			case "--help":
+			case "help":
+			case "--h":
+			case "h":
+				throw new IllegalArgumentException();
 			}
-			
-			if (address == null)
-				throw new IllegalArgumentException("Please specify the address of this node.");
-			
-			if (mode == Mode.SLAVE)
-			{
-				if (myName == null)
-					throw new IllegalArgumentException("Please specify the cluster-wide unique name of this node.");
-				if (master == null)
-					throw new IllegalArgumentException("Please specify the master node's address.");
-			}
-			
-		} catch (IllegalArgumentException ex)
-		{
-			logger.warning(ex.getMessage());
-			printUsage();
 		}
+
+		if (address == null)
+			throw new IllegalArgumentException("Please specify the address of this node.");
+
+		if (mode == Mode.MASTER)
+		{
+			if (master != null || myName != null)
+				throw new IllegalArgumentException("Master address and cluster-wide name of "
+						+ "this node should be specified on the master node only.");
+		} else
+		{
+			if (hasSlaveNodes)
+				throw new IllegalArgumentException("The list of slave nodes should "
+						+ "be specified only on the master node.");
+			if (myName == null)
+				throw new IllegalArgumentException("Please specify the cluster-wide "
+						+ "unique name of this node.");
+			if (master == null)
+				throw new IllegalArgumentException("Please specify the master node's address.");
+		}
+		
+		// ok, create the file
+		String str = FileUtils.read(JBossCLI.class.getResourceAsStream("xjaf2x-server.txt"));
+		str = str.replace("%mode%", mode.toString());
+		str = str.replace("%address%", address);
+		if (mode == Mode.MASTER)
+		{
+			StringBuilder slaves = new StringBuilder();
+			for (String sl: slaveNodes)
+				slaves.append("<slave address=\"").append(sl).append("\" />");
+			str = str.replace("%slave_list%", slaves.toString());
+			str = str.replace("%slave_info%", "");
+		}
+		else
+		{
+			String slaveInfo = String.format("master=\"%s\" name=\"%s\"", master, myName);
+			str = str.replace("%slave_info%", slaveInfo);
+			str = str.replace("%slave_list%", "");
+		}
+		FileUtils.write(configFile, str);
 	}
-	
+
 	private static void printUsage()
 	{
 		System.out.println("USAGE: java -jar xjaf2x-start.jar [args]");
-		System.out.println("Args:");
+		System.out.println("args:");
 		System.out.println("\t--mode:\t\tMASTER or SLAVE");
 		System.out.println("\t--address:\t\tNetwork address of this computer.");
 		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
 		System.out.println("\t--name:\t\tIf SLAVE, cluster-wide unique name of this node.");
+		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated "
+				+ "list of all at least one slave node.");
 	}
 
 	public static void main(String[] args)
 	{
-		parseArgs(args);
 		try
 		{
-			jbossHome = ServerConfig.getJBossHome();
-			switch (ServerConfig.getMode())
-			{
-			case MASTER:
+			if (args.length > 0)
+				createConfigFile(args, Xjaf2xCluster.getConfigFile());
+			Xjaf2xCluster.init(false);
+			jbossHome = Xjaf2xCluster.getJBossHome();
+			if (Xjaf2xCluster.get().getMode() == Mode.MASTER)
 				runMaster();
-				break;
-			case SLAVE:
+			else
 				runSlave();
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported mode: " + ServerConfig.getMode());
-			}
+		} catch (IllegalArgumentException ex)
+		{
+			System.out.println(ex.getMessage());
+			printUsage();
 		} catch (Exception ex)
 		{
 			logger.log(Level.SEVERE, "", ex);
-			System.exit(-1);
 		}
 	}
 }

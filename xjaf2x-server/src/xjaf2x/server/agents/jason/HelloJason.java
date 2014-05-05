@@ -26,8 +26,8 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.agentmanager.agent.Agent;
-import xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import xjaf2x.server.agentmanager.Agent;
+import xjaf2x.server.agentmanager.jason.JasonAgentI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**

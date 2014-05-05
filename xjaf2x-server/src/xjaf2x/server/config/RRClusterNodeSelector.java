@@ -29,7 +29,7 @@ import org.jboss.ejb.client.ClusterNodeSelector;
  */
 public class RRClusterNodeSelector implements ClusterNodeSelector
 {
-	private int index = 0;
+	private int index;
 	
 	@Override
 	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes)

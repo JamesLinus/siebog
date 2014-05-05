@@ -23,9 +23,9 @@ package xjaf2x.server.agents.ping;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.agentmanager.agent.AID;
-import xjaf2x.server.agentmanager.agent.Agent;
-import xjaf2x.server.agentmanager.agent.AgentI;
+import xjaf2x.server.agentmanager.AID;
+import xjaf2x.server.agentmanager.Agent;
+import xjaf2x.server.agentmanager.AgentI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 

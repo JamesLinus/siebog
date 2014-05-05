@@ -38,8 +38,8 @@ import javax.naming.Context;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.Global;
-import xjaf2x.server.agentmanager.agent.AID;
-import xjaf2x.server.agentmanager.agent.AgentI;
+import xjaf2x.server.agentmanager.AID;
+import xjaf2x.server.agentmanager.AgentI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
@@ -116,13 +116,14 @@ public class MessageManager implements MessageManagerI
 	@Override
 	public void post(final ACLMessage message)
 	{
-		try
+		/*try
 		{
 			producer.send(session.createObjectMessage(message));
 		} catch (JMSException ex)
 		{
 			logger.log(Level.SEVERE, "", ex);
-		}
+		}*/
+		deliver(message);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package xjaf2x.start;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +33,9 @@ public class FileUtils
 		} 
 	}
 	
-	public static void write(String fileName, String data) throws IOException
+	public static void write(File file, String data) throws IOException
 	{
-		try (PrintWriter out = new PrintWriter(fileName))
+		try (PrintWriter out = new PrintWriter(file))
 		{
 			out.print(data);
 		}

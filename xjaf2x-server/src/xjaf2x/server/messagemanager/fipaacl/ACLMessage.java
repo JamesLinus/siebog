@@ -23,7 +23,7 @@ package xjaf2x.server.messagemanager.fipaacl;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import xjaf2x.server.agentmanager.agent.AID;
+import xjaf2x.server.agentmanager.AID;
 
 /**
  * Represents a FIPA ACL message. Refer to <a

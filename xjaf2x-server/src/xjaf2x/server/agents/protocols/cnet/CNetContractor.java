@@ -20,7 +20,7 @@
 
 package xjaf2x.server.agents.protocols.cnet;
 
-import xjaf2x.server.agentmanager.agent.Agent;
+import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**

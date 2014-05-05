@@ -9,13 +9,13 @@
 			name: cluster-wide unique name of this node, required if mode = slave
 			master: address of the master node, required if mode = slave
 	 -->
-	<server mode="master" address="localhost" />
+	<server mode="%mode%" address="%address%" %slave_info% />
 	
 	<!-- 
-		if mode = master, specify network address of at least one slave node 
+		if mode = master and there are slave nodes, network address of at least one slave 
 	-->
 	<cluster>
-		<slave address="192.168.56.101" />
+		%slave_list%
 	</cluster>
 	
 	<!-- 

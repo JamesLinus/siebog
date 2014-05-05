@@ -22,8 +22,7 @@ package xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
 import java.util.List;
-import xjaf2x.server.agentmanager.agent.AID;
-import xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import xjaf2x.server.agentmanager.jason.JasonAgentI;
 
 /**
  * Remote interface of the agent manager.

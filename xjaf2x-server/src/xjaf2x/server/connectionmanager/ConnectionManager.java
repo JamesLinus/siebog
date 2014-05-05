@@ -24,40 +24,36 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
-import javax.ejb.Startup;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
+import javax.naming.NamingException;
 import org.jgroups.JChannel;
 import org.jgroups.ReceiverAdapter;
 import xjaf2x.server.config.RelayInfo;
-import xjaf2x.server.config.ServerConfig;
+import xjaf2x.server.config.Xjaf2xCluster;
 
 /**
  * Default connection manager implementation.
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Singleton
+@Stateless
 @Remote(ConnectionManagerI.class)
-@Startup
 public class ConnectionManager implements ConnectionManagerI
 {
 	private static final Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 	private JChannel channel;
 	
 	@PostConstruct
-	public void postConstruct()
+	public void postConstruct() throws NamingException
 	{
-		RelayInfo relay = ServerConfig.getRelay();
+		RelayInfo relay = Xjaf2xCluster.get().getRelay();
 		if (relay == null)
-		{
-			if (logger.isLoggable(Level.INFO))
-				logger.info("Relay not specified, support for remote clusters disabled");
-		}
+			logger.info("Relay not specified, support for remote clusters disabled");
 		else
 		{
 			try
 			{
-				channel = new JChannel(ServerConfig.class.getResource("/site-config.xml"));
+				channel = new JChannel(Xjaf2xCluster.class.getResource("/site-config.xml"));
 				channel.connect("xjaf2x-global-cluster");
 				channel.setReceiver(new ReceiverAdapter() {
 					

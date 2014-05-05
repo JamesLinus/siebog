@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agentmanager.agent;
+package xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
 import java.util.concurrent.BlockingQueue;
@@ -34,8 +34,8 @@ import javax.ejb.LockType;
 import javax.ejb.Remove;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
+import javax.naming.NamingException;
 import xjaf2x.server.Global;
-import xjaf2x.server.agentmanager.AgentManagerI;
 import xjaf2x.server.messagemanager.MessageManagerI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
@@ -66,7 +66,7 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
-	public final void init(AID aid, Serializable... args) throws Exception
+	public final void init(AID aid, Serializable... args) throws NamingException 
 	{
 		myAid = aid;
 		agm = Global.getAgentManager();

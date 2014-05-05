@@ -27,11 +27,16 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.jboss.ejb.client.ContextSelector;
 import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
@@ -48,61 +53,58 @@ import xjaf2x.server.Global;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class ServerConfig
+public class Xjaf2xCluster
 {
 	public static enum Mode
 	{
 		MASTER, SLAVE
 	}
-
-	private static final Logger logger = Logger.getLogger(ServerConfig.class.getName());
-	private static Document doc;
-	private static RelayInfo relay;
-	private static Mode mode;
-	private static String address;
-	private static String master;
-	private static String name;
-	private static Set<String> clusterNodes;
-
-	static
+	private static final Logger logger = Logger.getLogger(Xjaf2xCluster.class.getName());
+	private static Xjaf2xCluster instance;
+	private Mode mode;
+	private String address;
+	private String master;
+	private String name;
+	private Set<String> clusterNodes;
+	private RelayInfo relay;
+	
+	public static void init(boolean initClientContext) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
-		InputStream is = null;
-		try
+		if (instance == null)
 		{
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			try
-			{
-				is = new FileInputStream(getXjaf2xRoot() + "xjaf2x-server.xml");
-				logger.info("Using custom configuration file xjaf2x-server.xml");
-			} catch (IOException ex)
-			{
-				is = ServerConfig.class.getResourceAsStream("/xjaf2x-server.xml");
-			}
-
-			doc = builder.parse(is);
-			// TODO : validate against the schema
-			loadConfig();
-		} catch (Exception ex)
-		{
-			logger.log(Level.WARNING, "Error while reading server configuration", ex);
-		} finally
-		{
-			if (is != null)
-				try
-				{
-					is.close();
-				} catch (IOException e)
-				{
-				}
+			instance = new Xjaf2xCluster();
+			if (initClientContext)
+				instance.initClientContext();
 		}
-
+	}
+	
+	private Xjaf2xCluster() throws IOException, ParserConfigurationException, SAXException
+	{
+		File configFile = getConfigFile();
+		validateConfig(configFile);
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		try (InputStream is = new FileInputStream(configFile))
+		{
+			Document doc = builder.parse(is);
+			loadConfig(doc);
+			logger.info("Loaded configuration from " + configFile.getAbsolutePath());
+		}
+	}
+	
+	private void validateConfig(File configFile) throws SAXException, IOException
+	{
+		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		Schema schema = schemaFactory
+				.newSchema(Xjaf2xCluster.class.getResource("xjaf2x-server.xsd"));
+		Validator validator = schema.newValidator();
+		validator.validate(new StreamSource(configFile));
 	}
 
-	public static void initCluster() throws NamingException
+	private void initClientContext() throws NamingException
 	{
-		if (clusterNodes == null)
+		if (clusterNodes == null || clusterNodes.size() == 0)
 		{
-			logger.warning("ClusterManager.init() called, but there are no cluster nodes");
+			logger.warning("Trying to initialize without specifying cluster nodes.");
 			return;
 		}
 
@@ -140,92 +142,82 @@ public class ServerConfig
 		ContextSelector<EJBClientContext> selector = new ConfigBasedEJBClientContextSelector(cc);
 		EJBClientContext.setSelector(selector);
 
-		logger.info("Initialized cluster " + clusterNodes);
+		logger.info("Initialized EJB client context with cluster nodes " + clusterNodes);
 	}
 
-	private static void loadConfig() throws SAXException
+	private void loadConfig(Document doc) throws SAXException
 	{
-		// relay
-		NodeList list = doc.getElementsByTagName("relay");
-		if ((list != null) && (list.getLength() == 1))
-		{
-			Element elem = (Element) list.item(0);
-			String address = elem.getAttribute("address");
-			String site = elem.getAttribute("site");
-			relay = new RelayInfo(address, site);
-		}
-
 		// server properties
-		list = doc.getElementsByTagName("server");
-		if ((list == null) || (list.getLength() != 1))
-			throw new SAXException("Invalid format of the configuration file: "
-					+ "expected exactly 1 'server' node");
+		NodeList list = doc.getElementsByTagName("server");
 		Element elem = (Element) list.item(0);
 
 		// mode
 		String str = elem.getAttribute("mode");
-		if (mode == null)
-			throw new IllegalArgumentException("Configuration node 'server' requires "
-					+ "an attribute 'mode'");
 		try
 		{
 			mode = Mode.valueOf(str.toUpperCase());
 		} catch (IllegalArgumentException ex)
 		{
-			throw new IllegalArgumentException("Invalid mode '" + str
-					+ "', expected 'master', 'slave', or 'standalone'");
+			throw new IllegalArgumentException("Invalid mode: " + str);
 		}
 
 		// my address
 		address = elem.getAttribute("address");
-		if ((address == null) || (address.length() == 0))
-			throw new IllegalArgumentException(
-					"Configuration node 'server' requires an attribute 'address'");
 
 		// if slave, get my name and master address
 		if (mode == Mode.SLAVE)
 		{
 			name = elem.getAttribute("name");
+			if (name == null)
+				throw new IllegalArgumentException(
+						"Please specify the cluster-wide unique name of this node.");
+			// master address
 			master = elem.getAttribute("master");
-			if ((name == null) || (master == null) || (name.length() == 0)
-					|| (master.length() == 0))
-				throw new IllegalArgumentException("Configuration node 'server' requires "
-						+ "attributes 'name' and 'master'");
-		} else if (mode == Mode.MASTER)
+			if (master == null)
+				throw new IllegalArgumentException("Please specify the master node's address.");
+		} else
 		{
 			clusterNodes = new HashSet<>();
 			clusterNodes.add(address);
 			// collect all slave nodes
 			NodeList slaves = doc.getElementsByTagName("slave");
-			if (slaves == null || slaves.getLength() == 0)
-				clusterNodes.add(address);
-			else
+			if (slaves != null)
 				for (int i = 0; i < slaves.getLength(); i++)
 					clusterNodes.add(((Element) slaves.item(i)).getAttribute("address"));
 		}
+
+		// relay
+		list = doc.getElementsByTagName("relay");
+		if (list != null && list.getLength() == 1)
+		{
+			elem = (Element) list.item(0);
+			String address = elem.getAttribute("address");
+			String site = elem.getAttribute("site");
+			relay = new RelayInfo(address, site);
+		}
 	}
 
-	public static RelayInfo getRelay()
+	public RelayInfo getRelay()
 	{
 		return relay;
 	}
 
-	public static Mode getMode()
+	public Mode getMode()
 	{
 		return mode;
 	}
 
-	public static String getAddress()
+	public String getAddress()
 	{
 		return address;
 	}
 
-	public static String getMaster()
+	public String getMaster()
 	{
 		return master;
 	}
 
-	public static String getName()
+	public String getName()
 	{
 		return name;
 	}
@@ -234,7 +226,7 @@ public class ServerConfig
 	{
 		// TODO : make sure it works if there are spaces in the path
 		String jbossHome = System.getenv("JBOSS_HOME");
-		if ((jbossHome == null) || (jbossHome.length() == 0) || !new File(jbossHome).isDirectory())
+		if (jbossHome == null || jbossHome.length() == 0 || !new File(jbossHome).isDirectory())
 			throw new IOException("Environment variable JBOSS_HOME not set.");
 		jbossHome = jbossHome.replace('\\', '/');
 		if (!jbossHome.endsWith("/"))
@@ -246,12 +238,22 @@ public class ServerConfig
 	{
 		return getJBossHome() + "xjaf2x/";
 	}
+	
+	public static Xjaf2xCluster get()
+	{
+		return instance;
+	}
+	
+	public static File getConfigFile() throws IOException
+	{
+		return new File(getXjaf2xRoot(), "xjaf2x-server.xml");
+	}
 
 	@SuppressWarnings("unused")
 	private static String getRootFolder()
 	{
 		String root = "";
-		java.security.CodeSource codeSource = ServerConfig.class.getProtectionDomain()
+		java.security.CodeSource codeSource = Xjaf2xCluster.class.getProtectionDomain()
 				.getCodeSource();
 		try
 		{

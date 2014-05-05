@@ -21,15 +21,17 @@
 package xjaf2x.server;
 
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
+import xjaf2x.server.agentmanager.AID;
+import xjaf2x.server.agentmanager.AgentI;
 import xjaf2x.server.agentmanager.AgentManager;
 import xjaf2x.server.agentmanager.AgentManagerI;
-import xjaf2x.server.agentmanager.agent.AID;
-import xjaf2x.server.agentmanager.agent.AgentI;
 import xjaf2x.server.messagemanager.MessageManager;
 import xjaf2x.server.messagemanager.MessageManagerI;
 
@@ -40,54 +42,51 @@ import xjaf2x.server.messagemanager.MessageManagerI;
  */
 public abstract class Global
 {
-	public static final String
-		GROUP 		= "xjaf2x-group",
-		USERNAME 	= "xjaf2xadmin",
-		PASSWORD 	= "xjaf2xpass~",
-		SERVER 		= "xjaf2x-server",
-		MASTER_NAME = "xjaf2x-master";
-	
-	private static final Hashtable<String, Object> jndiProps = new Hashtable<>();
-	private static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String GROUP = "xjaf2x-group", USERNAME = "xjaf2xadmin",
+			PASSWORD = "xjaf2xpass~", SERVER = "xjaf2x-server", MASTER_NAME = "xjaf2x-master";
+
+	private static final String AgentManagerLookup = "ejb:/" + SERVER + "//"
 			+ AgentManager.class.getSimpleName() + "!" + AgentManagerI.class.getName();
-	private static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
+	private static final String MessageManagerLookup = "ejb:/" + SERVER + "//"
 			+ MessageManager.class.getSimpleName() + "!" + MessageManagerI.class.getName();
+	private static final Logger logger = Logger.getLogger(Global.class.getName());
 	private static Context context;
 
 	static
 	{
-		jndiProps.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
 		try
 		{
+			Hashtable<String, Object> jndiProps = new Hashtable<>();
+			jndiProps.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
 			context = new InitialContext(jndiProps);
-		} catch (NamingException e)
+		} catch (NamingException ex)
 		{
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Context initialization error.", ex);
 		}
 	}
 
-	public static Context getContext() throws Exception
+	public static Context getContext()
 	{
-		return context; // new InitialContext(jndiProps);
+		return context;
 	}
 
-	public static AgentManagerI getAgentManager() throws Exception
+	public static AgentManagerI getAgentManager() throws NamingException
 	{
 		return (AgentManagerI) getContext().lookup(AgentManagerLookup);
 	}
 
-	public static MessageManagerI getMessageManager() throws Exception
+	public static MessageManagerI getMessageManager() throws NamingException
 	{
 		return (MessageManagerI) getContext().lookup(MessageManagerLookup);
 	}
 
-	public static Cache<AID, AgentI> getRunningAgents() throws Exception
+	public static Cache<AID, AgentI> getRunningAgents() throws NamingException
 	{
 		CacheContainer container = (CacheContainer) getContext().lookup(
 				"java:jboss/infinispan/container/ejb");
 		Cache<AID, AgentI> cache = container.getCache("running-agents");
 		if (cache == null)
-			throw new Exception("Cannot load cache running-agents");
+			throw new IllegalStateException("Cannot load cache running-agents.");
 		return cache;
 	}
 }

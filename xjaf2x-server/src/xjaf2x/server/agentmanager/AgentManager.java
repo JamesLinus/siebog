@@ -38,9 +38,7 @@ import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.Global;
-import xjaf2x.server.agentmanager.agent.AID;
-import xjaf2x.server.agentmanager.agent.AgentI;
-import xjaf2x.server.agentmanager.agent.jason.JasonAgentI;
+import xjaf2x.server.agentmanager.jason.JasonAgentI;
 
 /**
  * Default agent manager implementation.

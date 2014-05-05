@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agentmanager.agent;
+package xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
 import javax.ejb.Remote;

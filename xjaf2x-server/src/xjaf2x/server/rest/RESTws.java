@@ -27,27 +27,21 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
-
 import xjaf2x.server.Deployment;
 import xjaf2x.server.Global;
-import xjaf2x.server.agentmanager.agent.AID;
+import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
-
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 
@@ -150,10 +144,9 @@ public class RESTws
 			@PathParam("runtimeName") String runtimeName)
 	{
 		Serializable[] args = null; // argumenti ??
-		AID aid;
 		try
 		{
-			aid = Global.getAgentManager().start(family, runtimeName, args);
+			Global.getAgentManager().start(family, runtimeName, args);
 			return "{\"success\": true}";
 		} catch (Exception e)
 		{

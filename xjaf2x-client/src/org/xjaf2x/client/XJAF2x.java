@@ -17,8 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import xjaf2x.server.config.ServerConfig;
-import xjaf2x.server.config.ServerConfig.Mode;
+import xjaf2x.server.config.Xjaf2xCluster;
 
 public class XJAF2x extends JFrame
 {
@@ -49,8 +48,7 @@ public class XJAF2x extends JFrame
 			}
 		});
 
-		if (ServerConfig.getMode() == Mode.MASTER)
-			ServerConfig.initCluster();
+		Xjaf2xCluster.init(true);
 		getContentPane().add(new AgentCtrls());
 
 		JPanel pnlCtrls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));

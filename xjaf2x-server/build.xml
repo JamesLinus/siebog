@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
 <project default="package" name="xjaf2x-server">
 	<property name="version" value="2.0.0" />
 	<property environment="env" />

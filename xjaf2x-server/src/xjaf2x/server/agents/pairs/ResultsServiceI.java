@@ -18,36 +18,16 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agents.ping;
+package xjaf2x.server.agents.pairs;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.agentmanager.Agent;
-import xjaf2x.server.agentmanager.AgentI;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
-import xjaf2x.server.messagemanager.fipaacl.Performative;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
- * Example of a pong agent. 
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_ping_Pong")
-@Remote(AgentI.class)
-@Clustered
-public class Pong extends Agent
+public interface ResultsServiceI extends Remote
 {
-	private static final long serialVersionUID = 1L;
-	private int number = 0;
-	
-	@Override
-	protected void onMessage(ACLMessage msg)
-	{
-		logger.info("Pong @ [" + getNodeName() + "]");
-		
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.setContent(number++);
-		msm.post(reply);
-	}
+	void add(long rtt) throws RemoteException;
 }
