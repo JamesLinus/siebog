@@ -43,7 +43,6 @@ public class Sender extends Agent
 	private int myIndex;
 	private int numIterations;
 	private int iterationIndex;
-	private Serializable content;
 	private AID receiver;
 	
 	@Override
@@ -57,17 +56,18 @@ public class Sender extends Agent
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
+		Serializable content = msg.getContent();
 		if (msg.getPerformative() == Performative.REQUEST)
 		{
 			iterationIndex = 0;
 			String time = "" + System.currentTimeMillis();
 			content = msg.getContent();
-			postMsg(time);
+			postMsg(content, time);
 		}
 		else
 		{
 			if (++iterationIndex < numIterations)
-				postMsg(msg.getInReplyTo());
+				postMsg(content, msg.getInReplyTo());
 			else
 			{
 				long avg = System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
@@ -79,7 +79,7 @@ public class Sender extends Agent
 		}
 	}
 	
-	private void postMsg(String time)
+	private void postMsg(Serializable content, String time)
 	{
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.setSender(myAid);

@@ -52,13 +52,13 @@ public class ServerConfig
 {
 	public static enum Mode
 	{
-		UNKNOWN, MASTER, SLAVE
+		MASTER, SLAVE
 	}
 
 	private static final Logger logger = Logger.getLogger(ServerConfig.class.getName());
 	private static Document doc;
 	private static RelayInfo relay;
-	private static Mode mode = Mode.UNKNOWN;
+	private static Mode mode;
 	private static String address;
 	private static String master;
 	private static String name;

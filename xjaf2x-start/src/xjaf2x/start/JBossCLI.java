@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xjaf2x.server.config.ServerConfig;
+import xjaf2x.server.config.ServerConfig.Mode;
 
 public class JBossCLI
 {
@@ -92,9 +93,83 @@ public class JBossCLI
 
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
+	
+	private static void parseArgs(String[] args)
+	{
+		Mode mode = null;
+		String address = null, master = null, myName = null;
+		String[] cluster = new String[0];
+		try
+		{
+			for (int i = 0; i < args.length - 1; i += 2)
+			{
+				String arg = args[i];
+				int n = arg.indexOf('=');
+				if (n <= 0 || n >= arg.length() - 1)
+					throw new IllegalArgumentException("Invalid argument: " + arg);
+				String name = arg.substring(0, n).toLowerCase();
+				String value = arg.substring(n + 1);
+				
+				switch (name)
+				{
+				case "--mode":
+					try
+					{
+						mode = Mode.valueOf(value.toUpperCase());
+					} catch (IllegalArgumentException ex) 
+					{
+						throw new IllegalArgumentException("Unsupported mode: " + value);
+					}
+					break;
+				case "--address":
+					address = value;
+					break;
+				case "--master":
+					master = value;
+					break;
+				case "--name":
+					myName = value;
+					break;
+				case "--cluster":
+					cluster = value.split(",");
+					break;
+				case "--help":
+					printUsage();
+					return;
+				}
+			}
+			
+			if (address == null)
+				throw new IllegalArgumentException("Please specify the address of this node.");
+			
+			if (mode == Mode.SLAVE)
+			{
+				if (myName == null)
+					throw new IllegalArgumentException("Please specify the cluster-wide unique name of this node.");
+				if (master == null)
+					throw new IllegalArgumentException("Please specify the master node's address.");
+			}
+			
+		} catch (IllegalArgumentException ex)
+		{
+			logger.warning(ex.getMessage());
+			printUsage();
+		}
+	}
+	
+	private static void printUsage()
+	{
+		System.out.println("USAGE: java -jar xjaf2x-start.jar [args]");
+		System.out.println("Args:");
+		System.out.println("\t--mode:\t\tMASTER or SLAVE");
+		System.out.println("\t--address:\t\tNetwork address of this computer.");
+		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
+		System.out.println("\t--name:\t\tIf SLAVE, cluster-wide unique name of this node.");
+	}
 
 	public static void main(String[] args)
 	{
+		parseArgs(args);
 		try
 		{
 			jbossHome = ServerConfig.getJBossHome();

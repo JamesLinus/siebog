@@ -75,5 +75,4 @@ public class Starter extends Agent
 			sb.append("A");
 		return sb.toString();
 	}
-
 }
