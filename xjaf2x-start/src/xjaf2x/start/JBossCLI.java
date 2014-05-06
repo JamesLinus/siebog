@@ -44,8 +44,8 @@ public class JBossCLI
 			"-mp", jbossHome + "modules",
 			"-jar", jbossHome + "jboss-modules.jar",
 			"--",
-			"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf2x.log",
-			"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
+			//"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf2x.log",
+			//"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
 			"-server",
 			"--",
 			// 
@@ -60,11 +60,10 @@ public class JBossCLI
 	public static void runSlave() throws IOException
 	{
 		final String ADDR = Xjaf2xCluster.get().getAddress();
-		final String NAME = Xjaf2xCluster.get().getName();
 		final String MASTER = Xjaf2xCluster.get().getMaster();
+		final String NAME = "xjaf2x@" + ADDR;
 
-		logger.info(String.format("Starting slave node %s@%s, with xjaf2x-master@%s", NAME, ADDR,
-				MASTER));
+		logger.info(String.format("Starting slave node %s, with xjaf2x-master@%s", NAME, MASTER));
 		String hostSlave = FileUtils.read(JBossCLI.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
@@ -82,27 +81,27 @@ public class JBossCLI
 			"-mp", jbossHome + "modules",
 			"-jar", jbossHome + "jboss-modules.jar",
 			"--",
-			"-Dorg.jboss.boot.log.file=" + jbossHome + "domain/log/host-controller.log",
-			"-Dlogging.configuration=file:" + jbossHome + "domain/configuration/logging.properties",
+			//"-Dorg.jboss.boot.log.file=" + jbossHome + "domain/log/host-controller.log",
+			//"-Dlogging.configuration=file:" + jbossHome + "domain/configuration/logging.properties",
 			"-server",
 			"--",
 			// 
 			"--host-config=host-slave.xml",
 			"-Djboss.domain.master.address=" + MASTER,
 			"-Djboss.bind.address=" + ADDR,
-			"-Djboss.bind.address.management=" + MASTER
+			"-Djboss.bind.address.management=" + ADDR
 		};
 		// @formatter:on
 
 		org.jboss.as.process.Main.start(jbossArgs);
 	}
 
-	private static void createConfigFile(String[] args, File configFile) throws IOException, SAXException,
-			ParserConfigurationException
+	private static void createConfigFile(String[] args, File configFile) throws IOException,
+			SAXException, ParserConfigurationException
 	{
 		logger.info("Loading configuration from the program arguments.");
 		Mode mode = null;
-		String address = null, master = null, myName = null;
+		String address = null, master = null;
 		Set<String> slaveNodes = new HashSet<>();
 		boolean hasSlaveNodes = false;
 		for (int i = 0; i < args.length; i++)
@@ -131,9 +130,6 @@ public class JBossCLI
 			case "--master":
 				master = value;
 				break;
-			case "--name":
-				myName = value;
-				break;
 			case "--slaves":
 				hasSlaveNodes = true;
 				String[] cc = value.split(",");
@@ -153,21 +149,18 @@ public class JBossCLI
 
 		if (mode == Mode.MASTER)
 		{
-			if (master != null || myName != null)
-				throw new IllegalArgumentException("Master address and cluster-wide name of "
-						+ "this node should be specified on the master node only.");
+			if (master != null)
+				throw new IllegalArgumentException("Master address should be specified "
+						+ "on the master node only.");
 		} else
 		{
 			if (hasSlaveNodes)
 				throw new IllegalArgumentException("The list of slave nodes should "
 						+ "be specified only on the master node.");
-			if (myName == null)
-				throw new IllegalArgumentException("Please specify the cluster-wide "
-						+ "unique name of this node.");
 			if (master == null)
 				throw new IllegalArgumentException("Please specify the master node's address.");
 		}
-		
+
 		// ok, create the file
 		String str = FileUtils.read(JBossCLI.class.getResourceAsStream("xjaf2x-server.txt"));
 		str = str.replace("%mode%", mode.toString());
@@ -175,15 +168,14 @@ public class JBossCLI
 		if (mode == Mode.MASTER)
 		{
 			StringBuilder slaves = new StringBuilder();
-			for (String sl: slaveNodes)
+			for (String sl : slaveNodes)
 				slaves.append("<slave address=\"").append(sl).append("\" />");
 			str = str.replace("%slave_list%", slaves.toString());
-			str = str.replace("%slave_info%", "");
-		}
-		else
+			str = str.replace("%master_addr%", "");
+		} else
 		{
-			String slaveInfo = String.format("master=\"%s\" name=\"%s\"", master, myName);
-			str = str.replace("%slave_info%", slaveInfo);
+			String masterAddr = "master=\"" + master + "\"";
+			str = str.replace("%master_addr%", masterAddr);
 			str = str.replace("%slave_list%", "");
 		}
 		FileUtils.write(configFile, str);
@@ -196,7 +188,6 @@ public class JBossCLI
 		System.out.println("\t--mode:\t\tMASTER or SLAVE");
 		System.out.println("\t--address:\t\tNetwork address of this computer.");
 		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
-		System.out.println("\t--name:\t\tIf SLAVE, cluster-wide unique name of this node.");
 		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated "
 				+ "list of all at least one slave node.");
 	}

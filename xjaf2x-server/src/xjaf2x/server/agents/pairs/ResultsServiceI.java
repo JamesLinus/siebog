@@ -29,5 +29,5 @@ import java.rmi.RemoteException;
  */
 public interface ResultsServiceI extends Remote
 {
-	void add(long rtt) throws RemoteException;
+	void add(long rtt, String nodeName) throws RemoteException;
 }

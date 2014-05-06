@@ -6,10 +6,9 @@
 		attributes:
 			mode: master or slave
 			address: network address of this node, required
-			name: cluster-wide unique name of this node, required if mode = slave
 			master: address of the master node, required if mode = slave
 	 -->
-	<server mode="%mode%" address="%address%" %slave_info% />
+	<server mode="%mode%" address="%address%" %master_addr% />
 	
 	<!-- 
 		if mode = master and there are slave nodes, network address of at least one slave 

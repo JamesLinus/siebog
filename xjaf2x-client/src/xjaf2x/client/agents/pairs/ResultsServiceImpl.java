@@ -22,9 +22,10 @@ public class ResultsServiceImpl extends UnicastRemoteObject implements ResultsSe
 	}
 
 	@Override
-	public synchronized void add(long rtt) throws RemoteException
+	public synchronized void add(long rtt, String nodeName) throws RemoteException
 	{
 		rtts.add(rtt);
+		System.out.printf("Pair %d from %s done.", rtts.size(), nodeName);
 		if (rtts.size() == numPairs)
 		{
 			long sum = 0;

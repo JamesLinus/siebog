@@ -56,14 +56,12 @@ public class Sender extends Agent
 	protected void onInit(Serializable... args)
 	{
 		myIndex = Integer.parseInt(args[0].toString());
+		receiver = new AID("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex);
 		numIterations = Integer.parseInt(args[1].toString());
-		int primeLimit = Integer.parseInt(args[2].toString());
 		// create message content
-		int contentLength = Integer.parseInt(args[3].toString());
+		int contentLength = Integer.parseInt(args[2].toString());
 		content = makeContent(contentLength);
-		// create receiver
-		receiver = agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex, primeLimit);
-		resultsServiceAddr = args[4].toString();
+		resultsServiceAddr = args[3].toString();
 	}
 
 	@Override
@@ -87,8 +85,7 @@ public class Sender extends Agent
 				{
 					Registry reg = LocateRegistry.getRegistry(resultsServiceAddr);
 					ResultsServiceI results = (ResultsServiceI) reg.lookup("ResultsService");
-					results.add(avg);
-					System.out.println("Pair " + myIndex + " done.");
+					results.add(avg, getNodeName());
 				} catch (RemoteException | NotBoundException ex)
 				{
 					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);

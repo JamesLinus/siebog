@@ -22,10 +22,11 @@ public class Starter
 	public static void main(String[] args) throws NamingException, IOException,
 			ParserConfigurationException, SAXException
 	{
-		if (args.length != 4)
+		String addr = System.getProperty("java.rmi.server.hostname");
+		if (args.length != 4 || addr == null)
 		{
-			System.out.println("Expecting the following program arguments:");
-			System.out.println("\tNumOfPairs NumIterations PrimeLimit MsgContentLen");
+			System.out.println("I need 4 arguments: NumOfPairs NumIterations PrimeLimit MsgContentLen");
+			System.out.println("In addition, set the property java.rmi.server.hostname to the address of this computer.");
 			return;
 		}
 
@@ -34,22 +35,17 @@ public class Starter
 		int primeLimit = Integer.parseInt(args[2]);
 		int contentLength = Integer.parseInt(args[3]);
 
-		String addr = System.getProperty("java.rmi.server.hostname");
-		if (addr == null)
-		{
-			System.out.println("VM argument java.rmi.server.hostname not defined, using localhost");
-			addr = "localhost";
-		}
-		
 		Xjaf2xCluster.init(true);
-		
 
 		List<AID> senders = new ArrayList<>();
 		AgentManagerI agm = Global.getAgentManager();
 		final String family = "xjaf2x_server_agents_pairs_Sender";
 		for (int i = 0; i < numPairs; i++)
 		{
-			AID aid = agm.start(family, "S" + i, i, numIterations, primeLimit, contentLength, addr);
+			// receiver
+			agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit);
+			// sender
+			AID aid = agm.start(family, "S" + i, i, numIterations, contentLength, addr);
 			senders.add(aid);
 		}
 

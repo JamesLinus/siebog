@@ -64,7 +64,6 @@ public class Xjaf2xCluster
 	private Mode mode;
 	private String address;
 	private String master;
-	private String name;
 	private Set<String> clusterNodes;
 	private RelayInfo relay;
 	
@@ -164,13 +163,9 @@ public class Xjaf2xCluster
 		// my address
 		address = elem.getAttribute("address");
 
-		// if slave, get my name and master address
+		// if slave, get master address
 		if (mode == Mode.SLAVE)
 		{
-			name = elem.getAttribute("name");
-			if (name == null)
-				throw new IllegalArgumentException(
-						"Please specify the cluster-wide unique name of this node.");
 			// master address
 			master = elem.getAttribute("master");
 			if (master == null)
@@ -215,11 +210,6 @@ public class Xjaf2xCluster
 	public String getMaster()
 	{
 		return master;
-	}
-
-	public String getName()
-	{
-		return name;
 	}
 
 	public static String getJBossHome() throws IOException
