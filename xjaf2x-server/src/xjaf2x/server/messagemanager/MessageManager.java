@@ -114,28 +114,15 @@ public class MessageManager implements MessageManagerI
 	}
 
 	@Override
-	public void post(final ACLMessage message)
+	public void post(ACLMessage message)
 	{
-		/*try
-		{
-			producer.send(session.createObjectMessage(message));
-		} catch (JMSException ex)
-		{
-			logger.log(Level.SEVERE, "", ex);
-		}*/
-		deliver(message);
-	}
-	
-	@Override
-	public void deliver(ACLMessage msg)
-	{
-		for (AID aid : msg.getReceivers())
+		for (AID aid : message.getReceivers())
 		{
 			if (aid == null)
 				continue;
 			AgentI agent = runningAgents.get(aid);
 			if (agent != null)
-				agent.handleMessage(msg);
+				agent.handleMessage(message);
 			else
 				logger.info("Agent not running: [" + aid + "]");
 		}

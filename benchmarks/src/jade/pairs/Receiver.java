@@ -8,7 +8,6 @@ public class Receiver extends Agent
 {
 	private static final long serialVersionUID = 5595224627469526099L;
 	private int primeLimit;
-	private int iterationIndex;
 	private int numIterations;
 	
 	@Override
@@ -26,7 +25,7 @@ public class Receiver extends Agent
 				ACLMessage msg = receive();
 				if (msg != null)
 				{
-					++iterationIndex;
+					--numIterations;
 					ACLMessage reply = msg.createReply();
 					reply.setPerformative(ACLMessage.INFORM);
 					reply.setSender(getAID());
@@ -40,7 +39,7 @@ public class Receiver extends Agent
 			@Override
 			public boolean done()
 			{
-				return iterationIndex >= numIterations;
+				return numIterations <= 0;
 			}
 		});
 	}

@@ -1,4 +1,4 @@
-package xjaf2x.client.agents.pairs;
+package jade.pairs;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import xjaf2x.server.agents.pairs.ResultsServiceI;
 
 public class ResultsServiceImpl extends UnicastRemoteObject implements ResultsServiceI
 {
@@ -22,10 +21,10 @@ public class ResultsServiceImpl extends UnicastRemoteObject implements ResultsSe
 	}
 
 	@Override
-	public synchronized void add(long rtt, String nodeName) throws RemoteException
+	public synchronized void add(long rtt) throws RemoteException
 	{
 		rtts.add(rtt);
-		System.out.printf("Pair %d from %s done.\n", rtts.size(), nodeName);
+		System.out.printf("Pair %d done.\n", rtts.size());
 		if (rtts.size() == numPairs)
 		{
 			long sum = 0;

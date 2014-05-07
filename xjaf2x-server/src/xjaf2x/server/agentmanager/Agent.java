@@ -66,6 +66,7 @@ public abstract class Agent implements AgentI
 
 	@Override
 	@Lock(LockType.WRITE)
+	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void init(AID aid, Serializable... args) throws NamingException 
 	{
 		myAid = aid;

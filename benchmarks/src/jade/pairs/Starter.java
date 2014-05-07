@@ -1,11 +1,10 @@
 package jade.pairs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.Profile;
-import jade.core.ProfileImpl;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentContainer;
@@ -14,73 +13,79 @@ import jade.wrapper.StaleProxyException;
 public class Starter extends Agent
 {
 	private static final long serialVersionUID = -3148135523727782805L;
-	
-	
+	private int numPairs;
+
 	@Override
 	public void setup()
-	{		
+	{
+		String[] args = getArguments()[0].toString().split("-");
+		if (args.length != 7)
+		{
+			System.out.println("I need 7 arguments: NumOfNodes ZeroBasedIndexOfThisNode "
+					+ "NumOfPairs NumIterations PrimeLimit MsgContentLen ReceiversServiceAddr");
+			doDelete();
+			return;
+		}
+		
+		int numNodes = Integer.parseInt(args[0]);
+		int nodeIndex = Integer.parseInt(args[1]);
+		numPairs = Integer.parseInt(args[2]);
+		int numIterations = Integer.parseInt(args[3]);
+		int primeLimit = Integer.parseInt(args[4]);
+		int contentLen = Integer.parseInt(args[5]);
+		String rServiceAddr = args[6];
+		
+		int myNumPairs = numPairs / numNodes;
+		Object[] receiverArgs = { primeLimit, numIterations };
+		AgentContainer ac = getContainerController();
+		try
+		{
+			for (int i = 0; i < myNumPairs; i++)
+			{
+				int index = i * numNodes + nodeIndex;
+				ac.createNewAgent("R" + index, Receiver.class.getName(), receiverArgs).start();
+				// sender
+				Object[] senderArgs = { index, numIterations, contentLen, rServiceAddr };
+				String nick = "S" + index;
+				ac.createNewAgent(nick, Sender.class.getName(), senderArgs).start();
+			}
+		} catch (StaleProxyException ex)
+		{
+			ex.printStackTrace();
+			return;
+		}
+		
+		String addr = System.getProperty("java.rmi.server.hostname");
+		if (addr == null)
+			System.out.println("java.rmi.server.hostname not defined, this is not the main node.");
+		else
+		{
+			try
+			{
+				Registry reg = LocateRegistry.createRegistry(2099);
+				reg.rebind("ResultsService", new ResultsServiceImpl(numPairs));
+			} catch (RemoteException ex)
+			{
+				ex.printStackTrace();
+				return;
+			}
+		}
+		
 		addBehaviour(new OneShotBehaviour() {
-			private static final long serialVersionUID = -6113426687347387718L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void action()
 			{
-				String[] args = getArguments()[0].toString().split("-");
-				int numPairs = Integer.parseInt(args[0]);
-				int numIterations = Integer.parseInt(args[1]);
-				int primeLimit = Integer.parseInt(args[2]);
-				int contentLength = Integer.parseInt(args[3]);
-				
-				// create containers
-				jade.core.Runtime rt = jade.core.Runtime.instance();
-				List<AgentContainer> containers = new ArrayList<>(); 
-				containers.add(getContainerController());
-				for (int i = 4; i < args.length; i++)
+				blockingReceive();
+				for (int i = 0; i < numPairs; i++)
 				{
-					Profile pp = new ProfileImpl(args[i], 2099, "ac" + args[i], false);
-					AgentContainer ac = rt.createAgentContainer(pp);
-					containers.add(ac);
+					ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
+					AID s = new AID("S" + i, false);
+					request.addReceiver(s);
+					send(request);
 				}
-				int contIndex = 0;
-				final int maxContIndex = containers.size() - 1;
-				
-				ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-				msg.setContent(makeContent(contentLength));
-				
-				final Object[] rargs = { primeLimit, numIterations };
-				try
-				{
-					for (int i = 0; i < numPairs; i++)
-					{
-						// next container
-						AgentContainer ac = containers.get(contIndex);
-						if (contIndex == maxContIndex)
-							contIndex = 0;
-						else
-							++contIndex;
-								
-						// run agents
-						ac.createNewAgent("R" + i, Receiver.class.getName(), rargs).start();
-						Object[] sargs = { i, numIterations };
-						String nick = "S" + i;
-						ac.createNewAgent(nick, Sender.class.getName(), sargs).start();
-						msg.addReceiver(new AID(nick, false));
-					}
-				} catch (StaleProxyException e)
-				{
-					e.printStackTrace();
-				}
-				
-				send(msg);
 			}
 		});
-	}
-	
-	private String makeContent(int length)
-	{
-		StringBuilder sb = new StringBuilder(length);
-		for (int i = 0; i < length; i++)
-			sb.append("A");
-		return sb.toString();
 	}
 }
