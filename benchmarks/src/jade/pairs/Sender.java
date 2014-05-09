@@ -25,6 +25,7 @@ public class Sender extends Agent
 	private AID receiver;
 	private String content;
 	private String resultsServiceAddr;
+	private long totalTime;
 	
 	@Override
 	protected void setup()
@@ -46,21 +47,21 @@ public class Sender extends Agent
 				ACLMessage msg = receive();
 				if (msg != null)
 				{
-					System.out.println("HERE: " + getAID());
 					if (msg.getPerformative() == ACLMessage.REQUEST)
 					{
 						iterationIndex = 0;
-						String time = "" + System.currentTimeMillis();
-						postMsg(time);
+						totalTime = 0;
+						postMsg();
 					}
 					else
 					{
-						if (++iterationIndex < numIterations)
-							postMsg(msg.getInReplyTo());
+						++iterationIndex;
+						totalTime += System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
+						if (iterationIndex < numIterations)
+							postMsg();
 						else
 						{
-							long avg = System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
-							avg /= numIterations;
+							long avg = totalTime / numIterations;
 							try
 							{
 								Registry reg = LocateRegistry.getRegistry(resultsServiceAddr, 2099);
@@ -89,13 +90,13 @@ public class Sender extends Agent
 		});
 	}
 	
-	private void postMsg(String time)
+	private void postMsg()
 	{
 		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		msg.setSender(getAID());
 		msg.addReceiver(receiver);
 		msg.setContent(content);
-		msg.setReplyWith(time);
+		msg.setReplyWith(System.currentTimeMillis() + "");
 		send(msg);		
 	}
 	

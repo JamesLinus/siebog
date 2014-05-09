@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project xjaf2x-client with libraries in sub-folder">
-	<target name="create_run_jar">
-
-		<property name="jboss.modules" value="jboss/modules/system/layers/base" />
-		<property name="jboss.client" value="jboss/bin/client" />
-		<property name="dest.file" value="../xjaf2x-client.jar" />
-
-		<delete file="${dest.file}" />
-		
-		<jar destfile="${dest.file}">
-			<manifest>
-				<attribute name="Main-Class" value="org.xjaf2x.client.XJAF2x" />
-				<attribute name="Class-Path" value=". xjaf2x-client_lib/jason-1.3.9.jar ${jboss.modules}/javax/ejb/api/main/jboss-ejb-api_3.1_spec-1.0.2.Final.jar ${jboss.modules}/org/jboss/ejb3/main/jboss-ejb3-ext-api-2.0.0.jar ${jboss.modules}/org/jboss/as/ejb3/main/jboss-as-ejb3-7.2.0.Alpha1-redhat-4.jar ${jboss.modules}/org/jboss/ejb-client/main/jboss-ejb-client-1.0.16.Final.jar ${jboss.modules}/org/jboss/as/controller-client/main/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar ${jboss.modules}/org/jboss/as/cli/main/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar ${jboss.modules}/org/jboss/as/naming/main/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar ${jboss.modules}/org/infinispan/main/infinispan-core-5.2.1.Final.jar ${jboss.client}/jboss-cli-client.jar ${jboss.client}/jboss-client.jar ${jboss.modules}/org/jboss/as/process-controller/main/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar" />
-			</manifest>
-			<fileset dir="./build/classes" />
-			<fileset dir="../xjaf2x-server/build/classes" />
-		</jar>
-		
-		<!--delete dir="../dist/xjaf2x-client_lib" />
-		<mkdir dir="../dist/xjaf2x-client_lib" />
-		<copy file="../xjaf2x-server/war/WEB-INF/lib/jason-1.3.9.jar" todir="../dist/xjaf2x-client_lib" /-->
-	</target>
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client.jar">
+            <manifest>
+                <attribute name="Main-Class" value="xjaf2x.client.agents.pairs.Starter"/>
+                <attribute name="Class-Path" value=". xjaf2x-client_lib/jason-1.3.9.jar xjaf2x-client_lib/jgroups-3.3.5.Final.jar xjaf2x-client_lib/json-simple-1.1.1.jar xjaf2x-client_lib/resteasy-multipart-provider-3.0.8.Final.jar xjaf2x-client_lib/infinispan-core-5.2.1.Final.jar xjaf2x-client_lib/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar xjaf2x-client_lib/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar xjaf2x-client_lib/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar xjaf2x-client_lib/jboss-client.jar xjaf2x-client_lib/jboss-ejb-client-1.0.16.Final.jar xjaf2x-client_lib/jboss-ejb3-ext-api-2.0.0.jar xjaf2x-client_lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar xjaf2x-client_lib/jboss-client.jar xjaf2x-client_lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar xjaf2x-client_lib/jboss-cli-client.jar xjaf2x-client_lib/jboss-msc-1.0.4.GA.jar"/>
+            </manifest>
+            <fileset dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-client/build/classes"/>
+            <fileset dir="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/build/classes"/>
+        </jar>
+        <delete dir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <mkdir dir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jason-1.3.9.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/jgroups-3.3.5.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/json-simple-1.1.1.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/war/WEB-INF/lib/resteasy-multipart-provider-3.0.8.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/infinispan-core-5.2.1.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-cli-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-controller-client-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-naming-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-client.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb-client-1.0.16.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-ejb3-ext-api-2.0.0.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-start/lib/jboss-client.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-cli-client.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+        <copy file="/home/dejan/dev/agents/xjaf2x/trunk/xjaf2x-server/lib/jboss-msc-1.0.4.GA.jar" todir="/home/dejan/dev/agents/xjaf2x/jboss-eap-6.1/xjaf2x/xjaf2x-client_lib"/>
+    </target>
 </project>

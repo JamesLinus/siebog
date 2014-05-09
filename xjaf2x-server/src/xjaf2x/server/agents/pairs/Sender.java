@@ -51,6 +51,7 @@ public class Sender extends Agent
 	private AID receiver;
 	private Serializable content;
 	private String resultsServiceAddr;
+	private long totalTime;
 	
 	@Override
 	protected void onInit(Serializable... args)
@@ -70,17 +71,18 @@ public class Sender extends Agent
 		if (msg.getPerformative() == Performative.REQUEST)
 		{
 			iterationIndex = 0;
-			String time = "" + System.currentTimeMillis();
-			postMsg(time);
+			totalTime = 0;
+			postMsg();
 		}
 		else
 		{
-			if (++iterationIndex < numIterations)
-				postMsg(msg.getInReplyTo());
+			++iterationIndex;
+			totalTime += System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
+			if (iterationIndex < numIterations)
+				postMsg();
 			else
 			{
-				long avg = System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
-				avg /= numIterations;
+				long avg = totalTime / numIterations;
 				try
 				{
 					Registry reg = LocateRegistry.getRegistry(resultsServiceAddr);
@@ -98,13 +100,13 @@ public class Sender extends Agent
 		}
 	}
 	
-	private void postMsg(String time)
+	private void postMsg()
 	{
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.setSender(myAid);
 		msg.addReceiver(receiver);
 		msg.setContent(content);
-		msg.setReplyWith(time);
+		msg.setReplyWith(System.currentTimeMillis() + "");
 		msm.post(msg);		
 	}
 	
