@@ -41,7 +41,6 @@ public final class AID implements Serializable, Matchable<AID>
 	private final String family;
 	private final String runtimeName;
 	private final String str; // string representation
-
 	
 	public AID(String family, String runtimeName)
 	{

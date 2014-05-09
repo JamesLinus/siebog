@@ -53,6 +53,7 @@ public abstract class Agent implements AgentI
 	// under normal circumstances, all methods return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
+	private AgentI myself;
 	protected AID myAid;
 	protected AgentManagerI agm;
 	protected MessageManagerI msm;
@@ -63,7 +64,7 @@ public abstract class Agent implements AgentI
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	@Resource
 	private SessionContext context;
-
+	
 	@Override
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
@@ -73,6 +74,7 @@ public abstract class Agent implements AgentI
 		agm = Global.getAgentManager();
 		msm = Global.getMessageManager();
 		queue = new LinkedBlockingQueue<>();
+		myself = context.getBusinessObject(AgentI.class);
 		onInit(args);
 	}
 
@@ -106,14 +108,12 @@ public abstract class Agent implements AgentI
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public final void processNextMessage()
 	{
-		final AgentI me = context.getBusinessObject(AgentI.class);
-
 		if (terminated)
 		{
 			onTerminate();
 			// remove statful beans
 			if (getClass().getAnnotation(Stateful.class) != null)
-				me.remove();
+				myself.remove();
 			return;
 		}
 
@@ -129,7 +129,7 @@ public abstract class Agent implements AgentI
 				{
 					// TODO : check if the access to onMessage is protected
 					onMessage(msg);
-					me.processNextMessage(); // will acquire lock
+					myself.processNextMessage(); // will acquire lock
 				}
 			});
 		}

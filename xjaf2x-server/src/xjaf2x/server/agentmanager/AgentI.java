@@ -21,7 +21,6 @@
 package xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
-import javax.ejb.Remote;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
@@ -29,7 +28,6 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Remote
 public interface AgentI extends Serializable
 {
 	AID getAid();
