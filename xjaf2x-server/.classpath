@@ -19,6 +19,8 @@
 	<classpathentry kind="lib" path="lib/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/resteasy-multipart-provider-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/xjaf2x-start/lib/jboss-client.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-as-process-controller-7.2.0.Alpha1-redhat-4.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-cli-client.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-msc-1.0.4.GA.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

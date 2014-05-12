@@ -47,18 +47,16 @@ public class Ping extends Agent
 		if (msg.getPerformative() == Performative.REQUEST)
 		{		
 			logger.info("Ping @ [" + getNodeName() + "]");
-			
-			
-			AID pongAid = new AID("xjaf2x_server_agents_ping_Pong", msg.getContent().toString());
+			// send a request to the Pong agent		
+			String pongName = msg.getContent().toString();
+			AID pongAid = new AID("xjaf2x_server_agents_ping_Pong", pongName);
 			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 			pongMsg.setSender(myAid);
 			pongMsg.addReceiver(pongAid);
-			msm.post(pongMsg);
-		}
-		else
-		{		
-			//ACLMessage reply = receive(0);
-			logger.info("Pong says: " + msg.getContent());
+			msm.post(pongMsg); // msm -> message manager
+			// wait for the reply in a blocking fashion
+			ACLMessage reply = receiveWait(0);
+			logger.info("Pong says: " + reply.getContent());
 		}
 	}
 }

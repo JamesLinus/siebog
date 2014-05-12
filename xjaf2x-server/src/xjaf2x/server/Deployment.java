@@ -39,6 +39,7 @@ import org.jboss.as.controller.client.helpers.domain.DuplicateDeploymentNameExce
 import org.jboss.as.controller.client.helpers.domain.ServerGroupDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.domain.ServerGroupDeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.domain.ServerUpdateResult;
+import xjaf2x.Global;
 
 /**
  * Helper class for deploying agents to the JBoss server.

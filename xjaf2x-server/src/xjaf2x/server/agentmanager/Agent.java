@@ -35,7 +35,7 @@ import javax.ejb.Remove;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.naming.NamingException;
-import xjaf2x.server.Global;
+import xjaf2x.Global;
 import xjaf2x.server.messagemanager.MessageManagerI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 

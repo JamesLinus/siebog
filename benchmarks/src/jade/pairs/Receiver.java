@@ -31,6 +31,8 @@ public class Receiver extends Agent
 					reply.setSender(getAID());
 					reply.setContent(msg.getContent() + "" + process());
 					send(reply);
+					if (done())
+						myAgent.doDelete();
 				}
 				else
 					block();

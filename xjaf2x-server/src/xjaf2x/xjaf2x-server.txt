@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xjaf2x-server xmlns="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://perun.pmf.uns.ac.rs/xjaf2x/xjaf2x-server xjaf2x-server.xsd ">
+	
+	<!-- 
+		attributes:
+			mode: master or slave
+			address: network address of this node, required
+			master: address of the master node, required if mode = slave
+	 -->
+	<server mode="%mode%" address="%address%" %master_addr% />
+	
+	<!-- 
+		if mode = master and there are slave nodes, network address of at least one slave 
+	-->
+	<cluster>
+		%slave_list%
+	</cluster>
+	
+	<!-- 
+		if mode = master, uncomment to make this computer a member of the global network
+		attributes:
+			address: network address of this computer
+			site: globally-unique name of this computer
+	-->
+	<!-- relay address="192.168.8.1" site="site1" /-->
+</xjaf2x-server>

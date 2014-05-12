@@ -28,7 +28,7 @@ import jason.asSyntax.Literal;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.Global;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.jason.JasonAgentI;

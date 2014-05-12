@@ -40,20 +40,25 @@ public class Receiver extends Agent
 {
 	private static final long serialVersionUID = -677935957265970587L;
 	private int primeLimit;
+	private int numIterations;
 
 	@Override
 	protected void onInit(Serializable... args)
 	{
 		primeLimit = Integer.parseInt(args[0].toString());
+		numIterations = Integer.parseInt(args[1].toString());
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
+		--numIterations;
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setSender(myAid);
 		reply.setContent(msg.getContent() + "" + process());
 		msm.post(reply);
+		if (numIterations <= 0)
+			agm.stop(myAid);
 	}
 	
 	private int process()

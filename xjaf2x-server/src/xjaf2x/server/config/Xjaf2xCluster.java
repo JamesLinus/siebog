@@ -46,7 +46,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xjaf2x.server.Global;
+import xjaf2x.Global;
 
 /**
  * Helper class for reading global server configuration.

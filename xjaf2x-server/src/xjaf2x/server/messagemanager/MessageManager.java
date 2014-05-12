@@ -37,7 +37,7 @@ import javax.jms.Session;
 import javax.naming.Context;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.Global;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.AgentI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;

@@ -37,7 +37,7 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf2x.server.Global;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.jason.JasonAgentI;
 
 /**

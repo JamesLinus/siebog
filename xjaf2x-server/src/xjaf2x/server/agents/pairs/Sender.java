@@ -94,7 +94,6 @@ public class Sender extends Agent
 				} finally
 				{
 					agm.stop(myAid);
-					agm.stop(receiver);
 				}
 			}
 		}

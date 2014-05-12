@@ -45,7 +45,7 @@ public class Pong extends Agent
 	protected void onMessage(ACLMessage msg)
 	{
 		logger.info("Pong @ [" + getNodeName() + "]");
-		
+		// reply with an auto-increasing content
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setContent(number++);
 		msm.post(reply);

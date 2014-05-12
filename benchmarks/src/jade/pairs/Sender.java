@@ -72,8 +72,7 @@ public class Sender extends Agent
 								logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);
 							} finally
 							{
-								//kill(getAID());
-								//kill(receiver);
+								myAgent.doDelete();
 							}
 						}
 					}
