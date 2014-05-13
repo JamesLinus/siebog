@@ -124,7 +124,6 @@ public class StartNode
 	private static void createConfigFile(String[] args, File configFile) throws IOException,
 			SAXException, ParserConfigurationException
 	{
-		logger.info("Loading configuration from the program arguments.");
 		Mode mode = null;
 		String address = null, master = null;
 		Set<String> slaveNodes = new HashSet<>();
@@ -187,7 +186,7 @@ public class StartNode
 		}
 
 		// ok, create the file
-		String str = Global.readFile(StartNode.class.getResourceAsStream("xjaf2x-server.txt"));
+		String str = Global.readFile(StartNode.class.getResourceAsStream("xjaf2x-config.txt"));
 		str = str.replace("%mode%", mode.toString());
 		str = str.replace("%address%", address);
 		if (mode == Mode.MASTER)
@@ -208,7 +207,7 @@ public class StartNode
 
 	private static void printUsage()
 	{
-		System.out.println("USAGE: java -jar xjaf2x-start.jar [args]");
+		System.out.println("USAGE: " + StartNode.class.getSimpleName() + " [args]");
 		System.out.println("args:");
 		System.out.println("\t--mode:\t\tMASTER or SLAVE");
 		System.out.println("\t--address:\t\tNetwork address of this computer.");
@@ -219,8 +218,19 @@ public class StartNode
 
 	public static void main(String[] args)
 	{
+		Global.printVersion();
 		try
 		{
+			// if there are no args, the config file has to be there
+			if (args.length == 0)
+			{
+				if (!Xjaf2xCluster.getConfigFile().exists())
+				{
+					printUsage();
+					return;
+				}
+			}
+			
 			if (args.length > 0)
 				createConfigFile(args, Xjaf2xCluster.getConfigFile());
 			Xjaf2xCluster.init(false);

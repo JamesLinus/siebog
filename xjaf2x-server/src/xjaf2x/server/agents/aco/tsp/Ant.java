@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
@@ -72,9 +73,9 @@ public class Ant extends Agent
 	@Override
 	protected void onInit(Serializable... args)
 	{
-		AID mapAidPattern = new AID("xjaf2x_server_agents_aco_tsp_Map", null);
+		AID mapAidPattern = new AID(null, Global.getEjbName(Map.class), null);
 		mapAID = agm.getRunning(mapAidPattern).get(0);
-		
+
 		ACLMessage message = new ACLMessage();
 		message.setPerformative(Performative.REQUEST);
 		message.setContent("MapSize?");
@@ -92,19 +93,19 @@ public class Ant extends Agent
 			mapSize = (Integer) message.getContent();
 			// choose starting map node randomly
 			currentMapPosIndex = new Random().nextInt(mapSize);
-	
+
 			tourSoFar = new ArrayList<>();
 			tourSoFar.add(currentMapPosIndex);
-	
+
 			tourSoFarWeights = new ArrayList<>();
-			
+
 			phase = 1;
 			ACLMessage start = new ACLMessage(Performative.REQUEST);
 			start.addReceiver(myAid);
 			msm.post(start);
 			return;
 		}
-		
+
 		switch (phase)
 		{
 		case 1:
@@ -228,7 +229,7 @@ public class Ant extends Agent
 			removeLastNode(); // which is the same as the first
 
 			phase = 5;
-			
+
 			msm.post(message);
 			break;
 		}
@@ -239,9 +240,10 @@ public class Ant extends Agent
 			{
 				phase = 6;
 				// when this ant is done, create another one
-				agm.start("xjaf2x_server_agents_aco_tsp_Ant",
-						"Ant" + myAid.hashCode() + System.currentTimeMillis());
-				//agm.stopAgent(myAid);
+				AID newAnt = new AID(Global.SERVER, Global.getEjbName(Ant.class), "Ant"
+						+ myAid.hashCode() + System.currentTimeMillis());
+				agm.start(newAnt);
+				agm.stop(myAid);
 				return;
 			}
 

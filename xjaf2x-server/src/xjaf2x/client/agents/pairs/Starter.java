@@ -6,11 +6,13 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
+import javax.sound.midi.Receiver;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.AgentManagerI;
+import xjaf2x.server.agents.pairs.Sender;
 import xjaf2x.server.config.Xjaf2xCluster;
 import xjaf2x.server.messagemanager.MessageManagerI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
@@ -39,13 +41,14 @@ public class Starter
 
 		List<AID> senders = new ArrayList<>();
 		AgentManagerI agm = Global.getAgentManager();
-		final String family = "xjaf2x_server_agents_pairs_Sender";
 		for (int i = 0; i < numPairs; i++)
 		{
 			// receiver
-			agm.start("xjaf2x_server_agents_pairs_Receiver", "R" + i, primeLimit, numIterations);
+			AID aid = new AID(Global.SERVER, Global.getEjbName(Receiver.class), "R" + i);
+			agm.start(aid, primeLimit, numIterations);
 			// sender
-			AID aid = agm.start(family, "S" + i, i, numIterations, contentLength, addr);
+			aid = new AID(Global.SERVER, Global.getEjbName(Sender.class), "S" + i);
+			agm.start(aid, numIterations, contentLength, addr);
 			senders.add(aid);
 		}
 

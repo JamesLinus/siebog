@@ -30,8 +30,8 @@ public class AgentCtrls extends JPanel
 	private JTextField txtContent;
 	private JComboBox<Performative> cbxPerf;
 	private JTextField txtNewName;
-	private DefaultListModel<String> mdlFamilies;
-	private JList<String> lstFamilies;
+	private DefaultListModel<AID> mdlFamilies;
+	private JList<AID> lstFamilies;
 	private JList<AID> lstRunning;
 	private DefaultListModel<AID> mdlRunning;
 	private JSpinner spnNumMsgs;
@@ -202,9 +202,9 @@ public class AgentCtrls extends JPanel
 				mdlFamilies.clear();
 				try
 				{
-					List<String> families = Global.getAgentManager().getFamilies();
-					for (String str : families)
-						mdlFamilies.addElement(str);
+					List<AID> deployed = Global.getAgentManager().getDeployed();
+					for (AID aid: deployed)
+						mdlFamilies.addElement(aid);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while reloading agent families", ex);
@@ -223,14 +223,15 @@ public class AgentCtrls extends JPanel
 					String runtimeName = txtNewName.getText();
 					if (runtimeName.length() == 0)
 						runtimeName = "a" + System.currentTimeMillis();
-					String family = (String) lstFamilies.getSelectedValue();
-					if (family == null)
+					AID aid = lstFamilies.getSelectedValue();
+					if (aid == null)
 						return;
 					String[] args = txtArgs.getText().split(";");
 					Serializable[] argss = new Serializable[args.length];
 					for (int i = 0; i < args.length; i++)
 						argss[i] = args[i];
-					Global.getAgentManager().start(family, runtimeName, argss);
+					AID newAid = new AID(aid.getModule(), aid.getEjbName(), runtimeName);
+					Global.getAgentManager().start(newAid, argss);
 				} catch (Exception ex)
 				{
 					logger.log(Level.WARNING, "Error while starting an agent", ex);

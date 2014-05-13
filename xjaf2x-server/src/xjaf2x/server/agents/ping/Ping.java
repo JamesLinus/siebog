@@ -23,6 +23,7 @@ package xjaf2x.server.agents.ping;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
@@ -49,7 +50,7 @@ public class Ping extends Agent
 			logger.info("Ping @ [" + getNodeName() + "]");
 			// send a request to the Pong agent		
 			String pongName = msg.getContent().toString();
-			AID pongAid = new AID("xjaf2x_server_agents_ping_Pong", pongName);
+			AID pongAid = new AID(Global.SERVER, Global.getEjbName(Pong.class), pongName);
 			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 			pongMsg.setSender(myAid);
 			pongMsg.addReceiver(pongAid);

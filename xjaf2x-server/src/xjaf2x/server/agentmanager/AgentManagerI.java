@@ -22,7 +22,6 @@ package xjaf2x.server.agentmanager;
 
 import java.io.Serializable;
 import java.util.List;
-import xjaf2x.server.agentmanager.jason.JasonAgentI;
 
 /**
  * Remote interface of the agent manager.
@@ -34,21 +33,18 @@ public interface AgentManagerI extends Serializable
 	/**
 	 * Runs a new instance of an agent.
 	 * 
-	 * @param family Agent family name.
-	 * @param runtimeName Runtime name of this agent.
+	 * @param aid AID object.
 	 * @param args Optional initialization arguments to pass to the agent.
 	 * @return AID instance on success, null otherwise.
 	 */
-	AID start(String family, String runtimeName, Serializable... args);
-	
+	boolean start(AID aid, Serializable... args);
+
 	/**
 	 * Terminates an active agent.
 	 * 
 	 * @param aid AID object.
 	 */
 	void stop(AID aid);
-
-	JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args);
 
 	/**
 	 * Returns the list of running agents.
@@ -66,9 +62,9 @@ public interface AgentManagerI extends Serializable
 	List<AID> getRunning(AID pattern);
 
 	/**
-	 * Returns the list of deployed agent families.
+	 * Returns the list of deployed agents.
 	 * 
-	 * @return List of available agent family names.
+	 * @return List of AIDs, with runtime names set to null.
 	 */
-	List<String> getFamilies();
+	List<AID> getDeployed();
 }

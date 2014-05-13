@@ -25,9 +25,11 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
+import xjaf2x.server.agents.protocols.cnet.CNetContractor;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
@@ -36,7 +38,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_cnet_CNetManager")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class CNetManager extends Agent
@@ -110,7 +112,8 @@ public class CNetManager extends Agent
 				{
 					ACLMessage cfp = new ACLMessage(Performative.CALL_FOR_PROPOSAL);
 					cfp.setSender(getAid());
-					cfp.addReceiver(new AID("org.xjaf2x.examples.cnet.CNetContractor", "C" + i));
+					AID aid = new AID(Global.SERVER, Global.getEjbName(CNetContractor.class), "C" + i);
+					cfp.addReceiver(aid);
 					cfp.setContent(content);
 					cfp.setProtocol("fipa-contract-net");
 					cfp.setLanguage("fipa-sl");

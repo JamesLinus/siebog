@@ -38,7 +38,6 @@ import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.Global;
-import xjaf2x.server.agentmanager.jason.JasonAgentI;
 
 /**
  * Default agent manager implementation.
@@ -70,31 +69,21 @@ public class AgentManager implements AgentManagerI
 	}
 
 	@Override
-	public AID start(String family, String runtimeName, Serializable... args)
+	public boolean start(AID aid, Serializable... args)
 	{
-		AID aid = new AID(family, runtimeName);
 		// is it running already?
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
-			logger.fine("Already running: [" + aid + "]");
-			return aid;
+			logger.info("Already running: [" + aid + "]");
+			return true;
 		}
 
-		agent = createNew(family, aid, args);
+		agent = createNew(aid, args);
 		if (agent == null)
-			return null;
-		logger.fine("Agent [" + aid + "] running.");
-		return aid;
-	}
-
-	@Override
-	public JasonAgentI startJasonAgent(String family, String runtimeName, Serializable[] args)
-	{
-		AID aid = start(family, runtimeName, args);
-		if (aid == null)
-			return null;
-		return (JasonAgentI) runningAgents.get(aid);
+			return false;
+		logger.fine("Agent [" + aid + "] started.");
+		return true;
 	}
 
 	/**
@@ -113,15 +102,15 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	private AgentI createNew(String family, AID aid, Serializable... args)
+	private AgentI createNew(AID aid, Serializable... args)
 	{
 		try
 		{
-			Class<?> cls = Class.forName(family.replace('_', '.'));
+			Class<?> cls = Class.forName(aid.getClassName());
 			// build the JNDI lookup string
 			final String view = AgentI.class.getName();
-			String jndiName = String.format("ejb:/%s//%s!%s", Global.SERVER, family, view);
-			if (cls.getAnnotation(Stateful.class) != null) // stateful EJB
+			String jndiName = String.format("ejb:/%s//%s!%s", aid.getModule(), aid.getEjbName(), view);
+			if (cls.getAnnotation(Stateful.class) != null)
 				jndiName += "?stateful";
 			AgentI agent = (AgentI) jndiContext.lookup(jndiName);
 			// the order of the next two statements matters. if we call init first and the agent
@@ -132,35 +121,39 @@ public class AgentManager implements AgentManagerI
 			return agent;
 		} catch (Exception ex)
 		{
-			if (logger.isLoggable(Level.INFO))
-				logger.log(Level.INFO, "Error while creating [" + aid + "]", ex);
+			logger.log(Level.INFO, "Error while creating [" + aid + "]", ex);
 			return null;
 		}
 	}
 
 	@Override
-	public List<String> getFamilies()
+	public List<AID> getDeployed()
 	{
-		List<String> result = new ArrayList<>();
+		List<AID> result = new ArrayList<>();
 		final String intf = "!" + AgentI.class.getName();
+		final String exp = "java:jboss/exported";
 		try
 		{
-			NamingEnumeration<NameClassPair> list = jndiContext.list("java:jboss/exported/"
-					+ Global.SERVER);
-			while (list.hasMore())
+			NamingEnumeration<NameClassPair> moduleList = jndiContext.list(exp);
+			while (moduleList.hasMore())
 			{
-				NameClassPair ncp = list.next();
-				final String name = ncp.getName();
-				if (name.endsWith(intf))
+				String module = moduleList.next().getName();
+				NamingEnumeration<NameClassPair> agentList = jndiContext.list(exp + "/" + module);
+				while (agentList.hasMore())
 				{
-					String family = name.substring(0, name.lastIndexOf('!'));
-					result.add(family);
-
+					String ejbName = agentList.next().getName();
+					if (ejbName != null && ejbName.endsWith(intf))
+					{
+						int n = ejbName.lastIndexOf(intf);
+						ejbName = ejbName.substring(0, n);
+						AID aid = new AID(module, ejbName, null);
+						result.add(aid);
+					}
 				}
 			}
 		} catch (NamingException ex)
 		{
-			logger.log(Level.WARNING, "Error while loading agent families", ex);
+			logger.log(Level.WARNING, "Error while loading deployed agents.", ex);
 		}
 		return result;
 	}

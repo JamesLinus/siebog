@@ -36,7 +36,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_cnet_PrimeContractor")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class PrimeContractor extends CNetContractor

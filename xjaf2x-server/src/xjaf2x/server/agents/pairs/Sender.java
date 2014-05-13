@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
@@ -57,7 +58,7 @@ public class Sender extends Agent
 	protected void onInit(Serializable... args)
 	{
 		myIndex = Integer.parseInt(args[0].toString());
-		receiver = new AID("xjaf2x_server_agents_pairs_Receiver", "R" + myIndex);
+		receiver = new AID(Global.SERVER, Global.getEjbName(Receiver.class), "R" + myIndex);
 		numIterations = Integer.parseInt(args[1].toString());
 		// create message content
 		int contentLength = Integer.parseInt(args[2].toString());

@@ -30,9 +30,11 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
+import xjaf2x.server.agents.protocols.cnet.CNetContractor;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
@@ -41,7 +43,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_cnet_CNetStarter")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class CNetStarter extends Agent
@@ -108,15 +110,16 @@ public class CNetStarter extends Agent
 		// create new contractors
 		for (int i = contractors.size(); i < numContr; i++)
 		{
-			AID aid = agm.start("org.xjaf2x.examples.cnet.CNetContractor", "C" + i);
-			contractors.add(aid);
+			AID aid = new AID(Global.SERVER, Global.getEjbName(CNetContractor.class), "C" + i);
+			if (agm.start(aid))
+				contractors.add(aid);
 		}
 		
 		if (manager == null)
 		{
-			if (logger.isLoggable(Level.INFO))
-				logger.info("Starting manager");
-			manager = agm.start("org.xjaf2x.examples.cnet.CNetManager", "Manager");
+			logger.info("Starting manager");
+			manager = new AID(Global.SERVER, Global.getEjbName(CNetManager.class), "Manager");
+			agm.start(manager);
 		}
 		
 		// go!

@@ -66,9 +66,18 @@ public class Xjaf2xCluster
 	private String master;
 	private Set<String> clusterNodes;
 	private RelayInfo relay;
+	private static File xjaf2xRoot;
 	
 	public static void init(boolean initClientContext) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
+		String xjaf2xRootStr = System.getProperty("xjaf2x.base.dir");
+		if (xjaf2xRootStr == null)
+		{
+			logger.warning("System property 'xjaf2x.base.dir' not defined.");
+			xjaf2xRootStr = System.getProperty("user.home");
+		}
+		xjaf2xRoot = new File(xjaf2xRootStr);
+		
 		if (instance == null)
 		{
 			instance = new Xjaf2xCluster();
@@ -86,7 +95,6 @@ public class Xjaf2xCluster
 		{
 			Document doc = builder.parse(is);
 			loadConfig(doc);
-			logger.info("Loaded configuration from " + configFile.getAbsolutePath());
 		}
 	}
 	
@@ -175,10 +183,21 @@ public class Xjaf2xCluster
 			clusterNodes = new HashSet<>();
 			clusterNodes.add(address);
 			// collect all slave nodes
-			NodeList slaves = doc.getElementsByTagName("slave");
-			if (slaves != null)
-				for (int i = 0; i < slaves.getLength(); i++)
-					clusterNodes.add(((Element) slaves.item(i)).getAttribute("address"));
+			NodeList cluster = doc.getElementsByTagName("cluster");
+			if (cluster != null)
+			{
+				String slaves = ((Element) cluster.item(0)).getAttribute("slaves");
+				if (slaves != null)
+				{
+					String[] slaveList = slaves.split(",");
+					for (String s: slaveList)
+					{
+						s = s.trim();
+						if (s.length() > 0)
+							clusterNodes.add(s);
+					}
+				}
+			}
 		}
 
 		// relay
@@ -224,11 +243,6 @@ public class Xjaf2xCluster
 		return jbossHome;
 	}
 
-	public static String getXjaf2xRoot() throws IOException
-	{
-		return getJBossHome() + "xjaf2x/";
-	}
-	
 	public static Xjaf2xCluster get()
 	{
 		return instance;
@@ -236,7 +250,7 @@ public class Xjaf2xCluster
 	
 	public static File getConfigFile() throws IOException
 	{
-		return new File(getXjaf2xRoot(), "xjaf2x-server.xml");
+		return new File(xjaf2xRoot, "xjaf2x-config.xml");
 	}
 
 	@SuppressWarnings("unused")

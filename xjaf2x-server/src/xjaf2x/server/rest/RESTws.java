@@ -62,12 +62,11 @@ public class RESTws
 	{		
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();
-		List<String> families;
 		try
 		{
-			families = Global.getAgentManager().getFamilies();
-			for (String str : families)
-				list.add(str);
+			List<AID> deployed = Global.getAgentManager().getDeployed();
+			for (AID aid : deployed)
+				list.add(aid.toString());
 		} catch (Exception e)
 		{			
 			e.printStackTrace();
@@ -90,9 +89,7 @@ public class RESTws
 			if (!aids.isEmpty())
 			{
 				for (AID aid : aids)
-				{					
-					list.add(aid.getFamily()+ "/" + aid.getRuntimeName());
-				}		
+					list.add(aid.toString());
 				obj.put("running", list);
 				return obj.toJSONString();
 			} 
@@ -109,7 +106,8 @@ public class RESTws
 	public String deleteAgent(@PathParam("family") String family,
 			@PathParam("runtimeName") String runtimeName)
 	{
-		AID aid = new AID(family, runtimeName);
+		// TODO : module, ejbName, runtimeName
+		AID aid = new AID(null, null, null);
 		try
 		{
 			Global.getAgentManager().stop(aid);
@@ -129,10 +127,8 @@ public class RESTws
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();			
 		Performative[] performatives = Performative.values();		
-		for (Performative p : performatives)		{
-			
+		for (Performative p : performatives)		
 			list.add(p.toString());
-		}
 		obj.put("performatives", list);
 		return obj.toJSONString();
 	}
@@ -146,13 +142,14 @@ public class RESTws
 		Serializable[] args = null; // argumenti ??
 		try
 		{
-			Global.getAgentManager().start(family, runtimeName, args);
+			// TODO : module, ejbName, runtimeName
+			AID aid = new AID(null, null, null);
+			Global.getAgentManager().start(aid, args);
 			return "{\"success\": true}";
 		} catch (Exception e)
 		{
 			return "{\"success\": false}";
 		}
-
 	}
 
 	@GET
@@ -163,7 +160,8 @@ public class RESTws
 			@PathParam("performative") String performative, @PathParam("content") String content)
 	{
 
-		AID aid = new AID(family, runtimeName);
+		// TODO : module, ejbName, runtimeName
+		AID aid = new AID(null, null, null);
 		Performative p = Performative.valueOf(performative);
 		ACLMessage msg = new ACLMessage(p);
 		msg.addReceiver(aid);
@@ -202,12 +200,15 @@ public class RESTws
 
 		
 		Performative p = Performative.valueOf(performative);
-		ACLMessage msg = new ACLMessage(p); 	
-		AID sender = new AID(senderFam, senderName);
+		ACLMessage msg = new ACLMessage(p); 
+		// TODO : module, ejbName, runtimeName
+		AID sender = new AID(null, null, null);
 		msg.setSender(sender);
-		AID reciever = new AID(recieverFam, recieverName);
+		// TODO : module, ejbName, runtimeName
+		AID reciever = new AID(null, null, null);
 		msg.addReceiver(reciever);
-		AID replyTo = new AID(replyToFam, replyToName);
+		// TODO : module, ejbName, runtimeName
+		AID replyTo = new AID(null, null, null);
 		msg.setReplyTo(replyTo);
 		msg.setContent(content);
 		msg.setLanguage(language);

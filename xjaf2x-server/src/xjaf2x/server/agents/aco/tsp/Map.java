@@ -20,7 +20,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_aco_tsp_Map")
+@Stateful
 @Remote(AgentI.class)
 public class Map extends Agent
 {

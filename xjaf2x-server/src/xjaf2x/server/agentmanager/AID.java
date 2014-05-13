@@ -27,8 +27,9 @@ import xjaf2x.server.Matchable;
 /**
  * Agent identifier. Includes several pieces of information about the agent:
  * <ul>
- * 		<li>Agent <i>family</i> name: corresponds to a class in OO languages.
- * 		<li><i>Runtime</i> name, specified by the user (e.g. Smith).
+ * 		<li>Module name (i.e. name of the project).
+ * 		<li>EJB name.
+ * 		<li>Runtime name.
  * </ul>
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
@@ -38,17 +39,34 @@ import xjaf2x.server.Matchable;
 public final class AID implements Serializable, Matchable<AID>
 {
 	private static final long serialVersionUID = 1L;
-	private final String family;
+	private final String module;
+	private final String ejbName;
 	private final String runtimeName;
+	private final String className;
 	private final String str; // string representation
-	
-	public AID(String family, String runtimeName)
+
+	public AID(String module, String ejbName, String runtimeName)
 	{
-		this.family = family;
+		this.module = module;
+		this.ejbName = ejbName;
 		this.runtimeName = runtimeName;
-		str = family + "/" + runtimeName;
+		className = ejbName.replace('_', '.');
+		if (runtimeName == null)
+			str = module + "/" + ejbName;
+		else
+			str = module + "/" + ejbName + "/" + runtimeName;
 	}
-	
+
+	public String getModule()
+	{
+		return module;
+	}
+
+	public String getClassName()
+	{
+		return className;
+	}
+
 	@Override
 	public int hashCode()
 	{
@@ -70,9 +88,14 @@ public final class AID implements Serializable, Matchable<AID>
 
 	public boolean matches(AID aid)
 	{
-		if (aid.family != null)
+		if (aid.module != null)
 		{
-			if (!family.matches(aid.family))
+			if (!module.matches(aid.module))
+				return false;
+		}
+		if (aid.ejbName != null)
+		{
+			if (!ejbName.matches(aid.ejbName))
 				return false;
 		}
 		if (aid.runtimeName != null)
@@ -94,8 +117,8 @@ public final class AID implements Serializable, Matchable<AID>
 		return runtimeName;
 	}
 
-	public String getFamily()
+	public String getEjbName()
 	{
-		return family;
+		return ejbName;
 	}
 }

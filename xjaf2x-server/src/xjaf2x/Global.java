@@ -49,8 +49,14 @@ import xjaf2x.server.messagemanager.MessageManagerI;
  */
 public abstract class Global
 {
-	public static final String GROUP = "xjaf2x-group", USERNAME = "xjaf2xadmin",
-			PASSWORD = "xjaf2xpass~", SERVER = "xjaf2x-server", MASTER_NAME = "xjaf2x-master";
+	public static final String VERSION = "2.0.0";
+	
+	public static final String 
+		GROUP = "xjaf2x-group", 
+		USERNAME = "xjaf2xadmin",
+		PASSWORD = "xjaf2xpass~", 
+		SERVER = "xjaf2x", 
+		MASTER_NAME = "xjaf2x-master";
 
 	private static final String AgentManagerLookup = "ejb:/" + SERVER + "//"
 			+ AgentManager.class.getSimpleName() + "!" + AgentManagerI.class.getName();
@@ -126,5 +132,18 @@ public abstract class Global
 		{
 			out.print(data);
 		}
+	}
+	
+	public static void printVersion()
+	{
+		System.out.println("-------------------------------------------------------------");
+		System.out.println("Extensible Java EE-Based Agent Framework");
+		System.out.println("XJAF v" + VERSION);
+		System.out.println("-------------------------------------------------------------");
+	}
+	
+	public static String getEjbName(Class<?> agentClass)
+	{
+		return agentClass.getName().replace('.', '_');
 	}
 }
