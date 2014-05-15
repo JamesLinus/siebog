@@ -186,14 +186,27 @@ public class StartNode
 		}
 
 		// ok, create the file
+		writeConfigFile(configFile, mode, address, slaveNodes, master);
+	}
+	
+	private static void writeConfigFile(File configFile, Mode mode, String address, Set<String> slaveNodes, String master) throws IOException
+	{
 		String str = Global.readFile(StartNode.class.getResourceAsStream("xjaf2x-config.txt"));
 		str = str.replace("%mode%", mode.toString());
 		str = str.replace("%address%", address);
 		if (mode == Mode.MASTER)
 		{
 			StringBuilder slaves = new StringBuilder();
-			for (String sl : slaveNodes)
-				slaves.append("<slave address=\"").append(sl).append("\" />");
+			if (slaveNodes != null)
+			{
+				String comma = "";
+				for (String sl: slaveNodes)
+				{
+					slaves.append(comma).append(sl);
+					if (comma.equals(""))
+						comma = ",";
+				}
+			}
 			str = str.replace("%slave_list%", slaves.toString());
 			str = str.replace("%master_addr%", "");
 		} else
@@ -215,24 +228,49 @@ public class StartNode
 		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated "
 				+ "list of all at least one slave node.");
 	}
+	
+	private static String getRootFolder()
+	{
+		String root = "";
+		java.security.CodeSource codeSource = StartNode.class.getProtectionDomain()
+				.getCodeSource();
+		try
+		{
+			String path = codeSource.getLocation().toURI().getPath();
+			File jarFile = new File(path);
+			if (path.lastIndexOf(".jar") > 0)
+				root = jarFile.getParentFile().getPath();
+			else
+				// get out of build/classes
+				root = jarFile.getParentFile().getParentFile().getPath();
+		} catch (Exception ex)
+		{
+		}
+		root = root.replace('\\', '/');
+		if (!root.endsWith("/"))
+			root += "/";
+		return root;
+	}
 
 	public static void main(String[] args)
 	{
 		Global.printVersion();
+		
+		String xjaf2xRootStr = System.getProperty("xjaf2x.base.dir");
+		if (xjaf2xRootStr == null)
+		{
+			xjaf2xRootStr = getRootFolder();
+			logger.info("System property 'xjaf2x.base.dir' not defined, using " + xjaf2xRootStr);
+		}
+		Xjaf2xCluster.setXjaf2xRoot(new File(xjaf2xRootStr));
+		
 		try
 		{
-			// if there are no args, the config file has to be there
-			if (args.length == 0)
-			{
-				if (!Xjaf2xCluster.getConfigFile().exists())
-				{
-					printUsage();
-					return;
-				}
-			}
-			
 			if (args.length > 0)
 				createConfigFile(args, Xjaf2xCluster.getConfigFile());
+			else if (!Xjaf2xCluster.getConfigFile().exists()) // use the default settings
+				writeConfigFile(Xjaf2xCluster.getConfigFile(), Mode.MASTER, "localhost", null, null);
+				
 			Xjaf2xCluster.init(false);
 			jbossHome = Xjaf2xCluster.getJBossHome();
 			if (Xjaf2xCluster.get().getMode() == Mode.MASTER)

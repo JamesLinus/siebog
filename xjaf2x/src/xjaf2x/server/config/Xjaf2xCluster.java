@@ -68,16 +68,18 @@ public class Xjaf2xCluster
 	private RelayInfo relay;
 	private static File xjaf2xRoot;
 	
+	public static File getXjaf2xRoot()
+	{
+		return xjaf2xRoot;
+	}
+
+	public static void setXjaf2xRoot(File xjaf2xRoot)
+	{
+		Xjaf2xCluster.xjaf2xRoot = xjaf2xRoot;
+	}
+	
 	public static void init(boolean initClientContext) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
-		String xjaf2xRootStr = System.getProperty("xjaf2x.base.dir");
-		if (xjaf2xRootStr == null)
-		{
-			logger.warning("System property 'xjaf2x.base.dir' not defined.");
-			xjaf2xRootStr = System.getProperty("user.home");
-		}
-		xjaf2xRoot = new File(xjaf2xRootStr);
-		
 		if (instance == null)
 		{
 			instance = new Xjaf2xCluster();
@@ -251,29 +253,5 @@ public class Xjaf2xCluster
 	public static File getConfigFile() throws IOException
 	{
 		return new File(xjaf2xRoot, "xjaf2x-config.xml");
-	}
-
-	@SuppressWarnings("unused")
-	private static String getRootFolder()
-	{
-		String root = "";
-		java.security.CodeSource codeSource = Xjaf2xCluster.class.getProtectionDomain()
-				.getCodeSource();
-		try
-		{
-			String path = codeSource.getLocation().toURI().getPath();
-			File jarFile = new File(path);
-			if (path.lastIndexOf(".jar") > 0)
-				root = jarFile.getParentFile().getPath();
-			else
-				// get out of xjaf2x-server/build/classes
-				root = jarFile.getParentFile().getParentFile().getParentFile().getPath();
-		} catch (Exception ex)
-		{
-		}
-		root = root.replace('\\', '/');
-		if (!root.endsWith("/"))
-			root += "/";
-		return root;
 	}
 }

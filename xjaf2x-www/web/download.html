@@ -2,11 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="description" content="extensible java ee-based agent framework" />
-<meta name="keywords" content="xjaf,agents,framework,platform,java ee,jboss" />
+<meta name="description"
+	content="extensible java ee-based agent framework" />
+<meta name="keywords"
+	content="xjaf,agents,framework,platform,java ee,jboss" />
 <meta name="author"
 	content="XJAF / Original design: Andreas Viklund - http://andreasviklund.com/" />
 <link rel="stylesheet" type="text/css" href="basic-presentation.css" />
+<script>
+	(function(i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		i[r] = i[r] || function() {
+			(i[r].q = i[r].q || []).push(arguments)
+		}, i[r].l = 1 * new Date();
+		a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m)
+	})(window, document, 'script', '//www.google-analytics.com/analytics.js',
+			'ga');
+
+	ga('create', 'UA-51062509-1', 'uns.ac.rs');
+	ga('send', 'pageview');
+</script>
 <title>XJAF - Download</title>
 </head>
 
@@ -24,13 +42,8 @@
 			<ul class="navmenu">
 				<li><a href="index.html">Home</a></li>
 				<li><a class="current" href="download.html">Download</a></li>
-				<li><a href="docs.html">Documentation</a></li>
+				<li><a href="documentation.html">Documentation</a></li>
 				<li><a href="contact.html">Contact</a></li>
-			</ul>
-
-			<h2>Latest News</h2>
-			<ul>
-				<li>- Version 2.0.0 is <a href="download.html">now available</a></li>
 			</ul>
 		</div>
 
@@ -38,7 +51,79 @@
 		<div id="main">
 			<img class="headerimage" src="banner1-1.jpg" width="740"
 				alt="Novi Sad" />
-			<h3>Under construction...</h3>
+			<h3>JBoss Application Server</h3>
+			<p>
+				If this is your first time using XJAF, you need to <a
+					href="dist/jboss-eap-6.1-xjaf2x.zip">download JBoss JBoss AS
+					(ZIP archive, 110 MB)</a>. After unpacking the archive, please <a
+					href="https://www.google.com/search?q=how+to+set+environment+variables">set
+					an environment variable</a> named JBOSS_HOME to point to the newly
+				created folder<br />(e.g. <i>C:\jboss-eap-6.1</i> on Windows, or <i>/home/myself/jboss-eap-6.1</i>
+				on Linux).
+			</p>
+			<p>
+				Please note that XJAF and JBoss AS require Java SE Development Kit
+				(JDK) 7 to run. The Java Runtime Environment (JRE) will not suffice.
+				You may <a
+					href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">download
+					JDK 7 here</a>. To make sure the correct Java version is used, you
+				should set an environment variable JAVA_HOME to point to the JDK
+				installation folder (e.g. <i>C:\Program Files\Java\jdk1.7.0_55</i>
+				on Windows, or <i>/usr/lib/jvm/open-jdk</i> on Linux).
+			</p>
+			<h3>Downloading and installing XJAF</h3>
+			<p>
+				<a href="dist/xjaf2x.zip">Download the latest version of XJAF
+					(ZIP archive)</a>. To install XJAF, follow the next set of commands:
+			</p>
+			<ul>
+				<li>Unpack the ZIP archive anywhere. Open the command prompt /
+					terminal, go to the <i>xjaf2x</i> folder of your XJAF installation,
+					and execute <i>start-node.bat</i> under Windows, or <i>./start-node.sh</i>
+					under Linux;
+				</li>
+				<li>Wait until you see "JBoss EAP 6.1.0.GA (AS
+					7.2.0.Final-redhat-8) started in XYZms";</li>
+				<li>Navigate to the <i>bin</i> folder of your JBoss
+					installation and type <i>jboss-cli.bat --gui</i> in Windows command
+					prompt, or <i>./jboss-cli.sh --gui</i> in Linux terminal;
+				</li>
+				<li>CLI GUI window should pop-up. Choose <i>Deployments
+						-&gt; Deploy</i> from the main menu. Browse the <i>xjaf2x.jar</i> file
+					in your XJAF installation, specify <i>xjaf2x</i> for the <i>Name</i>
+					field, and mark the <i>xjaf2x-group</i> check box. Leave other
+					fields empty / unchecked. Click <i>OK</i> to close the dialog, and
+					finally <i>Submit</i> to deploy XJAF to JBoss.
+				</li>
+			</ul>
+			<p>
+				Your XJAF installation is now ready. You may open the following
+				address in your web browser to access the XJAF client: <a
+					href="http://localhost:8080/xjaf2x">http://localhost:8080/xjaf2x</a>.
+				From there, you may explore the framework's functionalities and run
+				some of the bundled example agents. For more information about
+				configuring XJAF and starting a computer cluster, please visit the <a
+					href="documentation.html">documentation page</a>.
+			</p>
+			<h3>Source code</h3>
+			<p>
+				<a href="dist/xjaf2x-src.zip">Download the XJAF source code (ZIP
+					archive)</a>. XJAF is distributed under the generous <a
+					href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache
+					License, Version 2.0</a>. Basically, this license allows you to use the
+				source code in both commercial and free software, without any
+				limitations or obligations. If you do find the source code useful
+				for your own projects, we would be happy if you <a
+					href="mailto:dejan@dmi.uns.ac.rs">e-mail us</a> a brief description
+				of what you are working on. We might even be glad to help!
+			</p>
+			<p>
+				To compile the source code, you'll need <a
+					href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">JDK
+					7</a>, <a href="http://www.eclipse.org/downloads/">Eclipse IDE for
+					Java EE Developers</a> (Kepler or newer), and <a
+					href="http://tools.jboss.org/downloads/">JBoss Tools</a>.
+			</p>
 		</div>
 
 		<div id="footer">
