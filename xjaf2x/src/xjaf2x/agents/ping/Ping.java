@@ -18,65 +18,46 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agents.cnet;
+package xjaf2x.agents.ping;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
+import xjaf2x.Global;
+import xjaf2x.server.agentmanager.AID;
+import xjaf2x.server.agentmanager.Agent;
 import xjaf2x.server.agentmanager.AgentI;
-import xjaf2x.server.agents.protocols.cnet.CNetContractor;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
 /**
- * ContractNet contractor for calculating prime numbers.
+ * Example of a ping agent.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
+@Stateful(name = "xjaf2x_agents_ping_Ping")
 @Remote(AgentI.class)
 @Clustered
-public class PrimeContractor extends CNetContractor
+public class Ping extends Agent 
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(PrimeContractor.class.getName());
-
-	@PostConstruct
-	public void postConstruct()
-	{
-		if (logger.isLoggable(Level.INFO))
-			logger.info("CNetContractor started @" + System.getProperty("jboss.node.name"));
-	}
-	
-	private String process(String content)
-	{
-		long sum = 0;
-		for (int i = 0; i < content.length(); i++)
-			sum += content.codePointAt(i);
-		return "" + sum;
-	}
-	
-	@Override
-	protected ACLMessage getProposal(ACLMessage cfp)
-	{
-		ACLMessage proposal = cfp.makeReply(Performative.PROPOSE);
-		proposal.setContent(process((String) cfp.getContent()));
-		return proposal;
-	}
 
 	@Override
-	protected ACLMessage onAcceptProposal(ACLMessage proposal)
+	protected void onMessage(ACLMessage msg)
 	{
-		ACLMessage result = proposal.makeReply(Performative.INFORM);
-		result.setContent(process((String) proposal.getContent()));
-		return result;
-	}
-
-	@Override
-	protected void onRejectProposal(ACLMessage proposal)
-	{
+		if (msg.getPerformative() == Performative.REQUEST)
+		{		
+			logger.info("Ping @ [" + getNodeName() + "]");
+			// send a request to the Pong agent		
+			String pongName = msg.getContent().toString();
+			AID pongAid = new AID(Global.SERVER, Global.getEjbName(Pong.class), pongName);
+			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
+			pongMsg.setSender(myAid);
+			pongMsg.addReceiver(pongAid);
+			msm.post(pongMsg); // msm -> message manager
+			// wait for the reply in a blocking fashion
+			ACLMessage reply = receiveWait(0);
+			logger.info("Pong says: " + reply.getContent());
+		}
 	}
 }

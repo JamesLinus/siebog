@@ -1,4 +1,24 @@
-package xjaf2x.client.agents.pairs;
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements. See the NOTICE file 
+ * distributed with this work for additional information regarding 
+ * copyright ownership. The ASF licenses this file to you under 
+ * the Apache License, Version 2.0 (the "License"); you may not 
+ * use this file except in compliance with the License. You may 
+ * obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, 
+ * software distributed under the License is distributed on an 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * either express or implied. 
+ * 
+ * See the License for the specific language governing permissions 
+ * and limitations under the License.
+ */
+
+package xjaf2x.agents.pairs.client;
 
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
@@ -10,14 +30,19 @@ import javax.sound.midi.Receiver;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import xjaf2x.Global;
+import xjaf2x.agents.pairs.Sender;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.AgentManagerI;
-import xjaf2x.server.agents.pairs.Sender;
 import xjaf2x.server.config.Xjaf2xCluster;
 import xjaf2x.server.messagemanager.MessageManagerI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
+/**
+ * Entry point for the Sender-Receiver case study.
+ *
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ */
 public class Starter
 {
 
@@ -27,8 +52,10 @@ public class Starter
 		String addr = System.getProperty("java.rmi.server.hostname");
 		if (args.length != 4 || addr == null)
 		{
-			System.out.println("I need 4 arguments: NumOfPairs NumIterations PrimeLimit MsgContentLen");
-			System.out.println("In addition, set the property java.rmi.server.hostname to the address of this computer.");
+			System.out.println("I need 4 arguments: NumOfPairs NumIterations "
+					+ "PrimeLimit MsgContentLen");
+			System.out.println("In addition, set the property java.rmi.server.hostname "
+					+ "to the address of this computer.");
 			return;
 		}
 

@@ -18,51 +18,49 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agents.jason;
+package xjaf2x.server.messagemanager.protocols.cnet;
 
-import jason.asSyntax.Literal;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.server.agentmanager.Agent;
-import xjaf2x.server.agentmanager.jason.JasonAgentI;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 
 /**
- * Work in progress.
- *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Base class for <a
+ * href="http://www.fipa.org/specs/fipa00029/SC00029H.pdf">FIPA Contract Net</a>
+ * contractor/participant agents.
+ * 
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_jason_HelloJason")
-@Remote(JasonAgentI.class)
-@Clustered
-public class HelloJason extends Agent implements JasonAgentI
+public abstract class CNetContractor extends Agent
 {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void init(Map<String, Object> args) throws Exception
-	{
-	}
-	
-	@Override
 	public void onMessage(ACLMessage message)
 	{
+		switch (message.getPerformative())
+		{
+		case CALL_FOR_PROPOSAL:
+			ACLMessage reply = getProposal(message);
+			if (reply != null)
+				msm.post(reply);
+			break;
+		case ACCEPT_PROPOSAL:
+			ACLMessage result = onAcceptProposal(message);
+			if (result != null)
+				msm.post(result);
+			break;
+		case REJECT_PROPOSAL:
+			onRejectProposal(message);
+			break;
+		default:
+			break;
+		}
+
 	}
 
-	@Override
-	public List<Literal> perceive()
-	{
-		System.out.println("perceive(): " + getAid().getRuntimeName() + " " + System.getProperty("jboss.node.name"));
-		return null;
-	}
+	protected abstract ACLMessage getProposal(ACLMessage cfp);
 
-	@Override
-	public boolean act(String functor)
-	{
-		System.out.println("act(): " + getAid());
-		return true;
-	}
+	protected abstract ACLMessage onAcceptProposal(ACLMessage proposal);
+
+	protected abstract void onRejectProposal(ACLMessage proposal);
 }

@@ -164,7 +164,7 @@ public abstract class Agent implements AgentI
 	 *            message is available.
 	 * @return ACLMessage object, or null if the specified waiting time elapses
 	 *         before the message is available.
-	 * @throws IllegalArgumentException if timeout < 0.
+	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout)
 	{

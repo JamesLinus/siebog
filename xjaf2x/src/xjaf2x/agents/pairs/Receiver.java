@@ -18,8 +18,9 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agents.ping;
+package xjaf2x.agents.pairs;
 
+import java.io.Serializable;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
@@ -29,25 +30,54 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
 /**
- * Example of a pong agent. 
+ * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers
+ * in the [1..primeLimit] interval.
  *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_ping_Pong")
+@Stateful(name = "xjaf2x_agents_pairs_Receiver")
 @Remote(AgentI.class)
 @Clustered
-public class Pong extends Agent
+public class Receiver extends Agent
 {
-	private static final long serialVersionUID = 1L;
-	private int number = 0;
-	
+	private static final long serialVersionUID = -677935957265970587L;
+	private int primeLimit;
+	private int numIterations;
+
+	@Override
+	protected void onInit(Serializable... args)
+	{
+		primeLimit = Integer.parseInt(args[0].toString());
+		numIterations = Integer.parseInt(args[1].toString());
+	}
+
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
-		logger.info("Pong @ [" + getNodeName() + "]");
-		// reply with an auto-increasing content
+		--numIterations;
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.setContent(number++);
+		reply.setSender(myAid);
+		reply.setContent(msg.getContent() + "" + process());
 		msm.post(reply);
+		if (numIterations <= 0)
+			agm.stop(myAid);
+	}
+
+	private int process()
+	{
+		int primes = 0;
+		for (int i = 1; i <= primeLimit; i++)
+		{
+			int j = 2;
+			while (j <= i)
+			{
+				if (i % j == 0)
+					break;
+				++j;
+			}
+			if (j == i)
+				++primes;
+		}
+		return primes;
 	}
 }

@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agents.pairs;
+package xjaf2x.agents.pairs;
 
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -37,10 +37,13 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
 
 /**
+ * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number
+ * of iterations can be performed, averaging calculated RTTs in order reduce any noise in the
+ * results. In any case, the end RTT is reported to a RMI service.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_server_agents_pairs_Sender")
+@Stateful(name = "xjaf2x_agents_pairs_Sender")
 @Remote(AgentI.class)
 @Clustered
 public class Sender extends Agent
@@ -53,7 +56,7 @@ public class Sender extends Agent
 	private Serializable content;
 	private String resultsServiceAddr;
 	private long totalTime;
-	
+
 	@Override
 	protected void onInit(Serializable... args)
 	{
@@ -74,8 +77,7 @@ public class Sender extends Agent
 			iterationIndex = 0;
 			totalTime = 0;
 			postMsg();
-		}
-		else
+		} else
 		{
 			++iterationIndex;
 			totalTime += System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
@@ -99,7 +101,7 @@ public class Sender extends Agent
 			}
 		}
 	}
-	
+
 	private void postMsg()
 	{
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
@@ -107,9 +109,9 @@ public class Sender extends Agent
 		msg.addReceiver(receiver);
 		msg.setContent(content);
 		msg.setReplyWith(System.currentTimeMillis() + "");
-		msm.post(msg);		
+		msm.post(msg);
 	}
-	
+
 	private String makeContent(int length)
 	{
 		StringBuilder sb = new StringBuilder(length);
