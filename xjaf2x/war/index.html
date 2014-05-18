@@ -94,8 +94,8 @@
 <!-- log console -->
 <div id="menuDiv">
 	<div id="menuInfo">
-		<div id="menuInfoWrapper" class="menuWrapper">
-			<div id='menuInfoFormDiv'>
+		<div id="menuInfoWrapper" class="menuWrapper hidden">
+			<div id='menuInfoFormDiv' class="hidden">
 				<div id="menuInfoForm1" class="menuForm">
 					XJAF2X<br>
 					<table>
@@ -144,8 +144,8 @@
 				
 			</div>
 			<div id="menuInfoTabs" class="menuTabs">
-				<div id="menuInfoTabShow" class="clickable tab showHide inActive hidden" onclick="tab(this.id);">Show Logs</div>
-				<div id="menuInfoTabHide" class="clickable tab showHide inActive" onclick="tab(this.id);">Hide Logs</div>
+				<div id="menuInfoTabShow" class="clickable tab showHide inActive" onclick="tab(this.id);">Show Logs</div>
+				<div id="menuInfoTabHide" class="clickable tab showHide inActive hidden" onclick="tab(this.id);">Hide Logs</div>
 			</div>
 		</div>
 	</div>
@@ -157,7 +157,9 @@
 <script src="js/chart.min.js" type="text/javascript"></script> 
 <script src="js/bootstrap.js"></script>
 <script src="js/base.js"></script>
+ <script src="js/treemodel/TreeModel.js"></script>
 <script src="js/toggle.js"></script> 
+
 
 <script type="text/javascript">
 
@@ -170,10 +172,86 @@
 			 dataType: "json",
 			 success: function (data)
 			 {
-				$.each(data.families, function(i, family) {
-					$("#families-table").append('<tr><td colspan="2"><input type="radio" name="selectedfamily" value="' + family + '" style="margin-right:5px;"/>' + family + '</td></tr>');
-				});		 
-			 }
+				tree = new TreeModel();
+				root = tree.parse({ id: 'root', level: 0, isAgent: false });
+				
+				$.each(data.families, function(i, family)
+				{
+					var module = family.split('/')[0];
+					
+					var nodeModule = root.first(function (node) { return ((node.model.id === module) && (node.model.level == 1)); })
+					if (nodeModule == null) {
+						var existingModule = false;
+						nodeModule = tree.parse({ id: module, level: 1, isAgent: false });
+					} else {
+						var existingModule = true;
+					}
+					
+					var packagesAndClass = family.split('/')[1];
+					var packagesAndClassArray = packagesAndClass.split('_');
+					
+					var parentPackage = nodeModule;
+					for (var i = 0; i < packagesAndClassArray.length - 1; i++)
+					{
+						var nodePackage = root.first(function (node) { return ((node.model.id === packagesAndClassArray[i]) && (node.model.level == (i + 2))); })
+						if (nodePackage == null) {
+							var existingPackage = false;
+							nodePackage = tree.parse({ id: packagesAndClassArray[i], level: (i + 2), isAgent: false });
+						} else {
+							var existingPackage = true;
+						}
+						
+						if (!existingPackage) parentPackage.addChild(nodePackage);
+						
+						parentPackage = nodePackage;
+					}
+					
+					var agentClass = packagesAndClassArray[packagesAndClassArray.length-1];
+					var nodeAgentClass = tree.parse({ id: agentClass, level: (packagesAndClassArray.length + 1), isAgent: true });
+					parentPackage.addChild(nodeAgentClass);
+					
+					if (!existingModule) root.addChild(nodeModule);
+					
+				});
+				
+				console.log(root);
+				
+				var agentPath = "";
+				var lastLevel = 0;
+				root.walk(function (node) {
+				    if (node.model.level > 0)
+				    {
+					    if (!node.model.isAgent)
+					    {
+					    	if (node.model.level == 1)
+					    	{
+					    		agentPath = node.model.id + "/";
+					    		lastLevel == 1;
+					    		$("#families-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    	}
+					    	else
+				    		{
+					    		if (node.model.level < lastLevel) {
+					    			for (var i = 0; i < (lastLevel - node.model.level); i++) {
+					    				agentPath = agentPath.substring(0, agentPath.lastIndexOf("_"));
+					    			}
+				    			}
+					    		agentPath = agentPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		lastLevel = node.model.level;
+					    		$("#families-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+				    		}
+					    }
+					    else
+					   	{
+					    	$("#families-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="selectedfamily" value="' + (agentPath + "_" + node.model.id) + '" style="margin-right:5px;"/>' + node.model.id + '</td></tr>');
+					    	lastLevel = node.model.level;
+					   	}
+				    }
+				});
+				
+				
+		
+			  }
 		});
 	}
 	
