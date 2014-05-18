@@ -27,50 +27,51 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import xjaf2x.Global;
 import xjaf2x.server.Deployment;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
-
-
 /**
- *
+ * 
  * @author <a href="rade.milovanovic@hotmail.com">Rade Milovanovic</a>
  */
 
 @Path("/")
-public class RESTws
-{
+public class RESTws {
 	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getfamilies")
-	public String getFamilies()
-	{		
+	public String getFamilies() {
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();
-		try
-		{
+		try {
 			List<AID> deployed = Global.getAgentManager().getDeployed();
 			for (AID aid : deployed)
 				list.add(aid.toString());
-		} catch (Exception e)
-		{			
+		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 		obj.put("families", list);
 		return obj.toJSONString();
 	}
@@ -79,22 +80,18 @@ public class RESTws
 	@GET
 	@Produces("application/json")
 	@Path("/getrunning")
-	public String getRunning()
-	{
+	public String getRunning() {
 		JSONObject obj = new JSONObject();
-		JSONArray list = new JSONArray();	
-		try
-		{
+		JSONArray list = new JSONArray();
+		try {
 			List<AID> aids = Global.getAgentManager().getRunning();
-			if (!aids.isEmpty())
-			{
+			if (!aids.isEmpty()) {
 				for (AID aid : aids)
 					list.add(aid.toString());
 				obj.put("running", list);
 				return obj.toJSONString();
-			} 
-		} catch (Exception e)
-		{			
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		obj.put("running", list);
@@ -102,113 +99,115 @@ public class RESTws
 	}
 
 	@GET
-	@Path("/remove/{family}/{runtimeName}")
-	public String deleteAgent(@PathParam("family") String family,
-			@PathParam("runtimeName") String runtimeName)
-	{
-		// TODO : module, ejbName, runtimeName
-		AID aid = new AID(null, null, null);
-		try
-		{
+	@Path("/remove/{module}/{ejbName}/{runtimeName}")
+	public String deleteAgent(@PathParam("module") String module,
+			@PathParam("ejbName") String ejbName,
+			@PathParam("runtimeName") String runtimeName) {
+		AID aid = new AID(module, ejbName, runtimeName);
+		try {
 			Global.getAgentManager().stop(aid);
 			return "{\"success\": true}";
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			return "{\"success\": false}";
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getperformatives")
-	public String getPerformatives()
-	{
+	public String getPerformatives() {
 		JSONObject obj = new JSONObject();
-		JSONArray list = new JSONArray();			
-		Performative[] performatives = Performative.values();		
-		for (Performative p : performatives)		
+		JSONArray list = new JSONArray();
+		Performative[] performatives = Performative.values();
+		for (Performative p : performatives)
 			list.add(p.toString());
 		obj.put("performatives", list);
 		return obj.toJSONString();
 	}
 
-	
 	@GET
-	@Path("/create/{family}/{runtimeName}")
-	public String createAgent(@PathParam("family") String family,
-			@PathParam("runtimeName") String runtimeName)
-	{
-		Serializable[] args = null; // argumenti ??
-		try
-		{
-			// TODO : module, ejbName, runtimeName
-			AID aid = new AID(null, null, null);
+	@Path("/create/{module}/{ejbName}/{runtimeName}")
+	public String createAgent(@PathParam("module") String module,
+			@PathParam("ejbName") String ejbName,
+			@PathParam("runtimeName") String runtimeName) {
+		Serializable[] args = null; // arguments ??
+		try {
+			AID aid = new AID(module, ejbName, runtimeName);
 			Global.getAgentManager().start(aid, args);
 			return "{\"success\": true}";
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			return "{\"success\": false}";
 		}
 	}
 
 	@GET
 	@Produces("application/json")
-	@Path("/sendquickmsg/{family}/{runtimeName}/{performative}/{content}")
-	public String sendQuickMessage(@PathParam("family") String family,
-			@PathParam("runtimeName") String runtimeName,
-			@PathParam("performative") String performative, @PathParam("content") String content)
-	{
-
-		// TODO : module, ejbName, runtimeName
-		AID aid = new AID(null, null, null);
+	@Path("/sendquickmsg/{agents}/{performative}/{content}")
+	public String sendQuickMessage(@PathParam("agents") String agents,
+			@PathParam("performative") String performative,
+			@PathParam("content") String content) {
+		
+		Set<AID> receivers = new HashSet<AID>();
 		Performative p = Performative.valueOf(performative);
 		ACLMessage msg = new ACLMessage(p);
-		msg.addReceiver(aid);
 		msg.setContent(content);
-		try
-		{
+		String[] allAgents = agents.split(",");
+		for (String agent : allAgents) {
+			String[] parts = agent.split("^");
+			String module = parts[0];
+			String ejbName = parts[1];
+			String runtimeName = parts[2];
+			AID aid = new AID(module, ejbName, runtimeName);
+			receivers.add(aid);
+		}
+		msg.setReceivers(receivers);
+		try {
 			Global.getMessageManager().post(msg);
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			return "{\"success\": false}";
 		}
 
 		return "{\"success\": true}";
 	}
-	
-	
+
 	@GET
 	@Produces("application/json")
-	@Path("/sendmsg/{performative}/{senderFam}/{senderName}/{recieverFam}/{recieverName}/{replyToFam}/{replyToName}/{content}/{language}/{encoding}/{ontology}/{protocol}/{conversationId}/{replyWith}/{replyBy}")
+	@Path("/sendmsg/{performative}/{senderAgent}/{recievers}/{replyToAgent}/{content}/{language}/{encoding}/{ontology}/{protocol}/{conversationId}/{replyWith}/{replyBy}")
 	public String sendMessage(@PathParam("performative") String performative,
-						      @PathParam("senderFam") String senderFam,
-						      @PathParam("senderName") String senderName,
-						      @PathParam("recieverFam") String recieverFam,
-						      @PathParam("recieverName") String recieverName,
-						      @PathParam("replyToFam") String replyToFam,
-						      @PathParam("replyToName") String replyToName,
-						      @PathParam("content") String content,
-						      @PathParam("language") String language,
-						      @PathParam("encoding") String encoding,
-						      @PathParam("ontology") String ontology,
-						      @PathParam("protocol") String protocol,
-						      @PathParam("conversationId") String conversationId,
-						      @PathParam("replyWith") String replyWith,
-						      @PathParam("replyBy") long replyBy)
-	{
+			@PathParam("senderAgent") String senderAgent,
+			@PathParam("recievers") String recievers,
+			@PathParam("replyToAgent") String replyToAgent,
+			@PathParam("content") String content,
+			@PathParam("language") String language,
+			@PathParam("encoding") String encoding,
+			@PathParam("ontology") String ontology,
+			@PathParam("protocol") String protocol,
+			@PathParam("conversationId") String conversationId,
+			@PathParam("replyWith") String replyWith,
+			@PathParam("replyBy") long replyBy) {
 
-		
 		Performative p = Performative.valueOf(performative);
-		ACLMessage msg = new ACLMessage(p); 
+		ACLMessage msg = new ACLMessage(p);
 		// TODO : module, ejbName, runtimeName
-		AID sender = new AID(null, null, null);
+		String[] sparts = senderAgent.split("^");
+		AID sender = new AID(sparts[0], sparts[1], sparts[2]); // module,ejbName,runtimeName
 		msg.setSender(sender);
 		// TODO : module, ejbName, runtimeName
-		AID reciever = new AID(null, null, null);
-		msg.addReceiver(reciever);
+		Set<AID> receivers = new HashSet<AID>();
+		String[] allAgents = recievers.split(",");
+		for (String agent : allAgents) {
+			String[] parts = agent.split("^");
+			String module = parts[0];
+			String ejbName = parts[1];
+			String runtimeName = parts[2];
+			AID aid = new AID(module, ejbName, runtimeName);
+			receivers.add(aid);
+		}
+		msg.setReceivers(receivers);
 		// TODO : module, ejbName, runtimeName
-		AID replyTo = new AID(null, null, null);
+		String[] replyParts = replyToAgent.split("^");
+		AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
 		msg.setReplyTo(replyTo);
 		msg.setContent(content);
 		msg.setLanguage(language);
@@ -218,59 +217,47 @@ public class RESTws
 		msg.setConversationId(conversationId);
 		msg.setReplyWith(replyWith);
 		msg.setReplyBy(replyBy);
-		
-		try
-		{
+
+		try {
 			Global.getMessageManager().post(msg);
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			return "{\"success\": false}";
 		}
 
 		return "{\"success\": true}";
 	}
-	
-	
+
 	@POST
 	@Consumes("multipart/form-data")
 	@Path("/deployagent")
-	public Response deployAgent(@MultipartForm MyMultipartForm form)
-	{		
+	public Response deployAgent(@MultipartForm MyMultipartForm form) {
 		String output;
-		try
-		{
-			URL location = RESTws.class.getProtectionDomain().getCodeSource().getLocation();
-	        System.out.println(location.getFile());
-			
+		try {
+			URL location = RESTws.class.getProtectionDomain().getCodeSource()
+					.getLocation();
+			System.out.println(location.getFile());
 			String folderurl = location.toString().substring(5) + "/tmp/";
-			
-			String fileName = folderurl + form.getMasternodeaddress() + "_" + form.getApplicationname() + ".jar";
-	
+			String fileName = folderurl + form.getMasternodeaddress() + "_"
+					+ form.getApplicationname() + ".jar";
 			saveFile(form.getFile_input(), folderurl, fileName);
-	
 			output = "File saved to server location : " + fileName;
-			
 			File file = new File(fileName);
-			
 			Deployment deployment = new Deployment(form.getMasternodeaddress());
 			deployment.deploy(form.getApplicationname(), file);
-			
 			return Response.status(200).entity(output).build();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			output = "Error";
 			return Response.status(400).entity(output).build();
 		}
 
-		
 	}
-	
-	
-	private void saveFile(InputStream uploadedInputStream, String folderurl, String serverLocation) {
+
+	private void saveFile(InputStream uploadedInputStream, String folderurl,
+			String serverLocation) {
 
 		try {
 			new File(folderurl).mkdirs();
-			
+
 			OutputStream outpuStream = new FileOutputStream(new File(
 					serverLocation));
 			int read = 0;
@@ -287,5 +274,5 @@ public class RESTws
 			e.printStackTrace();
 		}
 	}
-	
+
 }
