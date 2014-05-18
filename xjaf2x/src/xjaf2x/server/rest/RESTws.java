@@ -36,6 +36,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xjaf2x.Global;
 import xjaf2x.server.Deployment;
@@ -58,6 +60,9 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 @Path("/")
 public class RESTws {
+	
+	private static final Logger logger = Logger.getLogger(RESTws.class.getName());
+	
 	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
@@ -70,7 +75,7 @@ public class RESTws {
 			for (AID aid : deployed)
 				list.add(aid.toString());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Error while loading deployed agents.", e);			
 		}
 		obj.put("families", list);
 		return obj.toJSONString();
@@ -92,7 +97,7 @@ public class RESTws {
 				return obj.toJSONString();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Error while loading running agents.", e);	
 		}
 		obj.put("running", list);
 		return obj.toJSONString();
@@ -108,6 +113,7 @@ public class RESTws {
 			Global.getAgentManager().stop(aid);
 			return "{\"success\": true}";
 		} catch (Exception e) {
+			logger.log(Level.WARNING, "Stopping agent - ["+ runtimeName +"] failed.", e);	
 			return "{\"success\": false}";
 		}
 	}
@@ -132,11 +138,12 @@ public class RESTws {
 			@PathParam("ejbName") String ejbName,
 			@PathParam("runtimeName") String runtimeName) {
 		Serializable[] args = null; // arguments ??
-		try {
-			AID aid = new AID(module, ejbName, runtimeName);
+		AID aid = new AID(module, ejbName, runtimeName);
+		try {			
 			Global.getAgentManager().start(aid, args);
 			return "{\"success\": true}";
 		} catch (Exception e) {
+			logger.log(Level.INFO, "Error while creating [" + aid + "]", e);
 			return "{\"success\": false}";
 		}
 	}
@@ -165,6 +172,7 @@ public class RESTws {
 		try {
 			Global.getMessageManager().post(msg);
 		} catch (Exception e) {
+			logger.log(Level.INFO, "Error while sending message.", e);
 			return "{\"success\": false}";
 		}
 
@@ -221,6 +229,7 @@ public class RESTws {
 		try {
 			Global.getMessageManager().post(msg);
 		} catch (Exception e) {
+			logger.log(Level.INFO, "Error while sending message.", e);
 			return "{\"success\": false}";
 		}
 
@@ -247,6 +256,7 @@ public class RESTws {
 			return Response.status(200).entity(output).build();
 		} catch (Exception e) {
 			output = "Error";
+			logger.log(Level.INFO, "Error while deploying agent.", e);
 			return Response.status(400).entity(output).build();
 		}
 
@@ -270,8 +280,7 @@ public class RESTws {
 			outpuStream.flush();
 			outpuStream.close();
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			logger.log(Level.INFO, "Error while saving file - [" + folderurl + "] .", e);			
 		}
 	}
 
