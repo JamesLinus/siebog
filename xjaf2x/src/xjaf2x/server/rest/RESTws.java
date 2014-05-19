@@ -26,6 +26,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
@@ -161,7 +162,7 @@ public class RESTws {
 		msg.setContent(content);
 		String[] allAgents = agents.split(",");
 		for (String agent : allAgents) {
-			String[] parts = agent.split("^");
+			String[] parts = agent.split("@");
 			String module = parts[0];
 			String ejbName = parts[1];
 			String runtimeName = parts[2];
@@ -179,33 +180,51 @@ public class RESTws {
 		return "{\"success\": true}";
 	}
 
-	@GET
+	@POST
 	@Produces("application/json")
-	@Path("/sendmsg/{performative}/{senderAgent}/{recievers}/{replyToAgent}/{content}/{language}/{encoding}/{ontology}/{protocol}/{conversationId}/{replyWith}/{replyBy}")
-	public String sendMessage(@PathParam("performative") String performative,
-			@PathParam("senderAgent") String senderAgent,
-			@PathParam("recievers") String recievers,
-			@PathParam("replyToAgent") String replyToAgent,
-			@PathParam("content") String content,
-			@PathParam("language") String language,
-			@PathParam("encoding") String encoding,
-			@PathParam("ontology") String ontology,
-			@PathParam("protocol") String protocol,
-			@PathParam("conversationId") String conversationId,
-			@PathParam("replyWith") String replyWith,
-			@PathParam("replyBy") long replyBy) {
+	@Path("/sendmsg")
+	public String sendMessage(String post)
+	{
+		String[] postArray = post.split("&");
+		String performative = postArray[0];
+		String senderAgent = postArray[1];
+		String recievers = postArray[2];
+		String replyToAgent = postArray[3];
+		String content = postArray[4];
+		String language = postArray[5];
+		String encoding = postArray[6];
+		String ontology = postArray[7];
+		String protocol = postArray[8];
+		String conversationId = postArray[9];
+		String replyWith = postArray[10];
+		String replyBy = postArray[11];
+		
+		System.out.println("DEBUG POST - START");
+		System.out.println(performative);
+		System.out.println(senderAgent);
+		System.out.println(recievers);
+		System.out.println(replyToAgent);
+		System.out.println(content);
+		System.out.println(language);
+		System.out.println(encoding);
+		System.out.println(ontology);
+		System.out.println(protocol);
+		System.out.println(conversationId);
+		System.out.println(replyWith);
+		System.out.println(replyBy);
+		System.out.println("DEBUG POST - END");
 
 		Performative p = Performative.valueOf(performative);
 		ACLMessage msg = new ACLMessage(p);
 		// TODO : module, ejbName, runtimeName
-		String[] sparts = senderAgent.split("^");
+		String[] sparts = senderAgent.split("%2F");
 		AID sender = new AID(sparts[0], sparts[1], sparts[2]); // module,ejbName,runtimeName
 		msg.setSender(sender);
 		// TODO : module, ejbName, runtimeName
 		Set<AID> receivers = new HashSet<AID>();
-		String[] allAgents = recievers.split(",");
+		String[] allAgents = recievers.split("%2C");
 		for (String agent : allAgents) {
-			String[] parts = agent.split("^");
+			String[] parts = agent.split("%40");
 			String module = parts[0];
 			String ejbName = parts[1];
 			String runtimeName = parts[2];
@@ -214,7 +233,7 @@ public class RESTws {
 		}
 		msg.setReceivers(receivers);
 		// TODO : module, ejbName, runtimeName
-		String[] replyParts = replyToAgent.split("^");
+		String[] replyParts = replyToAgent.split("%2F");
 		AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
 		msg.setReplyTo(replyTo);
 		msg.setContent(content);
@@ -224,7 +243,7 @@ public class RESTws {
 		msg.setProtocol(protocol);
 		msg.setConversationId(conversationId);
 		msg.setReplyWith(replyWith);
-		msg.setReplyBy(replyBy);
+		msg.setReplyBy(Long.valueOf(replyBy));
 
 		try {
 			Global.getMessageManager().post(msg);

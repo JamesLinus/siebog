@@ -64,24 +64,73 @@
 						
 							<div class="tab-content">
 								
-								<form id="edit-profile" class="form-horizontal">
+								<div id="edit-profile" class="form-horizontal">
 								
 	
 									<fieldset>
 									
-									
 										<div class="control-group">											
-											<label class="control-label">Choose agent</label>
+											<label class="control-label">Sender</label>
 											<div class="controls">
 												<div style="width:60%">
 												  <div class="widget widget-table action-table" style="clear: none;">
 													<div class="widget-header"> <i class="icon-play"></i>
-													  <h3>Running agents</h3><button class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
 													</div>
 													<div class="widget-content">
 													<div style="height:300px; overflow-y: scroll;">
 													  <table class="table table-striped table-bordered">
-														<tbody id="running-table">
+														<tbody id="sender-table">
+				
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label">Receivers</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody id="receivers-table">
+				
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label">Reply to</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody id="replyto-table">
 				
 														</tbody>
 													  </table>
@@ -162,17 +211,9 @@
 										</div>
 										
 										<div class="control-group">											
-											<label class="control-label" for="inReplyTo">In Reply To</label>
-											<div class="controls">
-												<input type="text" class="span6" id="inReplyTo" value="">
-												<p class="help-block">Denotes an expression that references an earlier action to which this message is a reply.</p>
-											</div>		
-										</div>
-										
-										<div class="control-group">											
 											<label class="control-label" for="replyBy">Reply By</label>
 											<div class="controls">
-												<input id="datetimepicker" type="text" class="span6" id="replyBy">
+												<input id="datetimepicker" type="text" class="span6">
 												<p class="help-block">Indicates the latest time by which the sending agent would like to receive a reply.</p>
 											</div>		
 										</div>
@@ -181,11 +222,11 @@
 										
 											
 										<div class="form-actions">
-											<button type="submit" class="btn btn-primary">SEND MESSAGE</button> 
+											<button onclick="javascript:sendMessage();" class="btn btn-primary">SEND MESSAGE</button> 
 											<button class="btn">Reset</button>
 										</div> <!-- /form-actions -->
 									</fieldset>
-								</form>
+								</div>
 							</div>
 						  
 						  
@@ -277,9 +318,9 @@
 <script src="js/jquery-ui.js"></script>
 <script src="js/datetimepicker/jquery.datetimepicker.js"></script>
 <script src="js/chosen/chosen.jquery.js"></script>
-	
 <script src="js/bootstrap.js"></script>
 <script src="js/base.js"></script>
+<script src="js/treemodel/TreeModel.js"></script>
 <script src="js/toggle.js"></script>
 
 <script type="text/javascript">
@@ -293,10 +334,92 @@
 			 url: "rest/getrunning",
 			 dataType: "json",
 			 success: function (data)
-			 {
-				$.each(data.running, function(i, runningagent) {
-					$("#running-table").append('<tr><td colspan="2"><input type="checkbox" name="selectedagent" value="' + runningagent + '" style="margin-right:5px;"/>' + runningagent + '<a href="javascript:stopAgent(\'' + runningagent  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
-				});	 
+			 {				 
+				tree = new TreeModel();
+				root = tree.parse({ id: 'root', level: 0, isAgent: false });
+				
+				$.each(data.running, function(i, runningagent)
+				{
+					var module = runningagent.split('/')[0];
+					
+					var nodeModule = root.first(function (node) { return ((node.model.id === module) && (node.model.level == 1)); })
+					if (nodeModule == null) {
+						var existingModule = false;
+						nodeModule = tree.parse({ id: module, level: 1, isAgent: false });
+					} else {
+						var existingModule = true;
+					}
+					
+					var packagesAndClass = runningagent.split('/')[1];
+					var packagesAndClassArray = packagesAndClass.split('_');
+					
+					var parentPackage = nodeModule;
+					for (var i = 0; i < packagesAndClassArray.length - 1; i++)
+					{
+						var nodePackage = root.first(function (node) { return ((node.model.id === packagesAndClassArray[i]) && (node.model.level == (i + 2))); })
+						if (nodePackage == null) {
+							var existingPackage = false;
+							nodePackage = tree.parse({ id: packagesAndClassArray[i], level: (i + 2), isAgent: false });
+						} else {
+							var existingPackage = true;
+						}
+						
+						if (!existingPackage) parentPackage.addChild(nodePackage);
+						
+						parentPackage = nodePackage;
+					}
+					
+					var agentClass = packagesAndClassArray[packagesAndClassArray.length-1];
+					var nodeAgentClass = tree.parse({ id: agentClass + "/" +  runningagent.split('/')[2], level: (packagesAndClassArray.length + 1), isAgent: true });
+					parentPackage.addChild(nodeAgentClass);
+					
+					if (!existingModule) root.addChild(nodeModule);
+					
+				});
+				
+				
+				var multiPath = "";
+				var agentPath = "";
+				var lastLevel = 0;
+				root.walk(function (node) {
+				    if (node.model.level > 0)
+				    {
+					    if (!node.model.isAgent)
+					    {
+					    	if (node.model.level == 1)
+					    	{
+					    		multiPath = node.model.id + "@";
+					    		agentPath = node.model.id + "/";
+					    		lastLevel == 1;
+					    		$("#sender-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#receivers-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#replyto-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    	}
+					    	else
+				    		{
+					    		if (node.model.level < lastLevel) {
+					    			for (var i = 0; i < (lastLevel - node.model.level); i++) {
+					    				multiPath = multiPath.substring(0, multiPath.lastIndexOf("_"));
+					    				agentPath = agentPath.substring(0, agentPath.lastIndexOf("_"));
+					    			}
+				    			}
+					    		multiPath = multiPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		agentPath = agentPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		lastLevel = node.model.level;
+					    		$("#sender-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#receivers-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#replyto-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+				    		}
+					    }
+					    else
+					   	{
+					    	$("#sender-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="senderagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	$("#receivers-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="checkbox" name="receiversagents" value="' + (multiPath + "_" + node.model.id.split('/')[0] + "@" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	$("#replyto-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="replytoagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	lastLevel = node.model.level;
+					   	}
+				    }
+				});
 			 }
 		});
 	}
@@ -308,27 +431,42 @@
 			 type: "GET",
 			 url: "rest/getperformatives",
 			 dataType: "json",
+			 contentType: "application/json; charset=utf-8", 
 			 success: function (data)
 			 {
 				$.each(data.performatives, function(i, performative) {
 					$("#performatives-list").append('<option value="' + performative + '">' + performative + '</option>');
-				});		 
+				});	
+				$(".chosen-select").chosen({width: "40%"});
 			 }
 		});
 	}
-	
-	
+
+
 	function sendMessage()
 	{		
-		if (($('input[name=selectedagent]:checked').val() != null) && ($('#contentmessageinput').val() != ""))
+		var receivers = "";
+		
+		$('input[name=receiversagents]:checked').each(function () {
+			receivers = receivers + "," + $(this).val();
+		});
+		
+		receivers = receivers.substring(1, receivers.length);
+		
+		console.log($('#datetimepicker').val());
+		
+		if ((receivers != "") && ($('#content').val() != ""))
 		{
 			jQuery.ajax({
-				type: "GET",
-				url: "rest/sendmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
+				type: "POST",
+				url: "rest/sendmsg",
 				dataType: "json",
+				data : { 'performative': $('select[name=selectedperformative]').val(), 'senderAgent': $('input[name=senderagent]:checked').val(), 'recievers' : receivers, 'replyToAgent': $('input[name=replytoagent]:checked').val(), 
+					 'content': $('#content').val(), 'language':  $('#language').val(), 'encoding':  $('#encoding').val(), 'ontology':  $('#ontology').val(), 'protocol':  $('#protocol').val(), 'conversationId':  $('#conversationId').val(),
+					 'replyWith': $('#replyWith').val(), 'replyBy': $('#datetimepicker').val() },
 				success: function (data)
 				{
-					$('#contentmessageinput').val("");
+					$('#content').val("");
 					if (data.success == true)
 						alert("Message was sent successfully.");
 					else
@@ -341,7 +479,7 @@
 			alert("Please select Agent and enter Message content.");
 		}
 	}
-	
+	 
 	getRunningAgents();
 	getAllPerformatives();
 	
@@ -350,7 +488,6 @@
 </script>
 
 <script type="text/javascript">
-	 $(".chosen-select").chosen({width: "40%"});
 	 $('#datetimepicker').datetimepicker({format:'unixtime', inline:true});
 </script>
 

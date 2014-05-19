@@ -157,7 +157,7 @@
 <script src="js/chart.min.js" type="text/javascript"></script> 
 <script src="js/bootstrap.js"></script>
 <script src="js/base.js"></script>
- <script src="js/treemodel/TreeModel.js"></script>
+<script src="js/treemodel/TreeModel.js"></script>
 <script src="js/toggle.js"></script> 
 
 
@@ -214,8 +214,6 @@
 					
 				});
 				
-				console.log(root);
-				
 				var agentPath = "";
 				var lastLevel = 0;
 				root.walk(function (node) {
@@ -248,9 +246,6 @@
 					   	}
 				    }
 				});
-				
-				
-		
 			  }
 		});
 	}
@@ -264,10 +259,86 @@
 			 url: "rest/getrunning",
 			 dataType: "json",
 			 success: function (data)
-			 {
-				$.each(data.running, function(i, runningagent) {
-					$("#running-table").append('<tr><td colspan="2"><input type="checkbox" name="selectedagent" value="' + runningagent + '" style="margin-right:5px;"/>' + runningagent + '<a href="javascript:stopAgent(\'' + runningagent  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
-				});	 
+			 {				 
+				tree = new TreeModel();
+				root = tree.parse({ id: 'root', level: 0, isAgent: false });
+				
+				$.each(data.running, function(i, runningagent)
+				{
+					var module = runningagent.split('/')[0];
+					
+					var nodeModule = root.first(function (node) { return ((node.model.id === module) && (node.model.level == 1)); })
+					if (nodeModule == null) {
+						var existingModule = false;
+						nodeModule = tree.parse({ id: module, level: 1, isAgent: false });
+					} else {
+						var existingModule = true;
+					}
+					
+					var packagesAndClass = runningagent.split('/')[1];
+					var packagesAndClassArray = packagesAndClass.split('_');
+					
+					var parentPackage = nodeModule;
+					for (var i = 0; i < packagesAndClassArray.length - 1; i++)
+					{
+						var nodePackage = root.first(function (node) { return ((node.model.id === packagesAndClassArray[i]) && (node.model.level == (i + 2))); })
+						if (nodePackage == null) {
+							var existingPackage = false;
+							nodePackage = tree.parse({ id: packagesAndClassArray[i], level: (i + 2), isAgent: false });
+						} else {
+							var existingPackage = true;
+						}
+						
+						if (!existingPackage) parentPackage.addChild(nodePackage);
+						
+						parentPackage = nodePackage;
+					}
+					
+					var agentClass = packagesAndClassArray[packagesAndClassArray.length-1];
+					var nodeAgentClass = tree.parse({ id: agentClass + "/" +  runningagent.split('/')[2], level: (packagesAndClassArray.length + 1), isAgent: true });
+					parentPackage.addChild(nodeAgentClass);
+					
+					if (!existingModule) root.addChild(nodeModule);
+					
+				});
+				
+				
+				var agentPath = "";
+				var deletePath = "";
+				var lastLevel = 0;
+				root.walk(function (node) {
+				    if (node.model.level > 0)
+				    {
+					    if (!node.model.isAgent)
+					    {
+					    	if (node.model.level == 1)
+					    	{
+					    		agentPath = node.model.id + "@";
+					    		deletePath = node.model.id + "/";
+					    		lastLevel == 1;
+					    		$("#running-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    	}
+					    	else
+				    		{
+					    		if (node.model.level < lastLevel) {
+					    			for (var i = 0; i < (lastLevel - node.model.level); i++) {
+					    				agentPath = agentPath.substring(0, agentPath.lastIndexOf("_"));
+					    				deletePath = deletePath.substring(0, deletePath.lastIndexOf("_"));
+					    			}
+				    			}
+					    		agentPath = agentPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		deletePath = deletePath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		lastLevel = node.model.level;
+					    		$("#running-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+				    		}
+					    }
+					    else
+					   	{
+					    	$("#running-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="checkbox" name="selectedagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "@" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>" + node.model.id.split('/')[1] + "</b>" + '<a href="javascript:stopAgent(\'' + (deletePath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1])  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
+					    	lastLevel = node.model.level;
+					   	}
+				    }
+				});
 			 }
 		});
 	}
@@ -325,11 +396,19 @@
 	
 	function sendQuickMessage()
 	{		
-		if (($('input[name=selectedagent]:checked').val() != null) && ($('#contentmessageinput').val() != ""))
+		var selectedagents = "";
+		
+		$('input[name=selectedagent]:checked').each(function () {
+			selectedagents = selectedagents + "," + $(this).val();
+		});
+		
+		selectedagents = selectedagents.substring(1, selectedagents.length);
+		
+		if ((selectedagents != "") && ($('#contentmessageinput').val() != ""))
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "rest/sendquickmsg/" + $('input[name=selectedagent]:checked').val() + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
+				url: "rest/sendquickmsg/" + selectedagents + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
 				dataType: "json",
 				success: function (data)
 				{
