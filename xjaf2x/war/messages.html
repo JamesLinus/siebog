@@ -327,7 +327,9 @@
 
 	function getRunningAgents()
 	{
-		$("#running-table").empty();
+		$("#sender-table").empty();
+		$("#receivers-table").empty();
+		$("#replyto-table").empty();
 		
 		jQuery.ajax({
 			 type: "GET",
