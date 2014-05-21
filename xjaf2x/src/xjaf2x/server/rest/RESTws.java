@@ -34,6 +34,7 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -154,7 +155,7 @@ public class RESTws {
 	@Path("/sendquickmsg/{agents}/{performative}/{content}")
 	public String sendQuickMessage(@PathParam("agents") String agents,
 			@PathParam("performative") String performative,
-			@PathParam("content") String content) {
+			@PathParam("content") String content) {	
 		
 		Set<AID> receivers = new HashSet<AID>();
 		Performative p = Performative.valueOf(performative);
@@ -185,36 +186,30 @@ public class RESTws {
 	@Path("/sendmsg")
 	public String sendMessage(String post)
 	{
-		String[] postArray = post.split("&");
-		String performative = postArray[0];
-		String senderAgent = postArray[1];
-		String recievers = postArray[2];
-		String replyToAgent = postArray[3];
-		String content = postArray[4];
-		String language = postArray[5];
-		String encoding = postArray[6];
-		String ontology = postArray[7];
-		String protocol = postArray[8];
-		String conversationId = postArray[9];
-		String replyWith = postArray[10];
-		String replyBy = postArray[11];
+		String[] postArray = post.split("&");	
+		List<String> list = new ArrayList<>();
+		for(String params: postArray){			
+			String[] param = params.split("=");
+			if(param.length == 1){
+				list.add("");	
+			}else{
+				list.add(param[1]);	
+			}					
+		}
+		String performative = list.get(0); 
+		String senderAgent = list.get(1);
+		String recievers = list.get(2);
+		String replyToAgent = list.get(3);
+		String content = list.get(4);
+		String language = list.get(5);
+		String encoding = list.get(6);
+		String ontology = list.get(7);
+		String protocol = list.get(8);
+		String conversationId = list.get(9);
+		String replyWith = list.get(10);
+		String replyBy = list.get(11);
 		
-		System.out.println("DEBUG POST - START");
-		System.out.println(performative);
-		System.out.println(senderAgent);
-		System.out.println(recievers);
-		System.out.println(replyToAgent);
-		System.out.println(content);
-		System.out.println(language);
-		System.out.println(encoding);
-		System.out.println(ontology);
-		System.out.println(protocol);
-		System.out.println(conversationId);
-		System.out.println(replyWith);
-		System.out.println(replyBy);
-		System.out.println("DEBUG POST - END");
-
-		Performative p = Performative.valueOf(performative);
+		Performative p = Performative.valueOf(performative);		
 		ACLMessage msg = new ACLMessage(p);
 		// TODO : module, ejbName, runtimeName
 		String[] sparts = senderAgent.split("%2F");
@@ -236,15 +231,28 @@ public class RESTws {
 		String[] replyParts = replyToAgent.split("%2F");
 		AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
 		msg.setReplyTo(replyTo);
-		msg.setContent(content);
-		msg.setLanguage(language);
-		msg.setEncoding(encoding);
-		msg.setOntology(ontology);
-		msg.setProtocol(protocol);
-		msg.setConversationId(conversationId);
-		msg.setReplyWith(replyWith);
-		msg.setReplyBy(Long.valueOf(replyBy));
-
+		msg.setContent(content);	
+		if(!language.equals("")){
+			msg.setLanguage(language);
+		}
+		if(!encoding.equals("")){
+			msg.setEncoding(encoding);			
+		}
+		if(!ontology.equals("")){
+			msg.setOntology(ontology);
+		}
+		if(!protocol.equals("")){
+			msg.setProtocol(protocol);
+		}
+		if(!conversationId.equals("")){
+			msg.setConversationId(conversationId);
+		}
+		if(!replyWith.equals("")){
+			msg.setReplyWith(replyWith);
+		}
+		if(!replyBy.equals("")){
+			msg.setReplyBy(Long.valueOf(replyBy));
+		}		
 		try {
 			Global.getMessageManager().post(msg);
 		} catch (Exception e) {
