@@ -26,10 +26,10 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
-import javax.sound.midi.Receiver;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import xjaf2x.Global;
+import xjaf2x.agents.pairs.Receiver;
 import xjaf2x.agents.pairs.Sender;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.AgentManagerI;
@@ -75,7 +75,7 @@ public class Starter
 			agm.start(aid, primeLimit, numIterations);
 			// sender
 			aid = new AID(Global.SERVER, Global.getEjbName(Sender.class), "S" + i);
-			agm.start(aid, numIterations, contentLength, addr);
+			agm.start(aid, i, numIterations, contentLength, addr);
 			senders.add(aid);
 		}
 

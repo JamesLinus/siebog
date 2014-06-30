@@ -26,12 +26,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,19 +37,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import xjaf2x.Global;
 import xjaf2x.server.Deployment;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
 import xjaf2x.server.messagemanager.fipaacl.Performative;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 /**
@@ -61,23 +55,26 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
  */
 
 @Path("/")
-public class RESTws {
-	
+public class RESTws
+{
 	private static final Logger logger = Logger.getLogger(RESTws.class.getName());
-	
+
 	@SuppressWarnings("unchecked")
 	@GET
 	@Produces("application/json")
 	@Path("/getfamilies")
-	public String getFamilies() {
+	public String getFamilies()
+	{
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();
-		try {
+		try
+		{
 			List<AID> deployed = Global.getAgentManager().getDeployed();
 			for (AID aid : deployed)
 				list.add(aid.toString());
-		} catch (Exception e) {
-			logger.log(Level.WARNING, "Error while loading deployed agents.", e);			
+		} catch (Exception e)
+		{
+			logger.log(Level.WARNING, "Error while loading deployed agents.", e);
 		}
 		obj.put("families", list);
 		return obj.toJSONString();
@@ -87,19 +84,23 @@ public class RESTws {
 	@GET
 	@Produces("application/json")
 	@Path("/getrunning")
-	public String getRunning() {
+	public String getRunning()
+	{
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();
-		try {
+		try
+		{
 			List<AID> aids = Global.getAgentManager().getRunning();
-			if (!aids.isEmpty()) {
+			if (!aids.isEmpty())
+			{
 				for (AID aid : aids)
 					list.add(aid.toString());
 				obj.put("running", list);
 				return obj.toJSONString();
 			}
-		} catch (Exception e) {
-			logger.log(Level.WARNING, "Error while loading running agents.", e);	
+		} catch (Exception e)
+		{
+			logger.log(Level.WARNING, "Error while loading running agents.", e);
 		}
 		obj.put("running", list);
 		return obj.toJSONString();
@@ -108,14 +109,16 @@ public class RESTws {
 	@GET
 	@Path("/remove/{module}/{ejbName}/{runtimeName}")
 	public String deleteAgent(@PathParam("module") String module,
-			@PathParam("ejbName") String ejbName,
-			@PathParam("runtimeName") String runtimeName) {
+			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
+	{
 		AID aid = new AID(module, ejbName, runtimeName);
-		try {
+		try
+		{
 			Global.getAgentManager().stop(aid);
 			return "{\"success\": true}";
-		} catch (Exception e) {
-			logger.log(Level.WARNING, "Stopping agent - ["+ runtimeName +"] failed.", e);	
+		} catch (Exception e)
+		{
+			logger.log(Level.WARNING, "Stopping agent - [" + runtimeName + "] failed.", e);
 			return "{\"success\": false}";
 		}
 	}
@@ -124,7 +127,8 @@ public class RESTws {
 	@GET
 	@Produces("application/json")
 	@Path("/getperformatives")
-	public String getPerformatives() {
+	public String getPerformatives()
+	{
 		JSONObject obj = new JSONObject();
 		JSONArray list = new JSONArray();
 		Performative[] performatives = Performative.values();
@@ -137,14 +141,16 @@ public class RESTws {
 	@GET
 	@Path("/create/{module}/{ejbName}/{runtimeName}")
 	public String createAgent(@PathParam("module") String module,
-			@PathParam("ejbName") String ejbName,
-			@PathParam("runtimeName") String runtimeName) {
+			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
+	{
 		Serializable[] args = null; // arguments ??
 		AID aid = new AID(module, ejbName, runtimeName);
-		try {			
+		try
+		{
 			Global.getAgentManager().start(aid, args);
 			return "{\"success\": true}";
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			logger.log(Level.INFO, "Error while creating [" + aid + "]", e);
 			return "{\"success\": false}";
 		}
@@ -154,15 +160,16 @@ public class RESTws {
 	@Produces("application/json")
 	@Path("/sendquickmsg/{agents}/{performative}/{content}")
 	public String sendQuickMessage(@PathParam("agents") String agents,
-			@PathParam("performative") String performative,
-			@PathParam("content") String content) {	
-		
+			@PathParam("performative") String performative, @PathParam("content") String content)
+	{
+
 		Set<AID> receivers = new HashSet<AID>();
 		Performative p = Performative.valueOf(performative);
 		ACLMessage msg = new ACLMessage(p);
 		msg.setContent(content);
 		String[] allAgents = agents.split(",");
-		for (String agent : allAgents) {
+		for (String agent : allAgents)
+		{
 			String[] parts = agent.split("@");
 			String module = parts[0];
 			String ejbName = parts[1];
@@ -171,9 +178,11 @@ public class RESTws {
 			receivers.add(aid);
 		}
 		msg.setReceivers(receivers);
-		try {
+		try
+		{
 			Global.getMessageManager().post(msg);
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			logger.log(Level.INFO, "Error while sending message.", e);
 			return "{\"success\": false}";
 		}
@@ -186,17 +195,20 @@ public class RESTws {
 	@Path("/sendmsg")
 	public String sendMessage(String post)
 	{
-		String[] postArray = post.split("&");	
+		String[] postArray = post.split("&");
 		List<String> list = new ArrayList<>();
-		for(String params: postArray){			
+		for (String params : postArray)
+		{
 			String[] param = params.split("=");
-			if(param.length == 1){
-				list.add("");	
-			}else{
-				list.add(param[1]);	
-			}					
+			if (param.length == 1)
+			{
+				list.add("");
+			} else
+			{
+				list.add(param[1]);
+			}
 		}
-		String performative = list.get(0); 
+		String performative = list.get(0);
 		String senderAgent = list.get(1);
 		String recievers = list.get(2);
 		String replyToAgent = list.get(3);
@@ -208,8 +220,8 @@ public class RESTws {
 		String conversationId = list.get(9);
 		String replyWith = list.get(10);
 		String replyBy = list.get(11);
-		
-		Performative p = Performative.valueOf(performative);		
+
+		Performative p = Performative.valueOf(performative);
 		ACLMessage msg = new ACLMessage(p);
 		// TODO : module, ejbName, runtimeName
 		String[] sparts = senderAgent.split("%2F");
@@ -218,7 +230,8 @@ public class RESTws {
 		// TODO : module, ejbName, runtimeName
 		Set<AID> receivers = new HashSet<AID>();
 		String[] allAgents = recievers.split("%2C");
-		for (String agent : allAgents) {
+		for (String agent : allAgents)
+		{
 			String[] parts = agent.split("%40");
 			String module = parts[0];
 			String ejbName = parts[1];
@@ -231,31 +244,40 @@ public class RESTws {
 		String[] replyParts = replyToAgent.split("%2F");
 		AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
 		msg.setReplyTo(replyTo);
-		msg.setContent(content);	
-		if(!language.equals("")){
+		msg.setContent(content);
+		if (!language.equals(""))
+		{
 			msg.setLanguage(language);
 		}
-		if(!encoding.equals("")){
-			msg.setEncoding(encoding);			
+		if (!encoding.equals(""))
+		{
+			msg.setEncoding(encoding);
 		}
-		if(!ontology.equals("")){
+		if (!ontology.equals(""))
+		{
 			msg.setOntology(ontology);
 		}
-		if(!protocol.equals("")){
+		if (!protocol.equals(""))
+		{
 			msg.setProtocol(protocol);
 		}
-		if(!conversationId.equals("")){
+		if (!conversationId.equals(""))
+		{
 			msg.setConversationId(conversationId);
 		}
-		if(!replyWith.equals("")){
+		if (!replyWith.equals(""))
+		{
 			msg.setReplyWith(replyWith);
 		}
-		if(!replyBy.equals("")){
+		if (!replyBy.equals(""))
+		{
 			msg.setReplyBy(Long.valueOf(replyBy));
-		}		
-		try {
+		}
+		try
+		{
 			Global.getMessageManager().post(msg);
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			logger.log(Level.INFO, "Error while sending message.", e);
 			return "{\"success\": false}";
 		}
@@ -266,11 +288,12 @@ public class RESTws {
 	@POST
 	@Consumes("multipart/form-data")
 	@Path("/deployagent")
-	public Response deployAgent(@MultipartForm MyMultipartForm form) {
+	public Response deployAgent(@MultipartForm MyMultipartForm form)
+	{
 		String output;
-		try {
-			URL location = RESTws.class.getProtectionDomain().getCodeSource()
-					.getLocation();
+		try
+		{
+			URL location = RESTws.class.getProtectionDomain().getCodeSource().getLocation();
 			System.out.println(location.getFile());
 			String folderurl = location.toString().substring(5) + "/tmp/";
 			String fileName = folderurl + form.getMasternodeaddress() + "_"
@@ -281,7 +304,8 @@ public class RESTws {
 			Deployment deployment = new Deployment(form.getMasternodeaddress());
 			deployment.deploy(form.getApplicationname(), file);
 			return Response.status(200).entity(output).build();
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			output = "Error";
 			logger.log(Level.INFO, "Error while deploying agent.", e);
 			return Response.status(400).entity(output).build();
@@ -289,25 +313,27 @@ public class RESTws {
 
 	}
 
-	private void saveFile(InputStream uploadedInputStream, String folderurl,
-			String serverLocation) {
+	private void saveFile(InputStream uploadedInputStream, String folderurl, String serverLocation)
+	{
 
-		try {
+		try
+		{
 			new File(folderurl).mkdirs();
 
-			OutputStream outpuStream = new FileOutputStream(new File(
-					serverLocation));
+			OutputStream outpuStream = new FileOutputStream(new File(serverLocation));
 			int read = 0;
 			byte[] bytes = new byte[1024];
 
 			outpuStream = new FileOutputStream(new File(serverLocation));
-			while ((read = uploadedInputStream.read(bytes)) != -1) {
+			while ((read = uploadedInputStream.read(bytes)) != -1)
+			{
 				outpuStream.write(bytes, 0, read);
 			}
 			outpuStream.flush();
 			outpuStream.close();
-		} catch (IOException e) {
-			logger.log(Level.INFO, "Error while saving file - [" + folderurl + "] .", e);			
+		} catch (IOException e)
+		{
+			logger.log(Level.INFO, "Error while saving file - [" + folderurl + "] .", e);
 		}
 	}
 
