@@ -42,7 +42,6 @@ public final class AID implements Serializable, Matchable<AID>
 	private final String module;
 	private final String ejbName;
 	private final String runtimeName;
-	private final String className;
 	private final String str; // string representation
 
 	public AID(String module, String ejbName, String runtimeName)
@@ -50,7 +49,6 @@ public final class AID implements Serializable, Matchable<AID>
 		this.module = module;
 		this.ejbName = ejbName;
 		this.runtimeName = runtimeName;
-		className = ejbName.replace('_', '.');
 		if (runtimeName == null)
 			str = module + "/" + ejbName;
 		else
@@ -60,11 +58,6 @@ public final class AID implements Serializable, Matchable<AID>
 	public String getModule()
 	{
 		return module;
-	}
-
-	public String getClassName()
-	{
-		return className;
 	}
 
 	@Override

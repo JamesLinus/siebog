@@ -35,7 +35,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_agents_pairs_Receiver")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class Receiver extends Agent

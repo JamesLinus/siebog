@@ -43,7 +43,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_agents_pairs_Sender")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class Sender extends Agent
@@ -61,7 +61,7 @@ public class Sender extends Agent
 	protected void onInit(Serializable... args)
 	{
 		myIndex = Integer.parseInt(args[0].toString());
-		receiver = new AID(Global.SERVER, Global.getEjbName(Receiver.class), "R" + myIndex);
+		receiver = new AID(Global.SERVER, "Receiver", "R" + myIndex);
 		numIterations = Integer.parseInt(args[1].toString());
 		// create message content
 		int contentLength = Integer.parseInt(args[2].toString());

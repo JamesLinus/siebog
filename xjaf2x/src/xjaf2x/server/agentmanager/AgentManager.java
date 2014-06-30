@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
@@ -106,13 +105,23 @@ public class AgentManager implements AgentManagerI
 	{
 		try
 		{
-			Class<?> cls = Class.forName(aid.getClassName());
 			// build the JNDI lookup string
 			final String view = AgentI.class.getName();
-			String jndiName = String.format("ejb:/%s//%s!%s", aid.getModule(), aid.getEjbName(), view);
-			if (cls.getAnnotation(Stateful.class) != null)
-				jndiName += "?stateful";
-			AgentI agent = (AgentI) jndiContext.lookup(jndiName);
+			String jndiNameStateless = String.format("ejb:/%s//%s!%s", aid.getModule(), aid.getEjbName(), view);
+			String jndiNameStateful = jndiNameStateless + "?stateful";
+			
+			AgentI agent = null;
+			try
+			{
+				agent = (AgentI) jndiContext.lookup(jndiNameStateful);
+			} catch (NamingException ex)
+			{
+				final Throwable cause = ex.getCause();
+				if (cause == null || !(cause instanceof IllegalStateException))
+					throw ex;
+				agent = (AgentI) jndiContext.lookup(jndiNameStateless);
+			}
+			
 			// the order of the next two statements matters. if we call init first and the agent
 			// sends a message from there, it sometimes happens that the reply arrives before we
 			// register the AID. also some agents might wish to terminate themselves inside init.

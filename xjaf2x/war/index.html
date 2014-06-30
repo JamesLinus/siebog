@@ -163,6 +163,13 @@
 
 <script type="text/javascript">
 
+	function trimAgentPath(agentPath) {
+		var len1 = agentPath.length - 1;
+    	if (agentPath.lastIndexOf("_") == len1)
+    		agentPath = agentPath.substring(0, len1);
+    	return agentPath;
+	}
+
 	function getAllFamilies()
 	{
 		$("#families-table").empty();
@@ -241,7 +248,7 @@
 					    }
 					    else
 					   	{
-					    	$("#families-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="selectedfamily" value="' + (agentPath + "_" + node.model.id) + '" style="margin-right:5px;"/>' + node.model.id + '</td></tr>');
+					    	$("#families-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="selectedfamily" value="' + (trimAgentPath(agentPath) + node.model.id) + '" style="margin-right:5px;"/>' + node.model.id + '</td></tr>');
 					    	lastLevel = node.model.level;
 					   	}
 				    }
@@ -334,7 +341,7 @@
 					    }
 					    else
 					   	{
-					    	$("#running-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="checkbox" name="selectedagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "@" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>" + node.model.id.split('/')[1] + "</b>" + '<a href="javascript:stopAgent(\'' + (deletePath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1])  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
+					    	$("#running-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="checkbox" name="selectedagent" value="' + (trimAgentPath(agentPath) + node.model.id.split('/')[0] + "@" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>" + node.model.id.split('/')[1] + "</b>" + '<a href="javascript:stopAgent(\'' + (deletePath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1])  + '\');" class="btn btn-danger btn-small" style="float:right"><i class="btn-icon-only icon-remove"> </i></a></td></tr>');
 					    	lastLevel = node.model.level;
 					   	}
 				    }
@@ -366,7 +373,7 @@
 			url: "rest/remove/" + agent,
 			dataType: "json",
 			success: function (data) 
-			{;
+			{
 				getRunningAgents();
 			}
 		 });

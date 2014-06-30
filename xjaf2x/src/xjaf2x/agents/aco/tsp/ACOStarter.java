@@ -36,25 +36,25 @@ import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
-@Stateless(name = "xjaf2x_agents_aco_tsp_Starter")
+@Stateless
 @Remote(AgentI.class)
-public class Starter extends Agent
+public class ACOStarter extends Agent
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(Starter.class.getName());
+	private static final Logger logger = Logger.getLogger(ACOStarter.class.getName());
 
 	@Override
 	protected void onInit(Serializable... args)
 	{
 		logger.fine("Starter agent running.");
 
-		AID mapAid = new AID(Global.SERVER, Global.getEjbName(Map.class), "Map");
+		AID mapAid = new AID(Global.SERVER, "Map", "Map");
 		agm.start(mapAid, args[1]);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i)
 		{
-			AID aid = new AID(Global.SERVER, Global.getEjbName(Ant.class), "Ant" + i);
+			AID aid = new AID(Global.SERVER, "Ant", "Ant" + i);
 			agm.start(aid);
 		}
 

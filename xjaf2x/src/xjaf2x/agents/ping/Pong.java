@@ -33,7 +33,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_agents_ping_Pong")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class Pong extends Agent

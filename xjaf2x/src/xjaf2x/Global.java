@@ -141,9 +141,4 @@ public abstract class Global
 		System.out.println("XJAF v" + VERSION);
 		System.out.println("-------------------------------------------------------------");
 	}
-	
-	public static String getEjbName(Class<?> agentClass)
-	{
-		return agentClass.getName().replace('.', '_');
-	}
 }

@@ -29,8 +29,6 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import xjaf2x.Global;
-import xjaf2x.agents.pairs.Receiver;
-import xjaf2x.agents.pairs.Sender;
 import xjaf2x.server.agentmanager.AID;
 import xjaf2x.server.agentmanager.AgentManagerI;
 import xjaf2x.server.config.Xjaf2xCluster;
@@ -43,7 +41,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class Starter
+public class PairsStarter
 {
 
 	public static void main(String[] args) throws NamingException, IOException,
@@ -71,10 +69,10 @@ public class Starter
 		for (int i = 0; i < numPairs; i++)
 		{
 			// receiver
-			AID aid = new AID(Global.SERVER, Global.getEjbName(Receiver.class), "R" + i);
+			AID aid = new AID(Global.SERVER, "Receiver", "R" + i);
 			agm.start(aid, primeLimit, numIterations);
 			// sender
-			aid = new AID(Global.SERVER, Global.getEjbName(Sender.class), "S" + i);
+			aid = new AID(Global.SERVER, "Sender", "S" + i);
 			agm.start(aid, i, numIterations, contentLength, addr);
 			senders.add(aid);
 		}

@@ -42,7 +42,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
-@Stateful(name = "xjaf2x_agents_aco_tsp_Ant")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class Ant extends Agent
@@ -93,7 +93,7 @@ public class Ant extends Agent
 	@Override
 	protected void onInit(Serializable... args)
 	{
-		AID mapAidPattern = new AID(null, Global.getEjbName(Map.class), null);
+		AID mapAidPattern = new AID(null, "Map", null);
 		mapAID = agm.getRunning(mapAidPattern).get(0);
 
 		ACLMessage message = new ACLMessage();
@@ -260,7 +260,7 @@ public class Ant extends Agent
 			{
 				phase = 6;
 				// when this ant is done, create another one
-				AID newAnt = new AID(Global.SERVER, Global.getEjbName(Ant.class), "Ant"
+				AID newAnt = new AID(Global.SERVER, "Ant", "Ant"
 						+ myAid.hashCode() + System.currentTimeMillis());
 				agm.start(newAnt);
 				agm.stop(myAid);

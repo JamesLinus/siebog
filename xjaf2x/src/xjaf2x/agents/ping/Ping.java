@@ -35,7 +35,7 @@ import xjaf2x.server.messagemanager.fipaacl.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful(name = "xjaf2x_agents_ping_Ping")
+@Stateful
 @Remote(AgentI.class)
 @Clustered
 public class Ping extends Agent 
@@ -50,7 +50,7 @@ public class Ping extends Agent
 			logger.info("Ping @ [" + getNodeName() + "]");
 			// send a request to the Pong agent		
 			String pongName = msg.getContent().toString();
-			AID pongAid = new AID(Global.SERVER, Global.getEjbName(Pong.class), pongName);
+			AID pongAid = new AID(Global.SERVER, "Pong", pongName);
 			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 			pongMsg.setSender(myAid);
 			pongMsg.addReceiver(pongAid);
