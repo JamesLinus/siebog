@@ -333,7 +333,7 @@
 		
 		jQuery.ajax({
 			 type: "GET",
-			 url: "rest/getrunning",
+			 url: "rest/agm/getrunning",
 			 dataType: "json",
 			 success: function (data)
 			 {				 
@@ -431,7 +431,7 @@
 		$("#performatives-list").empty();
 		jQuery.ajax({
 			 type: "GET",
-			 url: "rest/getperformatives",
+			 url: "rest/msm/getperformatives",
 			 dataType: "json",
 			 contentType: "application/json; charset=utf-8", 
 			 success: function (data)
@@ -461,7 +461,7 @@
 		{
 			jQuery.ajax({
 				type: "POST",
-				url: "rest/sendmsg",
+				url: "rest/msm/postmsg",
 				dataType: "json",
 				data : { 'performative': $('select[name=selectedperformative]').val(), 'senderAgent': $('input[name=senderagent]:checked').val(), 'recievers' : receivers, 'replyToAgent': $('input[name=replytoagent]:checked').val(), 
 					 'content': $('#content').val(), 'language':  $('#language').val(), 'encoding':  $('#encoding').val(), 'ontology':  $('#ontology').val(), 'protocol':  $('#protocol').val(), 'conversationId':  $('#conversationId').val(),

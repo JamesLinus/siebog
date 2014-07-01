@@ -29,12 +29,12 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import xjaf2x.Global;
-import xjaf2x.server.agentmanager.AID;
-import xjaf2x.server.agentmanager.AgentManagerI;
+import xjaf2x.server.agm.AID;
+import xjaf2x.server.agm.AgentManagerI;
 import xjaf2x.server.config.Xjaf2xCluster;
-import xjaf2x.server.messagemanager.MessageManagerI;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
-import xjaf2x.server.messagemanager.fipaacl.Performative;
+import xjaf2x.server.msm.MessageManagerI;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
+import xjaf2x.server.msm.fipa.acl.Performative;
 
 /**
  * Entry point for the Sender-Receiver case study.

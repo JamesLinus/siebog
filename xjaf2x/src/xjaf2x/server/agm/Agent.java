@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agentmanager;
+package xjaf2x.server.agm;
 
 import java.io.Serializable;
 import java.util.concurrent.BlockingQueue;
@@ -36,8 +36,8 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.naming.NamingException;
 import xjaf2x.Global;
-import xjaf2x.server.messagemanager.MessageManagerI;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.msm.MessageManagerI;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
  * Base class for all agents.

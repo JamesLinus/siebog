@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agentmanager;
+package xjaf2x.server.agm;
 
 import java.io.Serializable;
 import java.util.ArrayList;

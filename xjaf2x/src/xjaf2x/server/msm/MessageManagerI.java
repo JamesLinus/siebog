@@ -18,9 +18,9 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.messagemanager;
+package xjaf2x.server.msm;
 
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
  * Remote interface for the message manager.

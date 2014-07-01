@@ -18,12 +18,12 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.agentmanager.jason;
+package xjaf2x.server.agm.jason;
 
 import jason.asSyntax.Literal;
 import java.util.List;
 import java.util.Map;
-import xjaf2x.server.agentmanager.AgentI;
+import xjaf2x.server.agm.AgentI;
 
 /**
  * Work in progres...

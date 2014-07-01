@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.connectionmanager;
+package xjaf2x.server.cnm;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

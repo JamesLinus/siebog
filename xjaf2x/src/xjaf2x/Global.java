@@ -35,12 +35,12 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import xjaf2x.server.agentmanager.AID;
-import xjaf2x.server.agentmanager.AgentI;
-import xjaf2x.server.agentmanager.AgentManager;
-import xjaf2x.server.agentmanager.AgentManagerI;
-import xjaf2x.server.messagemanager.MessageManager;
-import xjaf2x.server.messagemanager.MessageManagerI;
+import xjaf2x.server.agm.AID;
+import xjaf2x.server.agm.AgentI;
+import xjaf2x.server.agm.AgentManager;
+import xjaf2x.server.agm.AgentManagerI;
+import xjaf2x.server.msm.MessageManager;
+import xjaf2x.server.msm.MessageManagerI;
 
 /**
  * Global constants and utility functions.

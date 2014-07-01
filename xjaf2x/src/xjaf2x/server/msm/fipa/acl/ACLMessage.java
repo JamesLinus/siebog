@@ -18,12 +18,12 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.messagemanager.fipaacl;
+package xjaf2x.server.msm.fipa.acl;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import xjaf2x.server.agentmanager.AID;
+import xjaf2x.server.agm.AID;
 
 /**
  * Represents a FIPA ACL message. Refer to <a

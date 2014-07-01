@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import xjaf2x.Global;
-import xjaf2x.server.agentmanager.AID;
-import xjaf2x.server.agentmanager.Agent;
-import xjaf2x.server.agentmanager.AgentI;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.agm.AID;
+import xjaf2x.server.agm.Agent;
+import xjaf2x.server.agm.AgentI;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
  * Starter agent, entry point.

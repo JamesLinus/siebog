@@ -18,10 +18,10 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.messagemanager.protocols.cnet;
+package xjaf2x.server.msm.fipa.protocols;
 
-import xjaf2x.server.agentmanager.Agent;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.agm.Agent;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
  * Base class for <a

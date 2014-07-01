@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.messagemanager.fipaacl;
+package xjaf2x.server.msm.fipa.acl;
 
 /**
  * Represents FIPA ACL message performatives.

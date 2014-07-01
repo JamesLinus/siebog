@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.messagemanager;
+package xjaf2x.server.msm;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +30,9 @@ import javax.ejb.Stateless;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
 import xjaf2x.Global;
-import xjaf2x.server.agentmanager.AID;
-import xjaf2x.server.agentmanager.AgentI;
-import xjaf2x.server.messagemanager.fipaacl.ACLMessage;
+import xjaf2x.server.agm.AID;
+import xjaf2x.server.agm.AgentI;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
  * Default message manager implementation.

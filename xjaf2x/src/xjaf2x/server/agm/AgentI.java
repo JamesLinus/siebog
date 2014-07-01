@@ -18,14 +18,39 @@
  * and limitations under the License.
  */
 
-package xjaf2x.server.connectionmanager;
+package xjaf2x.server.agm;
+
+import java.io.Serializable;
+import xjaf2x.server.msm.fipa.acl.ACLMessage;
 
 /**
- * Remote interface for the connection manager.
- *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Remote interface for all agents.
+ * 
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface ConnectionManagerI
+public interface AgentI extends Serializable
 {
+	AID getAid();
 
+	/**
+	 * Returns the name of the agent's host node.
+	 * 
+	 * @return
+	 */
+	String getNodeName();
+	
+	/**
+	 * The remaining methods are for internal purposes only. You should never directly call or
+	 * override any of them.
+	 */
+	
+	void init(AID aid, Serializable... args) throws Exception;
+	
+	void handleMessage(ACLMessage msg);
+
+	void processNextMessage();
+	
+	void terminate();
+	
+	void remove();
 }

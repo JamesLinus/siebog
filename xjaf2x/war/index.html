@@ -175,7 +175,7 @@
 		$("#families-table").empty();
 		jQuery.ajax({
 			 type: "GET",
-			 url: "rest/getfamilies",
+			 url: "rest/agm/getdeployed",
 			 dataType: "json",
 			 success: function (data)
 			 {
@@ -263,7 +263,7 @@
 		
 		jQuery.ajax({
 			 type: "GET",
-			 url: "rest/getrunning",
+			 url: "rest/agm/getrunning",
 			 dataType: "json",
 			 success: function (data)
 			 {				 
@@ -355,7 +355,7 @@
 		$("#performatives-list").empty();
 		jQuery.ajax({
 			 type: "GET",
-			 url: "rest/getperformatives",
+			 url: "rest/msm/getperformatives",
 			 dataType: "json",
 			 success: function (data)
 			 {
@@ -385,7 +385,7 @@
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "rest/create/" + $('input[name=selectedfamily]:checked').val() + "/" + $('#agentnameinput').val(),
+				url: "rest/agm/start/" + $('input[name=selectedfamily]:checked').val() + "/" + $('#agentnameinput').val(),
 				dataType: "json",
 				success: function (data)
 				{
@@ -415,7 +415,7 @@
 		{
 			jQuery.ajax({
 				type: "GET",
-				url: "rest/sendquickmsg/" + selectedagents + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
+				url: "rest/msm/postquickmsg/" + selectedagents + "/" + $('select[name=selectedperformative]').val() + "/" + $('#contentmessageinput').val(),
 				dataType: "json",
 				success: function (data)
 				{
