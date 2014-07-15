@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Radigost Examples - HelloWorld</title>
+<script type="text/javascript" src="../../client/fipaacl.js"></script>
+<script type="text/javascript" src="../../client/radigost.js"></script>
+<script type="text/javascript">
+	// define listener object 
+	function HelloWorldListener() {
+	};
+	HelloWorldListener.prototype = new AgentListener();
+	HelloWorldListener.prototype.onStart = function(aid) {
+		alert("Agent {" + aid.value + "} started");
+	};
+	HelloWorldListener.prototype.onStep = function(aid, msg) {
+		alert("Agent {" + aid.value + "} says:\n" + msg);
+	};
+
+	function test() {
+		var aid = radigost.runAgent("HelloWorld", "HelloWorld.js", new HelloWorldListener());
+
+		var name = window.prompt("Your name?", "Radigost");
+		var msg = new ACLMessage(ACLPerformative.INFORM);
+		msg.content = name;
+		msg.receivers.push(aid);
+		radigost.post(msg);
+	}
+</script>
+</head>
+<body>
+	<div id="start">
+		<a href="#" onclick="test()">Start</a>
+	</div>
+	<div id="main"></div>
+</body>
+</html>
