@@ -1,7 +1,28 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements. See the NOTICE file 
+ * distributed with this work for additional information regarding 
+ * copyright ownership. The ASF licenses this file to you under 
+ * the Apache License, Version 2.0 (the "License"); you may not 
+ * use this file except in compliance with the License. You may 
+ * obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, 
+ * software distributed under the License is distributed on an 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * either express or implied. 
+ * 
+ * See the License for the specific language governing permissions 
+ * and limitations under the License.
+ */
+
 package dnars
 
 import scala.util.parsing.combinator.RegexParsers
 import dnars.base.{ AtomicTerm, CompoundTerm }
+import dnars.base.AtomicTerm._
 import dnars.base.{ Statement, Term }
 import dnars.base.Connector.Product
 import dnars.base.Copula._
@@ -10,6 +31,7 @@ import dnars.base.Truth
 import dnars.base.Truth
 import dnars.base.Truth
 import dnars.base.Connector._
+import dnars.base.CompoundTerm
 
 /**
  * Creates Statement objects from input strings.
@@ -21,14 +43,21 @@ object StatementParser extends RegexParsers {
 	
 	def atomicTerm: Parser[AtomicTerm] = """\w+""".r ^^ { AtomicTerm(_) }
 	
-	def connector: Parser[String] = (Product | ExtImage | IntImage)
+	def image: Parser[String] = (ExtImage | IntImage)
+	def connector: Parser[String] = (Product | image)
 	
-	def compoundTerm: Parser[CompoundTerm] = (prefixCompTerm | infixCompTerm)
+	def compoundTerm: Parser[CompoundTerm] = (prefixCompTerm | infixCompTerm | imgCompTerm1 | imgCompTerm2)
 	def prefixCompTerm: Parser[CompoundTerm] = "(" ~ connector ~ atomicTerm ~ rep1(atomicTerm) ~ ")" ^^ {
 		case "(" ~ con ~ t ~ list ~ ")" => CompoundTerm(con, t :: list)
 	}
 	def infixCompTerm: Parser[CompoundTerm] = "(" ~ atomicTerm ~ rep1(connector ~ atomicTerm) ~ ")" ^^ {
 		case "(" ~ t ~ list ~ ")" => CompoundTerm(list.head._1, t :: (for (x <- list) yield x._2))
+	}
+	def imgCompTerm1: Parser[CompoundTerm] = "(" ~ image ~ atomicTerm ~ "*" ~ atomicTerm ~ ")" ^^ {// ("*" ~ atomicTerm | atomicTerm ~ "*") ~ ")" ^^ {
+		case "(" ~ img ~ rel ~ "*" ~ t ~ ")" => CompoundTerm(img, List(rel, Placeholder, t))
+	}
+	def imgCompTerm2: Parser[CompoundTerm] = "(" ~ image ~ atomicTerm ~ atomicTerm ~ "*" ~ ")" ^^ {// ("*" ~ atomicTerm | atomicTerm ~ "*") ~ ")" ^^ {
+		case "(" ~ img ~ rel ~ t ~ "*" ~ ")" => CompoundTerm(img, List(rel, t, Placeholder))
 	}
 	
 	def term: Parser[Term] = (atomicTerm | compoundTerm)
