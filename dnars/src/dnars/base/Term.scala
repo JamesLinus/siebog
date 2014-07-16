@@ -27,8 +27,10 @@ import java.security.MessageDigest
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-abstract class Term {
+abstract class Term extends Comparable[Term] {
 	val id: String
+	
+	override def compareTo(other: Term): Int = id.compareTo(other.id)
 	
 	def complexity: Int
 	
@@ -40,7 +42,7 @@ abstract class Term {
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-case class AtomicTerm(override val id: String) extends Term  {
+case class AtomicTerm(override val id: String) extends Term {
 	override def complexity = 1
 }
 

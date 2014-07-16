@@ -38,7 +38,7 @@ public class ForwardInferenceTest
 		DNarsGraph graph = createGraph();
 		try
 		{
-			Statement[] kb = createAndAdd(graph,
+			Statement[] kb = create(
 				"cat -> animal (0.82, 0.91)",
 				"water -> liquid (1.0, 0.9)",
 				"tiger -> cat (0.5, 0.7)",
@@ -46,7 +46,10 @@ public class ForwardInferenceTest
 				"feline ~ cat (0.76, 0.83)"
 			);
 			for (Statement st: kb)
+			{
+				graph.statements().add(st);
 				ForwardInference.deduction_analogy(graph, st);
+			}
 			Statement[] res = {
 				StatementParser.apply("tiger -> animal " + kb[0].truth().deduction(kb[2].truth())),
 				StatementParser.apply("feline -> animal " + kb[0].truth().analogy(kb[4].truth(), false))
@@ -67,15 +70,18 @@ public class ForwardInferenceTest
 		DNarsGraph graph = createGraph();
 		try
 		{
-			Statement[] kb = createAndAdd(graph,
-				"developer -> job (1.0, 0.9)",
-				"cat ~ feline (1.0, 0.9)",
-				"tiger -> cat (1.0, 0.9)",
-				"water -> liquid (1.0, 0.9)",
-				"lion ~ cat (1.0, 0.9)"
+			Statement[] kb = create(
+				"developer -> job (0.6, 0.77)",
+				"cat ~ feline (0.33, 0.51)",
+				"tiger -> cat (0.95, 0.83)",
+				"water -> liquid (0.63, 0.72)",
+				"lion ~ cat (0.85, 0.48)"
 			);
 			for (Statement st: kb)
+			{
+				graph.statements().add(st);
 				ForwardInference.analogy_resemblance(graph, st);
+			}
 			Statement[] res = {
 				StatementParser.apply("tiger -> feline " + kb[1].truth().analogy(kb[2].truth(), true)),
 				StatementParser.apply("lion ~ feline " + kb[1].truth().resemblance(kb[4].truth()))
@@ -96,22 +102,23 @@ public class ForwardInferenceTest
 		DNarsGraph graph = createGraph();
 		try
 		{
-			Statement[] kb = createAndAdd(graph,
+			Statement[] kb = create(
 				"tiger -> cat (1.0, 0.9)",
-				"water -> liquid (1.0, 0.9)",
-				"developer -> job (1.0, 0.9)",
-				"lion -> cat (1.0, 0.9)",
-				"feline ~ cat (1.0, 0.9)"
+				"water -> liquid (0.68, 0.39)",
+				"developer -> job (0.93, 0.46)",
+				"lion -> cat (0.43, 0.75)",
+				"feline ~ cat (0.49, 0.52)"
 			);
 			for (Statement st: kb)
+			{
+				graph.statements().add(st);
 				ForwardInference.abduction_comparison_analogy(graph, st);
+			}
 			Statement[] res = {
 				StatementParser.apply("lion -> tiger " + kb[0].truth().abduction(kb[3].truth())),
 				StatementParser.apply("lion ~ tiger " + kb[0].truth().comparison(kb[3].truth())),
-				StatementParser.apply("lion -> feline " + kb[0].truth().analogy(kb[4].truth(), false)),
 				StatementParser.apply("tiger -> feline " + kb[0].truth().analogy(kb[4].truth(), false)),
-				StatementParser.apply("tiger -> lion " + kb[3].truth().abduction(kb[0].truth())),
-				StatementParser.apply("tiger ~ lion " + kb[3].truth().comparison(kb[0].truth()))
+				StatementParser.apply("lion -> feline " + kb[3].truth().analogy(kb[4].truth(), false))
 			};
 			assertGraph(graph, kb, res);
 		} finally
@@ -126,12 +133,15 @@ public class ForwardInferenceTest
 		DNarsGraph graph = createGraph();
 		try
 		{
-			Statement[] kb = createAndAdd(graph,
+			Statement[] kb = create(
 				"(cat x bird) -> eat (1.0, 0.9)",
 				"tiger -> cat (1.0, 0.9)"
 			);
 			for (Statement st: kb)
+			{
+				graph.statements().add(st);
 				ForwardInference.deduction_analogy(graph, st);
+			}
 	
 			Truth ded = kb[0].truth().deduction(kb[1].truth());
 			Statement[] res = { 

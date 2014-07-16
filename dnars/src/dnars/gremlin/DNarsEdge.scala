@@ -33,7 +33,7 @@ import dnars.base.Truth
 class DNarsEdge(override val edge: Edge) extends ScalaEdge(edge) {
 	def copula: String = getLabel
 	def truth: Truth = getProperty[Truth]("truth")
-	def truth_=(value: Truth): Unit = setProperty("truth", truth)
+	def truth_=(value: Truth): Unit = setProperty("truth", value)
 }
 
 object DNarsEdge {

@@ -42,6 +42,14 @@ public class TestUtils
 		return st;
 	}
 	
+	public static Statement[] create(String... statements) 
+	{
+		Statement[] st = new Statement[statements.length];
+		for (int i = 0; i < statements.length; i++)
+			st[i] = StatementParser.apply(statements[i]);
+		return st;
+	}
+	
 	public static void assertGraph(DNarsGraph graph, Statement[] kb, Statement[] res)
 	{
 		List<Statement> all = new ArrayList<>(kb.length + res.length);

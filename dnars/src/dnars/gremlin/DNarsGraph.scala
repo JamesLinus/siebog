@@ -42,6 +42,11 @@ import dnars.base.AtomicTerm
  */
 class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
 	val statements = new StatementManager(this)
+	
+	def getV(term: Term): Option[Vertex] = {
+		val vertex = v(term)
+		if (vertex != null) Some(vertex) else None
+	}
 
 	def getOrAddV(term: Term): Vertex = {
 		val existing = v(term)
