@@ -96,7 +96,7 @@ public abstract class Global
 	public static Cache<AID, AgentI> getRunningAgents() throws NamingException
 	{
 		CacheContainer container = (CacheContainer) getContext().lookup(
-				"java:jboss/infinispan/container/ejb");
+				"java:jboss/infinispan/container/xjaf2x-cache");
 		Cache<AID, AgentI> cache = container.getCache("running-agents");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");

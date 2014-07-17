@@ -20,13 +20,13 @@
 
 package dnars.inference
 	
-import dnars.gremlin.DNarsGraph
+import dnars.graph.DNarsGraph
 import dnars.base.Statement
 import dnars.base.AtomicTerm._
 import dnars.base.Copula._
-import dnars.gremlin.DNarsVertex
+import dnars.graph.DNarsVertex
 import com.tinkerpop.blueprints.Direction
-import dnars.gremlin.DNarsEdge
+import dnars.graph.DNarsEdge
 import dnars.base.Term
 import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
 import com.tinkerpop.blueprints.Vertex

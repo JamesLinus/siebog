@@ -8,7 +8,7 @@
 			address: network address of this node, required
 			master: address of the master node, required if mode = slave
 	 -->
-	<server mode="MASTER" address="localhost"  />
+	<server mode="MASTER" address="172.16.238.1"  />
 	
 	<!-- 
 		if mode = master, comma-separated list of slave nodes (if any) 

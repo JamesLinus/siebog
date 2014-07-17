@@ -20,13 +20,16 @@
 
 package xjaf2x.agents.aco.tsp;
 
+import java.io.Serializable;
+
 /**
  * Represents a single graph vertex.
  *
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  */
-public class Node
+public class Node implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	private float x;
 	private float y;
 	

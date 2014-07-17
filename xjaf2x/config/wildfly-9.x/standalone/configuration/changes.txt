@@ -1,0 +1,49 @@
+=== extensions ===
+<extension module="org.jboss.as.clustering.jgroups"/>
+
+=== profile ===
+        <subsystem xmlns="urn:jboss:domain:jgroups:2.0" default-stack="udp">
+            <stack name="udp">
+                <transport type="UDP" socket-binding="jgroups-udp"/>
+                <protocol type="PING"/>
+                <protocol type="MERGE3"/>
+                <protocol type="FD_SOCK" socket-binding="jgroups-udp-fd"/>
+                <protocol type="FD_ALL"/>
+                <protocol type="VERIFY_SUSPECT"/>
+                <protocol type="pbcast.NAKACK2"/>
+                <protocol type="UNICAST3"/>
+                <protocol type="pbcast.STABLE"/>
+                <protocol type="pbcast.GMS"/>
+                <protocol type="UFC"/>
+                <protocol type="MFC"/>
+                <protocol type="FRAG2"/>
+                <protocol type="RSVP"/>
+            </stack>
+            <stack name="tcp">
+                <transport type="TCP" socket-binding="jgroups-tcp"/>
+                <protocol type="MPING" socket-binding="jgroups-mping"/>
+                <protocol type="MERGE2"/>
+                <protocol type="FD_SOCK" socket-binding="jgroups-tcp-fd"/>
+                <protocol type="FD"/>
+                <protocol type="VERIFY_SUSPECT"/>
+                <protocol type="pbcast.NAKACK2"/>
+                <protocol type="UNICAST3"/>
+                <protocol type="pbcast.STABLE"/>
+                <protocol type="pbcast.GMS"/>
+                <protocol type="MFC"/>
+                <protocol type="FRAG2"/>
+                <protocol type="RSVP"/>
+            </stack>
+        </subsystem>
+        
+=== socket-binding-group ===
+        <socket-binding name="jgroups-udp" port="55200" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45688" />
+        <socket-binding name="jgroups-udp-fd" port="54200" />
+        
+=== <subsystem infinispan ===
+            <cache-container name="xjaf2x-cache">
+                <transport lock-timeout="60000" />
+                <replicated-cache name="running-agents" mode="SYNC" start="EAGER" batching="true">
+                    <locking isolation="REPEATABLE_READ" />
+                </replicated-cache>
+            </cache-container>

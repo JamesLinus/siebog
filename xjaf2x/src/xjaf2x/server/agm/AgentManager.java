@@ -96,8 +96,8 @@ public class AgentManager implements AgentManagerI
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
-			runningAgents.remove(aid);
-			agent.terminate();
+			//runningAgents.remove(aid);
+			//agent.terminate();
 		}
 	}
 

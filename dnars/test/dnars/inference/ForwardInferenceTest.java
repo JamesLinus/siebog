@@ -20,12 +20,17 @@
 
 package dnars.inference;
 
+import static dnars.TestUtils.assertGraph;
+import static dnars.TestUtils.create;
+import static dnars.TestUtils.createGraph;
+import static dnars.TestUtils.invert;
 import org.junit.Test;
-import dnars.base.StatementParser;
-import static dnars.TestUtils.*;
+import scala.collection.mutable.ListBuffer;
 import dnars.base.Statement;
+import dnars.base.StatementParser;
 import dnars.base.Truth;
-import dnars.gremlin.DNarsGraph;
+import dnars.events.Event;
+import dnars.graph.DNarsGraph;
 
 public class ForwardInferenceTest
 {
@@ -45,10 +50,11 @@ public class ForwardInferenceTest
 				"developer ~ job (1.0, 0.9)",
 				"feline ~ cat (0.76, 0.83)"
 			);
+			ListBuffer<Event> events = new ListBuffer<>();
 			for (Statement st: kb)
 			{
-				graph.statements().add(st);
-				ForwardInference.deduction_analogy(graph, st);
+				graph.statements().add(st, events);
+				ForwardInference.deduction_analogy(graph, st, events);
 			}
 			Statement[] res = {
 				invert(kb[3]),
@@ -79,10 +85,11 @@ public class ForwardInferenceTest
 				"water -> liquid (0.63, 0.72)",
 				"lion ~ cat (0.85, 0.48)"
 			);
+			ListBuffer<Event> events = new ListBuffer<>();
 			for (Statement st: kb)
 			{
-				graph.statements().add(st);
-				ForwardInference.analogy_resemblance(graph, st);
+				graph.statements().add(st, events);
+				ForwardInference.analogy_resemblance(graph, st, events);
 			}
 			Statement st = StatementParser.apply("lion ~ feline " + kb[1].truth().resemblance(kb[4].truth()));
 			Statement[] res = {
@@ -115,10 +122,11 @@ public class ForwardInferenceTest
 				"lion -> cat (0.43, 0.75)",
 				"feline ~ cat (0.49, 0.52)"
 			);
+			ListBuffer<Event> events = new ListBuffer<>();
 			for (Statement st: kb)
 			{
-				graph.statements().add(st);
-				ForwardInference.abduction_comparison_analogy(graph, st);
+				graph.statements().add(st, events);
+				ForwardInference.abduction_comparison_analogy(graph, st, events);
 			}
 			Statement st = StatementParser.apply("lion ~ tiger " + kb[0].truth().comparison(kb[3].truth()));
 			Statement[] res = {
@@ -146,10 +154,11 @@ public class ForwardInferenceTest
 				"(cat x bird) -> eat (1.0, 0.9)",
 				"tiger -> cat (1.0, 0.9)"
 			);
+			ListBuffer<Event> events = new ListBuffer<>();
 			for (Statement st: kb)
 			{
-				graph.statements().add(st);
-				ForwardInference.deduction_analogy(graph, st);
+				graph.statements().add(st, events);
+				ForwardInference.deduction_analogy(graph, st, events);
 			}
 	
 			Truth ded = kb[0].truth().deduction(kb[1].truth());

@@ -20,34 +20,34 @@
 
 package xjaf2x.agents.aco.tsp;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import java.io.IOException;
+import javax.naming.NamingException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 import xjaf2x.Global;
 import xjaf2x.server.agm.AID;
-import xjaf2x.server.agm.Agent;
-import xjaf2x.server.agm.AgentI;
-import xjaf2x.server.msm.fipa.acl.ACLMessage;
+import xjaf2x.server.agm.AgentManagerI;
+import xjaf2x.server.config.Xjaf2xCluster;
 
 /**
- * Starter agent, entry point.
+ * Entry point for ACO example.
  * 
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
-@Stateless
-@Remote(AgentI.class)
-public class ACOStarter extends Agent
+public class ACOStarter 
 {
-	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(ACOStarter.class.getName());
-
-	@Override
-	protected void onInit(Serializable... args)
+	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException, SAXException
 	{
-		logger.fine("Starter agent running.");
-
+		if (args.length != 2)
+		{
+			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
+			return;
+		}
+		
+		Xjaf2xCluster.init(true);
+		
+		final AgentManagerI agm = Global.getAgentManager();
 		AID mapAid = new AID(Global.SERVER, "Map", "Map");
 		agm.start(mapAid, args[1]);
 
@@ -57,12 +57,5 @@ public class ACOStarter extends Agent
 			AID aid = new AID(Global.SERVER, "Ant", "Ant" + i);
 			agm.start(aid);
 		}
-
-		logger.fine("Starter done.");
-	}
-
-	@Override
-	public void onMessage(ACLMessage message)
-	{
 	}
 }

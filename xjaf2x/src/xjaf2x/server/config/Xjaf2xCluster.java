@@ -135,7 +135,7 @@ public class Xjaf2xCluster
 			final String id = "remote.connection." + addr;
 
 			p.put(id + ".host", str);
-			p.put(id + ".port", "4447");
+			p.put(id + ".port", "8080");
 			p.put(id + ".connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
 			p.put(id + ".username", Global.USERNAME);
 			p.put(id + ".password", Global.PASSWORD);

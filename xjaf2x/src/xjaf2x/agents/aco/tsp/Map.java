@@ -151,7 +151,7 @@ public class Map extends Agent
 	{
 		nodes = new ArrayList<>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader("/home/dejan/tmp/maps/" + fileName)))
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName)))
 		{
 			// skip preliminary info
 			for (int i = 0; i < 6; ++i)

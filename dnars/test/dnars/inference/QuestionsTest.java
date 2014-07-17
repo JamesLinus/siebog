@@ -29,7 +29,7 @@ import dnars.base.AtomicTerm;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
 import dnars.base.Term;
-import dnars.gremlin.DNarsGraph;
+import dnars.graph.DNarsGraph;
 
 public class QuestionsTest
 {
