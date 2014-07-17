@@ -18,20 +18,16 @@
  * and limitations under the License.
  */
 
-package dnars
+package dnars.base
 
 import scala.util.parsing.combinator.RegexParsers
-import dnars.base.{ AtomicTerm, CompoundTerm }
-import dnars.base.AtomicTerm._
-import dnars.base.{ Statement, Term }
+
+import dnars.base.AtomicTerm.Placeholder
+import dnars.base.Connector.ExtImage
+import dnars.base.Connector.IntImage
 import dnars.base.Connector.Product
-import dnars.base.Copula._
-import dnars.base.Copula
-import dnars.base.Truth
-import dnars.base.Truth
-import dnars.base.Truth
-import dnars.base.Connector._
-import dnars.base.CompoundTerm
+import dnars.base.Copula.Inherit
+import dnars.base.Copula.Similar
 
 /**
  * Creates Statement objects from input strings.

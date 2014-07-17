@@ -62,25 +62,46 @@ class Answer(val term: Term, val expectation: Double, val simplicity: Double) ex
 	}
 }
 
-object LocalInference {
+object Questions {
 	def answer(graph: DNarsGraph, question: Statement): Option[Term] = {
 		val copula = question.copula
-		if (question.subj == Question) {
+		if (question.subj == Question) { // ? -> P, ? ~ P
 			val result = answerForPredicate(graph, question.pred, copula)
-			if (result == None && copula == Similar) // similarity is reflexive
+			if (result == None && copula == Similar) // ? ~ P, reflexive
 				answerForSubject(graph, question.pred, copula)
 			else
 				result
 		}
-		else if (question.pred == Question) {
+		else if (question.pred == Question) { // S -> ?, S ~ ?
 			val result = answerForSubject(graph, question.subj, copula)
-			if (result == None && copula == Similar)
+			if (result == None && copula == Similar) // S ~ ?, reflexive
 				answerForPredicate(graph, question.subj, copula)
 			else
 				result
 		}
 		else
 			throw new IllegalArgumentException("Questions should have '?' as either the subject or the predicate")
+	}
+	
+	def exists(graph: DNarsGraph, question: Statement): Boolean = {
+		// both terms should exist
+		graph.getV(question.subj) match {
+			case None => false
+			case Some(s) =>
+				val subj: DNarsVertex = s
+				graph.getV(question.pred) match {
+					case None => false
+					case Some(pred) =>
+						val allEdges = subj.startPipe.as("x").outE
+						// if the question is a sim, we can traverse only over sim copulas
+						val allowedEdges = 
+							if (question.copula == Similar)
+								allEdges.filter(e => e.getLabel == Similar)
+							else
+								allEdges
+						allowedEdges.inV.loop("x", { lp => lp.getObject != pred }).hasNext
+				}
+		}
 	}
 	
 	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String): Option[Term] =

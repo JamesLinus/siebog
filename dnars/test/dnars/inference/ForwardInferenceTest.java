@@ -21,7 +21,7 @@
 package dnars.inference;
 
 import org.junit.Test;
-import dnars.StatementParser;
+import dnars.base.StatementParser;
 import static dnars.TestUtils.*;
 import dnars.base.Statement;
 import dnars.base.Truth;
@@ -51,6 +51,8 @@ public class ForwardInferenceTest
 				ForwardInference.deduction_analogy(graph, st);
 			}
 			Statement[] res = {
+				invert(kb[3]),
+				invert(kb[4]),
 				StatementParser.apply("tiger -> animal " + kb[0].truth().deduction(kb[2].truth())),
 				StatementParser.apply("feline -> animal " + kb[0].truth().analogy(kb[4].truth(), false))
 			};
@@ -82,9 +84,13 @@ public class ForwardInferenceTest
 				graph.statements().add(st);
 				ForwardInference.analogy_resemblance(graph, st);
 			}
+			Statement st = StatementParser.apply("lion ~ feline " + kb[1].truth().resemblance(kb[4].truth()));
 			Statement[] res = {
+				invert(kb[1]),
+				invert(kb[4]),
 				StatementParser.apply("tiger -> feline " + kb[1].truth().analogy(kb[2].truth(), true)),
-				StatementParser.apply("lion ~ feline " + kb[1].truth().resemblance(kb[4].truth()))
+				st,
+				invert(st)
 			};
 			assertGraph(graph, kb, res);
 		} finally
@@ -114,9 +120,12 @@ public class ForwardInferenceTest
 				graph.statements().add(st);
 				ForwardInference.abduction_comparison_analogy(graph, st);
 			}
+			Statement st = StatementParser.apply("lion ~ tiger " + kb[0].truth().comparison(kb[3].truth()));
 			Statement[] res = {
+				invert(kb[4]),
 				StatementParser.apply("lion -> tiger " + kb[0].truth().abduction(kb[3].truth())),
-				StatementParser.apply("lion ~ tiger " + kb[0].truth().comparison(kb[3].truth())),
+				st,
+				invert(st),
 				StatementParser.apply("tiger -> feline " + kb[0].truth().analogy(kb[4].truth(), false)),
 				StatementParser.apply("lion -> feline " + kb[3].truth().analogy(kb[4].truth(), false))
 			};

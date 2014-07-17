@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.tinkerpop.gremlin.scala.ScalaGraph;
+import dnars.base.Copula;
 import dnars.base.Statement;
+import dnars.base.StatementParser;
 import dnars.gremlin.DNarsGraph;
 
 public class TestUtils
@@ -83,5 +85,12 @@ public class TestUtils
 	public static dnars.gremlin.DNarsGraph createGraph()
 	{
 		return DNarsGraph.wrap(ScalaGraph.wrap(new TinkerGraph()));
+	}
+	
+	public static Statement invert(Statement st)
+	{
+		if (!st.copula().equals(Copula.Similar()))
+			throw new IllegalArgumentException("Only similarity statements can be inverted.");
+		return new Statement(st.pred(), Copula.Similar(), st.subj(), st.truth());
 	}
 }

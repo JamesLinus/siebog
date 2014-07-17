@@ -38,31 +38,42 @@ import com.tinkerpop.blueprints.Direction
 class StatementManager(val graph: DNarsGraph) {
 
 	def add(st: Statement): Unit = {
+		// TODO : when adding statements, consider that "S~P <=> S->P & P->S" and "S~P => S->P"
 		val existing = graph.getE(st)
 		existing match {
 			case Some(e) => // already exists, apply revision
 				val edge: DNarsEdge = e
 				val truth = edge.truth.revision(st.truth)
 				edge.truth = truth
-				// are there any structural transformations?
-				unpack(st) match {
-					case List(su1, su2) => 
-						val e1: DNarsEdge = graph.getE(su1).get
-						val e2: DNarsEdge = graph.getE(su2).get
-						e1.truth = truth
-						e2.truth = truth
-					case _ => pack(st) match {
-						case List(sp1, sp2) =>
-							val e1: DNarsEdge = graph.getE(sp1).get
-							val e2: DNarsEdge = graph.getE(sp2).get
+				if (st.copula == Similar) {
+					// update in the opposite direction as well
+					val invStat = Statement(st.pred, Similar, st.subj, st.truth)
+					val invEdge: DNarsEdge = graph.getE(invStat).get
+					invEdge.truth = truth
+				}
+				else {
+					// are there any structural transformations?
+					unpack(st) match {
+						case List(su1, su2) => 
+							val e1: DNarsEdge = graph.getE(su1).get
+							val e2: DNarsEdge = graph.getE(su2).get
 							e1.truth = truth
 							e2.truth = truth
-						case _ =>
+						case _ => pack(st) match {
+							case List(sp1, sp2) =>
+								val e1: DNarsEdge = graph.getE(sp1).get
+								val e2: DNarsEdge = graph.getE(sp2).get
+								e1.truth = truth
+								e2.truth = truth
+							case _ =>
+						}
 					}
 				}
 			case None =>
 				addE(st)
-				if (st.copula == Inherit) { 
+				if (st.copula == Similar)
+					addE(Statement(st.pred, Similar, st.subj, st.truth))
+				else {
 					// structural transformations?
 					val unpacked = unpackAndAdd(graph, st)
 					if (!unpacked)

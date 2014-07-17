@@ -25,15 +25,16 @@ import static dnars.TestUtils.createGraph;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import scala.Option;
-import dnars.StatementParser;
 import dnars.base.AtomicTerm;
+import dnars.base.Statement;
+import dnars.base.StatementParser;
 import dnars.base.Term;
 import dnars.gremlin.DNarsGraph;
 
-public class LocalInferenceTest
+public class QuestionsTest
 {
 	@Test
-	public void test1()
+	public void testAnswer()
 	{
 		DNarsGraph graph = createGraph();
 		try
@@ -56,9 +57,38 @@ public class LocalInferenceTest
 		}
 	}
 	
+	@Test
+	public void testTraversal()
+	{
+		DNarsGraph graph = createGraph();
+		try
+		{
+			createAndAdd(graph, // @formatter:off
+				"cat -> animal (1.0, 0.9)",
+				"mammal ~ animal (1.0, 0.9)",
+				"animal -> being (1.0, 0.9)"
+			); // @formatter:on
+			
+			assertPath(graph, "cat -> being", true);
+			assertPath(graph, "animal ~ mammal", true);
+			assertPath(graph, "cat -> mammal", true);
+			assertPath(graph, "cat ~ mammal", false);
+			assertPath(graph, "cat ~ being", false);
+		} finally
+		{
+			graph.shutdown();
+		}
+	}
+	
+	private void assertPath(DNarsGraph graph, String statement, boolean exists)
+	{
+		Statement st = StatementParser.apply(statement + " (1.0, 0.9)");
+		assertEquals(exists, Questions.exists(graph, st));
+	}
+	
 	private void assertAnswer(DNarsGraph graph, String question, Term answer)
 	{
-		Option<Term> a = LocalInference.answer(graph, StatementParser.apply(question));
+		Option<Term> a = Questions.answer(graph, StatementParser.apply(question));
 		if (a == Option.apply((Term) null))
 			assertEquals(answer, null);
 		else

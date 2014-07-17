@@ -23,8 +23,9 @@ package dnars.gremlin;
 import static dnars.TestUtils.assertGraph;
 import static dnars.TestUtils.createAndAdd;
 import static dnars.TestUtils.createGraph;
+import static dnars.TestUtils.invert;
 import org.junit.Test;
-import dnars.StatementParser;
+import dnars.base.StatementParser;
 import dnars.base.Statement;
 import dnars.base.Truth;
 
@@ -47,7 +48,7 @@ public class DNarsGraphTest
 			Truth t = st[0].truth().revision(st[0].truth());
 			st[0] = new Statement(st[0].subj(), st[0].copula(), st[0].pred(), t);
 
-			assertGraph(graph, st, new Statement[0]);
+			assertGraph(graph, st, new Statement[]{ invert(st[1]) });
 		} finally
 		{
 			graph.shutdown();
