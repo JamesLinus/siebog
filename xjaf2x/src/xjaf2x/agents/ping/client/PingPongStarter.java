@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.agents.ping;
+package xjaf2x.agents.ping.client;
 
 import java.io.IOException;
 import javax.naming.NamingException;

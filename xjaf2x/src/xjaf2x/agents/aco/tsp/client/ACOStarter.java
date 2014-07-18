@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf2x.agents.aco.tsp;
+package xjaf2x.agents.aco.tsp.client;
 
 import java.io.IOException;
 import javax.naming.NamingException;
