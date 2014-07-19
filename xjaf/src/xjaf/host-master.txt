@@ -81,7 +81,7 @@
 	</jvms-->
 
 	<servers>
-		<server name="xjaf-master" group="xjaf-group" auto-start="true" />
+		<server name="xjaf-master" group="xjaf2x-group" auto-start="true" />
 	</servers>
 
 </host>

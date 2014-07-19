@@ -51,18 +51,18 @@
 		<div id="main">
 			<img class="headerimage" src="banner1-1.jpg" width="740"
 				alt="Novi Sad" />
-			<h3>JBoss Application Server</h3>
+			<h3>WildFly (formerly, JBoss) Application Server</h3>
 			<p>
 				If this is your first time using XJAF, you need to <a
-					href="dist/jboss-eap-6.1-xjaf2x.zip">download JBoss AS (ZIP
+					href="dist/wildfly-9.x.zip">download WildfFly (ZIP
 					archive, 110 MB)</a>. After unpacking the archive, please <a
 					href="https://www.google.com/search?q=how+to+set+environment+variables">set
 					an environment variable</a> named JBOSS_HOME to point to the newly
-				created folder<br />(e.g. <i>C:\jboss-eap-6.1</i> on Windows, or <i>/home/myself/jboss-eap-6.1</i>
+				created folder<br />(e.g. <i>C:\widfly-9.x</i> on Windows, or <i>/home/myself/widlfly-9.x</i>
 				on Linux).
 			</p>
 			<p>
-				Please note that XJAF and JBoss AS require Java SE Development Kit
+				Please note that XJAF and WildFly require Java SE Development Kit
 				(JDK) 7 to run. The Java Runtime Environment (JRE) will not suffice.
 				You may <a
 					href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">download
@@ -74,7 +74,7 @@
 			</p>
 			<h3>Downloading and installing XJAF</h3>
 			<p>
-				<a href="dist/xjaf2x.zip">Download the latest version of XJAF
+				<a href="dist/xjaf.zip">Download the latest version of XJAF
 					(ZIP archive)</a>. To install XJAF, follow the next set of commands:
 			</p>
 			<ul>
@@ -82,15 +82,14 @@
 					folder, and execute <i>start-node.bat</i> under Windows, or <i>start-node.sh</i>
 					in Linux terminal;
 				</li>
-				<li>Wait until you see "JBoss EAP 6.1.0.GA (AS
-					7.2.0.Final-redhat-8) started in XYZms";</li>
-				<li>Navigate to the <i>bin</i> folder of your JBoss
+				<li>Wait until you see "WildFly 1.0.0.Alpha3 'Kenny' started in XYZms";</li>
+				<li>Navigate to the <i>bin</i> folder of your WildFly
 					installation and type <i>jboss-cli.bat --gui</i> in Windows command
 					prompt, or <i>./jboss-cli.sh --gui</i> in Linux terminal;
 				</li>
 				<li>CLI GUI window should pop-up. Choose <i>Deployments
-						-&gt; Deploy</i> from the main menu. Browse the <i>xjaf2x.jar</i> file
-					in your XJAF installation, specify <i>xjaf2x</i> for the <i>Name</i>
+						-&gt; Deploy</i> from the main menu. Browse the <i>xjaf.jar</i> file
+					in your XJAF installation, specify <i>xjaf</i> for the <i>Name</i>
 					field, and mark the <i>xjaf2x-group</i> check box. Leave other
 					fields empty / unchecked. Click <i>OK</i> to close the dialog, and
 					finally <i>Submit</i> to deploy XJAF to JBoss.
@@ -99,15 +98,15 @@
 			<p>
 				Your XJAF installation is now ready. You may open the following
 				address in your web browser to access the XJAF client: <a
-					href="http://localhost:8080/xjaf2x">http://localhost:8080/xjaf2x</a>.
+					href="http://localhost:8080/xjaf">http://localhost:8080/xjaf</a>.
 				From there, you may explore the framework's functionalities and run
-				some of the bundled example agents. For more information about
+				some of the bundled example agents. Fosr more information about
 				configuring XJAF and starting a computer cluster, please visit the <a
 					href="documentation.html">documentation page</a>.
 			</p>
 			<h3>Source code</h3>
 			<p>
-				<a href="dist/xjaf2x-src.zip">Download the XJAF source code (ZIP
+				<a href="dist/xjaf-src.zip">Download the XJAF source code (ZIP
 					archive)</a>. XJAF is distributed under the generous <a
 					href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache
 					License, Version 2.0</a>. Basically, this license allows you to use the

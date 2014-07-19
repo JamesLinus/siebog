@@ -52,7 +52,7 @@ public abstract class Global
 	public static final String VERSION = "2.0.0";
 	
 	public static final String 
-		GROUP = "xjaf-group", 
+		GROUP = "xjaf2x-group", 
 		USERNAME = "xjaf2xadmin",
 		PASSWORD = "xjaf2xpass~", 
 		SERVER = "xjaf", 

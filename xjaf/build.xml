@@ -4,15 +4,12 @@
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
-	<property name="dest.dir" value="." />
-	<property name="dest.file.name" value="${ant.project.name}.zip" />
+	<property name="dest.dir" value="../www/web/dist" />
+	<property name="dest.file.name" value="${ant.project.name}.jar" />
 	<property name="dest.file.path" value="${dest.dir}/${dest.file.name}" />
-	<property name="web.dir" value="war" />
-	<property name="web.inf.dir" value="${web.dir}/WEB-INF" />
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
 	<property name="controller" value="remoting://localhost" />
-	<property name="dist.dir" value="../xjaf-www/web/dist" />
-	<property name="javadoc.dir" value="../xjaf-www/web/javadoc" />
+	<property name="javadoc.dir" value="${dest.dir}/javadoc" />
 
 	<target name="clean">
 		<delete file="${dest.file.path}" />
@@ -28,23 +25,16 @@
 			<fileset dir="build/classes" />
 			<fileset dir="war" includes="*.html" />
 			<fileset dir="war" includes="WEB-INF/*.xml"  />
-			<zipgroupfileset dir="war/WEB-INF/lib" includes="*.jar" />
+			<fileset dir="war" includes="WEB-INF/lib/*.jar" />
 		</jar>
 	</target>
-	<!--target name="package" depends="clean">
-		<war destfile="${dest.file.path}" webxml="${web.inf.dir}/web.xml" manifest="${web.dir}/META-INF/MANIFEST.MF">
-			<fileset dir="${web.dir}" includes="*.html" />
-			<zipgroupfileset dir="${web.inf.dir}/lib" includes="*.jar" />
-			<classes dir="build/classes" />
-		</war>
-	</target-->
 
 	<target name="undeploy">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='undeploy ${ant.project.name} --server-groups=xjaf-group' />
+			<arg value='undeploy ${ant.project.name} --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 
@@ -53,20 +43,19 @@
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='deploy ${dest.file.path} --name=${ant.project.name} --server-groups=xjaf-group' />
+			<arg value='deploy ${dest.file.path} --name=${ant.project.name} --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 
 	<target name="dist" depends="package">
 		<!-- cleanup -->
-		<delete dir="${dist.dir}" />
+		<delete file="${dest.file.path}" />
 		<delete dir="${javadoc.dir}" />
-		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${javadoc.dir}" />
 		<!-- binary distribution -->
-		<zip destfile="${dist.dir}/${ant.project.name}.zip" basedir="." includes="${dest.file.name},start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
+		<zip destfile="${dest.dir}/${ant.project.name}.zip" basedir="." includes="${dest.file.name},start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
 		<!-- source -->
-		<zip defaultexcludes="no" destfile="${dist.dir}/${ant.project.name}-src.zip" basedir="." includes="src/**,lib/**,war/**,.settings/**,.project,.classpath,build.xml" />
+		<zip defaultexcludes="no" destfile="${dest.dir}/${ant.project.name}-src.zip" basedir="." includes="src/**,lib/**,war/**,.settings/**,.project,.classpath,build.xml" />
 		<!-- javadoc -->
 		<javadoc sourcepath="src" destdir="${javadoc.dir}" />
 	</target>
