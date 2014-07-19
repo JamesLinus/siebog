@@ -77,6 +77,6 @@
     <RSVP resend_interval="2000" timeout="10000"/>
     <pbcast.STATE_TRANSFER />
     <!-- pbcast.FLUSH  /-->
-    <relay.RELAY2 site="site1" config="xjaf2x-relay2.xml" relay_multicasts="true" />
+    <relay.RELAY2 site="site1" config="xjaf-relay2.xml" relay_multicasts="true" />
     <FORWARD_TO_COORD />
 </config>

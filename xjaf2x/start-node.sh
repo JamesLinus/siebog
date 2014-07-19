@@ -15,7 +15,7 @@ JBOSS_MODULES_BASE=$JBOSS_HOME/modules/system/layers/base;
 JBOSS_BIN=$JBOSS_HOME/bin;
 CWD=$(pwd);
 
-$JAVA_EXE -Dxjaf2x.base.dir=$CWD -cp .:\
+$JAVA_EXE -Dxjaf.base.dir=$CWD -cp .:\
 $JBOSS_MODULES_BASE/org/infinispan/main/infinispan-core-6.0.2.Final.jar:\
 $JBOSS_MODULES_BASE/org/infinispan/commons/infinispan-commons-6.0.2.Final.jar:\
 $JBOSS_MODULES_BASE/javax/ws/rs/api/main/jaxrs-api-3.0.8.Final.jar:\
@@ -29,5 +29,5 @@ $JBOSS_MODULES_BASE/org/jboss/as/controller-client/main/wildfly-controller-clien
 $JBOSS_MODULES_BASE/org/jboss/as/naming/main/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar:\
 $JBOSS_MODULES_BASE/org/jboss/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar:\
 $JBOSS_MODULES_BASE/org/jboss/logmanager/main/jboss-logmanager-1.5.2.Final.jar:\
-$CWD/xjaf2x.jar \
-xjaf2x.StartNode $@
+$CWD/xjaf.jar \
+xjaf.StartNode $@

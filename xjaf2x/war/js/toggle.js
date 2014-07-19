@@ -1,4 +1,4 @@
-if (localStorage.getItem("xjaf2x-showconsole") == 1)
+if (localStorage.getItem("xjaf-showconsole") == 1)
 	tab('menuInfoTabShow');
 else
 	tab('menuInfoTabHide');
@@ -10,14 +10,14 @@ function tab(id)
 		hide('menuInfoWrapper');
 		hide('menuInfoTabHide');
 		show('menuInfoTabShow');
-		localStorage.setItem("xjaf2x-showconsole", 0);
+		localStorage.setItem("xjaf-showconsole", 0);
 	}
 	else if(id == 'menuInfoTabShow') {
 		show('menuInfoFormDiv');
 		show('menuInfoWrapper');
 		hide('menuInfoTabShow');
 		show('menuInfoTabHide');
-		localStorage.setItem("xjaf2x-showconsole", 1);
+		localStorage.setItem("xjaf-showconsole", 1);
 	}
 }
  
