@@ -20,6 +20,11 @@
 
 package dnars.base
 
+import com.thinkaurelius.titan.core.AttributeSerializer
+import com.thinkaurelius.titan.graphdb.database.serialize.attribute.StringSerializer
+import com.thinkaurelius.titan.diskstorage.ScanBuffer
+import com.thinkaurelius.titan.diskstorage.WriteBuffer
+
 /**
  * Truth-value with accompanying functions.
  * 
@@ -31,7 +36,7 @@ object Truth {
 	val EPSILON = 0.01
 }
 
-case class Truth(val freq: Double, val conf: Double) {
+case class Truth(val freq: Double, val conf: Double) extends Serializable {
 	// used in comparisons, hash code calculations etc.   
 	val freqInt = (freq * 100).toInt
 	val confInt = (conf * 100).toInt
@@ -102,4 +107,36 @@ case class Truth(val freq: Double, val conf: Double) {
 		(Math.abs(freq - other.freq) <= Truth.EPSILON) && (Math.abs(conf - other.conf) <= Truth.EPSILON)
 	
 	override def toString = "(%.2f,%.2f)".format(freq, conf)
+}
+
+/**
+ * Used when an AtomicTerm is de-/serialized as a vertex attribute.
+ * 
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ */
+class TruthSerializer extends AttributeSerializer[Truth] {
+	val strser = new StringSerializer
+	
+	override def read(buffer: ScanBuffer): Truth = 
+		str2truth( strser.read(buffer) )
+	
+	override def writeObjectData(buffer: WriteBuffer, attribute: Truth): Unit = 
+		strser.writeObjectData(buffer, truth2str(attribute))
+	
+	override def verifyAttribute(value: Truth): Unit = { }
+	
+	override def convert(value: Any): Truth = value match {
+		case str: String => str2truth(str)
+		case _ => null
+	}
+	
+	private def str2truth(str: String): Truth = {
+		val elems = str.split(",")
+		val freq = elems(0).toInt / 100.0
+		val conf = elems(1).toInt / 100.0
+		Truth(freq, conf)
+	}
+	
+	private def truth2str(truth: Truth): String = 
+		truth.freqInt + "," + truth.confInt
 }

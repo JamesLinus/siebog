@@ -25,8 +25,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import scala.collection.mutable.ListBuffer;
-import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
-import com.tinkerpop.gremlin.scala.ScalaGraph;
 import dnars.base.Copula;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
@@ -35,6 +33,8 @@ import dnars.graph.DNarsGraph;
 
 public class TestUtils
 {
+	public static final String TEST_KEYSPACE = "test123";
+	
 	public static Statement[] createAndAdd(DNarsGraph graph, String... statements)
 	{
 		ListBuffer<Event> events = new ListBuffer<>();
@@ -83,11 +83,6 @@ public class TestUtils
 				System.out.println(st);
 			throw e;
 		}
-	}
-	
-	public static dnars.graph.DNarsGraph createGraph()
-	{
-		return DNarsGraph.wrap(ScalaGraph.wrap(new TinkerGraph()));
 	}
 	
 	public static Statement invert(Statement st)

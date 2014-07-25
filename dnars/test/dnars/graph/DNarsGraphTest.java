@@ -22,8 +22,8 @@ package dnars.graph;
 
 import static dnars.TestUtils.assertGraph;
 import static dnars.TestUtils.createAndAdd;
-import static dnars.TestUtils.createGraph;
 import static dnars.TestUtils.invert;
+import static dnars.TestUtils.TEST_KEYSPACE;
 import org.junit.Test;
 import scala.collection.mutable.ListBuffer;
 import dnars.base.Statement;
@@ -36,7 +36,7 @@ public class DNarsGraphTest
 	@Test
 	public void testAtomicAddition()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			Statement[] st = createAndAdd(graph, // @formatter:off
@@ -46,7 +46,8 @@ public class DNarsGraphTest
 			); // @formatter:on
 
 			ListBuffer<Event> events = new ListBuffer<>();
-			// test if revision is correctly applied
+			
+			// add the first statement again to test revision
 			graph.statements().add(st[0], events);
 			Truth t = st[0].truth().revision(st[0].truth());
 			st[0] = new Statement(st[0].subj(), st[0].copula(), st[0].pred(), t);
@@ -54,14 +55,14 @@ public class DNarsGraphTest
 			assertGraph(graph, st, new Statement[]{ invert(st[1]) });
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 
 	@Test
 	public void testCompoundAddition()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off
@@ -94,14 +95,14 @@ public class DNarsGraphTest
 			assertGraph(graph, kb, res);
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 
 	@Test
 	public void testUnpack()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off
@@ -118,14 +119,14 @@ public class DNarsGraphTest
 			assertGraph(graph, kb, res);
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 
 	@Test
 	public void testPack()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off
@@ -150,7 +151,7 @@ public class DNarsGraphTest
 			assertGraph(graph, kb, res);
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 }

@@ -33,6 +33,18 @@ import dnars.base.CompoundTerm
 import dnars.base.Connector._
 import dnars.base.Copula._
 import dnars.base.AtomicTerm
+import org.apache.commons.configuration.BaseConfiguration
+import com.thinkaurelius.titan.core.TitanFactory
+import dnars.base.CompoundTerm
+import dnars.base.CompoundTermSerializer
+import dnars.base.AtomicTermSerializer
+import dnars.base.TruthSerializer
+import org.apache.commons.configuration.Configuration
+import java.io.File
+import java.nio.file.Files
+import com.tinkerpop.blueprints.impls.tg.TinkerGraphFactory
+import com.thinkaurelius.titan.core.util.TitanCleanup
+import com.thinkaurelius.titan.core.TitanGraph
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by 
@@ -44,36 +56,42 @@ class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
 	val statements = new StatementManager(this)
 	
 	def getV(term: Term): Option[Vertex] = {
-		val vertex = v(term)
-		if (vertex != null) Some(vertex) else None
+		val vertex = V.has("term", term.id).toList
+		vertex match {
+			case h :: Nil => Some(h)
+			case _ => None
+		}
 	}
 
+	/**
+	 * Returns a vertex that corresponds to the given term. 
+	 * If the vertex does not exist, it will added to the graph.
+	 */
 	def getOrAddV(term: Term): Vertex = {
-		val existing = v(term)
-		if (existing != null)
-			existing
-		else {
-			val added = addV(term)
-			DNarsVertex.wrap(added).term = term
-			added
+		getV(term) match {
+			case Some(v) => v
+			case None =>
+				val added = addV(null)
+				DNarsVertex(added).term = term
+				added
 		}
 	}
 	
 	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge = {
 		val edge = subj.addEdge(copula, pred)
-		edge.setProperty("truth", truth)
+		DNarsEdge(edge).truth = truth
 		edge
 	}
 	
 	def getE(st: Statement): Option[Edge] = {
-		val s = v(st.subj)
-		val p = v(st.pred)
-		if (s == null || p == null) // no vertex, so no edge
+		val s = getV(st.subj)
+		val p = getV(st.pred)
+		if (s == None || p == None) // no vertex, so no edge
 			None
 		else {
-			// at least one vertex exists, check for an edge
-			val subj: ScalaVertex = s
-			val list = subj.outE(st.copula).as("x").inV.retain(Seq(p)).back("x").toList
+			// vertices exist, check for an edge
+			val subj: ScalaVertex = s.get
+			val list = subj.outE(st.copula).as("x").inV.retain(Seq(p.get)).back("x").toList
 			list match {
 				case List() => None // nope
 				case h :: Nil => Some(h.asInstanceOf[Edge])
@@ -82,17 +100,61 @@ class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
 		}
 	}
 	
+	/**
+	 * Debugging purposes only.
+	 */
 	def printEdges() {
 		val list = E.map { e => e.toString + " " + e.getProperty("truth") }.toList
 		for (e <- list)
 			println(e)
 	}
 	
-	def shutdown() = graph.shutdown()
+	def shutdown(clear: Boolean = false) = {
+		graph.shutdown()
+		if (clear)
+			graph match {
+			case tg: TitanGraph => 
+				TitanCleanup.clear(tg)
+			case any: Any => 
+				throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
+		}
+	}
 }
 
 object DNarsGraph {
 	def apply(graph: ScalaGraph) = wrap(graph)
 	implicit def wrap(graph: ScalaGraph) = new DNarsGraph(graph)
 	implicit def unwrap(wrapper: DNarsGraph) = wrapper.graph
+}
+
+object DNarsGraphFactory {
+	def create(keyspace: String): DNarsGraph = {
+		val conf = getConfig(keyspace)
+		val graph = TitanFactory.open(conf)
+		try {
+			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
+		} catch {
+			case _: IllegalArgumentException => 
+			case e: Throwable => throw e 
+		}
+		DNarsGraph(ScalaGraph(graph))
+	}
+	
+	private def getConfig(keyspace: String): Configuration = {
+		val conf = new BaseConfiguration
+		conf.setProperty("storage.backend", "cassandra")
+		conf.setProperty("storage.hostname", "localhost");
+		// storage.machine-id-appendix
+		conf.setProperty("storage.keyspace", keyspace)
+		// custom serializers
+		conf.setProperty("attributes.allow-all", "true")
+		conf.setProperty("attributes.attribute20",  classOf[AtomicTerm].getName)
+		conf.setProperty("attributes.serializer20", classOf[AtomicTermSerializer].getName)
+		conf.setProperty("attributes.attribute21",  classOf[CompoundTerm].getName)
+		conf.setProperty("attributes.serializer21", classOf[CompoundTermSerializer].getName)
+		conf.setProperty("attributes.attribute22",  classOf[Truth].getName)
+		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)
+		// done
+		conf
+	}
 }

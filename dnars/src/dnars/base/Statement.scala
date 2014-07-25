@@ -25,7 +25,7 @@ package dnars.base
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-case class Statement(val subj: Term, val copula: String, val pred: Term, val truth: Truth) {
+case class Statement(val subj: Term, val copula: String, val pred: Term, val truth: Truth) extends Serializable {
 	lazy val id = s"$subj $copula $pred $truth"
 	
 	def equivalent(other: Statement): Boolean = 

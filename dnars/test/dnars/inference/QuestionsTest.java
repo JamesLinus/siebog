@@ -20,8 +20,8 @@
 
 package dnars.inference;
 
+import static dnars.TestUtils.TEST_KEYSPACE;
 import static dnars.TestUtils.createAndAdd;
-import static dnars.TestUtils.createGraph;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import scala.Option;
@@ -30,13 +30,14 @@ import dnars.base.Statement;
 import dnars.base.StatementParser;
 import dnars.base.Term;
 import dnars.graph.DNarsGraph;
+import dnars.graph.DNarsGraphFactory;
 
 public class QuestionsTest
 {
 	@Test
 	public void testAnswer()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			createAndAdd(graph, // @formatter:off 
@@ -53,14 +54,14 @@ public class QuestionsTest
 			assertAnswer(graph, "? ~ developer", new AtomicTerm("job"));
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 	
 	@Test
 	public void testTraversal()
 	{
-		DNarsGraph graph = createGraph();
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
 		try
 		{
 			createAndAdd(graph, // @formatter:off
@@ -76,7 +77,7 @@ public class QuestionsTest
 			assertPath(graph, "cat ~ being", false);
 		} finally
 		{
-			graph.shutdown();
+			graph.shutdown(true);
 		}
 	}
 	

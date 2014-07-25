@@ -24,6 +24,8 @@ import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaVertex
 import dnars.base.Truth
 import dnars.base.Term
+import dnars.base.AtomicTerm
+import dnars.base.CompoundTerm
 
 /**
  * Wrapper around the ScalaVertex class. Inspired by 
@@ -32,8 +34,20 @@ import dnars.base.Term
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class DNarsVertex(override val vertex: Vertex) extends ScalaVertex(vertex) {
-	def term: Term = getProperty[Term]("term")
-	def term_=(value: Term): Unit = setProperty("term", value)
+	def term: Term = {
+		val id = getProperty[String]("term")
+		if (id.charAt(0) == '(') {
+			val elems = id.substring(1, id.length - 1).split(" ")
+			val comps = for (c <- elems.tail) 
+				yield AtomicTerm(c)
+			CompoundTerm(elems(0), comps)
+		}
+		else
+			AtomicTerm(id)
+	}
+	
+	def term_=(value: Term): Unit = 
+		setProperty("term", value.id)
 }
 
 object DNarsVertex {

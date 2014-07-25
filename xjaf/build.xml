@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE project>
-<project default="package" name="xjaf">
+<project default="package" name="xjaf" basedir="." xmlns:sonar="antlib:org.sonar.ant">
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
@@ -10,6 +10,17 @@
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
 	<property name="controller" value="remoting://localhost" />
 	<property name="javadoc.dir" value="${dest.dir}/javadoc" />
+
+	<!--property name="sonar.jdbc.url" value="jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+	<property name="sonar.jdbc.username" value="sonar" />
+	<property name="sonar.jdbc.password" value="sonar" /-->
+
+	<property name="sonar.projectKey" value="siebog-xjaf" />
+	<property name="sonar.projectName" value="XJAF" />
+	<property name="sonar.projectVersion" value="1.0" />
+	<property name="sonar.language" value="java" />
+	<property name="sonar.sources" value="src" />
+	<property name="sonar.binaries" value="build/classes" />
 
 	<target name="clean">
 		<delete file="${dest.file.path}" />
@@ -24,9 +35,17 @@
 			</manifest>
 			<fileset dir="build/classes" />
 			<fileset dir="war" includes="*.html" />
-			<fileset dir="war" includes="WEB-INF/*.xml"  />
+			<fileset dir="war" includes="WEB-INF/*.xml" />
 			<fileset dir="war" includes="WEB-INF/lib/*.jar" />
 		</jar>
+	</target>
+
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="lib/sonar-ant-task-2.2.jar" />
+		</taskdef>
+
+		<sonar:sonar />
 	</target>
 
 	<target name="undeploy">

@@ -68,7 +68,7 @@ object ForwardInference {
 	//		S -> M	=> S -> P ded 
 	//		S ~ M	=> S -> P ana
 	def deduction_analogy(graph: DNarsGraph, st: Statement, events: ListBuffer[Event]): Unit = {
-		val m: ScalaVertex = graph.v(st.pred)
+		val m: ScalaVertex = graph.getV(st.pred).get
 		val edges = m.outE(Inherit).toList
 		for (e <- edges) {
 			val vertex: DNarsVertex = e.getVertex(Direction.IN) 
@@ -90,7 +90,7 @@ object ForwardInference {
 	//		S -> M	=> S -> P ana'
 	//		S ~ M	=> S ~ P res
 	def analogy_resemblance(graph: DNarsGraph, st: Statement, events: ListBuffer[Event]): Unit = {
-		val m: ScalaVertex = graph.v(st.pred)
+		val m: ScalaVertex = graph.getV(st.pred).get
 		val edges = m.outE(Similar).toList
 		for (e <- edges) {
 			val vertex: DNarsVertex = e.getVertex(Direction.IN)
@@ -111,7 +111,7 @@ object ForwardInference {
 	//		S -> M	=> S -> P abd, S ~ P cmp
 	//		S ~ M 	=> P -> S ana
 	def abduction_comparison_analogy(graph: DNarsGraph, st: Statement, events: ListBuffer[Event]): Unit = {
-		val m: ScalaVertex = graph.v(st.pred)
+		val m: ScalaVertex = graph.getV(st.pred).get
 		val edges = m.inE(Inherit).toList
 		for (e <- edges) {
 			val vertex: DNarsVertex = e.getVertex(Direction.OUT)
@@ -135,7 +135,7 @@ object ForwardInference {
 	// M -> P, M -> S => S -> P ind, S ~ P cmp
 	def induction_comparison(graph: DNarsGraph, st: Statement, events: ListBuffer[Event]): Unit = {
 		if (st.copula == Inherit) {
-			val m: ScalaVertex = graph.v(st.subj)
+			val m: ScalaVertex = graph.getV(st.subj).get
 			val edges = m.outE(Inherit).toList
 			for (e <- edges) {
 				val vertex: DNarsVertex = e.getVertex(Direction.IN)
@@ -154,7 +154,7 @@ object ForwardInference {
 	// M ~ P, M -> S => P -> S ana'
 	def analogy_inv(graph: DNarsGraph, st: Statement, events: ListBuffer[Event]): Unit = {
 		if (st.copula == Inherit) {
-			val m: ScalaVertex = graph.v(st.subj)
+			val m: ScalaVertex = graph.getV(st.subj).get
 			val edges = m.outE(Similar).toList
 			for (e <- edges) {
 				val vertex: DNarsVertex = e.getVertex(Direction.IN)
