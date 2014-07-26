@@ -47,7 +47,6 @@ class StatementManager(val graph: DNarsGraph) {
 		existing match {
 			case Some(e) => // already exists, apply revision
 				val edge: DNarsEdge = e
-				val prevTruth = edge.truth
 				val truth = edge.truth.revision(st.truth)
 				edge.truth = truth
 				if (st.copula == Similar) {
@@ -74,7 +73,7 @@ class StatementManager(val graph: DNarsGraph) {
 						}
 					}
 				}
-				events += StatementUpdated(st, prevTruth)
+				events += StatementUpdated(st, truth)
 			case None =>
 				addE(st)
 				if (st.copula == Similar)

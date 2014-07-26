@@ -33,7 +33,7 @@ import dnars.graph.DNarsGraph;
 
 public class TestUtils
 {
-	public static final String TEST_KEYSPACE = "test123";
+	public static final String TEST_KEYSPACE = "TestUtils123";
 	
 	public static Statement[] createAndAdd(DNarsGraph graph, String... statements)
 	{
@@ -78,9 +78,7 @@ public class TestUtils
 			}
 		} catch (AssertionError e)
 		{
-			System.out.println("Graph statements:");
-			for (Statement st: gr)
-				System.out.println(st);
+			graph.printEdges();
 			throw e;
 		}
 	}

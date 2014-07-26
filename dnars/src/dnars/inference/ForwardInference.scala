@@ -49,9 +49,8 @@ import dnars.events.Event
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 object ForwardInference {
-	def apply(graph: DNarsGraph, statements: Seq[Statement]): Unit = {
-		val events = new ListBuffer[Event]
-		for (st <- statements) {
+	def include(graph: DNarsGraph, newStatements: Seq[Statement], events: ListBuffer[Event]): Unit = {
+		for (st <- newStatements) {
 			graph.statements.add(st, events)
 			deduction_analogy(graph, st, events)
 			analogy_resemblance(graph, st, events)

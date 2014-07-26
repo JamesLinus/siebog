@@ -32,7 +32,7 @@ class Event { }
 
 case class StatementAdded(val st: Statement) extends Event { }
 
-case class StatementUpdated(val st: Statement, val prevTruth: Truth) extends Event { }
+case class StatementUpdated(val st: Statement, val newTruth: Truth) extends Event { }
 
 trait EventObserver {
 	def onChange(event: Array[Event])

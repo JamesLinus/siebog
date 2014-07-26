@@ -52,7 +52,7 @@ import com.thinkaurelius.titan.core.TitanGraph
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
+class DNarsGraph(override val graph: Graph, val keyspace: String) extends ScalaGraph(graph) {
 	val statements = new StatementManager(this)
 	
 	def getV(term: Term): Option[Vertex] = {
@@ -104,9 +104,22 @@ class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
 	 * Debugging purposes only.
 	 */
 	def printEdges() {
-		val list = E.map { e => e.toString + " " + e.getProperty("truth") }.toList
-		for (e <- list)
-			println(e)
+		val list = E.map { e => {
+			val s: DNarsVertex = e.getVertex(Direction.OUT)
+			val p: DNarsVertex = e.getVertex(Direction.IN)
+			val c = e.getLabel
+			val t = DNarsEdge(e).truth
+			val st = Statement(s.term, c, p.term, t)
+			// print only the packed version
+			statements.pack(st) match {
+				case List() => st
+				case List(h, _) => h
+			}
+		} }.toSet
+		println(s"---------------- Graph dump [keyspace=$keyspace] ----------------")
+		for (st <- list)
+			println(st)
+		println("------------------- Done -------------------")
 	}
 	
 	def shutdown(clear: Boolean = false) = {
@@ -122,8 +135,8 @@ class DNarsGraph(override val graph: Graph) extends ScalaGraph(graph) {
 }
 
 object DNarsGraph {
-	def apply(graph: ScalaGraph) = wrap(graph)
-	implicit def wrap(graph: ScalaGraph) = new DNarsGraph(graph)
+	def apply(graph: ScalaGraph, keyspace: String) = wrap(graph, keyspace)
+	implicit def wrap(graph: ScalaGraph, keyspace: String) = new DNarsGraph(graph, keyspace)
 	implicit def unwrap(wrapper: DNarsGraph) = wrapper.graph
 }
 
@@ -137,7 +150,7 @@ object DNarsGraphFactory {
 			case _: IllegalArgumentException => 
 			case e: Throwable => throw e 
 		}
-		DNarsGraph(ScalaGraph(graph))
+		DNarsGraph(ScalaGraph(graph), keyspace)
 	}
 	
 	private def getConfig(keyspace: String): Configuration = {

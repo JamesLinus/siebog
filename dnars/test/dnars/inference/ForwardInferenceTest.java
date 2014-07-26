@@ -45,25 +45,25 @@ public class ForwardInferenceTest
 		try
 		{
 			Statement[] kb = create(
-				"cat -> animal (0.82, 0.91)"
-				//"water -> liquid (1.0, 0.9)",
-				//"tiger -> cat (0.5, 0.7)",
-				//"developer ~ job (1.0, 0.9)",
-				//"feline ~ cat (0.76, 0.83)"
+				"cat -> animal (0.82, 0.91)",
+				"water -> liquid (1.0, 0.9)",
+				"tiger -> cat (0.5, 0.7)",
+				"developer ~ job (1.0, 0.9)",
+				"feline ~ cat (0.76, 0.83)"
 			);
 			ListBuffer<Event> events = new ListBuffer<>();
 			for (Statement st: kb)
 			{
 				graph.statements().add(st, events);
-				//ForwardInference.deduction_analogy(graph, st, events);
+				ForwardInference.deduction_analogy(graph, st, events);
 			}
-			/*Statement[] res = {
+			Statement[] res = {
 				invert(kb[3]),
 				invert(kb[4]),
 				StatementParser.apply("tiger -> animal " + kb[0].truth().deduction(kb[2].truth())),
 				StatementParser.apply("feline -> animal " + kb[0].truth().analogy(kb[4].truth(), false))
 			};
-			assertGraph(graph, kb, res);*/
+			assertGraph(graph, kb, res);
 		} finally
 		{
 			graph.shutdown(true);
