@@ -24,11 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import scala.collection.mutable.ListBuffer;
 import dnars.base.Copula;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
-import dnars.events.Event;
 import dnars.graph.DNarsGraph;
 
 public class TestUtils
@@ -37,12 +35,11 @@ public class TestUtils
 	
 	public static Statement[] createAndAdd(DNarsGraph graph, String... statements)
 	{
-		ListBuffer<Event> events = new ListBuffer<>();
 		Statement[] st = new Statement[statements.length];
 		for (int i = 0; i < statements.length; i++)
 		{
 			st[i] = StatementParser.apply(statements[i]);
-			graph.statements().add(st[i], events);
+			graph.statements().add(st[i]);
 		}
 		return st;
 	}

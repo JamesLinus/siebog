@@ -45,6 +45,9 @@ import java.nio.file.Files
 import com.tinkerpop.blueprints.impls.tg.TinkerGraphFactory
 import com.thinkaurelius.titan.core.util.TitanCleanup
 import com.thinkaurelius.titan.core.TitanGraph
+import dnars.events.EventManager
+import scala.collection.mutable.ListBuffer
+import dnars.events.Event
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by 
@@ -52,8 +55,9 @@ import com.thinkaurelius.titan.core.TitanGraph
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph, val keyspace: String) extends ScalaGraph(graph) {
+class DNarsGraph(override val graph: Graph, val kbase: String) extends ScalaGraph(graph) {
 	val statements = new StatementManager(this)
+	val eventManager = new EventManager()
 	
 	def getV(term: Term): Option[Vertex] = {
 		val vertex = V.has("term", term.id).toList
@@ -116,7 +120,7 @@ class DNarsGraph(override val graph: Graph, val keyspace: String) extends ScalaG
 				case List(h, _) => h
 			}
 		} }.toSet
-		println(s"---------------- Graph dump [keyspace=$keyspace] ----------------")
+		println(s"---------------- Graph dump [knowledgebase=$kbase] ----------------")
 		for (st <- list)
 			println(st)
 		println("------------------- Done -------------------")
@@ -141,8 +145,8 @@ object DNarsGraph {
 }
 
 object DNarsGraphFactory {
-	def create(keyspace: String): DNarsGraph = {
-		val conf = getConfig(keyspace)
+	def create(kbase: String): DNarsGraph = {
+		val conf = getConfig(kbase)
 		val graph = TitanFactory.open(conf)
 		try {
 			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
@@ -150,15 +154,15 @@ object DNarsGraphFactory {
 			case _: IllegalArgumentException => 
 			case e: Throwable => throw e 
 		}
-		DNarsGraph(ScalaGraph(graph), keyspace)
+		DNarsGraph(ScalaGraph(graph), kbase)
 	}
 	
-	private def getConfig(keyspace: String): Configuration = {
+	private def getConfig(kbase: String): Configuration = {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
 		// storage.machine-id-appendix
-		conf.setProperty("storage.keyspace", keyspace)
+		conf.setProperty("storage.keyspace", kbase)
 		// custom serializers
 		conf.setProperty("attributes.allow-all", "true")
 		conf.setProperty("attributes.attribute20",  classOf[AtomicTerm].getName)

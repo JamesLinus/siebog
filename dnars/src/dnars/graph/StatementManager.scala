@@ -20,19 +20,21 @@
 
 package dnars.graph
 
-import dnars.base.Statement
-import dnars.base.CompoundTerm
-import dnars.base.Connector._
-import dnars.base.Copula._
-import dnars.base.AtomicTerm
-import dnars.base.AtomicTerm._
-import dnars.base.Term
-import dnars.base.Truth
 import com.tinkerpop.blueprints.Direction
-import dnars.events.Event
-import dnars.events.StatementUpdated
+
+import dnars.base.AtomicTerm
+import dnars.base.AtomicTerm.Placeholder
+import dnars.base.CompoundTerm
+import dnars.base.Connector.ExtImage
+import dnars.base.Connector.IntImage
+import dnars.base.Connector.Product
+import dnars.base.Copula.Inherit
+import dnars.base.Copula.Similar
+import dnars.base.Statement
 import dnars.events.StatementAdded
-import scala.collection.mutable.ListBuffer
+import dnars.events.StatementUpdated
+import dnars.graph.DNarsEdge.wrap
+import dnars.graph.DNarsVertex.wrap
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -40,8 +42,7 @@ import scala.collection.mutable.ListBuffer
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class StatementManager(val graph: DNarsGraph) {
-
-	def add(st: Statement, events: ListBuffer[Event]): Unit = {
+	def add(st: Statement): Unit = {
 		// TODO : when adding statements, consider that "S~P <=> S->P & P->S" and "S~P => S->P"
 		val existing = graph.getE(st)
 		existing match {
@@ -73,7 +74,7 @@ class StatementManager(val graph: DNarsGraph) {
 						}
 					}
 				}
-				events += StatementUpdated(st, truth)
+				graph.eventManager.addEvent(StatementUpdated(st, truth))
 			case None =>
 				addE(st)
 				if (st.copula == Similar)
@@ -84,7 +85,7 @@ class StatementManager(val graph: DNarsGraph) {
 					if (!unpacked)
 						packAndAdd(graph, st)
 				}
-				events += StatementAdded(st)
+				graph.eventManager.addEvent(StatementAdded(st))
 		}
 	}
 

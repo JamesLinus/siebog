@@ -24,11 +24,11 @@ object NTImporter {
 		val keyspace = args(1)
 		
 		val graph = DNarsGraphFactory.create(keyspace)
-		try {		
+		try {
+			graph.eventManager.paused = true
 			val model = ModelFactory.createDefaultModel();
 			val reader = model.getReader("N-Triples")
 			var counter = 0
-			val events = ListBuffer[Event]()
 			println(s"Reading from $fileName into $keyspace")
 			Source
 				.fromFile(fileName)
@@ -46,7 +46,7 @@ object NTImporter {
 					
 					val subj = CompoundTerm(Product, List(termSubj, termObjt))
 					val statement = Statement(subj, Inherit, termPred, Truth(1.0, 0.9))
-					graph.statements.add(statement, events)
+					graph.statements.add(statement)
 					
 					counter += 1
 					if (counter % 300 == 0) 

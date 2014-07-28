@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="siebog">
+        <wb-resource deploy-path="/" source-path="/ear" tag="defaultRootSource"/>
+        <dependent-module archiveName="xjaf.war" deploy-path="/" handle="module:/resource/xjaf/xjaf">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="radigost.war" deploy-path="/" handle="module:/resource/radigost/radigost">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dnars.jar" deploy-path="/lib" handle="module:/resource/dnars/dnars">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

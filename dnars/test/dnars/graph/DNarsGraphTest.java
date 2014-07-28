@@ -20,16 +20,14 @@
 
 package dnars.graph;
 
+import static dnars.TestUtils.TEST_KEYSPACE;
 import static dnars.TestUtils.assertGraph;
 import static dnars.TestUtils.createAndAdd;
 import static dnars.TestUtils.invert;
-import static dnars.TestUtils.TEST_KEYSPACE;
 import org.junit.Test;
-import scala.collection.mutable.ListBuffer;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
 import dnars.base.Truth;
-import dnars.events.Event;
 
 public class DNarsGraphTest
 {
@@ -45,10 +43,8 @@ public class DNarsGraphTest
 				"tiger -> cat (1.0, 0.9)"
 			); // @formatter:on
 
-			ListBuffer<Event> events = new ListBuffer<>();
-			
 			// add the first statement again to test revision
-			graph.statements().add(st[0], events);
+			graph.statements().add(st[0]);
 			Truth t = st[0].truth().revision(st[0].truth());
 			st[0] = new Statement(st[0].subj(), st[0].copula(), st[0].pred(), t);
 
@@ -72,12 +68,11 @@ public class DNarsGraphTest
 				"(\\ hate * cat) -> dog (0.85, 0.9)"
 			); // @formatter:on
 
-			ListBuffer<Event> events = new ListBuffer<>();
 			// apply revision
 			Truth[] t = new Truth[kb.length];
 			for (int i = 0; i < kb.length; i++)
 			{
-				graph.statements().add(kb[i], events);
+				graph.statements().add(kb[i]);
 				t[i] = kb[i].truth().revision(kb[i].truth());
 				kb[i] = new Statement(kb[i].subj(), kb[i].copula(), kb[i].pred(), t[i]);
 			}

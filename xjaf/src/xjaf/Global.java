@@ -55,12 +55,13 @@ public abstract class Global
 		GROUP = "xjaf2x-group", 
 		USERNAME = "xjaf2xadmin",
 		PASSWORD = "xjaf2xpass~", 
+		PROJECT = "siebog",
 		SERVER = "xjaf", 
 		MASTER_NAME = "xjaf-master";
 
-	private static final String AgentManagerLookup = "ejb:/" + SERVER + "//"
+	private static final String AgentManagerLookup = "ejb:" + PROJECT + "/" + SERVER + "//"
 			+ AgentManager.class.getSimpleName() + "!" + AgentManagerI.class.getName();
-	private static final String MessageManagerLookup = "ejb:/" + SERVER + "//"
+	private static final String MessageManagerLookup = "ejb:" + PROJECT + "/" + SERVER + "//"
 			+ MessageManager.class.getSimpleName() + "!" + MessageManagerI.class.getName();
 	private static final Logger logger = Logger.getLogger(Global.class.getName());
 	private static Context context;

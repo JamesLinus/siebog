@@ -96,8 +96,8 @@ public class AgentManager implements AgentManagerI
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
-			//runningAgents.remove(aid);
-			//agent.terminate();
+			// runningAgents.remove(aid);
+			// agent.terminate();
 		}
 	}
 
@@ -107,9 +107,10 @@ public class AgentManager implements AgentManagerI
 		{
 			// build the JNDI lookup string
 			final String view = AgentI.class.getName();
-			String jndiNameStateless = String.format("ejb:/%s//%s!%s", aid.getModule(), aid.getEjbName(), view);
+			String jndiNameStateless = String.format("ejb:%s/%s//%s!%s", Global.PROJECT,
+					aid.getModule(), aid.getEjbName(), view);
 			String jndiNameStateful = jndiNameStateless + "?stateful";
-			
+
 			AgentI agent = null;
 			try
 			{
@@ -121,7 +122,7 @@ public class AgentManager implements AgentManagerI
 					throw ex;
 				agent = (AgentI) jndiContext.lookup(jndiNameStateless);
 			}
-			
+
 			// the order of the next two statements matters. if we call init first and the agent
 			// sends a message from there, it sometimes happens that the reply arrives before we
 			// register the AID. also some agents might wish to terminate themselves inside init.
@@ -140,7 +141,7 @@ public class AgentManager implements AgentManagerI
 	{
 		List<AID> result = new ArrayList<>();
 		final String intf = "!" + AgentI.class.getName();
-		final String exp = "java:jboss/exported";
+		final String exp = "java:jboss/exported/" + Global.PROJECT;
 		try
 		{
 			NamingEnumeration<NameClassPair> moduleList = jndiContext.list(exp);
