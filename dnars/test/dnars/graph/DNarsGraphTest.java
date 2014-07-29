@@ -34,7 +34,7 @@ public class DNarsGraphTest
 	@Test
 	public void testAtomicAddition()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] st = createAndAdd(graph, // @formatter:off
@@ -58,7 +58,7 @@ public class DNarsGraphTest
 	@Test
 	public void testCompoundAddition()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off
@@ -97,7 +97,7 @@ public class DNarsGraphTest
 	@Test
 	public void testUnpack()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off
@@ -121,7 +121,7 @@ public class DNarsGraphTest
 	@Test
 	public void testPack()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = createAndAdd(graph, // @formatter:off

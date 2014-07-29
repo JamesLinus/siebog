@@ -39,7 +39,7 @@ public class ForwardInferenceTest
 		// M -> P  
 		//		S -> M	=> S -> P ded 
 		//		S ~ M	=> S -> P ana
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = create(
@@ -73,7 +73,7 @@ public class ForwardInferenceTest
 		// M ~ P ::
 		//		S -> M	=> S -> P ana'
 		//		S ~ M	=> S ~ P res
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = create(
@@ -109,7 +109,7 @@ public class ForwardInferenceTest
 		// P -> M 
 		//		S -> M	=> S -> P abd, S ~ P cmp
 		//		S ~ M 	=> P -> S ana
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = create(
@@ -143,7 +143,7 @@ public class ForwardInferenceTest
 	@Test
 	public void compoundExtentional()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			Statement[] kb = create(

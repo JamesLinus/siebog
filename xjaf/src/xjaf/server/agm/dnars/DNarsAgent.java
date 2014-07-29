@@ -43,7 +43,7 @@ public abstract class DNarsAgent extends Agent implements DNarsAgentI, EventObse
 		super.onInit(args);
 		if (args.length == 0)
 			throw new IllegalArgumentException("DNars agents need to be initialized with the knowledgebase name.");
-		kbase = DNarsGraphFactory.create(args[0].toString());
+		kbase = DNarsGraphFactory.create(args[0].toString(), null);
 		kbase.eventManager().addObserver(this);
 	}
 }

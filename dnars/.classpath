@@ -40,5 +40,7 @@
 	<classpathentry kind="lib" path="/siebog/ear/lib/titan-cassandra-0.4.4.jar"/>
 	<classpathentry kind="lib" path="/siebog/ear/lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="/siebog/ear/lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="/siebog/ear/lib/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="/siebog/ear/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

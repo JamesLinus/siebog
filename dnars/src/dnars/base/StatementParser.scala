@@ -37,7 +37,8 @@ import dnars.base.Copula.Similar
 object StatementParser extends RegexParsers {
 	def number: Parser[Double] = """\d+(\.\d*)?""".r ^^ { _.toDouble }
 	
-	def atomicTerm: Parser[AtomicTerm] = """[<>:/_\.@\w]+""".r ^^ { AtomicTerm(_) }
+	//[\p{L}0-9[\p{Punct}&&[^()]]–…—]
+	def atomicTerm: Parser[AtomicTerm] = """[^\s()]+""".r ^^ { AtomicTerm(_) }
 	
 	def image: Parser[String] = (ExtImage | IntImage)
 	def connector: Parser[String] = (Product | image)

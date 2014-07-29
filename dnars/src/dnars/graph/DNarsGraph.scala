@@ -145,8 +145,8 @@ object DNarsGraph {
 }
 
 object DNarsGraphFactory {
-	def create(kbase: String): DNarsGraph = {
-		val conf = getConfig(kbase)
+	def create(kbase: String, additionalConfig: Map[String, Any] = null): DNarsGraph = {
+		val conf = getConfig(kbase, additionalConfig)
 		val graph = TitanFactory.open(conf)
 		try {
 			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
@@ -157,7 +157,7 @@ object DNarsGraphFactory {
 		DNarsGraph(ScalaGraph(graph), kbase)
 	}
 	
-	private def getConfig(kbase: String): Configuration = {
+	private def getConfig(kbase: String, additionalConfig: Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
@@ -171,6 +171,9 @@ object DNarsGraphFactory {
 		conf.setProperty("attributes.serializer21", classOf[CompoundTermSerializer].getName)
 		conf.setProperty("attributes.attribute22",  classOf[Truth].getName)
 		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)
+		// additional configuration?
+		if (additionalConfig != null)
+			additionalConfig.foreach { e => conf.setProperty(e._1 , e._2) }
 		// done
 		conf
 	}

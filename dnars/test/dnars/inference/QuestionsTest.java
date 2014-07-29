@@ -37,7 +37,7 @@ public class QuestionsTest
 	@Test
 	public void testAnswer()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			createAndAdd(graph, // @formatter:off 
@@ -61,7 +61,7 @@ public class QuestionsTest
 	@Test
 	public void testTraversal()
 	{
-		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE);
+		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
 			createAndAdd(graph, // @formatter:off
