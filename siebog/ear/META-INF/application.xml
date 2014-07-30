@@ -7,13 +7,13 @@
 	<module>
 		<web>
 			<web-uri>xjaf.war</web-uri>
-			<context-root>xjaf</context-root>
+			<context-root>/xjaf</context-root>
 		</web>
 	</module>
 	<module>
 		<web>
 			<web-uri>radigost.war</web-uri>
-			<context-root>radigost</context-root>
+			<context-root>/radigost</context-root>
 		</web>
 	</module>
 	<library-directory>lib</library-directory>

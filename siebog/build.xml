@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="package" name="siebog" basedir=".">
+	<property environment="env" />
+	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+	<property name="xjaf.war.dir" value="../xjaf/war" />
+	<property name="radigost.war.dir" value="../radigost/war" />
+	<property name="dest.file" value="${basedir}/siebog.ear" />
+	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
+	<property name="controller" value="remoting://localhost" />
+	
+	<target name="package-dnars">
+		<jar destfile="ear/lib/dnars.jar">
+			<fileset dir="../dnars/bin" includes="**" />
+		</jar>
+	</target>
+	
+	<target name="package-xjaf" depends="package-dnars">
+		<war destfile="xjaf.war" webxml="${xjaf.war.dir}/WEB-INF/web.xml" manifest="${xjaf.war.dir}/META-INF/MANIFEST.MF">
+			<fileset dir="${xjaf.war.dir}" includes="WEB-INF/**" />
+			<fileset dir="${xjaf.war.dir}" includes="css/**,font/**,img/**,js/**,*.html" />
+		</war>
+	</target>
+	
+	<target name="package-radigost" depends="package-xjaf">
+		<war destfile="radigost.war" webxml="${radigost.war.dir}/WEB-INF/web.xml" manifest="${radigost.war.dir}/META-INF/MANIFEST.MF">
+			<fileset dir="${radigost.war.dir}" includes="WEB-INF/**" />
+			<fileset dir="${xjaf.war.dir}" includes="samples/**,client/**" />
+		</war>
+	</target>
+	
+	<target name="package" depends="package-radigost">
+		<ear destfile="${dest.file}" appxml="ear/META-INF/application.xml">
+			<fileset dir="ear" includes="lib/**" />
+			<fileset dir="${basedir}" includes="xjaf.war,radigost.war" />
+		</ear>
+	</target>
+	
+	<target name="undeploy">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${controller}" />
+			<arg value='undeploy ${ant.project.name} --server-groups=xjaf2x-group' />
+		</exec>
+	</target>
+
+	<target name="deploy" depends="undeploy">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${controller}" />
+			<arg value='deploy ${dest.file} --name=${ant.project.name} --server-groups=xjaf2x-group' />
+		</exec>
+	</target>
+</project>
