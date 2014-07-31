@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf;
+package xjaf.server;
 
 import java.io.BufferedReader;
 import java.io.File;

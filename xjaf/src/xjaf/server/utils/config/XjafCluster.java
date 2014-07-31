@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf.server.config;
+package xjaf.server.utils.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +46,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xjaf.Global;
+import xjaf.server.Global;
 
 /**
  * Helper class for reading global server configuration.

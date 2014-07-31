@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf.Global;
+import xjaf.server.Global;
 import xjaf.server.agm.AID;
 import xjaf.server.agm.Agent;
 import xjaf.server.agm.AgentI;

@@ -33,7 +33,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import xjaf.Global;
+import xjaf.server.Global;
 import xjaf.server.agm.AID;
 import xjaf.server.msm.fipa.acl.ACLMessage;
 import xjaf.server.msm.fipa.acl.Performative;

@@ -18,24 +18,17 @@
  * and limitations under the License.
  */
 
-package xjaf.server.config;
+package xjaf.server;
 
-import org.jboss.ejb.client.DeploymentNodeSelector;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
 /**
- * Round-robin deployment node selector for distributing agents accross cluster nodes.
- * 
+ *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RRDeploymentNodeSelector implements DeploymentNodeSelector
+@ApplicationPath("/rest")
+public class XjafRestApp extends Application
 {
-	private int index;
-
-	@Override
-	public String selectNode(String[] eligibleNodes, String appName, String moduleName,
-			String distinctName)
-	{
-		return eligibleNodes[index++ % eligibleNodes.length]; 
-	}
 
 }

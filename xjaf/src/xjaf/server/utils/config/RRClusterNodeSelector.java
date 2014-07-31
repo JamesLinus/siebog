@@ -18,31 +18,23 @@
  * and limitations under the License.
  */
 
-package xjaf.server.config;
+package xjaf.server.utils.config;
+
+import org.jboss.ejb.client.ClusterNodeSelector;
 
 /**
- * Relay configuration, used to connect remote clusters.
- * 
- * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Round-robin cluster node selector.
+ *
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RelayInfo
+public class RRClusterNodeSelector implements ClusterNodeSelector
 {
-	private final String address;
-	private final String site;
-
-	public RelayInfo(String address, String site)
+	private int index;
+	
+	@Override
+	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes)
 	{
-		this.address = address;
-		this.site = site;
+		return availableNodes[index++ % availableNodes.length];
 	}
 
-	public String getAddress()
-	{
-		return address;
-	}
-
-	public String getSite()
-	{
-		return site;
-	}
 }

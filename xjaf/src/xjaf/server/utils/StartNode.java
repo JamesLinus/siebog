@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf;
+package xjaf.server.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import xjaf.server.config.XjafCluster;
-import xjaf.server.config.XjafCluster.Mode;
+import xjaf.server.Global;
+import xjaf.server.utils.config.XjafCluster;
+import xjaf.server.utils.config.XjafCluster.Mode;
 
 /**
  * A helper class for starting XJAF / JBoss nodes.

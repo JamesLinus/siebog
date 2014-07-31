@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package xjaf.server.rest;
+package xjaf.server.utils.deployment;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -27,11 +27,11 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xjaf.server.Deployment;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
@@ -39,11 +39,10 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
  * 
  * @author <a href="rade.milovanovic@hotmail.com">Rade Milovanovic</a>
  */
-
 @Path("/")
-public class RESTws
+public class DeploymentWS
 {
-	private static final Logger logger = Logger.getLogger(RESTws.class.getName());
+	private static final Logger logger = Logger.getLogger(DeploymentWS.class.getName());
 
 	@POST
 	@Consumes("multipart/form-data")
@@ -53,16 +52,16 @@ public class RESTws
 		String output;
 		try
 		{
-			URL location = RESTws.class.getProtectionDomain().getCodeSource().getLocation();
+			URL location = DeploymentWS.class.getProtectionDomain().getCodeSource().getLocation();
 			System.out.println(location.getFile());
 			String folderurl = location.toString().substring(5) + "/tmp/";
-			String fileName = folderurl + form.getMasternodeaddress() + "_"
-					+ form.getApplicationname() + ".jar";
-			saveFile(form.getFile_input(), folderurl, fileName);
+			String fileName = folderurl + form.getMasterNodeAddress() + "_"
+					+ form.getApplicationName() + ".jar";
+			saveFile(form.getFileInput(), folderurl, fileName);
 			output = "File saved to server location : " + fileName;
 			File file = new File(fileName);
-			Deployment deployment = new Deployment(form.getMasternodeaddress());
-			deployment.deploy(form.getApplicationname(), file);
+			InetAddress addr = InetAddress.getByName(form.getMasterNodeAddress());
+			Deployment.deploy(addr, file, form.getApplicationName());
 			return Response.status(200).entity(output).build();
 		} catch (Exception e)
 		{

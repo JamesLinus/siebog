@@ -29,7 +29,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf.Global;
+import xjaf.server.Global;
 import xjaf.server.agm.AID;
 import xjaf.server.agm.AgentI;
 import xjaf.server.msm.fipa.acl.ACLMessage;

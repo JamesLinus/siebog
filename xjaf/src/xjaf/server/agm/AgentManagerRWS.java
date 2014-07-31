@@ -30,7 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import xjaf.Global;
+import xjaf.server.Global;
 
 /**
  * RESTful interface for the agent manager.

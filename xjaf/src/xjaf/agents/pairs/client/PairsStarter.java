@@ -28,13 +28,13 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import xjaf.Global;
+import xjaf.server.Global;
 import xjaf.server.agm.AID;
 import xjaf.server.agm.AgentManagerI;
-import xjaf.server.config.XjafCluster;
 import xjaf.server.msm.MessageManagerI;
 import xjaf.server.msm.fipa.acl.ACLMessage;
 import xjaf.server.msm.fipa.acl.Performative;
+import xjaf.server.utils.config.XjafCluster;
 
 /**
  * Entry point for the Sender-Receiver case study.

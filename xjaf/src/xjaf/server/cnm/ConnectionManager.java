@@ -28,8 +28,8 @@ import javax.ejb.Stateless;
 import javax.naming.NamingException;
 import org.jgroups.JChannel;
 import org.jgroups.ReceiverAdapter;
-import xjaf.server.config.RelayInfo;
-import xjaf.server.config.XjafCluster;
+import xjaf.server.utils.config.RelayInfo;
+import xjaf.server.utils.config.XjafCluster;
 
 /**
  * Default connection manager implementation.

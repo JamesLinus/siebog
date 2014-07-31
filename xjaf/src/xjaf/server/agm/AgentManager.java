@@ -36,7 +36,7 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.jboss.ejb3.annotation.Clustered;
-import xjaf.Global;
+import xjaf.server.Global;
 
 /**
  * Default agent manager implementation.
