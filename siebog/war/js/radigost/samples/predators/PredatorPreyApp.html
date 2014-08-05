@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Radigost</title><!--  -->
+<script type="text/javascript" src="../../client/uuid.js"></script>
+<script type="text/javascript" src="../../client/radigost.js"></script>
+<script type="text/javascript" src="../../client/fipaacl.js"></script>
+<script type="text/javascript" src="PredatorPreyApp.js"></script>
+<script type="text/javascript">
+	var app = null;
+
+	function load() {
+		if (typeof Worker === "undefined") {
+			document.getElementById("main").innerHTML = "<p>Your browser does not support Web Workers</p>";
+			return;
+		}
+	}
+
+	function start() {
+		if (app == null)
+			app = new PredatorPreyApp();
+		app.start();
+	}
+</script>
+</head>
+<body onload="load()">
+	<div id="main">
+		<a href="#" onclick="start()">Run Predators</a>&nbsp;&bull;&nbsp; <a
+			href="#" onclick="app.stop()">Stop Predators</a>
+		<p />
+		<output id="epNum">Ready</output>
+		<br />
+		<output id="trialNum">Ready</output>
+		<br />
+		<textarea id="log" rows="3"></textarea>
+	</div>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Messages - xjaf Admin</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">    
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+	<link href="css/font-awesome.css" rel="stylesheet">
+	<link href="js/chosen/chosen.css" rel="stylesheet">
+	<link href="css/jquery-ui.css" rel="stylesheet">
+	<link href="js/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" /> 
+	<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+		<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> </a><a class="brand" href="index.html">xjaf Admin</a>
+    </div>
+  </div>
+</div>
+   
+<div class="subnavbar">
+  <div class="subnavbar-inner">
+    <div class="container">
+      <ul class="mainnav">
+        <li><a href="index.html"><i class="icon-dashboard"></i><span>Dashboard</span></a></li>
+		<li class="active"><a href="messages.html"><i class="icon-rss"></i><span>Messages</span></a></li>
+        <li><a href="deployagents.html"><i class="icon-upload-alt"></i><span>Deploy Agents</span></a></li>
+		<li><a href="cluster.html"><i class="icon-sitemap"></i><span>Cluster</span></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="main">
+	
+	<div class="main-inner">
+
+	    <div class="container">
+	
+	      <div class="row">
+	      	
+	      	<div class="span12">      		
+	      		
+	      		<div class="widget ">
+	      			
+	      			<div class="widget-header">
+	      				<i class="icon-rss"></i>
+	      				<h3>Send Message</h3>
+	  				</div> <!-- /widget-header -->
+					
+					<div class="widget-content">
+						
+						
+						
+						<div class="tabbable">						
+						<br>
+						
+							<div class="tab-content">
+								
+								<div id="edit-profile" class="form-horizontal">
+								
+	
+									<fieldset>
+									
+										<div class="control-group">											
+											<label class="control-label">Sender</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody id="sender-table">
+				
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label">Receivers</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody id="receivers-table">
+				
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label">Reply to</label>
+											<div class="controls">
+												<div style="width:60%">
+												  <div class="widget widget-table action-table" style="clear: none;">
+													<div class="widget-header"> <i class="icon-play"></i>
+													  <h3>Running agents</h3><button onclick="javascript:getRunningAgents();" class="btn btn-success" style="float:right; margin-right:10px; margin-top:6px">Reload</button>
+													</div>
+													<div class="widget-content">
+													<div style="height:300px; overflow-y: scroll;">
+													  <table class="table table-striped table-bordered">
+														<tbody id="replyto-table">
+				
+														</tbody>
+													  </table>
+													</div>
+													  
+													</div>
+													<!-- /widget-content --> 
+												  </div>
+												</div>
+												<!-- /span6 --> 
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										
+										<div class="control-group">											
+											<label class="control-label" for="performatives">Performative</label>
+											<div class="controls">
+												<select class="chosen-select" id="performatives-list" name="selectedperformative">
+
+												</select>
+											</div> <!-- /controls -->				
+										</div> <!-- /control-group -->
+										
+										<div class="control-group">											
+											<label class="control-label" for="content">Content</label>
+											<div class="controls">
+												<textarea class="span6" rows="14" id="content"></textarea> 
+												<p class="help-block">Denotes the content of the message; equivalently denotes the object of the action</p>
+											</div>		
+										</div> 
+										
+										<div class="control-group">											
+											<label class="control-label" for="language">Language</label>
+											<div class="controls">
+												<input type="text" class="span6" id="language" value="">
+												<p class="help-block">Denotes the language in which the content parameter is expressed.</p>
+											</div>		
+										</div> 
+										
+										<div class="control-group">											
+											<label class="control-label" for="encoding">Encoding</label>
+											<div class="controls">
+												<input type="text" class="span6" id="encoding" value="">
+												<p class="help-block">Denotes the specific encoding of the content language expression.</p>
+											</div> 		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="ontology">Ontology</label>
+											<div class="controls">
+												<input type="text" class="span6" id="ontology" value="">
+												<p class="help-block">Denotes the ontology(s) used to give a meaning to the symbols in the content expression.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="protocol">Protocol</label>
+											<div class="controls">
+												<input type="text" class="span6" id="protocol" value="">
+												<p class="help-block">Denotes the interaction protocol that the sending agent is employing with this ACL message.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="conversationId">Conversation ID</label>
+											<div class="controls">
+												<input type="text" class="span6" id="conversationId" value="">
+												<p class="help-block">Used to identify the ongoing sequence of communicative acts that together form a conversation.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="replyWith">Reply With</label>
+											<div class="controls">
+												<input type="text" class="span6" id="replyWith" value="">
+												<p class="help-block">Introduces an expression that will be used by the responding agent to identify this message.</p>
+											</div>		
+										</div>
+										
+										<div class="control-group">											
+											<label class="control-label" for="replyBy">Reply By</label>
+											<div class="controls">
+												<input id="datetimepicker" type="text" class="span6">
+												<p class="help-block">Indicates the latest time by which the sending agent would like to receive a reply.</p>
+											</div>		
+										</div>
+
+										 <br />
+										
+											
+										<div class="form-actions">
+											<button onclick="javascript:sendMessage();" class="btn btn-primary">SEND MESSAGE</button> 
+											<button class="btn">Reset</button>
+										</div> <!-- /form-actions -->
+									</fieldset>
+								</div>
+							</div>
+						  
+						  
+						</div>
+						
+						
+						
+						
+						
+					</div> <!-- /widget-content -->
+						
+				</div> <!-- /widget -->
+	      		
+		    </div> <!-- /span8 -->
+	      	
+	      	
+	      	
+	      	
+	      </div> <!-- /row -->
+	
+	    </div> <!-- /container -->
+	    
+	</div> <!-- /main-inner -->
+    
+</div> <!-- /main -->
+
+<!-- log console -->
+<div id="menuDiv">
+	<div id="menuInfo">
+		<div id="menuInfoWrapper" class="menuWrapper hidden">
+			<div id='menuInfoFormDiv' class="hidden">
+				<div id="menuInfoForm1" class="menuForm">
+					xjaf<br>
+					<table>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+						<tr>
+							<td>13:16:27,436</td>
+							<td>INFO</td>
+							<td>[org.hibernate.validator.internal.util.Version] (http-localhost/127.0.0.1:8080-5) HV000001: Hibernate Validator 4.3.1.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:27,849</td>
+							<td>INFO</td>
+							<td>[org.jboss.ejb.client] (http-localhost/127.0.0.1:8080-4) JBoss EJB Client version 1.0.16.Final</td>
+						</tr>
+						<tr>
+							<td>13:16:28,053 </td>
+							<td>INFO</td>
+							<td>[xjaf.server.agents.ping.PingAgent] (pool-18-thread-1) Ping @ [zoran]</td>
+						</tr>
+						<tr>
+							<td>13:17:52,088</td>
+							<td>INFO</td>
+							<td>[xjaf.server.messagemanager.MessageManager] (pool-18-thread-1) Agent not running: [xjaf_server_agents_ping_PongAgent/fdf]</td>
+						</tr>
+					</table>
+				</div>
+				
+			</div>
+			<div id="menuInfoTabs" class="menuTabs">
+				<div id="menuInfoTabShow" class="clickable tab showHide inActive" onclick="tab(this.id);">Show Logs</div>
+				<div id="menuInfoTabHide" class="clickable tab showHide inActive hidden" onclick="tab(this.id);">Hide Logs</div>
+			</div>
+		</div>
+	</div>
+</div>   
+    
+<!-- Placed at the end of the document so the pages load faster --> 
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/datetimepicker/jquery.datetimepicker.js"></script>
+<script src="js/chosen/chosen.jquery.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/base.js"></script>
+<script src="js/treemodel/TreeModel.js"></script>
+<script src="js/toggle.js"></script>
+
+<script type="text/javascript">
+
+	function getRunningAgents()
+	{
+		$("#sender-table").empty();
+		$("#receivers-table").empty();
+		$("#replyto-table").empty();
+		
+		jQuery.ajax({
+			 type: "GET",
+			 url: "rest/agm/getrunning",
+			 dataType: "json",
+			 success: function (data)
+			 {				 
+				tree = new TreeModel();
+				root = tree.parse({ id: 'root', level: 0, isAgent: false });
+				
+				$.each(data.running, function(i, runningagent)
+				{
+					var module = runningagent.split('/')[0];
+					
+					var nodeModule = root.first(function (node) { return ((node.model.id === module) && (node.model.level == 1)); })
+					if (nodeModule == null) {
+						var existingModule = false;
+						nodeModule = tree.parse({ id: module, level: 1, isAgent: false });
+					} else {
+						var existingModule = true;
+					}
+					
+					var packagesAndClass = runningagent.split('/')[1];
+					var packagesAndClassArray = packagesAndClass.split('_');
+					
+					var parentPackage = nodeModule;
+					for (var i = 0; i < packagesAndClassArray.length - 1; i++)
+					{
+						var nodePackage = root.first(function (node) { return ((node.model.id === packagesAndClassArray[i]) && (node.model.level == (i + 2))); })
+						if (nodePackage == null) {
+							var existingPackage = false;
+							nodePackage = tree.parse({ id: packagesAndClassArray[i], level: (i + 2), isAgent: false });
+						} else {
+							var existingPackage = true;
+						}
+						
+						if (!existingPackage) parentPackage.addChild(nodePackage);
+						
+						parentPackage = nodePackage;
+					}
+					
+					var agentClass = packagesAndClassArray[packagesAndClassArray.length-1];
+					var nodeAgentClass = tree.parse({ id: agentClass + "/" +  runningagent.split('/')[2], level: (packagesAndClassArray.length + 1), isAgent: true });
+					parentPackage.addChild(nodeAgentClass);
+					
+					if (!existingModule) root.addChild(nodeModule);
+					
+				});
+				
+				
+				var multiPath = "";
+				var agentPath = "";
+				var lastLevel = 0;
+				root.walk(function (node) {
+				    if (node.model.level > 0)
+				    {
+					    if (!node.model.isAgent)
+					    {
+					    	if (node.model.level == 1)
+					    	{
+					    		multiPath = node.model.id + "@";
+					    		agentPath = node.model.id + "/";
+					    		lastLevel == 1;
+					    		$("#sender-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#receivers-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#replyto-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    	}
+					    	else
+				    		{
+					    		if (node.model.level < lastLevel) {
+					    			for (var i = 0; i < (lastLevel - node.model.level); i++) {
+					    				multiPath = multiPath.substring(0, multiPath.lastIndexOf("_"));
+					    				agentPath = agentPath.substring(0, agentPath.lastIndexOf("_"));
+					    			}
+				    			}
+					    		multiPath = multiPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		agentPath = agentPath + ((node.model.level == 2) ? "" : "_") + node.model.id;
+					    		lastLevel = node.model.level;
+					    		$("#sender-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#receivers-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+					    		$("#replyto-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><img src="img/package.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
+				    		}
+					    }
+					    else
+					   	{
+					    	$("#sender-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="senderagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	$("#receivers-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="checkbox" name="receiversagents" value="' + (multiPath + "_" + node.model.id.split('/')[0] + "@" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	$("#replyto-table").append('<tr><td colspan="2" style="padding-left:' + ((node.model.level - 1) * 20) + 'px"><input type="radio" name="replytoagent" value="' + (agentPath + "_" + node.model.id.split('/')[0] + "/" + node.model.id.split('/')[1]) + '" style="margin-right:5px;"/>' + node.model.id.split('/')[0] + ":   <b>"+ node.model.id.split('/')[1] + '</b></a></td></tr>');
+					    	lastLevel = node.model.level;
+					   	}
+				    }
+				});
+			 }
+		});
+	}
+	
+	function getAllPerformatives()
+	{
+		$("#performatives-list").empty();
+		jQuery.ajax({
+			 type: "GET",
+			 url: "rest/msm/getperformatives",
+			 dataType: "json",
+			 contentType: "application/json; charset=utf-8", 
+			 success: function (data)
+			 {
+				$.each(data.performatives, function(i, performative) {
+					$("#performatives-list").append('<option value="' + performative + '">' + performative + '</option>');
+				});	
+				$(".chosen-select").chosen({width: "40%"});
+			 }
+		});
+	}
+
+
+	function sendMessage()
+	{		
+		var receivers = "";
+		
+		$('input[name=receiversagents]:checked').each(function () {
+			receivers = receivers + "," + $(this).val();
+		});
+		
+		receivers = receivers.substring(1, receivers.length);
+		
+		console.log($('#datetimepicker').val());
+		
+		if ((receivers != "") && ($('#content').val() != ""))
+		{
+			jQuery.ajax({
+				type: "POST",
+				url: "rest/msm/postmsg",
+				dataType: "json",
+				data : { 'performative': $('select[name=selectedperformative]').val(), 'senderAgent': $('input[name=senderagent]:checked').val(), 'recievers' : receivers, 'replyToAgent': $('input[name=replytoagent]:checked').val(), 
+					 'content': $('#content').val(), 'language':  $('#language').val(), 'encoding':  $('#encoding').val(), 'ontology':  $('#ontology').val(), 'protocol':  $('#protocol').val(), 'conversationId':  $('#conversationId').val(),
+					 'replyWith': $('#replyWith').val(), 'replyBy': $('#datetimepicker').val() },
+				success: function (data)
+				{
+					$('#content').val("");
+					if (data.success == true)
+						alert("Message was sent successfully.");
+					else
+						alert("Error");
+				}
+			});
+		}
+		else
+		{
+			alert("Please select Agent and enter Message content.");
+		}
+	}
+	 
+	getRunningAgents();
+	getAllPerformatives();
+	
+	
+	
+</script>
+
+<script type="text/javascript">
+	 $('#datetimepicker').datetimepicker({format:'unixtime', inline:true});
+</script>
+
+
+
+ </body>
+
+</html>
