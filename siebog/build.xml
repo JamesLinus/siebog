@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE project>
-<project default="package" name="siebog" basedir=".">
+<project default="package" name="siebog" basedir="." xmlns:sonar="antlib:org.sonar.ant">
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
-	<property name="xjaf.war.dir" value="../xjaf/war" />
-	<property name="radigost.war.dir" value="../radigost/war" />
-	<property name="dest.file" value="${basedir}/siebog.ear" />
+	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
+	
+	<property name="bin.dir" value="war/WEB-INF/classes" />
+	<property name="dest.dir" value="../www/web/dist" />
+	<property name="dest.file.name" value="${ant.project.name}.war" />
+	<property name="dest.file.path" value="${dest.dir}/${dest.file.name}" />
+	
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
 	<property name="controller" value="remoting://localhost" />
-	
-	<target name="package-dnars">
-		<jar destfile="ear/lib/dnars.jar">
-			<fileset dir="../dnars/bin" includes="**" />
-		</jar>
-	</target>
-	
-	<target name="package-xjaf" depends="package-dnars">
-		<war destfile="xjaf.war" webxml="${xjaf.war.dir}/WEB-INF/web.xml" manifest="${xjaf.war.dir}/META-INF/MANIFEST.MF">
-			<fileset dir="${xjaf.war.dir}" includes="WEB-INF/**" />
-			<fileset dir="${xjaf.war.dir}" includes="css/**,font/**,img/**,js/**,*.html" />
+	<property name="javadoc.dir" value="${dest.dir}/javadoc" />
+
+	<!--property name="sonar.jdbc.url" value="jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+	<property name="sonar.jdbc.username" value="sonar" />
+	<property name="sonar.jdbc.password" value="sonar" /-->
+
+	<property name="sonar.projectKey" value="siebog" />
+	<property name="sonar.projectName" value="siebog" />
+	<property name="sonar.projectVersion" value="1.0" />
+	<property name="sonar.language" value="java" />
+	<property name="sonar.sources" value="src" />
+	<property name="sonar.binaries" value="${bin.dir}" />
+
+	<target name="package">
+		<delete file="${dest.file.path}" />
+		<war destfile="${dest.file.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
+			<fileset dir="${bin.dir}" includes="**" />
+			<fileset dir="war" includes="WEB-INF/jboss-web.xml" />
+			<fileset dir="war" includes="*.html" />
+			<fileset dir="war" includes="css/**,font/**,img/**,js/**" />
 		</war>
 	</target>
-	
-	<target name="package-radigost" depends="package-xjaf">
-		<war destfile="radigost.war" webxml="${radigost.war.dir}/WEB-INF/web.xml" manifest="${radigost.war.dir}/META-INF/MANIFEST.MF">
-			<fileset dir="${radigost.war.dir}" includes="WEB-INF/**" />
-			<fileset dir="${xjaf.war.dir}" includes="samples/**,client/**" />
-		</war>
+
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="lib/sonar-ant-task-2.2.jar" />
+		</taskdef>
+
+		<sonar:sonar />
 	</target>
-	
-	<target name="package" depends="package-radigost">
-		<ear destfile="${dest.file}" appxml="ear/META-INF/application.xml">
-			<fileset dir="ear" includes="lib/**" />
-			<fileset dir="${basedir}" includes="xjaf.war,radigost.war" />
-		</ear>
-	</target>
-	
+
 	<target name="undeploy">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
@@ -45,12 +52,25 @@
 		</exec>
 	</target>
 
-	<target name="deploy" depends="undeploy">
+	<target name="deploy" depends="package, undeploy">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='deploy ${dest.file} --name=${ant.project.name} --server-groups=xjaf2x-group' />
+			<arg value='deploy ${dest.file.path} --name=${ant.project.name} --server-groups=xjaf2x-group' />
 		</exec>
+	</target>
+
+	<target name="dist" depends="package">
+		<!-- cleanup -->
+		<delete file="${dest.file.path}" />
+		<delete dir="${javadoc.dir}" />
+		<mkdir dir="${javadoc.dir}" />
+		<!-- binary distribution -->
+		<zip destfile="${dest.dir}/${ant.project.name}.zip" basedir="." includes="${dest.file.name},start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
+		<!-- source -->
+		<zip defaultexcludes="no" destfile="${dest.dir}/${ant.project.name}-src.zip" basedir="." includes="src/**,lib/**,war/**,.settings/**,.project,.classpath,build.xml" />
+		<!-- javadoc -->
+		<javadoc sourcepath="src" destdir="${javadoc.dir}" />
 	</target>
 </project>
