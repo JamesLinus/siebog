@@ -23,11 +23,9 @@ package agents.dnars;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.dnars.base.Statement;
-import siebog.server.dnars.base.StatementParser;
-import siebog.server.dnars.events.Event;
 import siebog.server.xjaf.agm.AgentI;
-import siebog.server.xjaf.agm.dnars.DNarsAgent;
+import siebog.server.xjaf.dnarslayer.DNarsAgent;
+import siebog.server.xjaf.dnarslayer.Event;
 import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 
 /**
@@ -49,7 +47,6 @@ public class DNarsPing extends DNarsAgent
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
-		Statement st = StatementParser.apply("cat -> animal (1.0, 0.9)");
-		graph.statements().add(st);
+		graph.addStatement("cat -> animal (1.0, 0.9)");
 	}
 }

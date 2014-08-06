@@ -18,13 +18,10 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.agm.dnars;
+package siebog.server.xjaf.dnarslayer;
 
 import java.io.Serializable;
 import java.util.Map;
-import siebog.server.dnars.events.Event;
-import siebog.server.dnars.graph.DNarsGraph;
-import siebog.server.dnars.graph.DNarsGraphFactory;
 import siebog.server.xjaf.agm.Agent;
 import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 import siebog.server.xjaf.msm.fipa.acl.Performative;
@@ -36,7 +33,7 @@ import siebog.server.xjaf.msm.fipa.acl.Performative;
 public abstract class DNarsAgent extends Agent 
 {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraph graph;
+	protected DNarsGraphI graph;
 	
 	@Override
 	protected void onInit(Map<String, Serializable> args)
@@ -45,8 +42,14 @@ public abstract class DNarsAgent extends Agent
 		String domain = (String) args.get("domain");
 		if (domain == null)
 			domain = myAid.toString();
-		graph = DNarsGraphFactory.create(domain, null);
-		graph.eventManager().addObserver(myAid);
+		try
+		{
+			graph = DNarsGraphFactory.create(domain);
+			graph.addObserver(myAid);
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	
 	@Override

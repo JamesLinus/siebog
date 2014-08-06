@@ -32,18 +32,15 @@ import com.tinkerpop.blueprints.Graph
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaGraph
 import com.tinkerpop.gremlin.scala.ScalaVertex
-import com.tinkerpop.gremlin.scala.wrapScalaVertex.apply
 
-import siebog.server.dnars.base.AtomicTerm
-import siebog.server.dnars.base.AtomicTermSerializer
-import siebog.server.dnars.base.CompoundTerm
-import siebog.server.dnars.base.CompoundTermSerializer
 import siebog.server.dnars.base.Statement
+import siebog.server.dnars.base.StatementParser
 import siebog.server.dnars.base.Term
 import siebog.server.dnars.base.Truth
-import siebog.server.dnars.base.TruthSerializer
 import siebog.server.dnars.events.EventManager
 import siebog.server.dnars.graph.DNarsVertex.wrap
+import siebog.server.xjaf.agm.AID
+import siebog.server.xjaf.dnarslayer.DNarsGraphI
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by 
@@ -51,7 +48,7 @@ import siebog.server.dnars.graph.DNarsVertex.wrap
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) {
+class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) with DNarsGraphI {
 	val statements = new StatementManager(this)
 	val eventManager = new EventManager()
 	
@@ -132,6 +129,17 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 				throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
 		}
 	}
+	
+	override def addObserver(aid: AID): Unit = 
+		eventManager.addObserver(aid)
+	
+	override def addStatement(st: String): Unit = 
+		try {
+			statements.add(StatementParser(st))
+		} catch {
+			case e: Throwable => 
+				throw new IllegalArgumentException(e.getMessage)
+		}
 }
 
 object DNarsGraph {
@@ -141,7 +149,7 @@ object DNarsGraph {
 }
 
 object DNarsGraphFactory {
-	def create(domain: String, additionalConfig: Map[String, Any] = null): DNarsGraph = {
+	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
 		val conf = getConfig(domain, additionalConfig)
 		val graph = TitanFactory.open(conf)
 		try {
@@ -153,7 +161,7 @@ object DNarsGraphFactory {
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 	
-	private def getConfig(domain: String, additionalConfig: Map[String, Any]): Configuration = {
+	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
@@ -168,8 +176,14 @@ object DNarsGraphFactory {
 		conf.setProperty("attributes.attribute22",  classOf[Truth].getName)
 		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)*/
 		// additional configuration?
-		if (additionalConfig != null)
-			additionalConfig.foreach { e => conf.setProperty(e._1 , e._2) }
+		if (additionalConfig != null) {
+			val es = additionalConfig.entrySet()
+			val i = es.iterator()
+			while (i.hasNext()) {
+				val c = i.next()
+				conf.setProperty(c.getKey(), c.getValue())
+			}
+		}
 		// done
 		conf
 	}

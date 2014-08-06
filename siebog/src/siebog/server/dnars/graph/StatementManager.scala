@@ -21,7 +21,6 @@
 package siebog.server.dnars.graph
 
 import com.tinkerpop.blueprints.Direction
-
 import siebog.server.dnars.base.AtomicTerm
 import siebog.server.dnars.base.AtomicTerm.Placeholder
 import siebog.server.dnars.base.CompoundTerm
@@ -31,10 +30,9 @@ import siebog.server.dnars.base.Connector.Product
 import siebog.server.dnars.base.Copula.Inherit
 import siebog.server.dnars.base.Copula.Similar
 import siebog.server.dnars.base.Statement
-import siebog.server.dnars.events.StatementAdded
-import siebog.server.dnars.events.StatementUpdated
 import siebog.server.dnars.graph.DNarsEdge.wrap
 import siebog.server.dnars.graph.DNarsVertex.wrap
+import siebog.server.xjaf.dnarslayer.Event
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -74,7 +72,8 @@ class StatementManager(val graph: DNarsGraph) {
 						}
 					}
 				}
-				graph.eventManager.addEvent(StatementUpdated(st, truth))
+				val event = new Event(Event.Kind.UPDATED, st.toString)
+				graph.eventManager.addEvent(event)
 			case None =>
 				addE(st)
 				if (st.copula == Similar)
@@ -85,7 +84,8 @@ class StatementManager(val graph: DNarsGraph) {
 					if (!unpacked)
 						packAndAdd(graph, st)
 				}
-				graph.eventManager.addEvent(StatementAdded(st))
+				val event = new Event(Event.Kind.ADDED, st.toString)
+				graph.eventManager.addEvent(event)
 		}
 	}
 

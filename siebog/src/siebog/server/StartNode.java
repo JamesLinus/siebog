@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.utils;
+package siebog.server;
 
 import java.io.File;
 import java.io.IOException;
@@ -242,8 +242,8 @@ public class StartNode
 			if (path.lastIndexOf(".jar") > 0)
 				root = jarFile.getParentFile().getPath();
 			else
-				// get out of build/classes
-				root = jarFile.getParentFile().getParentFile().getPath();
+				// get out of war/WEB-INF/classes
+				root = jarFile.getParentFile().getParentFile().getParentFile().getPath();
 		} catch (Exception ex)
 		{
 		}

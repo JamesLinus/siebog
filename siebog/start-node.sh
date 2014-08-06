@@ -29,5 +29,5 @@ $JBOSS_MODULES_BASE/org/jboss/as/controller-client/main/wildfly-controller-clien
 $JBOSS_MODULES_BASE/org/jboss/as/naming/main/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar:\
 $JBOSS_MODULES_BASE/org/jboss/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar:\
 $JBOSS_MODULES_BASE/org/jboss/logmanager/main/jboss-logmanager-1.5.2.Final.jar:\
-$CWD/xjaf.jar \
-xjaf.utils.StartNode $@
+$CWD/siebog.war \
+siebog.server.StartNode $@

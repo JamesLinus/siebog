@@ -3,6 +3,7 @@ package siebog.server.dnars.utils.importers.nt
 import siebog.server.dnars.graph.DNarsGraphFactory
 import scala.io.Source
 import siebog.server.dnars.base.StatementParser
+import java.util.HashMap
 
 object DNarsImporter {
 	def main(args: Array[String]): Unit = {
@@ -14,7 +15,8 @@ object DNarsImporter {
 		val kbname = args(1)
 		
 		println(s"Reading from $input...")
-		val cfg = Map[String, Any]("storage.batch-loading" -> "true")
+		val cfg = new HashMap[String, Any]
+		cfg.put("storage.batch-loading", "true")
 		val graph = DNarsGraphFactory.create(kbname, cfg)
 		try {
 			graph.eventManager.paused = true

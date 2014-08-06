@@ -6,13 +6,16 @@
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
 	
 	<property name="bin.dir" value="war/WEB-INF/classes" />
-	<property name="dest.dir" value="../www/web/dist" />
-	<property name="dest.file.name" value="${ant.project.name}.war" />
-	<property name="dest.file.path" value="${dest.dir}/${dest.file.name}" />
+	<property name="siebog.file" value="${basedir}/${ant.project.name}.war" />
 	
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
 	<property name="controller" value="remoting://localhost" />
-	<property name="javadoc.dir" value="${dest.dir}/javadoc" />
+	
+	<property name="dist.dir" value="../www/web/dist" />
+	<property name="javadoc.dir" value="${dist.dir}/javadoc" />
+	
+	<property name="wildfly.base" value="/home/dejan/dev/siebog/wildfly-9.x-base" />
+	<property name="wildfly.modules" value="${wildfly.base}/modules/system/layers/base" />
 
 	<!--property name="sonar.jdbc.url" value="jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
 	<property name="sonar.jdbc.username" value="sonar" />
@@ -24,10 +27,10 @@
 	<property name="sonar.language" value="java" />
 	<property name="sonar.sources" value="src" />
 	<property name="sonar.binaries" value="${bin.dir}" />
-
+	
 	<target name="package">
-		<delete file="${dest.file.path}" />
-		<war destfile="${dest.file.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
+		<delete file="${siebog.file}" />
+		<war destfile="${siebog.file}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="${bin.dir}" includes="**" />
 			<fileset dir="war" includes="WEB-INF/jboss-web.xml" />
 			<fileset dir="war" includes="*.html" />
@@ -57,20 +60,32 @@
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='deploy ${dest.file.path} --name=${ant.project.name} --server-groups=xjaf2x-group' />
+			<arg value='deploy ${siebog.file} --name=${ant.project.name} --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 
 	<target name="dist" depends="package">
 		<!-- cleanup -->
-		<delete file="${dest.file.path}" />
-		<delete dir="${javadoc.dir}" />
-		<mkdir dir="${javadoc.dir}" />
-		<!-- binary distribution -->
-		<zip destfile="${dest.dir}/${ant.project.name}.zip" basedir="." includes="${dest.file.name},start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
-		<!-- source -->
-		<zip defaultexcludes="no" destfile="${dest.dir}/${ant.project.name}-src.zip" basedir="." includes="src/**,lib/**,war/**,.settings/**,.project,.classpath,build.xml" />
-		<!-- javadoc -->
-		<javadoc sourcepath="src" destdir="${javadoc.dir}" />
+		<!-- copy modules -->
+		<delete dir="${wildfly.modules}/siebog-core" />
+		<mkdir dir="${wildfly.modules}/siebog-core/main" />
+		<copy todir="${wildfly.modules}/siebog-core/main">
+			<fileset dir="${basedir}/lib/module" includes="*.jar,*.xml" />
+		</copy>
+		<!-- copy wildfly server -->
+		<mkdir dir="${dist.dir}/wildfly-9.x" />
+		<copy todir="${dist.dir}/wildfly-9.x">
+			<fileset dir="${wildfly.base}" includes="**" />
+		</copy>
+		<!-- copy binaries -->
+		<mkdir dir="${dist.dir}/siebog" />
+		<copy todir="${dist.dir}/siebog">
+			<fileset dir="${basedir}" includes="siebog.war,start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
+		</copy>
+		<!-- pack -->
+		<zip destfile="${dist.dir}/siebog.zip" basedir="${dist.dir}" includes="wildfly-9.x/**,siebog/**" />
+		<!-- cleanup -->
+		<delete dir="${dist.dir}/wildfly-9.x" />
+		<delete dir="${dist.dir}/siebog" />
 	</target>
 </project>
