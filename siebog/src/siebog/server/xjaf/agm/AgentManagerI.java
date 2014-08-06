@@ -22,6 +22,7 @@ package siebog.server.xjaf.agm;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Remote interface of the agent manager.
@@ -30,14 +31,15 @@ import java.util.List;
  */
 public interface AgentManagerI extends Serializable
 {
+
 	/**
 	 * Runs a new instance of an agent.
 	 * 
 	 * @param aid AID object.
-	 * @param args Optional initialization arguments to pass to the agent.
-	 * @return AID instance on success, null otherwise.
+	 * @param args Optional initialization arguments to be passed to the agent.
+	 * @return true if the agent was create successfully, false otherwise.
 	 */
-	boolean start(AID aid, Serializable... args);
+	boolean start(AID aid, Map<String, Serializable> args);
 
 	/**
 	 * Terminates an active agent.

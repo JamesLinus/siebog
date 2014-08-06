@@ -21,6 +21,9 @@
 package agents.aco.tsp.client;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -49,13 +52,15 @@ public class ACOStarter
 		
 		final AgentManagerI agm = Global.getAgentManager();
 		AID mapAid = new AID(Global.SERVER, "Map", "Map");
-		agm.start(mapAid, args[1]);
+		Map<String, Serializable> mapArgs = new HashMap<>();
+		mapArgs.put("fileName", args[1]);
+		agm.start(mapAid, mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i)
 		{
 			AID aid = new AID(Global.SERVER, "Ant", "Ant" + i);
-			agm.start(aid);
+			agm.start(aid, null);
 		}
 	}
 }

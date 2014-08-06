@@ -25,6 +25,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -58,15 +59,15 @@ public class Sender extends Agent
 	private long totalTime;
 
 	@Override
-	protected void onInit(Serializable... args)
+	protected void onInit(Map<String, Serializable> args)
 	{
-		myIndex = Integer.parseInt(args[0].toString());
+		myIndex = (Integer) args.get("myIndex");
 		receiver = new AID(Global.SERVER, "Receiver", "R" + myIndex);
-		numIterations = Integer.parseInt(args[1].toString());
+		numIterations = (Integer) args.get("numIterations");
 		// create message content
-		int contentLength = Integer.parseInt(args[2].toString());
+		int contentLength = (Integer) args.get("contentLength");
 		content = makeContent(contentLength);
-		resultsServiceAddr = args[3].toString();
+		resultsServiceAddr = args.get("resultsServiceAddr").toString();
 	}
 
 	@Override

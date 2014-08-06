@@ -60,4 +60,9 @@
         <resource-root path="xercesImpl-2.11.0.jar" />
         <resource-root path="xml-apis-1.4.01.jar" />
     </resources>
+    <dependencies>
+        <module name="org.omg.api" />
+        <module name="javax.api" />
+        <module name="sun.jdk" />
+    </dependencies>
 </module>

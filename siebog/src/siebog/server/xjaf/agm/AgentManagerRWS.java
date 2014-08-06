@@ -21,7 +21,9 @@
 package siebog.server.xjaf.agm;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.GET;
@@ -95,7 +97,7 @@ public class AgentManagerRWS
 	public String start(@PathParam("module") String module, @PathParam("ejbName") String ejbName,
 			@PathParam("runtimeName") String runtimeName)
 	{
-		Serializable[] args = null; // arguments ??
+		Map<String, Serializable> args = new HashMap<>(); // TODO: arguments ??
 		AID aid = new AID(module, ejbName, runtimeName);
 		try
 		{

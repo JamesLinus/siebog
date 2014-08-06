@@ -20,16 +20,18 @@
 
 package siebog.server.dnars.events
 
-import java.util.concurrent.BlockingQueue
 import scala.collection.mutable.ListBuffer
-import java.util.concurrent.locks.Lock
-import scala.collection.mutable.ArrayBuffer
+
+import siebog.server.xjaf.Global
+import siebog.server.xjaf.agm.AID
+import siebog.server.xjaf.msm.fipa.acl.ACLMessage
+import siebog.server.xjaf.msm.fipa.acl.Performative
 
 /**
- * 
+ *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[EventObserver]) extends Thread {
+class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends Thread {
 	override def run: Unit = {
 		while (!Thread.interrupted()) {
 			try {
@@ -42,19 +44,21 @@ class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[Eve
 				}
 				dispatch(events)
 			} catch {
-				case _: InterruptedException => 
+				case _: InterruptedException =>
 					return
-				case e: Throwable => 
+				case e: Throwable =>
 					e.printStackTrace()
 					return
 			}
 		}
 	}
-	
+
 	private def dispatch(events: Array[Event]): Unit = {
+		val acl = new ACLMessage(Performative.INFORM)
+		acl.setContent(events)
 		observers synchronized {
-			for (eo <- observers) 
-				eo.onChange(events)
-		} 
+			observers.foreach { aid => acl.addReceiver(aid) }
+		}
+		Global.getMessageManager().post(acl)
 	}
 }

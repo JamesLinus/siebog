@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
@@ -91,7 +92,7 @@ public class Ant extends Agent
 	private final Random rnd = new Random();
 
 	@Override
-	protected void onInit(Serializable... args)
+	protected void onInit(Map<String, Serializable> args)
 	{
 		AID mapAidPattern = new AID(null, "Map", null);
 		mapAID = agm.getRunning(mapAidPattern).get(0);
@@ -262,7 +263,7 @@ public class Ant extends Agent
 				// when this ant is done, create another one
 				AID newAnt = new AID(Global.SERVER, "Ant", "Ant"
 						+ myAid.hashCode() + System.currentTimeMillis());
-				agm.start(newAnt);
+				agm.start(newAnt, null);
 				agm.stop(myAid);
 				return;
 			}

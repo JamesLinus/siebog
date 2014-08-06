@@ -21,6 +21,7 @@
 package siebog.server.xjaf.agm;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,7 +51,7 @@ public abstract class Agent implements AgentI
 {
 	private static final long serialVersionUID = 1L;
 	// the access timeout is needed only when the system is under a heavy load.
-	// under normal circumstances, all methods return as quickly as possible
+	// under normal circumstances, all methods should return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
 	private AgentI myself;
@@ -64,11 +65,11 @@ public abstract class Agent implements AgentI
 	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	@Resource
 	private SessionContext context;
-	
+
 	@Override
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
-	public final void init(AID aid, Serializable... args) throws NamingException 
+	public final void init(AID aid, Map<String, Serializable> args) throws NamingException
 	{
 		myAid = aid;
 		agm = Global.getAgentManager();
@@ -78,7 +79,7 @@ public abstract class Agent implements AgentI
 		onInit(args);
 	}
 
-	protected void onInit(Serializable... args)
+	protected void onInit(Map<String, Serializable> args)
 	{
 	}
 
@@ -128,7 +129,8 @@ public abstract class Agent implements AgentI
 				public void run()
 				{
 					// TODO : check if the access to onMessage is protected
-					onMessage(msg);
+					if (filter(msg))
+						onMessage(msg);
 					myself.processNextMessage(); // will acquire lock
 				}
 			});
@@ -156,14 +158,13 @@ public abstract class Agent implements AgentI
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified
-	 * wait time if necessary for the message to become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
+	 * for the message to become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time
-	 *            is not taken into account and the method simply waits until a
-	 *            message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses
-	 *         before the message is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
+	 *            account and the method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
+	 *         is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout)
@@ -216,5 +217,17 @@ public abstract class Agent implements AgentI
 	@Remove
 	public final void remove()
 	{
+	}
+
+	/**
+	 * Before being finally delivered to the agent, the message will be passed to this filtering
+	 * function.
+	 * 
+	 * @param msg
+	 * @return If false, the message will be discarded.
+	 */
+	protected boolean filter(ACLMessage msg)
+	{
+		return true;
 	}
 }

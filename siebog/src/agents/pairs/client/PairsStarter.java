@@ -21,10 +21,13 @@
 package agents.pairs.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -70,10 +73,18 @@ public class PairsStarter
 		{
 			// receiver
 			AID aid = new AID(Global.SERVER, "Receiver", "R" + i);
-			agm.start(aid, primeLimit, numIterations);
+			Map<String, Serializable> rcArgs = new HashMap<>();
+			rcArgs.put("primeLimit", primeLimit);
+			rcArgs.put("numIterations", numIterations);
+			agm.start(aid, rcArgs);
 			// sender
 			aid = new AID(Global.SERVER, "Sender", "S" + i);
-			agm.start(aid, i, numIterations, contentLength, addr);
+			Map<String, Serializable> snArgs = new HashMap<>();
+			snArgs.put("myIndex", i);
+			snArgs.put("numIterations", numIterations);
+			snArgs.put("contentLength", contentLength);
+			snArgs.put("resultsServiceAddr", addr);
+			agm.start(aid, snArgs);
 			senders.add(aid);
 		}
 

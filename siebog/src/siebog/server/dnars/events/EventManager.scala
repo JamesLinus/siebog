@@ -2,12 +2,12 @@ package siebog.server.dnars.events
 
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.locks.ReentrantLock
-
 import scala.collection.mutable.ListBuffer
+import siebog.server.xjaf.agm.AID
 
 class EventManager {
 	private val list = new ListBuffer[Event]
-	private val observers = new ListBuffer[EventObserver]
+	private val observers = new ListBuffer[AID]
 	private var _paused: Boolean = false
 	
 	val NUM_DISPATCHERS = 1
@@ -21,11 +21,11 @@ class EventManager {
 				list.notify
 		}
 	
-	def addObserver(eo: EventObserver): Unit = 
-		observers synchronized { observers += eo }
+	def addObserver(aid: AID): Unit = 
+		observers synchronized { observers += aid }
 	
-	def remObserver(eo: EventObserver): Unit = 
-		observers synchronized { observers -= eo}
+	def remObserver(aid: AID): Unit = 
+		observers synchronized { observers -= aid }
 	
 	def paused = this synchronized { _paused }
 	

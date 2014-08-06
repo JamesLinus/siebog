@@ -21,27 +21,45 @@
 package siebog.server.xjaf.agm.dnars;
 
 import java.io.Serializable;
-import siebog.server.dnars.events.EventObserver;
+import java.util.Map;
+import siebog.server.dnars.events.Event;
 import siebog.server.dnars.graph.DNarsGraph;
 import siebog.server.dnars.graph.DNarsGraphFactory;
 import siebog.server.xjaf.agm.Agent;
+import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
+import siebog.server.xjaf.msm.fipa.acl.Performative;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends Agent implements DNarsAgentI, EventObserver
+public abstract class DNarsAgent extends Agent 
 {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraph domain;
+	protected DNarsGraph graph;
 	
 	@Override
-	protected void onInit(Serializable... args)
+	protected void onInit(Map<String, Serializable> args)
 	{
 		super.onInit(args);
-		if (args.length == 0)
-			throw new IllegalArgumentException("DNars agents need to be initialized with the domain name.");
-		domain = DNarsGraphFactory.create(args[0].toString(), null);
-		domain.eventManager().addObserver(this);
+		String domain = (String) args.get("domain");
+		if (domain == null)
+			domain = myAid.toString();
+		graph = DNarsGraphFactory.create(domain, null);
+		graph.eventManager().addObserver(myAid);
 	}
+	
+	@Override
+	protected boolean filter(ACLMessage msg)
+	{
+		if (msg.getPerformative() == Performative.INFORM)
+		{
+			Event[] events = (Event[]) msg.getContent();
+			onEvents(events);
+			return false;
+		}
+		return true;
+	}
+	
+	protected abstract void onEvents(Event[] events);
 }

@@ -43,7 +43,7 @@ class Answer(val term: Term, val expectation: Double, val simplicity: Double) ex
 	override def compareTo(other: Answer): Int = {
 		val EPSILON = 0.001
 		val absDiff = math.abs(expectation - other.expectation)
-		// If the two competing answers have the same e, the simpler answer is chosen
+		// if the two competing answers have the same e, the simpler answer is chosen
 		if (absDiff < EPSILON) {
 			val simp = simplicity - other.simplicity
 			if (math.abs(simp) < EPSILON) term.compareTo(other.term)
@@ -51,7 +51,7 @@ class Answer(val term: Term, val expectation: Double, val simplicity: Double) ex
 			else 1
 		}
 		else {
-			// If the expectations differ, the answer with higher e * s is selected
+			// if the expectations differ, the answer with higher e * s is selected
 			val p1 = expectation * simplicity
 			val p2 = other.expectation * other.simplicity
 			val diff = p1 - p2

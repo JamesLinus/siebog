@@ -48,8 +48,8 @@ public class PingPongStarter
 	{
 		XjafCluster.init(true);
 		AID ping = new AID(Global.SERVER, "Ping", "Ping");
-		Global.getAgentManager().start(ping);
-		Global.getAgentManager().start(new AID(Global.SERVER, "Pong", "Pong"));
+		Global.getAgentManager().start(ping, null);
+		Global.getAgentManager().start(new AID(Global.SERVER, "Pong", "Pong"), null);
 		
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(ping);

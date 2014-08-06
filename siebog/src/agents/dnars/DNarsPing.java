@@ -20,16 +20,15 @@
 
 package agents.dnars;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.agm.AgentI;
-import siebog.server.xjaf.agm.dnars.DNarsAgent;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 import siebog.server.dnars.base.Statement;
 import siebog.server.dnars.base.StatementParser;
 import siebog.server.dnars.events.Event;
+import siebog.server.xjaf.agm.AgentI;
+import siebog.server.xjaf.agm.dnars.DNarsAgent;
+import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 
 /**
  *
@@ -42,21 +41,15 @@ public class DNarsPing extends DNarsAgent
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void onInit(Serializable... args)
+	public void onEvents(Event[] event)
 	{
-		super.onInit(args);
-		Statement st = StatementParser.apply("cat -> animal (1.0, 0.9)");
-		domain.statements().add(st);
-	}
-	
-	@Override
-	protected void onMessage(ACLMessage msg)
-	{
+		System.out.println(Arrays.toString(event));
 	}
 
 	@Override
-	public void onChange(Event[] event)
+	protected void onMessage(ACLMessage msg)
 	{
-		System.out.println(Arrays.toString(event));
+		Statement st = StatementParser.apply("cat -> animal (1.0, 0.9)");
+		graph.statements().add(st);
 	}
 }

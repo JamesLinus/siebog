@@ -20,34 +20,30 @@
 
 package siebog.server.dnars.graph
 
-import com.tinkerpop.gremlin.scala.ScalaGraph
-import com.tinkerpop.blueprints.Graph
-import siebog.server.dnars.base.Term
-import com.tinkerpop.blueprints.Vertex
-import siebog.server.dnars.base.Truth
-import com.tinkerpop.blueprints.Edge
-import siebog.server.dnars.base.Statement
-import com.tinkerpop.gremlin.scala.ScalaVertex
-import com.tinkerpop.blueprints.Direction
-import siebog.server.dnars.base.CompoundTerm
-import siebog.server.dnars.base.Connector._
-import siebog.server.dnars.base.Copula._
-import siebog.server.dnars.base.AtomicTerm
 import org.apache.commons.configuration.BaseConfiguration
+import org.apache.commons.configuration.Configuration
+
 import com.thinkaurelius.titan.core.TitanFactory
+import com.thinkaurelius.titan.core.TitanGraph
+import com.thinkaurelius.titan.core.util.TitanCleanup
+import com.tinkerpop.blueprints.Direction
+import com.tinkerpop.blueprints.Edge
+import com.tinkerpop.blueprints.Graph
+import com.tinkerpop.blueprints.Vertex
+import com.tinkerpop.gremlin.scala.ScalaGraph
+import com.tinkerpop.gremlin.scala.ScalaVertex
+import com.tinkerpop.gremlin.scala.wrapScalaVertex.apply
+
+import siebog.server.dnars.base.AtomicTerm
+import siebog.server.dnars.base.AtomicTermSerializer
 import siebog.server.dnars.base.CompoundTerm
 import siebog.server.dnars.base.CompoundTermSerializer
-import siebog.server.dnars.base.AtomicTermSerializer
+import siebog.server.dnars.base.Statement
+import siebog.server.dnars.base.Term
+import siebog.server.dnars.base.Truth
 import siebog.server.dnars.base.TruthSerializer
-import org.apache.commons.configuration.Configuration
-import java.io.File
-import java.nio.file.Files
-import com.tinkerpop.blueprints.impls.tg.TinkerGraphFactory
-import com.thinkaurelius.titan.core.util.TitanCleanup
-import com.thinkaurelius.titan.core.TitanGraph
 import siebog.server.dnars.events.EventManager
-import scala.collection.mutable.ListBuffer
-import siebog.server.dnars.events.Event
+import siebog.server.dnars.graph.DNarsVertex.wrap
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by 
@@ -164,13 +160,13 @@ object DNarsGraphFactory {
 		// storage.machine-id-appendix
 		conf.setProperty("storage.keyspace", domain)
 		// custom serializers
-		conf.setProperty("attributes.allow-all", "true")
+		/*conf.setProperty("attributes.allow-all", "true")
 		conf.setProperty("attributes.attribute20",  classOf[AtomicTerm].getName)
 		conf.setProperty("attributes.serializer20", classOf[AtomicTermSerializer].getName)
 		conf.setProperty("attributes.attribute21",  classOf[CompoundTerm].getName)
 		conf.setProperty("attributes.serializer21", classOf[CompoundTermSerializer].getName)
 		conf.setProperty("attributes.attribute22",  classOf[Truth].getName)
-		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)
+		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)*/
 		// additional configuration?
 		if (additionalConfig != null)
 			additionalConfig.foreach { e => conf.setProperty(e._1 , e._2) }

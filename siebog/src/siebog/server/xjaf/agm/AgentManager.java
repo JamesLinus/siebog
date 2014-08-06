@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,7 +69,7 @@ public class AgentManager implements AgentManagerI
 	}
 
 	@Override
-	public boolean start(AID aid, Serializable... args)
+	public boolean start(AID aid, Map<String, Serializable> args)
 	{
 		// is it running already?
 		AgentI agent = runningAgents.get(aid);
@@ -101,7 +102,7 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	private AgentI createNew(AID aid, Serializable... args)
+	private AgentI createNew(AID aid, Map<String, Serializable> args)
 	{
 		try
 		{

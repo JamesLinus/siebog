@@ -21,6 +21,7 @@
 package siebog.server.xjaf.agm;
 
 import java.io.Serializable;
+import java.util.Map;
 import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 
 /**
@@ -44,7 +45,7 @@ public interface AgentI extends Serializable
 	 * override any of them.
 	 */
 	
-	void init(AID aid, Serializable... args) throws Exception;
+	void init(AID aid, Map<String, Serializable> args) throws Exception;
 	
 	void handleMessage(ACLMessage msg);
 
