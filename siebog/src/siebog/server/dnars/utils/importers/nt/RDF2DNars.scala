@@ -38,7 +38,7 @@ object RDF2DNars {
 				
 				val completed = counter + 1
 				if (completed % 4096 == 0) 
-					println(s"Read $completed statements...")
+					println(s"Processed $completed statements...")
 				true
 			})
 			println(s"Done. Total: $total statements.")

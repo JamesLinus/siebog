@@ -32,8 +32,18 @@ import siebog.server.dnars.base.Truth
  */
 class DNarsEdge(override val edge: Edge) extends ScalaEdge(edge) {
 	def copula: String = getLabel
-	def truth: Truth = getProperty[Truth]("truth")
-	def truth_=(value: Truth): Unit = setProperty("truth", value)
+	
+	def truth: Truth = { 
+		val str = getProperty[String]("truth").split("_")
+		val freq = str(0).toDouble
+		val conf = str(1).toDouble
+		Truth(freq, conf)		
+	}
+	
+	def truth_=(value: Truth): Unit = {
+		val str = value.freq + "_" + value.conf
+		setProperty("truth", str)
+	}
 }
 
 object DNarsEdge {

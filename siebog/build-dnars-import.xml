@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="create_run_jar" name="Create Runnable Jar for Project siebog">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="dnars-import.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="siebog.server.dnars.utils.importers.nt.DNarsImporterJ"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/home/dejan/dev/siebog/trunk/siebog/war/WEB-INF/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/activation/api/main/activation-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/annotation/api/main/jboss-annotations-api_1.2_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/batch/api/main/jboss-batch-api_1.0_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/ejb/api/main/jboss-ejb-api_3.2_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/el/api/main/jboss-el-api_3.0_spec-1.0.4.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/enterprise/api/main/cdi-api-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/enterprise/concurrent/api/main/jboss-concurrency-api_1.0_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/faces/api/main/jboss-jsf-api_2.2_spec-2.2.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/inject/api/main/javax.inject-1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/interceptor/api/main/jboss-interceptors-api_1.2_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/jms/api/main/jboss-jms-api_2.0_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/jws/api/main/jsr181-api-1.0-MR1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/mail/api/main/javax.mail-1.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/management/j2ee/api/main/jboss-j2eemgmt-api_1.1_spec-1.0.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/persistence/api/main/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/resource/api/main/jboss-connector-api_1.7_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/rmi/api/main/jboss-rmi-api_1.0_spec-1.0.4.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/security/auth/message/api/main/jboss-jaspi-api_1.1_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/security/jacc/api/main/jboss-jacc-api_1.5_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_3.1_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/servlet/jsp/api/main/jboss-jsp-api_2.3_spec-1.0.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/servlet/jstl/api/main/jboss-jstl-api_1.2_spec-1.1.2.Beta1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/transaction/api/main/jboss-transaction-api_1.2_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/validation/api/main/validation-api-1.1.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/websocket/api/main/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/ws/rs/api/main/jaxrs-api-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/wsdl4j/api/main/wsdl4j-1.6.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/xml/bind/api/main/jboss-jaxb-api_2.2_spec-1.0.4.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/xml/rpc/api/main/jboss-jaxrpc-api_1.1_spec-1.0.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/xml/soap/api/main/jboss-saaj-api_1.3_spec-1.0.3.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/javax/xml/ws/api/main/jboss-jaxws-api_2.2_spec-2.0.2.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/hibernate/validator/cdi/main/hibernate-validator-cdi-5.1.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/hibernate/validator/main/hibernate-validator-5.1.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/picketbox/main/picketbox-4.0.21.Beta3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/picketbox/main/picketbox-commons-1.0.0.final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/picketbox/main/picketbox-infinispan-4.0.21.Beta3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/dmr/main/jboss-dmr-1.2.0.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/logging/main/jboss-logging-3.1.4.GA.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/main/async-http-servlet-3.0-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-client-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/main/resteasy-jaxrs-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/resteasy/resteasy-multipart-provider/main/resteasy-multipart-provider-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/wildfly-9.x/modules/system/layers/base/org/jboss/ejb3/main/jboss-ejb3-ext-api-2.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/infinispan-core-6.0.2.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jaxrs-api-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-cli-client.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-client.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-ejb3-ext-api-2.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/jboss-msc-1.2.2.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/resteasy-multipart-provider-3.0.8.Final.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/sonar-ant-task-2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/wildfly-cli-1.0.0.Alpha3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/json-simple-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/jade.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/astyanax-cassandra-1.56.37.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/astyanax-core-1.56.37.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/astyanax-thrift-1.56.37.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/blueprints-core-2.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/cassandra-all-1.2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/cassandra-thrift-1.2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/colt-1.2.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/commons-codec-1.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/commons-collections-3.2.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/commons-configuration-1.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/commons-lang-2.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/commons-logging-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/gremlin-java-2.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/gremlin-scala-2.4.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/guava-14.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/high-scale-lib-1.1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/hppc-0.4.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/jackson-core-asl-1.9.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/jackson-mapper-asl-1.9.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/jena-core-2.11.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/joda-time-1.6.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/kryo-2.21-shaded.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/libthrift-0.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/log4j-1.2.17.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/metrics-core-3.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/pipes-2.4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/slf4j-api-1.7.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/slf4j-log4j12-1.7.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/spatial4j-0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/titan-cassandra-0.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/titan-core-0.4.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/xercesImpl-2.11.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/xml-apis-1.4.01.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/trunk/siebog/lib/module/scala-library.jar"/>
+        </jar>
+    </target>
+</project>
