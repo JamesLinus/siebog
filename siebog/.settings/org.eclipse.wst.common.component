@@ -2,6 +2,7 @@
     <wb-module deploy-name="siebog">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/war" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
         <property name="java-output-path" value="/siebog/bin"/>
         <property name="context-root" value="siebog"/>
     </wb-module>

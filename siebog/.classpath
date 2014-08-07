@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar">
@@ -124,5 +125,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/module/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

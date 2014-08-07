@@ -100,7 +100,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	/**
 	 * Debugging purposes only.
 	 */
-	def printEdges() {
+	def printEdges(): Unit = {
 		val list = E.map { e => {
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
@@ -117,6 +117,15 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		for (st <- list)
 			println(st)
 		println("------------------- Done -------------------")
+	}
+	
+	/**
+	 * Debugging purposes only.
+	 */
+	def getEdgeCount(): Long = {
+		var count = 0L
+		V.as("x").inE.sideEffect { e => count += 1 }.back("x").outE.sideEffect { e => count += 1 }.iterate
+		count
 	}
 	
 	def shutdown(clear: Boolean = false) = {

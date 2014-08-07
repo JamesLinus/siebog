@@ -11,16 +11,19 @@ import siebog.server.dnars.base.Truth
 import siebog.server.dnars.base.StatementParser
 
 object RDF2DNars {
-	def main(args: Array[String]): Unit = {
-		if (args.length != 2) {
-			println("I need 2 arguments: InputFile OutputFile")
+	def apply(args: Array[String]): Unit = {
+		if (args.length != 3) {
+			println("I need 3 arguments: InputFile OutputFile LinesPerFile")
 			return
 		}
 		val input = args(0)
 		val output = args(1)
+		val linesPerFile = args(2).toInt
 		
 		println(s"Reading from $input...")
-		val out = new PrintWriter(output)
+		var out: PrintWriter = null 
+		var linesInFile = 0
+		var fileNum = 0
 		try {
 			val total = NTReader.read(input, (ntStat, counter) => {
 				// subject-predicate-object becomes
@@ -34,16 +37,31 @@ object RDF2DNars {
 				
 				var str = statement.toString
 				StatementParser(str) // make sure everything's ok
+				
+				if (out == null) {
+					fileNum += 1
+					val fileName = output + "." + fileNum
+					println(s"Writing to file $fileName")
+					out = new PrintWriter(fileName)
+					linesInFile = 0
+				}
+				
 				out.println(str)
 				
-				val completed = counter + 1
-				if (completed % 4096 == 0) 
-					println(s"Processed $completed statements...")
+				linesInFile += 1
+				if (linesInFile == linesPerFile) {
+					out.close()
+					out = null
+				}
+				
+				if (counter % 4096 == 0) 
+					println(s"Processed $counter statements...")
 				true
 			})
 			println(s"Done. Total: $total statements.")
 		} finally {
-			out.close()
+			if (out != null)
+				out.close()
 		}
 	}
 	

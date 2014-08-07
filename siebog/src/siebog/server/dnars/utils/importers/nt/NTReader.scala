@@ -20,8 +20,8 @@ object NTReader {
 				reader.read(model, new StringReader(line), "")
 				val statement = model.listStatements.nextStatement
 				
-				ok = progress(statement, counter)
 				counter += 1
+				ok = progress(statement, counter)
 			} }
 		counter
 	}
