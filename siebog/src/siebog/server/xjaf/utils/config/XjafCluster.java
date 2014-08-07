@@ -59,16 +59,19 @@ public class XjafCluster
 	{
 		MASTER, SLAVE
 	}
+
 	private static final Logger logger = Logger.getLogger(XjafCluster.class.getName());
 	private static XjafCluster instance;
 	private Mode mode;
 	private String address;
 	private String master;
+	private int portOffset; // if slave
 	private Set<String> clusterNodes;
 	private RelayInfo relay;
+	private String slaveName;
 	private static File xjafRoot;
 	private static boolean initialized;
-	
+
 	public static File getXjaf2xRoot()
 	{
 		return xjafRoot;
@@ -78,8 +81,9 @@ public class XjafCluster
 	{
 		XjafCluster.xjafRoot = xjafRoot;
 	}
-	
-	public static void init(boolean initClientContext) throws IOException, ParserConfigurationException, SAXException, NamingException
+
+	public static void init(boolean initClientContext) throws IOException,
+			ParserConfigurationException, SAXException, NamingException
 	{
 		if (instance == null)
 		{
@@ -91,7 +95,7 @@ public class XjafCluster
 			}
 		}
 	}
-	
+
 	private XjafCluster() throws IOException, ParserConfigurationException, SAXException
 	{
 		File configFile = getConfigFile();
@@ -103,12 +107,11 @@ public class XjafCluster
 			loadConfig(doc);
 		}
 	}
-	
+
 	private void validateConfig(File configFile) throws SAXException, IOException
 	{
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		Schema schema = schemaFactory
-				.newSchema(XjafCluster.class.getResource("xjaf-server.xsd"));
+		Schema schema = schemaFactory.newSchema(XjafCluster.class.getResource("xjaf-server.xsd"));
 		Validator validator = schema.newValidator();
 		validator.validate(new StreamSource(configFile));
 	}
@@ -177,13 +180,23 @@ public class XjafCluster
 		// my address
 		address = elem.getAttribute("address");
 
-		// if slave, get master address
 		if (mode == Mode.SLAVE)
 		{
 			// master address
 			master = elem.getAttribute("master");
 			if (master == null)
 				throw new IllegalArgumentException("Please specify the master node's address.");
+			// slave name
+			slaveName = elem.getAttribute("name");
+			if (slaveName == null)
+				throw new IllegalArgumentException("Please specify the name of this slave node.");
+			try
+			{
+				portOffset = Integer.parseInt(elem.getAttribute("port-offset"));
+			} catch (NumberFormatException ex)
+			{
+				portOffset = 0;
+			}
 		} else
 		{
 			clusterNodes = new HashSet<>();
@@ -196,7 +209,7 @@ public class XjafCluster
 				if (slaves != null)
 				{
 					String[] slaveList = slaves.split(",");
-					for (String s: slaveList)
+					for (String s : slaveList)
 					{
 						s = s.trim();
 						if (s.length() > 0)
@@ -215,6 +228,11 @@ public class XjafCluster
 			String site = elem.getAttribute("site");
 			relay = new RelayInfo(address, site);
 		}
+	}
+
+	public int getPortOffset()
+	{
+		return portOffset;
 	}
 
 	public RelayInfo getRelay()
@@ -253,9 +271,14 @@ public class XjafCluster
 	{
 		return instance;
 	}
-	
+
 	public static File getConfigFile() throws IOException
 	{
 		return new File(xjafRoot, "xjaf-config.xml");
+	}
+
+	public String getSlaveName()
+	{
+		return slaveName;
 	}
 }

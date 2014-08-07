@@ -11,6 +11,7 @@
 						<attribute name="address" type="string" use="required" />
 						<attribute name="name" type="string" use="optional" />
 						<attribute name="master" type="string" use="optional" />
+						<attribute name="port-offset" type="string" use="optional" />
 					</complexType>
 				</element>
 				

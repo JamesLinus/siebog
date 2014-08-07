@@ -7,8 +7,10 @@
 			mode: master or slave
 			address: network address of this node, required
 			master: address of the master node, required if mode = slave
+			name: cluster-wide unique name of this slave node, required if mode = slave
+			port-offset: socket port offset, if mode = slave (optional)
 	 -->
-	<server mode="%mode%" address="%address%" %master_addr% />
+	<server mode="%mode%" address="%address%" %master_addr% %slave_name% %port_offset% />
 	
 	<!-- 
 		if mode = master, comma-separated list of slave nodes (if any) 

@@ -49,7 +49,7 @@ import siebog.server.xjaf.msm.MessageManagerI;
  */
 public abstract class Global
 {
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "1.0.1";
 	
 	public static final String 
 		GROUP = "xjaf2x-group", 
@@ -137,8 +137,7 @@ public abstract class Global
 	public static void printVersion()
 	{
 		System.out.println("-------------------------------------------------------------");
-		System.out.println("Extensible Java EE-Based Agent Framework");
-		System.out.println("XJAF v" + VERSION);
+		System.out.println("Siebog Multiagent Framework v" + VERSION);
 		System.out.println("-------------------------------------------------------------");
 	}
 }

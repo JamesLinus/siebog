@@ -7,8 +7,9 @@
 			mode: master or slave
 			address: network address of this node, required
 			master: address of the master node, required if mode = slave
+			port-offset: socket port offset, if mode = slave (optional)
 	 -->
-	<server mode="MASTER" address="localhost"  />
+	<server mode="MASTER" address="localhost"   />
 	
 	<!-- 
 		if mode = master, comma-separated list of slave nodes (if any) 

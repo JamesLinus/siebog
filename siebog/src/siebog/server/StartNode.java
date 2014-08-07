@@ -54,7 +54,9 @@ public class StartNode
 			"<interface name=\"public\"><inet-address value=\"${jboss.bind.address:ADDR}\" /></interface>" +
 			"<interface name=\"unsecure\"><inet-address value=\"${jboss.bind.address.unsecure:ADDR}\" /></interface>";
 	private final static String SLAVE_SERVER_DEF = "" +
-			"<server name=\"NAME\" group=\"xjaf-group\" auto-start=\"true\" />";
+			"<server name=\"NAME\" group=\"xjaf2x-group\" auto-start=\"true\">" +
+			"  <socket-bindings port-offset=\"POFFSET\" />" +
+			"</server>";
 	// @formatter:on
 
 	private static void runMaster() throws IOException
@@ -94,16 +96,26 @@ public class StartNode
 	{
 		final String ADDR = XjafCluster.get().getAddress();
 		final String MASTER = XjafCluster.get().getMaster();
-		final String NAME = "xjaf@" + ADDR;
+		final String NAME = XjafCluster.get().getSlaveName() + "@" + ADDR;
+		final int portOffset = XjafCluster.get().getPortOffset();
 
-		logger.info(String.format("Starting slave node %s, with %s@%s", NAME, Global.MASTER_NAME, MASTER));
+		logger.info(String.format("Starting slave node %s, with %s@%s", NAME, Global.MASTER_NAME,
+				MASTER));
 		String hostSlave = Global.readFile(StartNode.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostSlave = hostSlave.replace("<!-- interface-def -->", intfDef);
 
-		String serverDef = SLAVE_SERVER_DEF.replace("NAME", NAME);
+		String serverDef = SLAVE_SERVER_DEF.replace("NAME", NAME).replace("POFFSET",
+				portOffset + "");
 		hostSlave = hostSlave.replace("<!-- server-def -->", serverDef);
+		
+		int nativePort = 9999;
+		if (portOffset > 0)
+			nativePort += portOffset;
+		hostSlave = hostSlave.replace("NAT_PORT", nativePort + "");
+		
+		hostSlave = hostSlave.replace("SL_NAME", "name=\"" + NAME + "\"");
 
 		File hostConfig = new File(jbossHome + "domain/configuration/host-slave.xml");
 		Global.writeFile(hostConfig, hostSlave);
@@ -154,8 +166,7 @@ public class StartNode
 						if (--maxTries < 0)
 							throw e;
 						status = ServerStatus.STARTING;
-					}
-					else
+					} else
 						throw e;
 				}
 			} while (status == ServerStatus.STARTING || status == ServerStatus.UNKNOWN);
@@ -170,7 +181,8 @@ public class StartNode
 			SAXException, ParserConfigurationException
 	{
 		Mode mode = null;
-		String address = null, master = null;
+		String address = null, master = null, slaveName = null;
+		int portOffset = -1;
 		Set<String> slaveNodes = new HashSet<>();
 		boolean hasSlaveNodes = false;
 		for (int i = 0; i < args.length; i++)
@@ -205,6 +217,15 @@ public class StartNode
 				for (String s : cc)
 					slaveNodes.add(s);
 				break;
+			case "--port-offset":
+				portOffset = Integer.parseInt(value);
+				if (portOffset < 0 || portOffset > 65535)
+					throw new IllegalArgumentException(
+							"Port offset should be in the range of [0..65535].");
+				break;
+			case "--name":
+				slaveName = value;
+				break;
 			case "--help":
 			case "help":
 			case "--h":
@@ -221,6 +242,12 @@ public class StartNode
 			if (master != null)
 				throw new IllegalArgumentException("Master address should be specified "
 						+ "on the master node only.");
+			if (portOffset >= 0)
+				throw new IllegalArgumentException("Port offset should be specified "
+						+ "on the slave node only.");
+			if (slaveName != null)
+				throw new IllegalArgumentException("Slave name should not be specified "
+						+ "on the master node.");
 		} else
 		{
 			if (hasSlaveNodes)
@@ -228,14 +255,16 @@ public class StartNode
 						+ "be specified only on the master node.");
 			if (master == null)
 				throw new IllegalArgumentException("Please specify the master node's address.");
+			if (slaveName == null)
+				throw new IllegalArgumentException("Please specify the name of this slave node.");
 		}
 
 		// ok, create the file
-		writeConfigFile(configFile, mode, address, slaveNodes, master);
+		writeConfigFile(configFile, mode, address, slaveNodes, master, slaveName, portOffset);
 	}
 
 	private static void writeConfigFile(File configFile, Mode mode, String address,
-			Set<String> slaveNodes, String master) throws IOException
+			Set<String> slaveNodes, String master, String slaveName, int portOffset) throws IOException
 	{
 		String str = Global.readFile(StartNode.class.getResourceAsStream("xjaf-config.txt"));
 		str = str.replace("%mode%", mode.toString());
@@ -255,11 +284,18 @@ public class StartNode
 			}
 			str = str.replace("%slave_list%", slaves.toString());
 			str = str.replace("%master_addr%", "");
+			str = str.replace("%port_offset%", "");
+			str = str.replace("%slave_name%", "");
 		} else
 		{
 			String masterAddr = "master=\"" + master + "\"";
 			str = str.replace("%master_addr%", masterAddr);
 			str = str.replace("%slave_list%", "");
+			str = str.replace("%slave_name%", "name=\"" + slaveName + "\"");
+			if (portOffset >= 0)
+				str = str.replace("%port_offset%", "port-offset=\"" + portOffset + "\"");
+			else
+				str = str.replace("%port_offset%", "");
 		}
 		Global.writeFile(configFile, str);
 	}
@@ -271,8 +307,10 @@ public class StartNode
 		System.out.println("\t--mode:\t\tMASTER or SLAVE");
 		System.out.println("\t--address:\t\tNetwork address of this computer.");
 		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
+		System.out.println("\t--name:\t\tIf SLAVE, the name of this slave node.");
+		System.out.println("\t--port-offset:\t\tIf SLAVE, optional, socket port offset.");
 		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated "
-				+ "list of all at least one slave node.");
+				+ "list of all or at least one slave node.");
 	}
 
 	private static String getRootFolder()
@@ -314,7 +352,7 @@ public class StartNode
 			if (args.length > 0)
 				createConfigFromArgs(args, XjafCluster.getConfigFile());
 			else if (!XjafCluster.getConfigFile().exists()) // use the default settings
-				writeConfigFile(XjafCluster.getConfigFile(), Mode.MASTER, "localhost", null, null);
+				writeConfigFile(XjafCluster.getConfigFile(), Mode.MASTER, "localhost", null, null, "", -1);
 
 			XjafCluster.init(false);
 			jbossHome = XjafCluster.getJBossHome();
