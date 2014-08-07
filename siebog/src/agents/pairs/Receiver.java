@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import org.jboss.ejb3.annotation.Clustered;
 import siebog.server.xjaf.agm.Agent;
 import siebog.server.xjaf.agm.AgentI;
 import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
@@ -38,7 +37,6 @@ import siebog.server.xjaf.msm.fipa.acl.Performative;
  */
 @Stateful
 @Remote(AgentI.class)
-@Clustered
 public class Receiver extends Agent
 {
 	private static final long serialVersionUID = -677935957265970587L;

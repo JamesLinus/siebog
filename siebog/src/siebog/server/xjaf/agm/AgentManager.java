@@ -36,7 +36,6 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
-import org.jboss.ejb3.annotation.Clustered;
 import siebog.server.xjaf.Global;
 
 /**
@@ -47,7 +46,6 @@ import siebog.server.xjaf.Global;
  */
 @Stateless
 @Remote(AgentManagerI.class)
-@Clustered
 public class AgentManager implements AgentManagerI
 {
 	private static final long serialVersionUID = 1L;

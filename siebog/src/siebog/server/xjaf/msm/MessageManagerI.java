@@ -36,4 +36,6 @@ public interface MessageManagerI
 	 * @param message ACLMessage instance.
 	 */
 	void post(ACLMessage message);
+	
+	String ping();
 }

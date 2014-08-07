@@ -29,7 +29,6 @@ import java.util.Random;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import org.jboss.ejb3.annotation.Clustered;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agm.AID;
 import siebog.server.xjaf.agm.Agent;
@@ -45,7 +44,6 @@ import siebog.server.xjaf.msm.fipa.acl.Performative;
  */
 @Stateful
 @Remote(AgentI.class)
-@Clustered
 public class Ant extends Agent
 {
 	private static final long serialVersionUID = 8886978416763257091L;

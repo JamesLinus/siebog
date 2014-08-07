@@ -28,7 +28,6 @@ import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.infinispan.Cache;
-import org.jboss.ejb3.annotation.Clustered;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agm.AID;
 import siebog.server.xjaf.agm.AgentI;
@@ -41,7 +40,6 @@ import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
  */
 @Stateless
 @Remote(MessageManagerI.class)
-@Clustered
 @Lock(LockType.READ)
 public class MessageManager implements MessageManagerI
 {
@@ -73,5 +71,11 @@ public class MessageManager implements MessageManagerI
 			else
 				logger.info("Agent not running: [" + aid + "]");
 		}
+	}
+
+	@Override
+	public String ping()
+	{
+		return "Pong from " + System.getProperty("jboss.node.name");
 	}
 }

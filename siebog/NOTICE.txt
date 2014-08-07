@@ -1,4 +1,4 @@
-Extensible Java EE-based Agent Framework - XJAF
+Siebog Multiagent Middleware
 Copyright 2013 - 2014 University of Novi Sad, Serbia
 
 This project includes software developed by staff members

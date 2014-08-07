@@ -6,6 +6,7 @@ if [ "x$JBOSS_HOME" = "x" ]; then
 fi
 
 if [ "x$JAVA_HOME" = "x" ]; then
+  echo "WARNING: Environment variable JAVA_HOME not set, unknown errors may occur."
   JAVA_EXE=java;
 else
   JAVA_EXE=$JAVA_HOME/bin/java;
@@ -15,7 +16,7 @@ JBOSS_MODULES_BASE=$JBOSS_HOME/modules/system/layers/base;
 JBOSS_BIN=$JBOSS_HOME/bin;
 CWD=$(pwd);
 
-$JAVA_EXE -Dxjaf.base.dir=$CWD -cp .:\
+$JAVA_EXE -server -Dxjaf.base.dir=$CWD -cp .:\
 $JBOSS_MODULES_BASE/org/infinispan/main/infinispan-core-6.0.2.Final.jar:\
 $JBOSS_MODULES_BASE/org/infinispan/commons/infinispan-commons-6.0.2.Final.jar:\
 $JBOSS_MODULES_BASE/javax/ws/rs/api/main/jaxrs-api-3.0.8.Final.jar:\

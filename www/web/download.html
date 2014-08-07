@@ -51,60 +51,45 @@
 		<div id="main">
 			<img class="headerimage" src="banner1-1.jpg" width="740"
 				alt="Novi Sad" />
-			<h3>WildFly (formerly, JBoss) Application Server</h3>
 			<p>
-				If this is your first time using XJAF, you need to <a
-					href="dist/wildfly-9.x.zip">download WildfFly (ZIP
-					archive, 110 MB)</a>. After unpacking the archive, please <a
+				<a href="dist/siebog.zip">Download the latest version of XJAF
+					(ZIP archive, ~130 MB)</a>.
+			</p>
+			<p>
+				The archive includes <a href="http://wildfly.org/">WildFly</a>
+				enterprise application server (formerly: JBoss), pre-configured to
+				work with XJAF. After unpacking the archive, please <a
 					href="https://www.google.com/search?q=how+to+set+environment+variables">set
-					an environment variable</a> named JBOSS_HOME to point to the newly
-				created folder<br />(e.g. <i>C:\widfly-9.x</i> on Windows, or <i>/home/myself/widlfly-9.x</i>
+					an environment variable</a> named JBOSS_HOME to point to the <i>wildfly-9.x</i>
+				sub-folder<br />(e.g. <i>C:\siebog\wildfly-9.x</i> on Windows, or <i>/home/myself/siebog/wildfly-9.x</i>
 				on Linux).
 			</p>
 			<p>
 				Please note that XJAF and WildFly require Java SE Development Kit
-				(JDK) 7 to run. The Java Runtime Environment (JRE) will not suffice.
-				You may <a
-					href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">download
-					JDK 7 here</a>. To make sure the correct Java version is used, you
-				should set an environment variable JAVA_HOME to point to the JDK
+				(JDK) 7 or later to run. The Java Runtime Environment (JRE) will not
+				suffice. You may <a
+					href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">download
+					the latest JDK here</a>. To make sure the correct Java version is used,
+				you should set an environment variable JAVA_HOME to point to the JDK
 				installation folder<br />(e.g. <i>C:\Program
-					Files\Java\jdk1.7.0_55</i> on Windows, or <i>/usr/lib/jvm/open-jdk</i>
+					Files\Java\jdk1.8.0_1</i> on Windows, or <i>/usr/lib/jvm/java-8-oracle</i>
 				on Linux).
 			</p>
-			<h3>Downloading and installing XJAF</h3>
 			<p>
-				<a href="dist/xjaf.zip">Download the latest version of XJAF
-					(ZIP archive)</a>. To install XJAF, follow the next set of commands:
+				Finally, to start XJAF, go to the unpacked XJAF folder, and execute
+				<i>start-node.bat</i> under Windows, or <i>start-node.sh</i> in
+				Linux terminal.
 			</p>
-			<ul>
-				<li>Unpack the ZIP archive anywhere. Go to the unpacked XJAF
-					folder, and execute <i>start-node.bat</i> under Windows, or <i>start-node.sh</i>
-					in Linux terminal;
-				</li>
-				<li>Wait until you see "WildFly 1.0.0.Alpha3 'Kenny' started in XYZms";</li>
-				<li>Navigate to the <i>bin</i> folder of your WildFly
-					installation and type <i>jboss-cli.bat --gui</i> in Windows command
-					prompt, or <i>./jboss-cli.sh --gui</i> in Linux terminal;
-				</li>
-				<li>CLI GUI window should pop-up. Choose <i>Deployments
-						-&gt; Deploy</i> from the main menu. Browse the <i>xjaf.jar</i> file
-					in your XJAF installation, specify <i>xjaf</i> for the <i>Name</i>
-					field, and mark the <i>xjaf2x-group</i> check box. Leave other
-					fields empty / unchecked. Click <i>OK</i> to close the dialog, and
-					finally <i>Submit</i> to deploy XJAF to JBoss.
-				</li>
-			</ul>
 			<p>
 				Your XJAF installation is now ready. You may open the following
 				address in your web browser to access the XJAF client: <a
-					href="http://localhost:8080/xjaf">http://localhost:8080/xjaf</a>.
+					href="http://localhost:8080/siebog">http://localhost:8080/siebog</a>.
 				From there, you may explore the framework's functionalities and run
-				some of the bundled example agents. Fosr more information about
+				some of the bundled example agents. For more information about
 				configuring XJAF and starting a computer cluster, please visit the <a
 					href="documentation.html">documentation page</a>.
 			</p>
-			<h3>Source code</h3>
+			<!-- h3>Source code</h3>
 			<p>
 				<a href="dist/xjaf-src.zip">Download the XJAF source code (ZIP
 					archive)</a>. XJAF is distributed under the generous <a
@@ -122,7 +107,7 @@
 					7</a>, <a href="http://www.eclipse.org/downloads/">Eclipse IDE for
 					Java EE Developers</a> (Kepler or newer), and <a
 					href="http://tools.jboss.org/downloads/">JBoss Tools</a>.
-			</p>
+			</p-->
 		</div>
 
 		<div id="footer">

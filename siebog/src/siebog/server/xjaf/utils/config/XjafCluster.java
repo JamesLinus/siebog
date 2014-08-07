@@ -67,6 +67,7 @@ public class XjafCluster
 	private Set<String> clusterNodes;
 	private RelayInfo relay;
 	private static File xjafRoot;
+	private static boolean initialized;
 	
 	public static File getXjaf2xRoot()
 	{
@@ -83,8 +84,11 @@ public class XjafCluster
 		if (instance == null)
 		{
 			instance = new XjafCluster();
-			if (initClientContext)
+			if (initClientContext && !initialized)
+			{
 				instance.initClientContext();
+				initialized = true;
+			}
 		}
 	}
 	

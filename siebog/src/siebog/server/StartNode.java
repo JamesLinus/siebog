@@ -22,15 +22,21 @@ package siebog.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
+import org.jboss.as.controller.client.helpers.domain.DomainClient;
+import org.jboss.as.controller.client.helpers.domain.ServerIdentity;
+import org.jboss.as.controller.client.helpers.domain.ServerStatus;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.utils.config.XjafCluster;
 import siebog.server.xjaf.utils.config.XjafCluster.Mode;
+import siebog.server.xjaf.utils.deployment.Deployment;
 
 /**
  * A helper class for starting XJAF / JBoss nodes.
@@ -55,7 +61,7 @@ public class StartNode
 	{
 		final String ADDR = XjafCluster.get().getAddress();
 
-		logger.info("Starting master node xjaf-master@" + ADDR);
+		logger.info("Starting master node " + Global.MASTER_NAME + "@" + ADDR);
 		String hostMaster = Global.readFile(StartNode.class.getResourceAsStream("host-master.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
@@ -81,6 +87,7 @@ public class StartNode
 		// @formatter:on
 
 		org.jboss.as.process.Main.start(jbossArgs);
+		waitForServer(ADDR, Global.MASTER_NAME, "master");
 	}
 
 	public static void runSlave() throws IOException
@@ -89,7 +96,7 @@ public class StartNode
 		final String MASTER = XjafCluster.get().getMaster();
 		final String NAME = "xjaf@" + ADDR;
 
-		logger.info(String.format("Starting slave node %s, with xjaf-master@%s", NAME, MASTER));
+		logger.info(String.format("Starting slave node %s, with %s@%s", NAME, Global.MASTER_NAME, MASTER));
 		String hostSlave = Global.readFile(StartNode.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
@@ -120,9 +127,46 @@ public class StartNode
 		// @formatter:on
 
 		org.jboss.as.process.Main.start(jbossArgs);
+		waitForServer(ADDR, NAME, "slave");
 	}
 
-	private static void createConfigFile(String[] args, File configFile) throws IOException,
+	private static void waitForServer(String address, String serverName, String hostName)
+	{
+		try
+		{
+			InetAddress addr = InetAddress.getByName(address);
+			ServerStatus status;
+			int maxTries = 10;
+			do
+			{
+				Thread.sleep(500);
+				DomainClient client = DomainClient.Factory.create(addr, 9990);
+				ServerIdentity id = new ServerIdentity(hostName, Global.GROUP, serverName);
+				try
+				{
+					Map<ServerIdentity, ServerStatus> statuses = client.getServerStatuses();
+					status = statuses.get(id);
+				} catch (RuntimeException e)
+				{
+					final Throwable cause = e.getCause();
+					if (cause != null && (cause instanceof IOException))
+					{
+						if (--maxTries < 0)
+							throw e;
+						status = ServerStatus.STARTING;
+					}
+					else
+						throw e;
+				}
+			} while (status == ServerStatus.STARTING || status == ServerStatus.UNKNOWN);
+		} catch (Throwable ex)
+		{
+			throw new IllegalStateException("Error while waiting for the server to start: "
+					+ ex.getMessage());
+		}
+	}
+
+	private static void createConfigFromArgs(String[] args, File configFile) throws IOException,
 			SAXException, ParserConfigurationException
 	{
 		Mode mode = null;
@@ -189,8 +233,9 @@ public class StartNode
 		// ok, create the file
 		writeConfigFile(configFile, mode, address, slaveNodes, master);
 	}
-	
-	private static void writeConfigFile(File configFile, Mode mode, String address, Set<String> slaveNodes, String master) throws IOException
+
+	private static void writeConfigFile(File configFile, Mode mode, String address,
+			Set<String> slaveNodes, String master) throws IOException
 	{
 		String str = Global.readFile(StartNode.class.getResourceAsStream("xjaf-config.txt"));
 		str = str.replace("%mode%", mode.toString());
@@ -201,7 +246,7 @@ public class StartNode
 			if (slaveNodes != null)
 			{
 				String comma = "";
-				for (String sl: slaveNodes)
+				for (String sl : slaveNodes)
 				{
 					slaves.append(comma).append(sl);
 					if (comma.equals(""))
@@ -229,12 +274,11 @@ public class StartNode
 		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated "
 				+ "list of all at least one slave node.");
 	}
-	
+
 	private static String getRootFolder()
 	{
 		String root = "";
-		java.security.CodeSource codeSource = StartNode.class.getProtectionDomain()
-				.getCodeSource();
+		java.security.CodeSource codeSource = StartNode.class.getProtectionDomain().getCodeSource();
 		try
 		{
 			String path = codeSource.getLocation().toURI().getPath();
@@ -256,7 +300,7 @@ public class StartNode
 	public static void main(String[] args)
 	{
 		Global.printVersion();
-		
+
 		String xjafRootStr = System.getProperty("xjaf.base.dir");
 		if (xjafRootStr == null)
 		{
@@ -264,23 +308,31 @@ public class StartNode
 			logger.info("System property 'xjaf.base.dir' not defined, using " + xjafRootStr);
 		}
 		XjafCluster.setXjafRoot(new File(xjafRootStr));
-		
+
 		try
 		{
 			if (args.length > 0)
-				createConfigFile(args, XjafCluster.getConfigFile());
+				createConfigFromArgs(args, XjafCluster.getConfigFile());
 			else if (!XjafCluster.getConfigFile().exists()) // use the default settings
 				writeConfigFile(XjafCluster.getConfigFile(), Mode.MASTER, "localhost", null, null);
-				
+
 			XjafCluster.init(false);
 			jbossHome = XjafCluster.getJBossHome();
-			if (XjafCluster.get().getMode() == Mode.MASTER)
-				runMaster();
-			else
+			if (XjafCluster.get().getMode() == Mode.SLAVE)
 				runSlave();
+			else
+			{
+				runMaster();
+				// TODO: check if already deployed
+				File file = new File(xjafRootStr, Global.SERVER + ".war");
+				logger.info("Deploying " + file.getAbsolutePath());
+				InetAddress addr = InetAddress.getByName(XjafCluster.get().getAddress());
+				Deployment.deploy(addr, file, Global.SERVER);
+			}
+			logger.info("Siebog node ready.");
 		} catch (IllegalArgumentException ex)
 		{
-			System.out.println(ex.getMessage());
+			logger.info(ex.getMessage());
 			printUsage();
 		} catch (Exception ex)
 		{
