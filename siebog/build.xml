@@ -31,7 +31,7 @@
 	<target name="package">
 		<delete file="${siebog.file}" />
 		<war destfile="${siebog.file}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
-			<fileset dir="${bin.dir}" includes="**" />
+			<fileset dir="war" includes="WEB-INF/classes/**" />
 			<fileset dir="war" includes="WEB-INF/jboss-web.xml" />
 			<fileset dir="war" includes="*.html" />
 			<fileset dir="war" includes="css/**,font/**,img/**,js/**" />
@@ -51,7 +51,7 @@
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='undeploy ${ant.project.name} --server-groups=xjaf2x-group' />
+			<arg value='undeploy ${ant.project.name}.war --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 
@@ -60,7 +60,7 @@
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='deploy ${siebog.file} --name=${ant.project.name} --server-groups=xjaf2x-group' />
+			<arg value='deploy ${siebog.file} --name=${ant.project.name}.war --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 

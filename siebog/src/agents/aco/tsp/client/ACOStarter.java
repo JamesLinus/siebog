@@ -28,8 +28,8 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.agm.AID;
-import siebog.server.xjaf.agm.AgentManagerI;
+import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.managers.AgentManagerI;
 import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**

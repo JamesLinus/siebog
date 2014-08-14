@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.agm;
+package siebog.server.xjaf.managers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,23 +29,40 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import siebog.server.xjaf.Global;
+import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentI;
 
 /**
  * Default agent manager implementation.
  * 
- * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
+ * @author <a href="rade.milovanovic@hotmail.com">Rade Milovanovic</a>
  */
 @Stateless
 @Remote(AgentManagerI.class)
+@Path("/agents")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@LocalBean
 public class AgentManager implements AgentManagerI
 {
 	private static final long serialVersionUID = 1L;
@@ -84,6 +101,17 @@ public class AgentManager implements AgentManagerI
 		return true;
 	}
 
+	@PUT
+	@Path("/running/{module}/{ejbName}/{runtimeName}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public boolean start(@PathParam("module") String module,
+			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
+	{
+		// TODO : how to extract arbitrary args from the form?
+		AID aid = new AID(module, ejbName, runtimeName);
+		return start(aid, null);
+	}
+
 	/**
 	 * Terminates an active agent.
 	 * 
@@ -95,9 +123,19 @@ public class AgentManager implements AgentManagerI
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
+			// TODO : implement this
 			// runningAgents.remove(aid);
 			// agent.terminate();
 		}
+	}
+	
+	@DELETE
+	@Path("/running/{module}/{ejbName}/{runtimeName}")
+	public void stop(@PathParam("module") String module,
+			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
+	{
+		AID aid = new AID(module, ejbName, runtimeName);
+		stop(aid);		
 	}
 
 	private AgentI createNew(AID aid, Map<String, Serializable> args)
@@ -106,8 +144,8 @@ public class AgentManager implements AgentManagerI
 		{
 			// build the JNDI lookup string
 			final String view = AgentI.class.getName();
-			String jndiNameStateless = String.format("ejb:/%s//%s!%s", 
-					aid.getModule(), aid.getEjbName(), view);
+			String jndiNameStateless = String.format("ejb:/%s//%s!%s", aid.getModule(),
+					aid.getEjbName(), view);
 			String jndiNameStateful = jndiNameStateless + "?stateful";
 
 			AgentI agent = null;
@@ -135,6 +173,8 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
+	@GET
+	@Path("/deployed")
 	@Override
 	public List<AID> getDeployed()
 	{
@@ -176,9 +216,13 @@ public class AgentManager implements AgentManagerI
 		return aids;
 	}
 
+	@GET
+	@Path("/running")
 	@Override
-	public List<AID> getRunning(AID pattern)
+	public List<AID> getRunning(@QueryParam("aid") AID pattern)
 	{
+		if (pattern == null)
+			return getRunning();
 		List<AID> aids = new ArrayList<>();
 		Iterator<AID> i = runningAgents.keySet().iterator();
 		while (i.hasNext())

@@ -18,11 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.agm;
+package siebog.server.xjaf.managers;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import siebog.server.xjaf.agents.base.AID;
 
 /**
  * Remote interface of the agent manager.

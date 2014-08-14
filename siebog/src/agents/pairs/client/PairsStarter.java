@@ -32,11 +32,11 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.agm.AID;
-import siebog.server.xjaf.agm.AgentManagerI;
-import siebog.server.xjaf.msm.MessageManagerI;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
-import siebog.server.xjaf.msm.fipa.acl.Performative;
+import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
+import siebog.server.xjaf.agents.fipa.acl.Performative;
+import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.managers.MessageManagerI;
 import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**

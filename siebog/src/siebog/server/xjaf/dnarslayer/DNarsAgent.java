@@ -22,9 +22,9 @@ package siebog.server.xjaf.dnarslayer;
 
 import java.io.Serializable;
 import java.util.Map;
-import siebog.server.xjaf.agm.Agent;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
-import siebog.server.xjaf.msm.fipa.acl.Performative;
+import siebog.server.xjaf.agents.base.Agent;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
+import siebog.server.xjaf.agents.fipa.acl.Performative;
 
 /**
  *

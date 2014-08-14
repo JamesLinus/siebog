@@ -35,12 +35,15 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import siebog.server.xjaf.agm.AID;
-import siebog.server.xjaf.agm.AgentI;
-import siebog.server.xjaf.agm.AgentManager;
-import siebog.server.xjaf.agm.AgentManagerI;
-import siebog.server.xjaf.msm.MessageManager;
-import siebog.server.xjaf.msm.MessageManagerI;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentI;
+import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.managers.MessageManager;
+import siebog.server.xjaf.managers.MessageManagerI;
 
 /**
  * Global constants and utility functions.
@@ -64,6 +67,7 @@ public abstract class Global
 			+ MessageManager.class.getSimpleName() + "!" + MessageManagerI.class.getName();
 	private static final Logger logger = Logger.getLogger(Global.class.getName());
 	private static Context context;
+	private static final JSONParser jsonParser = new JSONParser();
 
 	static
 	{
@@ -139,5 +143,10 @@ public abstract class Global
 		System.out.println("-------------------------------------------------------------");
 		System.out.println("Siebog Multiagent Framework v" + VERSION);
 		System.out.println("-------------------------------------------------------------");
+	}
+	
+	public static JSONObject parseJson(String json) throws ParseException
+	{
+		return (JSONObject) jsonParser.parse(json);
 	}
 }

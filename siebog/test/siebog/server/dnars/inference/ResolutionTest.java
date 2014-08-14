@@ -31,9 +31,9 @@ import siebog.server.dnars.base.StatementParser;
 import siebog.server.dnars.base.Term;
 import siebog.server.dnars.graph.DNarsGraph;
 import siebog.server.dnars.graph.DNarsGraphFactory;
-import siebog.server.dnars.inference.Questions;
+import siebog.server.dnars.inference.Resolution;
 
-public class QuestionsTest
+public class ResolutionTest
 {
 	@Test
 	public void testAnswer()
@@ -85,12 +85,12 @@ public class QuestionsTest
 	private void assertPath(DNarsGraph graph, String statement, boolean exists)
 	{
 		Statement st = StatementParser.apply(statement + " (1.0, 0.9)");
-		assertEquals(exists, Questions.exists(graph, st));
+		assertEquals(exists, Resolution.exists(graph, st));
 	}
 	
 	private void assertAnswer(DNarsGraph graph, String question, Term answer)
 	{
-		Option<Term> a = Questions.answer(graph, StatementParser.apply(question));
+		Option<Term> a = Resolution.answer(graph, StatementParser.apply(question));
 		if (a == Option.apply((Term) null))
 			assertEquals(answer, null);
 		else

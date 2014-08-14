@@ -23,9 +23,9 @@ package siebog.server.dnars.events
 import scala.collection.mutable.ListBuffer
 
 import siebog.server.xjaf.Global
-import siebog.server.xjaf.agm.AID
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage
-import siebog.server.xjaf.msm.fipa.acl.Performative
+import siebog.server.xjaf.agents.base.AID
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage
+import siebog.server.xjaf.agents.fipa.acl.Performative
 import siebog.server.xjaf.dnarslayer.Event
 
 /**

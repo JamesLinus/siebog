@@ -18,12 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.msm.fipa.acl;
+package siebog.server.xjaf.agents.fipa.acl;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import siebog.server.xjaf.agm.AID;
+import siebog.server.xjaf.agents.base.AID;
 
 /**
  * Represents a FIPA ACL message. Refer to <a

@@ -18,35 +18,14 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.msm.fipa.acl;
+package siebog.server.xjaf.managers;
 
 /**
- * Represents FIPA ACL message performatives.
- * 
- * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
+ * Remote interface for the connection manager.
+ *
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public enum Performative
+public interface ConnectionManagerI
 {
-	ACCEPT_PROPOSAL,
-	AGREE, 
-	CANCEL, 
-	CALL_FOR_PROPOSAL, 
-	CONFIRM, 
-	DISCONFIRM, 
-	FAILURE, 
-	INFORM, 
-	INFORM_IF, 
-	INFORM_REF, 
-	NOT_UNDERSTOOD, 
-	PROPAGATE, 
-	PROPOSE, 
-	PROXY, 
-	QUERY_IF, 
-	QUERY_REF,
-	REFUSE, 
-	REJECT_PROPOSAL, 
-	REQUEST, 
-	REQUEST_WHEN, 
-	REQUEST_WHENEVER, 
-	SUBSCRIBE
+
 }

@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.agm;
+package siebog.server.xjaf.agents.base;
 
 import java.io.Serializable;
 import siebog.server.xjaf.Matchable;
@@ -113,5 +113,28 @@ public final class AID implements Serializable, Matchable<AID>
 	public String getEjbName()
 	{
 		return ejbName;
+	}
+	
+	/**
+	 * Converts the string in form of "module_ejbName_runtimeName" into an AID.
+	 * @param path
+	 * @return
+	 */
+	public static AID valueOf(String path)
+	{
+		/*try
+		{
+			JSONObject obj = Global.parseJson(json);
+			String module = (String) obj.get("module");
+			String ejbName = (String) obj.get("ejbName");
+			String runtimeName = (String) obj.get("runtimeName");
+			return new AID(module, ejbName, runtimeName);
+		} catch (ParseException ex)
+		{
+			logger.log(Level.WARNING, "Not a valid AID: " + json, ex);
+			return null;
+		}*/
+		String[] elems = path.split("/");
+		return new AID(elems[0], elems[1], elems[2]);
 	}
 }

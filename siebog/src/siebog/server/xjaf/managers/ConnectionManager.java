@@ -18,14 +18,13 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.cnm;
+package siebog.server.xjaf.managers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.naming.NamingException;
 import org.jgroups.JChannel;
 import org.jgroups.ReceiverAdapter;
 import siebog.server.xjaf.utils.config.RelayInfo;
@@ -44,7 +43,7 @@ public class ConnectionManager implements ConnectionManagerI
 	private JChannel channel;
 	
 	@PostConstruct
-	public void postConstruct() throws NamingException
+	public void postConstruct() 
 	{
 		RelayInfo relay = XjafCluster.get().getRelay();
 		if (relay == null)

@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.agm;
+package siebog.server.xjaf.agents.base;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -37,8 +37,9 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.naming.NamingException;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.msm.MessageManagerI;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
+import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.managers.MessageManagerI;
 
 /**
  * Base class for all agents.

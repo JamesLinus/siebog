@@ -62,7 +62,7 @@ class Answer(val term: Term, val expectation: Double, val simplicity: Double) ex
 	}
 }
 
-object Questions {
+object Resolution {
 	def answer(graph: DNarsGraph, question: Statement): Option[Term] = {
 		val copula = question.copula
 		if (question.subj == Question) { // ? -> P, ? ~ P
@@ -123,12 +123,12 @@ object Questions {
 		}
 	
 	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction): Option[Term] = {
-		val candidates = pipe.map { e => {
+		val candidates = pipe.map { e => 
 			val term = DNarsVertex.wrap(e.getVertex(dir)).term
 			val expectation = DNarsEdge.wrap(e).truth.expectation
 			val simplicity = 1.0 / term.complexity
 			new Answer(term, expectation, simplicity)
-		} }.toList
+		}.toList
 		
 		candidates.sorted match {
 			case head :: _ => Some(head.term)

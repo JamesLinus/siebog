@@ -362,10 +362,11 @@ public class StartNode
 			{
 				runMaster();
 				// TODO: check if already deployed
-				File file = new File(xjafRootStr, Global.SERVER + ".war");
+				final String appName = Global.SERVER + ".war";
+				File file = new File(xjafRootStr, appName);
 				logger.info("Deploying " + file.getAbsolutePath());
 				InetAddress addr = InetAddress.getByName(XjafCluster.get().getAddress());
-				Deployment.deploy(addr, file, Global.SERVER);
+				Deployment.deploy(addr, file, appName);
 			}
 			logger.info("Siebog node ready.");
 		} catch (IllegalArgumentException ex)

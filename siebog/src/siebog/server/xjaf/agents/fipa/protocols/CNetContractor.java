@@ -18,10 +18,10 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.msm.fipa.protocols;
+package siebog.server.xjaf.agents.fipa.protocols;
 
-import siebog.server.xjaf.agm.Agent;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
+import siebog.server.xjaf.agents.base.Agent;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 
 /**
  * Base class for <a

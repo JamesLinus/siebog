@@ -23,15 +23,13 @@ package agents.pso;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Random;
-
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-
-import siebog.server.xjaf.agm.AID;
-import siebog.server.xjaf.agm.Agent;
-import siebog.server.xjaf.agm.AgentI;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
-import siebog.server.xjaf.msm.fipa.acl.Performative;
+import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.Agent;
+import siebog.server.xjaf.agents.base.AgentI;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
+import siebog.server.xjaf.agents.fipa.acl.Performative;
 
 /**
  * 

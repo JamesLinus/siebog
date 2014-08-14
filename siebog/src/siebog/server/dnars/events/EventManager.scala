@@ -3,7 +3,7 @@ package siebog.server.dnars.events
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.locks.ReentrantLock
 import scala.collection.mutable.ListBuffer
-import siebog.server.xjaf.agm.AID
+import siebog.server.xjaf.agents.base.AID
 import siebog.server.xjaf.dnarslayer.Event
 
 class EventManager {

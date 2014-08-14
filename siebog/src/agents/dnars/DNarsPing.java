@@ -23,10 +23,10 @@ package agents.dnars;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.agm.AgentI;
+import siebog.server.xjaf.agents.base.AgentI;
+import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.dnarslayer.DNarsAgent;
 import siebog.server.xjaf.dnarslayer.Event;
-import siebog.server.xjaf.msm.fipa.acl.ACLMessage;
 
 /**
  *
