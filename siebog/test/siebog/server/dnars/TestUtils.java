@@ -35,13 +35,13 @@ public class TestUtils
 	
 	public static Statement[] createAndAdd(DNarsGraph graph, String... statements)
 	{
-		Statement[] st = new Statement[statements.length];
+		Statement[] res = new Statement[statements.length];
 		for (int i = 0; i < statements.length; i++)
 		{
-			st[i] = StatementParser.apply(statements[i]);
-			graph.statements().add(st[i]);
+			res[i] = StatementParser.apply(statements[i]);
+			graph.statements().add(res[i]);
 		}
-		return st;
+		return res;
 	}
 	
 	public static Statement[] create(String... statements) 

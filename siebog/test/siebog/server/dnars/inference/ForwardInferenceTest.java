@@ -23,6 +23,7 @@ package siebog.server.dnars.inference;
 import static siebog.server.dnars.TestUtils.TEST_KEYSPACE;
 import static siebog.server.dnars.TestUtils.assertGraph;
 import static siebog.server.dnars.TestUtils.create;
+import static siebog.server.dnars.TestUtils.createAndAdd;
 import static siebog.server.dnars.TestUtils.invert;
 import org.junit.Test;
 import siebog.server.dnars.base.Statement;
@@ -42,18 +43,16 @@ public class ForwardInferenceTest
 		DNarsGraph graph = DNarsGraphFactory.create(TEST_KEYSPACE, null);
 		try
 		{
-			Statement[] kb = create(
+			Statement[] kb = createAndAdd(graph,
 				"cat -> animal (0.82, 0.91)",
 				"water -> liquid (1.0, 0.9)",
 				"tiger -> cat (0.5, 0.7)",
 				"developer ~ job (1.0, 0.9)",
 				"feline ~ cat (0.76, 0.83)"
 			);
-			for (Statement st: kb)
-			{
-				graph.statements().add(st);
+			
+			for (Statement st: kb)	
 				ForwardInference.deduction_analogy(graph, st);
-			}
 			Statement[] res = {
 				invert(kb[3]),
 				invert(kb[4]),

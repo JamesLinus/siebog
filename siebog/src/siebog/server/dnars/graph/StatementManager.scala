@@ -88,6 +88,15 @@ class StatementManager(val graph: DNarsGraph) {
 				graph.eventManager.addEvent(event)
 		}
 	}
+	
+	def addAll(st: Seq[Statement]): Unit = {
+		graph.eventManager.paused = true
+		try {
+			for (s <- st) add(s)
+		} finally {
+			graph.eventManager.paused = false
+		}
+	}
 
 	/**
 	 * Checks if the given statement exists in the graph.

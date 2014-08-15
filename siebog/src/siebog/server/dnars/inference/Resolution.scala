@@ -24,6 +24,7 @@ import siebog.server.dnars.graph.DNarsGraph
 import siebog.server.dnars.base.Statement
 import siebog.server.dnars.base.AtomicTerm._
 import siebog.server.dnars.base.Copula._
+import siebog.server.dnars.base.Truth
 import siebog.server.dnars.graph.DNarsVertex
 import com.tinkerpop.blueprints.Direction
 import siebog.server.dnars.graph.DNarsEdge
@@ -63,6 +64,9 @@ class Answer(val term: Term, val expectation: Double, val simplicity: Double) ex
 }
 
 object Resolution {
+	/**
+	 * Answers questions in form of "S copula ?" and "? copula P"
+	 */
 	def answer(graph: DNarsGraph, question: Statement): Option[Term] = {
 		val copula = question.copula
 		if (question.subj == Question) { // ? -> P, ? ~ P
@@ -80,27 +84,29 @@ object Resolution {
 				result
 		}
 		else
-			throw new IllegalArgumentException("Questions should have '?' as either the subject or the predicate")
+			throw new IllegalArgumentException("Bad question format, should be 'S copula ?' or '? copula P'")
 	}
 	
+	/**
+	 * Checks if there is an answer for a question in form of "S copula P"
+	 */
 	def exists(graph: DNarsGraph, question: Statement): Boolean = {
-		// both terms should exist
-		graph.getV(question.subj) match {
-			case None => false
-			case Some(s) =>
-				val subj: DNarsVertex = s
-				graph.getV(question.pred) match {
-					case None => false
-					case Some(pred) =>
-						val allEdges = subj.startPipe.as("x").outE
-						// if the question is a sim, we can traverse only over sim copulas
-						val allowedEdges = 
-							if (question.copula == Similar)
-								allEdges.filter(e => e.getLabel == Similar)
-							else
-								allEdges
-						allowedEdges.inV.loop("x", { lp => lp.getObject != pred }).hasNext
-				}
+		val st = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
+		hasAnswer(graph, Set(st))
+	}
+	
+	private def hasAnswer(graph: DNarsGraph, questions: Set[Statement]): Boolean = {
+		try {
+			val q = questions.head
+			graph.getE(q) match {
+				case Some(_) =>
+					true
+				case None =>
+					val derivedQuestons = ForwardInference.conclusions(graph, List(q))
+					hasAnswer(graph, derivedQuestons.toSet ++ questions.tail)
+			}
+		} catch {
+			case _: NoSuchElementException => false
 		}
 	}
 	

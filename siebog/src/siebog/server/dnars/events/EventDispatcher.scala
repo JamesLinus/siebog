@@ -49,7 +49,6 @@ class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[AID
 					return
 				case e: Throwable =>
 					e.printStackTrace()
-					return
 			}
 		}
 	}
