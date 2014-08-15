@@ -42,7 +42,7 @@ public class Pong extends Agent
 	@Override
 	protected void onMessage(ACLMessage msg)
 	{
-		logger.info("Pong @ [" + getNodeName() + "]");
+		logger.info(myAid.toString());
 		// reply with an auto-increasing content
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setContent(number++);

@@ -26,8 +26,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.agents.fipa.acl.Performative;
+import siebog.server.xjaf.managers.AgentManagerI;
 import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**
@@ -47,9 +49,9 @@ public class PingPongStarter
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
 		XjafCluster.init(true);
-		AID ping = new AID(Global.SERVER, "Ping", "Ping");
-		Global.getAgentManager().start(ping, null);
-		Global.getAgentManager().start(new AID(Global.SERVER, "Pong", "Pong"), null);
+		final AgentManagerI agm = Global.getAgentManager();
+		AID ping = agm.start(new AgentClass(Global.SERVER, "Ping"), "Ping", null);
+		agm.start(new AgentClass(Global.SERVER, "Pong"), "Pong", null);
 		
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(ping);

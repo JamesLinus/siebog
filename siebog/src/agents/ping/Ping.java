@@ -22,7 +22,6 @@ package agents.ping;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
 import siebog.server.xjaf.agents.base.Agent;
 import siebog.server.xjaf.agents.base.AgentI;
@@ -45,10 +44,13 @@ public class Ping extends Agent
 	{
 		if (msg.getPerformative() == Performative.REQUEST)
 		{		
-			logger.info("Ping @ [" + getNodeName() + "]");
+			logger.info(myAid.toString());
 			// send a request to the Pong agent		
-			String pongName = msg.getContent().toString();
-			AID pongAid = new AID(Global.SERVER, "Pong", pongName);
+			final String content = msg.getContent().toString();
+			int n = content.indexOf('@');
+			String name = content.substring(0, n);
+			String hap = content.substring(n + 1);
+			AID pongAid = new AID(name, hap);
 			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
 			pongMsg.setSender(myAid);
 			pongMsg.addReceiver(pongAid);

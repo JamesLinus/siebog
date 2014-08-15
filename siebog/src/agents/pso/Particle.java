@@ -20,7 +20,6 @@
 
 package agents.pso;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Random;
 import javax.ejb.Remote;
@@ -101,12 +100,12 @@ public class Particle extends Agent {
 	 * @see xjaf2x.server.agm.Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
-	protected void onInit(Map<String, Serializable> args) {
+	protected void onInit(Map<String, String> args) {
 
 		// read arguments
-		dimension = (Integer) args.get("dimension");
-		minX = Double.parseDouble(args.get("minx").toString());
-		maxX = Double.parseDouble(args.get("maxx").toString());
+		dimension = Integer.parseInt(args.get("dimension"));
+		minX = Double.parseDouble(args.get("minx"));
+		maxX = Double.parseDouble(args.get("maxx"));
 
 		// initialize variables
 		minV = -1.0 * maxX;
@@ -143,8 +142,7 @@ public class Particle extends Agent {
 		bestFitness = fitness;
 
 		// get the reference to the Starter (main) PSO agent
-		AID swarmAidPattern = new AID(null, "Swarm", null);
-		swarmAID = agm.getRunning(swarmAidPattern).get(0);
+		AID swarmAID = agm.getAIDByName("Swarm");
 
 		// compose the message
 		ACLMessage message = new ACLMessage();

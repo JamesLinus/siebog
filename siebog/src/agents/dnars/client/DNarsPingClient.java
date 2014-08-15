@@ -21,7 +21,6 @@
 package agents.dnars.client;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import javax.naming.NamingException;
@@ -29,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.agents.fipa.acl.Performative;
 import siebog.server.xjaf.utils.config.XjafCluster;
@@ -44,12 +44,12 @@ public class DNarsPingClient
 	{
 		XjafCluster.init(true);
 		
-		Map<String, Serializable> agArgs = new HashMap<>();
+		Map<String, String> agArgs = new HashMap<>();
 		agArgs.put("domain", "dnars");
 		
-		AID aid = new AID(Global.SERVER, "DNarsPing", "dnars");
+		AgentClass agClass = new AgentClass(Global.SERVER, "DNarsPing");
 		
-		Global.getAgentManager().start(aid, agArgs);
+		AID aid = Global.getAgentManager().start(agClass, "dnars", agArgs);
 		
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(aid);

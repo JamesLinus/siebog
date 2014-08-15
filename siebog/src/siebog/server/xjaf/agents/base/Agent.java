@@ -20,7 +20,6 @@
 
 package siebog.server.xjaf.agents.base;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -70,7 +69,7 @@ public abstract class Agent implements AgentI
 	@Override
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
-	public final void init(AID aid, Map<String, Serializable> args) throws NamingException
+	public final void init(AID aid, Map<String, String> args) throws NamingException
 	{
 		myAid = aid;
 		agm = Global.getAgentManager();
@@ -80,7 +79,7 @@ public abstract class Agent implements AgentI
 		onInit(args);
 	}
 
-	protected void onInit(Map<String, Serializable> args)
+	protected void onInit(Map<String, String> args)
 	{
 	}
 
@@ -206,12 +205,6 @@ public abstract class Agent implements AgentI
 	public AID getAid()
 	{
 		return myAid;
-	}
-
-	@Override
-	public String getNodeName()
-	{
-		return System.getProperty("jboss.node.name");
 	}
 
 	@Override

@@ -34,18 +34,11 @@ public interface AgentI extends Serializable
 	AID getAid();
 
 	/**
-	 * Returns the name of the agent's host node.
-	 * 
-	 * @return
-	 */
-	String getNodeName();
-	
-	/**
 	 * The remaining methods are for internal purposes only. You should never directly call or
 	 * override any of them.
 	 */
 	
-	void init(AID aid, Map<String, Serializable> args) throws Exception;
+	void init(AID aid, Map<String, String> args) throws Exception;
 	
 	void handleMessage(ACLMessage msg);
 

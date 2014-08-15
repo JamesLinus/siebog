@@ -22,7 +22,6 @@ package agents.aco.tsp;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,7 +63,7 @@ public class Map extends Agent
 	private static final int MAX_STATIONARY_ITERATIONS = 500;
 
 	@Override
-	protected void onInit(java.util.Map<String, Serializable> args)
+	protected void onInit(java.util.Map<String, String> args)
 	{
 		logger.fine("Map opened.");
 		loadMap(args.get("fileName").toString());

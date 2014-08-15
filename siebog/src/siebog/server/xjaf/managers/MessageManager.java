@@ -117,8 +117,9 @@ public class MessageManager implements MessageManagerI
 			String module = parts[0];
 			String ejbName = parts[1];
 			String runtimeName = parts[2];
-			AID aid = new AID(module, ejbName, runtimeName);
-			receivers.add(aid);
+			// TODO : fix
+			//AID aid = new AID(module, ejbName, runtimeName);
+			receivers.add(null);
 		}
 		msg.setReceivers(receivers);
 		try
@@ -168,8 +169,9 @@ public class MessageManager implements MessageManagerI
 		ACLMessage msg = new ACLMessage(p);
 		// TODO : module, ejbName, runtimeName
 		String[] sparts = senderAgent.split("%2F");
-		AID sender = new AID(sparts[0], sparts[1], sparts[2]); // module,ejbName,runtimeName
-		msg.setSender(sender);
+		// TODO : fix
+		//AID sender = new AID(sparts[0], sparts[1], sparts[2]); // module,ejbName,runtimeName
+		msg.setSender(null);
 		Set<AID> receivers = new HashSet<AID>();
 		String[] allAgents = recievers.split("%2C");
 		for (String agent : allAgents)
@@ -178,13 +180,15 @@ public class MessageManager implements MessageManagerI
 			String module = parts[0];
 			String ejbName = parts[1];
 			String runtimeName = parts[2];
-			AID aid = new AID(module, ejbName, runtimeName);
-			receivers.add(aid);
+			// TODO : fix
+			// AID aid = new AID(module, ejbName, runtimeName);
+			receivers.add(null);
 		}
 		msg.setReceivers(receivers);
 		String[] replyParts = replyToAgent.split("%2F");
-		AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
-		msg.setReplyTo(replyTo);
+		// TODO : fix
+		//AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
+		msg.setReplyTo(null);
 		msg.setContent(content);
 		msg.setLanguage(language);
 		msg.setEncoding(encoding);

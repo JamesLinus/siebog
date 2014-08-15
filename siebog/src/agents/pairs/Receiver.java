@@ -20,7 +20,6 @@
 
 package agents.pairs;
 
-import java.io.Serializable;
 import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -44,10 +43,10 @@ public class Receiver extends Agent
 	private int numIterations;
 
 	@Override
-	protected void onInit(Map<String, Serializable> args)
+	protected void onInit(Map<String, String> args)
 	{
-		primeLimit = (Integer) args.get("primeLimit");
-		numIterations = (Integer) args.get("numIterations");
+		primeLimit = Integer.parseInt(args.get("primeLimit"));
+		numIterations = Integer.parseInt(args.get("numIterations"));
 	}
 
 	@Override

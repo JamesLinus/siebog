@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
 import siebog.server.xjaf.agents.base.Agent;
 import siebog.server.xjaf.agents.base.AgentI;
@@ -48,7 +47,6 @@ import siebog.server.xjaf.agents.fipa.acl.Performative;
 public class Sender extends Agent
 {
 	private static final long serialVersionUID = -5648061637952026195L;
-	private int myIndex;
 	private int numIterations;
 	private int iterationIndex;
 	private AID receiver;
@@ -57,13 +55,12 @@ public class Sender extends Agent
 	private long totalTime;
 
 	@Override
-	protected void onInit(Map<String, Serializable> args)
+	protected void onInit(Map<String, String> args)
 	{
-		myIndex = (Integer) args.get("myIndex");
-		receiver = new AID(Global.SERVER, "Receiver", "R" + myIndex);
-		numIterations = (Integer) args.get("numIterations");
+		receiver = new AID(args.get("rcvrName"), args.get("rcvrHap"));
+		numIterations = Integer.parseInt(args.get("numIterations"));
 		// create message content
-		int contentLength = (Integer) args.get("contentLength");
+		int contentLength = Integer.parseInt(args.get("contentLength"));
 		content = makeContent(contentLength);
 		resultsServiceAddr = args.get("resultsServiceAddr").toString();
 	}
@@ -89,7 +86,7 @@ public class Sender extends Agent
 				{
 					Registry reg = LocateRegistry.getRegistry(resultsServiceAddr);
 					ResultsServiceI results = (ResultsServiceI) reg.lookup("ResultsService");
-					results.add(avg, getNodeName());
+					results.add(avg, myAid.getHap());
 				} catch (RemoteException | NotBoundException ex)
 				{
 					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);

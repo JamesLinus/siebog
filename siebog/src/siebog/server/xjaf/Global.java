@@ -149,4 +149,9 @@ public abstract class Global
 	{
 		return (JSONObject) jsonParser.parse(json);
 	}
+	
+	public static String getNodeName()
+	{
+		return System.getProperty("jboss.node.name");
+	}
 }

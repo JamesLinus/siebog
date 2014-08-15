@@ -21,7 +21,6 @@
 package agents.pairs.client;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.agents.fipa.acl.Performative;
 import siebog.server.xjaf.managers.AgentManagerI;
@@ -72,20 +72,21 @@ public class PairsStarter
 		for (int i = 0; i < numPairs; i++)
 		{
 			// receiver
-			AID aid = new AID(Global.SERVER, "Receiver", "R" + i);
-			Map<String, Serializable> rcArgs = new HashMap<>();
-			rcArgs.put("primeLimit", primeLimit);
-			rcArgs.put("numIterations", numIterations);
-			agm.start(aid, rcArgs);
+			Map<String, String> rcArgs = new HashMap<>();
+			rcArgs.put("primeLimit", primeLimit + "");
+			rcArgs.put("numIterations", numIterations + "");
+			AgentClass rcAgClass = new AgentClass(Global.SERVER, "Receiver");
+			AID rcAid = agm.start(rcAgClass, "R" + i, rcArgs);
 			// sender
-			aid = new AID(Global.SERVER, "Sender", "S" + i);
-			Map<String, Serializable> snArgs = new HashMap<>();
-			snArgs.put("myIndex", i);
-			snArgs.put("numIterations", numIterations);
-			snArgs.put("contentLength", contentLength);
+			Map<String, String> snArgs = new HashMap<>();
+			snArgs.put("numIterations", numIterations + "");
+			snArgs.put("contentLength", contentLength + "");
+			snArgs.put("rcvrName", rcAid.getName());
+			snArgs.put("rcvrHap", rcAid.getHap());
 			snArgs.put("resultsServiceAddr", addr);
-			agm.start(aid, snArgs);
-			senders.add(aid);
+			AgentClass snAgClass = new AgentClass(Global.SERVER, "Sender");
+			AID snAid = agm.start(snAgClass, "S" + i, snArgs);
+			senders.add(snAid);
 		}
 
 		Registry reg = LocateRegistry.createRegistry(1099);

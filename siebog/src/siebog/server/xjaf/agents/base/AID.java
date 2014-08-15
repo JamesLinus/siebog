@@ -21,7 +21,7 @@
 package siebog.server.xjaf.agents.base;
 
 import java.io.Serializable;
-import siebog.server.xjaf.Matchable;
+import siebog.server.xjaf.Global;
 
 // @formatter:off
 /**
@@ -36,28 +36,23 @@ import siebog.server.xjaf.Matchable;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 // @formatter:on
-public final class AID implements Serializable, Matchable<AID>
+public final class AID implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-	private final String module;
-	private final String ejbName;
-	private final String runtimeName;
+	private final String name;
+	private final String hap;
 	private final String str; // string representation
 
-	public AID(String module, String ejbName, String runtimeName)
+	public AID(String name)
 	{
-		this.module = module;
-		this.ejbName = ejbName;
-		this.runtimeName = runtimeName;
-		if (runtimeName == null)
-			str = module + "/" + ejbName;
-		else
-			str = module + "/" + ejbName + "/" + runtimeName;
+		this(name, Global.getNodeName());
 	}
-
-	public String getModule()
+	
+	public AID(String name, String hap)
 	{
-		return module;
+		this.name = name;
+		this.hap = hap;
+		str = name + "@" + hap;
 	}
 
 	@Override
@@ -79,62 +74,19 @@ public final class AID implements Serializable, Matchable<AID>
 		return str.equals(other.str);
 	}
 
-	public boolean matches(AID aid)
-	{
-		if (aid.module != null)
-		{
-			if (!module.matches(aid.module))
-				return false;
-		}
-		if (aid.ejbName != null)
-		{
-			if (!ejbName.matches(aid.ejbName))
-				return false;
-		}
-		if (aid.runtimeName != null)
-		{
-			if (!runtimeName.matches(aid.runtimeName))
-				return false;
-		}
-		return true;
-	}
-
 	@Override
 	public String toString()
 	{
 		return str;
 	}
 
-	public String getRuntimeName()
+	public String getName()
 	{
-		return runtimeName;
+		return name;
 	}
 
-	public String getEjbName()
+	public String getHap()
 	{
-		return ejbName;
-	}
-	
-	/**
-	 * Converts the string in form of "module_ejbName_runtimeName" into an AID.
-	 * @param path
-	 * @return
-	 */
-	public static AID valueOf(String path)
-	{
-		/*try
-		{
-			JSONObject obj = Global.parseJson(json);
-			String module = (String) obj.get("module");
-			String ejbName = (String) obj.get("ejbName");
-			String runtimeName = (String) obj.get("runtimeName");
-			return new AID(module, ejbName, runtimeName);
-		} catch (ParseException ex)
-		{
-			logger.log(Level.WARNING, "Not a valid AID: " + json, ex);
-			return null;
-		}*/
-		String[] elems = path.split("/");
-		return new AID(elems[0], elems[1], elems[2]);
+		return hap;
 	}
 }

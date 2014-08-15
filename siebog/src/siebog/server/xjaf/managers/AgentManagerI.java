@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentClass;
 
 /**
  * Remote interface of the agent manager.
@@ -34,13 +35,15 @@ public interface AgentManagerI extends Serializable
 {
 
 	/**
-	 * Runs a new instance of an agent.
+	 * Starts a new agent.
 	 * 
-	 * @param aid AID object.
+	 * @param agClass AgentClass object.
+	 * @param name Runtime name.
 	 * @param args Optional initialization arguments to be passed to the agent.
-	 * @return true if the agent was create successfully, false otherwise.
+	 * @return AID of the new agent.
+	 * @throws IllegalArgumentException if the agent could not be started.
 	 */
-	boolean start(AID aid, Map<String, Serializable> args);
+	AID start(AgentClass agClass, String name, Map<String, String> args);
 
 	/**
 	 * Terminates an active agent.
@@ -55,19 +58,13 @@ public interface AgentManagerI extends Serializable
 	 * @return List of agent AIDs.
 	 */
 	List<AID> getRunning();
-
-	/**
-	 * Returns the list of running agents whose AIDs match the provided pattern.
-	 * 
-	 * @param pattern
-	 * @return
-	 */
-	List<AID> getRunning(AID pattern);
+	
+	AID getAIDByName(String name);
 
 	/**
 	 * Returns the list of deployed agents.
 	 * 
 	 * @return List of AIDs, with runtime names set to null.
 	 */
-	List<AID> getDeployed();
+	List<AgentClass> getDeployed();
 }

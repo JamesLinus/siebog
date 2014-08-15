@@ -5,7 +5,6 @@
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
 	
-	<property name="bin.dir" value="war/WEB-INF/classes" />
 	<property name="siebog.file" value="${basedir}/${ant.project.name}.war" />
 	
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
@@ -26,7 +25,7 @@
 	<property name="sonar.projectVersion" value="1.0" />
 	<property name="sonar.language" value="java" />
 	<property name="sonar.sources" value="src" />
-	<property name="sonar.binaries" value="${bin.dir}" />
+	<property name="sonar.binaries" value="war/WEB-INF/classes" />
 	
 	<target name="package">
 		<delete file="${siebog.file}" />

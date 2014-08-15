@@ -20,7 +20,6 @@
 
 package agents.aco.tsp;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import javax.ejb.Stateful;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
 import siebog.server.xjaf.agents.base.Agent;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.base.AgentI;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.agents.fipa.acl.Performative;
@@ -90,10 +90,9 @@ public class Ant extends Agent
 	private final Random rnd = new Random();
 
 	@Override
-	protected void onInit(Map<String, Serializable> args)
+	protected void onInit(Map<String, String> args)
 	{
-		AID mapAidPattern = new AID(null, "Map", null);
-		mapAID = agm.getRunning(mapAidPattern).get(0);
+		mapAID = agm.getAIDByName("Map");
 
 		ACLMessage message = new ACLMessage();
 		message.setPerformative(Performative.REQUEST);
@@ -259,9 +258,9 @@ public class Ant extends Agent
 			{
 				phase = 6;
 				// when this ant is done, create another one
-				AID newAnt = new AID(Global.SERVER, "Ant", "Ant"
-						+ myAid.hashCode() + System.currentTimeMillis());
-				agm.start(newAnt, null);
+				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
+				AgentClass agClass = new AgentClass(Global.SERVER, "Ant");
+				agm.start(agClass, name, null);
 				agm.stop(myAid);
 				return;
 			}

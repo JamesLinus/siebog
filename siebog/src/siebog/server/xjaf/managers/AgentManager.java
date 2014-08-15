@@ -20,9 +20,7 @@
 
 package siebog.server.xjaf.managers;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,11 +41,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.base.AgentI;
 
 /**
@@ -83,33 +81,25 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
+	@PUT
+	@Path("/running/{agClass}/{name}")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public boolean start(AID aid, Map<String, Serializable> args)
+	public AID start(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
+			Map<String, String> args)
 	{
+		AID aid = new AID(name);
 		// is it running already?
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
 		{
 			logger.info("Already running: [" + aid + "]");
-			return true;
+			return aid;
 		}
 
-		agent = createNew(aid, args);
-		if (agent == null)
-			return false;
+		createNew(agClass, aid, args);
 		logger.fine("Agent [" + aid + "] started.");
-		return true;
-	}
-
-	@PUT
-	@Path("/running/{module}/{ejbName}/{runtimeName}")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public boolean start(@PathParam("module") String module,
-			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
-	{
-		// TODO : how to extract arbitrary args from the form?
-		AID aid = new AID(module, ejbName, runtimeName);
-		return start(aid, null);
+		return aid;
 	}
 
 	/**
@@ -117,8 +107,10 @@ public class AgentManager implements AgentManagerI
 	 * 
 	 * @param aid AID object.
 	 */
+	@DELETE
+	@Path("/running/{aid}")
 	@Override
-	public void stop(AID aid)
+	public void stop(@PathParam("aid") AID aid)
 	{
 		AgentI agent = runningAgents.get(aid);
 		if (agent != null)
@@ -128,24 +120,15 @@ public class AgentManager implements AgentManagerI
 			// agent.terminate();
 		}
 	}
-	
-	@DELETE
-	@Path("/running/{module}/{ejbName}/{runtimeName}")
-	public void stop(@PathParam("module") String module,
-			@PathParam("ejbName") String ejbName, @PathParam("runtimeName") String runtimeName)
-	{
-		AID aid = new AID(module, ejbName, runtimeName);
-		stop(aid);		
-	}
 
-	private AgentI createNew(AID aid, Map<String, Serializable> args)
+	private void createNew(AgentClass agClass, AID aid, Map<String, String> args)
 	{
 		try
 		{
 			// build the JNDI lookup string
 			final String view = AgentI.class.getName();
-			String jndiNameStateless = String.format("ejb:/%s//%s!%s", aid.getModule(),
-					aid.getEjbName(), view);
+			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(),
+					agClass.getEjbName(), view);
 			String jndiNameStateful = jndiNameStateless + "?stateful";
 
 			AgentI agent = null;
@@ -165,20 +148,19 @@ public class AgentManager implements AgentManagerI
 			// register the AID. also some agents might wish to terminate themselves inside init.
 			runningAgents.put(aid, agent);
 			agent.init(aid, args);
-			return agent;
 		} catch (Exception ex)
 		{
 			logger.log(Level.INFO, "Error while creating [" + aid + "]", ex);
-			return null;
+			throw new IllegalArgumentException("Cannot create an agent of class " + agClass, ex);
 		}
 	}
 
 	@GET
 	@Path("/deployed")
 	@Override
-	public List<AID> getDeployed()
+	public List<AgentClass> getDeployed()
 	{
-		List<AID> result = new ArrayList<>();
+		List<AgentClass> result = new ArrayList<>();
 		final String intf = "!" + AgentI.class.getName();
 		final String exp = "java:jboss/exported/";
 		try
@@ -195,8 +177,8 @@ public class AgentManager implements AgentManagerI
 					{
 						int n = ejbName.lastIndexOf(intf);
 						ejbName = ejbName.substring(0, n);
-						AID aid = new AID(module, ejbName, null);
-						result.add(aid);
+						AgentClass agClass = new AgentClass(module, ejbName);
+						result.add(agClass);
 					}
 				}
 			}
@@ -207,6 +189,8 @@ public class AgentManager implements AgentManagerI
 		return result;
 	}
 
+	@GET
+	@Path("/running")
 	@Override
 	public List<AID> getRunning()
 	{
@@ -215,22 +199,14 @@ public class AgentManager implements AgentManagerI
 		aids.addAll(keys);
 		return aids;
 	}
-
-	@GET
-	@Path("/running")
+	
 	@Override
-	public List<AID> getRunning(@QueryParam("aid") AID pattern)
+	public AID getAIDByName(String name)
 	{
-		if (pattern == null)
-			return getRunning();
-		List<AID> aids = new ArrayList<>();
-		Iterator<AID> i = runningAgents.keySet().iterator();
-		while (i.hasNext())
-		{
-			AID aid = i.next();
-			if (aid.matches(pattern))
-				aids.add(aid);
-		}
-		return aids;
+		List<AID> running = getRunning();
+		for (AID aid: running)
+			if (aid.getName().equals(name))
+				return aid;
+		return null;
 	}
 }

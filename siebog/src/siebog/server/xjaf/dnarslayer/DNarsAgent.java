@@ -20,7 +20,6 @@
 
 package siebog.server.xjaf.dnarslayer;
 
-import java.io.Serializable;
 import java.util.Map;
 import siebog.server.xjaf.agents.base.Agent;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
@@ -36,7 +35,7 @@ public abstract class DNarsAgent extends Agent
 	protected DNarsGraphI graph;
 	
 	@Override
-	protected void onInit(Map<String, Serializable> args)
+	protected void onInit(Map<String, String> args)
 	{
 		super.onInit(args);
 		String domain = (String) args.get("domain");

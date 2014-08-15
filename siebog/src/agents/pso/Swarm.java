@@ -20,7 +20,6 @@
 
 package agents.pso;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -29,6 +28,7 @@ import javax.ejb.Stateful;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.agents.base.AID;
 import siebog.server.xjaf.agents.base.Agent;
+import siebog.server.xjaf.agents.base.AgentClass;
 import siebog.server.xjaf.agents.base.AgentI;
 import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
 import siebog.server.xjaf.agents.fipa.acl.Performative;
@@ -68,7 +68,7 @@ public class Swarm extends Agent {
 	 * @see xjaf2x.server.agm.Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
-	protected void onInit(Map<String, Serializable> args) {
+	protected void onInit(Map<String, String> args) {
 
 		logger.info("PsoStarter agent running.");
 
@@ -83,15 +83,12 @@ public class Swarm extends Agent {
 		logger.fine("Number of particles in swarm = " + numberParticles);
 
 		logger.fine("Initializing swarm with random positions/solutions.");
-		AID particleAid;
 		for (int i = 0; i < numberParticles; ++i) {
-			particleAid = new AID(Global.SERVER, "Particle", "Particle" + i);
-			Map<String, Serializable> mapArgs = new HashMap<>();
-
-			mapArgs.put("dimension", dimension);
-			mapArgs.put("minx", minX);
-			mapArgs.put("maxx", maxX);
-			agm.start(particleAid, mapArgs);
+			Map<String, String> mapArgs = new HashMap<>();
+			mapArgs.put("dimension", dimension + "");
+			mapArgs.put("minx", minX + "");
+			mapArgs.put("maxx", maxX + "");
+			agm.start(new AgentClass(Global.SERVER, "Particle"), "Particle" + i, mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");
@@ -111,8 +108,7 @@ public class Swarm extends Agent {
 			for (int i = 0; i < numberParticles; ++i) {
 
 				// find particle
-				AID particleAidPattern = new AID(null, "Particle", "Particle" + i);
-				AID particleAID = agm.getRunning(particleAidPattern).get(0);
+				AID particleAID = agm.getAIDByName("Particle" + i);
 
 				// compose message
 				ACLMessage message = new ACLMessage();
@@ -179,8 +175,7 @@ public class Swarm extends Agent {
 		for (int i = 0; i < numberParticles; ++i) {
 
 			// find particle
-			AID particleAidPattern = new AID(null, "Particle", "Particle" + i);
-			AID particleAID = agm.getRunning(particleAidPattern).get(0);
+			AID particleAID = agm.getAIDByName("Particle" + i);
 
 			// Looks like 'stop' is not yet implemented, so it is not working yet
 			// All particles should be stopped/terminated at this point
