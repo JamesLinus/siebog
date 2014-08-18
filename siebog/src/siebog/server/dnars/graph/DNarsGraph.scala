@@ -167,6 +167,12 @@ object DNarsGraphFactory {
 			case _: IllegalArgumentException => 
 			case e: Throwable => throw e 
 		}
+		try {
+			graph.makeKey("label").dataType(classOf[String]).indexed("standard", classOf[Edge]).make()
+		} catch {
+			case _: IllegalArgumentException => 
+			case e: Throwable => throw e 
+		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 	
