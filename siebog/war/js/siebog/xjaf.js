@@ -32,7 +32,7 @@
 			$.ajax({
 				type : "PUT",
 				url : "rest/agents/running/" + moduleAndEjbName + "/" + runtimeName,
-				dataType : "multipart/form-data",
+				contentType : "application/x-www-form-urlencoded; charset=UTF-8",
 				success : onSuccess
 			});
 		};

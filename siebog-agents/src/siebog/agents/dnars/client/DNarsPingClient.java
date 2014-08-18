@@ -18,51 +18,39 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.dnarslayer;
+package siebog.agents.dnars.client;
 
-import java.util.Map;
-import siebog.server.xjaf.base.Agent;
+import java.io.IOException;
+import javax.naming.NamingException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import siebog.server.xjaf.Global;
+import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.base.AgentClass;
 import siebog.server.xjaf.fipa.acl.ACLMessage;
 import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.managers.AgentInitArgs;
+import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends Agent 
+public class DNarsPingClient
 {
-	private static final long serialVersionUID = 1L;
-	protected DNarsGraphI graph;
-	
-	@Override
-	protected void onInit(Map<String, String> args)
+	public static void main(String[] args) throws IOException, ParserConfigurationException,
+			SAXException, NamingException
 	{
-		super.onInit(args);
-		String domain = (String) args.get("domain");
-		if (domain == null)
-			domain = myAid.toString();
-		try
-		{
-			graph = DNarsGraphFactory.create(domain);
-			graph.addObserver(myAid);
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
+		XjafCluster.init(true);
+		
+		AgentInitArgs agArgs = new AgentInitArgs("domain->dnars");
+		
+		AgentClass agClass = new AgentClass(Global.SERVER, "DNarsPing");
+		
+		AID aid = Global.getAgentManager().start(agClass, "dnars", agArgs);
+		
+		ACLMessage msg = new ACLMessage(Performative.REQUEST);
+		msg.addReceiver(aid);
+		Global.getMessageManager().post(msg);
 	}
-	
-	@Override
-	protected boolean filter(ACLMessage msg)
-	{
-		if (msg.getPerformative() == Performative.INFORM)
-		{
-			// TODO : String to Event[]
-			// Event[] events = (Event[]) msg.getContent();
-			onEvents(null);
-			return false;
-		}
-		return true;
-	}
-	
-	protected abstract void onEvents(Event[] events);
 }

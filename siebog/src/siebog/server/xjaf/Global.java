@@ -38,8 +38,8 @@ import org.infinispan.manager.CacheContainer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import siebog.server.xjaf.agents.base.AID;
-import siebog.server.xjaf.agents.base.AgentI;
+import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.base.AgentI;
 import siebog.server.xjaf.managers.AgentManager;
 import siebog.server.xjaf.managers.AgentManagerI;
 import siebog.server.xjaf.managers.MessageManager;
@@ -87,14 +87,26 @@ public abstract class Global
 		return context;
 	}
 
-	public static AgentManagerI getAgentManager() throws NamingException
+	public static AgentManagerI getAgentManager() throws IllegalStateException
 	{
-		return (AgentManagerI) getContext().lookup(AgentManagerLookup);
+		try
+		{
+			return (AgentManagerI) getContext().lookup(AgentManagerLookup);
+		} catch (NamingException ex)
+		{
+			throw new IllegalStateException("Failed to lookup agent manager.", ex);
+		}
 	}
 
-	public static MessageManagerI getMessageManager() throws NamingException
+	public static MessageManagerI getMessageManager() throws IllegalStateException
 	{
-		return (MessageManagerI) getContext().lookup(MessageManagerLookup);
+		try
+		{
+			return (MessageManagerI) getContext().lookup(MessageManagerLookup);
+		} catch (NamingException ex)
+		{
+			throw new IllegalStateException("Failed to lookup message manager.", ex);
+		}
 	}
 
 	public static Cache<AID, AgentI> getRunningAgents() throws NamingException

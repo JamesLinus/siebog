@@ -39,7 +39,7 @@ import siebog.server.dnars.base.Term
 import siebog.server.dnars.base.Truth
 import siebog.server.dnars.events.EventManager
 import siebog.server.dnars.graph.DNarsVertex.wrap
-import siebog.server.xjaf.agents.base.AID
+import siebog.server.xjaf.base.AID
 import siebog.server.xjaf.dnarslayer.DNarsGraphI
 
 /**

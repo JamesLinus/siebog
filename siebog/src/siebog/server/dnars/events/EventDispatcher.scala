@@ -23,9 +23,9 @@ package siebog.server.dnars.events
 import scala.collection.mutable.ListBuffer
 
 import siebog.server.xjaf.Global
-import siebog.server.xjaf.agents.base.AID
-import siebog.server.xjaf.agents.fipa.acl.ACLMessage
-import siebog.server.xjaf.agents.fipa.acl.Performative
+import siebog.server.xjaf.base.AID
+import siebog.server.xjaf.fipa.acl.ACLMessage
+import siebog.server.xjaf.fipa.acl.Performative
 import siebog.server.xjaf.dnarslayer.Event
 
 /**
@@ -55,7 +55,8 @@ class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[AID
 
 	private def dispatch(events: Array[Event]): Unit = {
 		val acl = new ACLMessage(Performative.INFORM)
-		acl.setContent(events)
+		// TODO : Event[] to String
+		//acl.setContent(events)
 		observers synchronized {
 			observers.foreach { aid => acl.addReceiver(aid) }
 		}

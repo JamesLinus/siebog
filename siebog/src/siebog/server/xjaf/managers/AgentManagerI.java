@@ -22,9 +22,8 @@ package siebog.server.xjaf.managers;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import siebog.server.xjaf.agents.base.AID;
-import siebog.server.xjaf.agents.base.AgentClass;
+import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.base.AgentClass;
 
 /**
  * Remote interface of the agent manager.
@@ -43,7 +42,7 @@ public interface AgentManagerI extends Serializable
 	 * @return AID of the new agent.
 	 * @throws IllegalArgumentException if the agent could not be started.
 	 */
-	AID start(AgentClass agClass, String name, Map<String, String> args);
+	AID start(AgentClass agClass, String name, AgentInitArgs args);
 
 	/**
 	 * Terminates an active agent.

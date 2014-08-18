@@ -18,51 +18,35 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.dnarslayer;
+package siebog.agents.dnars;
 
-import java.util.Map;
-import siebog.server.xjaf.base.Agent;
+import java.util.Arrays;
+import javax.ejb.Remote;
+import javax.ejb.Stateful;
+import siebog.server.xjaf.base.AgentI;
+import siebog.server.xjaf.dnarslayer.DNarsAgent;
+import siebog.server.xjaf.dnarslayer.Event;
 import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends Agent 
+@Stateful
+@Remote(AgentI.class)
+public class DNarsPing extends DNarsAgent
 {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraphI graph;
-	
+
 	@Override
-	protected void onInit(Map<String, String> args)
+	public void onEvents(Event[] event)
 	{
-		super.onInit(args);
-		String domain = (String) args.get("domain");
-		if (domain == null)
-			domain = myAid.toString();
-		try
-		{
-			graph = DNarsGraphFactory.create(domain);
-			graph.addObserver(myAid);
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
+		System.out.println(Arrays.toString(event));
 	}
-	
+
 	@Override
-	protected boolean filter(ACLMessage msg)
+	protected void onMessage(ACLMessage msg)
 	{
-		if (msg.getPerformative() == Performative.INFORM)
-		{
-			// TODO : String to Event[]
-			// Event[] events = (Event[]) msg.getContent();
-			onEvents(null);
-			return false;
-		}
-		return true;
+		graph.addStatement("cat -> animal (1.0, 0.9)");
 	}
-	
-	protected abstract void onEvents(Event[] events);
 }

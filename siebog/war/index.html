@@ -212,7 +212,7 @@
 			    if (node.model.level > 0) {
 				    if (!node.model.isAgent) {
 				    	if (node.model.level == 1) {
-				    		agentPath = node.model.id + "/";
+				    		agentPath = node.model.id + "$";
 				    		lastLevel == 1;
 				    		$("#families-table").append('<tr><td colspan="2" style="padding-left:10px"><img src="img/module.png" style="margin-right:5px;" />' + node.model.id + '</td></tr>');
 				    	} else {

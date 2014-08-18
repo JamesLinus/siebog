@@ -43,10 +43,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
+import org.jboss.resteasy.annotations.Form;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.agents.base.AID;
-import siebog.server.xjaf.agents.base.AgentClass;
-import siebog.server.xjaf.agents.base.AgentI;
+import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.base.AgentClass;
+import siebog.server.xjaf.base.AgentI;
 
 /**
  * Default agent manager implementation.
@@ -86,20 +87,26 @@ public class AgentManager implements AgentManagerI
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
 	public AID start(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
-			Map<String, String> args)
+			@Form AgentInitArgs args)
 	{
 		AID aid = new AID(name);
 		// is it running already?
-		AgentI agent = runningAgents.get(aid);
-		if (agent != null)
+		if (runningAgents.containsKey(aid))
 		{
 			logger.info("Already running: [" + aid + "]");
 			return aid;
 		}
 
-		createNew(agClass, aid, args);
-		logger.fine("Agent [" + aid + "] started.");
-		return aid;
+		try
+		{
+			createNew(agClass, aid, args.toStringMap());
+			logger.fine("Agent [" + aid + "] started.");
+			return aid;
+		} catch (Exception ex)
+		{
+			logger.log(Level.WARNING, "Unable to start an agent of class " + agClass, ex);
+			return null;
+		}
 	}
 
 	/**
@@ -121,38 +128,31 @@ public class AgentManager implements AgentManagerI
 		}
 	}
 
-	private void createNew(AgentClass agClass, AID aid, Map<String, String> args)
+	private void createNew(AgentClass agClass, AID aid, Map<String, String> args) throws NamingException
 	{
+		// build the JNDI lookup string
+		final String view = AgentI.class.getName();
+		String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(),
+				agClass.getEjbName(), view);
+		String jndiNameStateful = jndiNameStateless + "?stateful";
+
+		AgentI agent = null;
 		try
 		{
-			// build the JNDI lookup string
-			final String view = AgentI.class.getName();
-			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(),
-					agClass.getEjbName(), view);
-			String jndiNameStateful = jndiNameStateless + "?stateful";
-
-			AgentI agent = null;
-			try
-			{
-				agent = (AgentI) jndiContext.lookup(jndiNameStateful);
-			} catch (NamingException ex)
-			{
-				final Throwable cause = ex.getCause();
-				if (cause == null || !(cause instanceof IllegalStateException))
-					throw ex;
-				agent = (AgentI) jndiContext.lookup(jndiNameStateless);
-			}
-
-			// the order of the next two statements matters. if we call init first and the agent
-			// sends a message from there, it sometimes happens that the reply arrives before we
-			// register the AID. also some agents might wish to terminate themselves inside init.
-			runningAgents.put(aid, agent);
-			agent.init(aid, args);
-		} catch (Exception ex)
+			agent = (AgentI) jndiContext.lookup(jndiNameStateful);
+		} catch (NamingException ex)
 		{
-			logger.log(Level.INFO, "Error while creating [" + aid + "]", ex);
-			throw new IllegalArgumentException("Cannot create an agent of class " + agClass, ex);
+			final Throwable cause = ex.getCause();
+			if (cause == null || !(cause instanceof IllegalStateException))
+				throw ex;
+			agent = (AgentI) jndiContext.lookup(jndiNameStateless);
 		}
+
+		// the order of the next two statements matters. if we call init first and the agent
+		// sends a message from there, it sometimes happens that the reply arrives before we
+		// register the AID. also some agents might wish to terminate themselves inside init.
+		runningAgents.put(aid, agent);
+		agent.init(aid, args);
 	}
 
 	@GET

@@ -18,24 +18,33 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.managers;
+package siebog.server.xjaf.base;
 
+import java.io.Serializable;
+import java.util.Map;
 import siebog.server.xjaf.fipa.acl.ACLMessage;
 
 /**
- * Remote interface for the message manager.
- *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Remote interface for all agents.
+ * 
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface MessageManagerI
+public interface AgentI extends Serializable
 {
+	AID getAid();
+
 	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will NOT wait for any of the agents to
-	 * process the message.
-	 * 
-	 * @param message ACLMessage instance.
+	 * The remaining methods are for internal purposes only. You should never directly call or
+	 * override any of them.
 	 */
-	void post(ACLMessage message);
 	
-	String ping();
+	void init(AID aid, Map<String, String> args);
+	
+	void handleMessage(ACLMessage msg);
+
+	void processNextMessage();
+	
+	void terminate();
+	
+	void remove();
 }

@@ -21,9 +21,7 @@
 package siebog.server.xjaf.managers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -34,15 +32,15 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
+import org.jboss.resteasy.annotations.Form;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.agents.base.AID;
-import siebog.server.xjaf.agents.base.AgentI;
-import siebog.server.xjaf.agents.fipa.acl.ACLMessage;
-import siebog.server.xjaf.agents.fipa.acl.Performative;
+import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.base.AgentI;
+import siebog.server.xjaf.fipa.acl.ACLMessage;
+import siebog.server.xjaf.fipa.acl.Performative;
 
 /**
  * Default message manager implementation.
@@ -84,129 +82,22 @@ public class MessageManager implements MessageManagerI
 		return list;		
 	}
 
+	@POST
+	@Path("/")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public void post(ACLMessage message)
+	public void post(@Form ACLMessage msg)
 	{
-		for (AID aid : message.getReceivers())
+		for (AID aid : msg.getReceivers())
 		{
 			if (aid == null)
 				continue;
 			AgentI agent = runningAgents.get(aid);
 			if (agent != null)
-				agent.handleMessage(message);
+				agent.handleMessage(msg);
 			else
 				logger.info("Agent not running: [" + aid + "]");
 		}
-	}
-	
-	@GET
-	@Produces("application/json")
-	@Path("/postquickmsg/{agents}/{performative}/{content}")
-	public String sendQuickMessage(@PathParam("agents") String agents,
-			@PathParam("performative") String performative, @PathParam("content") String content)
-	{
-
-		Set<AID> receivers = new HashSet<AID>();
-		Performative p = Performative.valueOf(performative);
-		ACLMessage msg = new ACLMessage(p);
-		msg.setContent(content);
-		String[] allAgents = agents.split(",");
-		for (String agent : allAgents)
-		{
-			String[] parts = agent.split("@");
-			String module = parts[0];
-			String ejbName = parts[1];
-			String runtimeName = parts[2];
-			// TODO : fix
-			//AID aid = new AID(module, ejbName, runtimeName);
-			receivers.add(null);
-		}
-		msg.setReceivers(receivers);
-		try
-		{
-			Global.getMessageManager().post(msg);
-		} catch (Exception e)
-		{
-			logger.log(Level.INFO, "Error while sending message.", e);
-			return "{\"success\": false}";
-		}
-
-		return "{\"success\": true}";
-	}
-
-	@POST
-	@Produces("application/json")
-	@Path("/postmsg")
-	public String sendMessage(String post)
-	{
-		String[] postArray = post.split("&");
-		List<String> list = new ArrayList<>();
-		for (String params : postArray)
-		{
-			String[] param = params.split("=");
-			if (param.length == 1)
-			{
-				list.add("");
-			} else
-			{
-				list.add(param[1]);
-			}
-		}
-		String performative = list.get(0);
-		String senderAgent = list.get(1);
-		String recievers = list.get(2);
-		String replyToAgent = list.get(3);
-		String content = list.get(4);
-		String language = list.get(5);
-		String encoding = list.get(6);
-		String ontology = list.get(7);
-		String protocol = list.get(8);
-		String conversationId = list.get(9);
-		String replyWith = list.get(10);
-		String replyBy = list.get(11);
-
-		Performative p = Performative.valueOf(performative);
-		ACLMessage msg = new ACLMessage(p);
-		// TODO : module, ejbName, runtimeName
-		String[] sparts = senderAgent.split("%2F");
-		// TODO : fix
-		//AID sender = new AID(sparts[0], sparts[1], sparts[2]); // module,ejbName,runtimeName
-		msg.setSender(null);
-		Set<AID> receivers = new HashSet<AID>();
-		String[] allAgents = recievers.split("%2C");
-		for (String agent : allAgents)
-		{
-			String[] parts = agent.split("%40");
-			String module = parts[0];
-			String ejbName = parts[1];
-			String runtimeName = parts[2];
-			// TODO : fix
-			// AID aid = new AID(module, ejbName, runtimeName);
-			receivers.add(null);
-		}
-		msg.setReceivers(receivers);
-		String[] replyParts = replyToAgent.split("%2F");
-		// TODO : fix
-		//AID replyTo = new AID(replyParts[0], replyParts[1], replyParts[2]);
-		msg.setReplyTo(null);
-		msg.setContent(content);
-		msg.setLanguage(language);
-		msg.setEncoding(encoding);
-		msg.setOntology(ontology);
-		msg.setProtocol(protocol);
-		msg.setConversationId(conversationId);
-		msg.setReplyWith(replyWith);
-		msg.setReplyBy(Long.valueOf(replyBy));
-		try
-		{
-			Global.getMessageManager().post(msg);
-		} catch (Exception e)
-		{
-			logger.log(Level.INFO, "Error while sending message.", e);
-			return "{\"success\": false}";
-		}
-
-		return "{\"success\": true}";
 	}
 
 	@Override

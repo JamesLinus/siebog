@@ -18,24 +18,35 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.managers;
-
-import siebog.server.xjaf.fipa.acl.ACLMessage;
+package siebog.server.xjaf.fipa.acl;
 
 /**
- * Remote interface for the message manager.
- *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Represents FIPA ACL message performatives.
+ * 
+ * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  */
-public interface MessageManagerI
+public enum Performative
 {
-	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will NOT wait for any of the agents to
-	 * process the message.
-	 * 
-	 * @param message ACLMessage instance.
-	 */
-	void post(ACLMessage message);
-	
-	String ping();
+	ACCEPT_PROPOSAL,
+	AGREE, 
+	CANCEL, 
+	CALL_FOR_PROPOSAL, 
+	CONFIRM, 
+	DISCONFIRM, 
+	FAILURE, 
+	INFORM, 
+	INFORM_IF, 
+	INFORM_REF, 
+	NOT_UNDERSTOOD, 
+	PROPAGATE, 
+	PROPOSE, 
+	PROXY, 
+	QUERY_IF, 
+	QUERY_REF,
+	REFUSE, 
+	REJECT_PROPOSAL, 
+	REQUEST, 
+	REQUEST_WHEN, 
+	REQUEST_WHENEVER, 
+	SUBSCRIBE
 }
