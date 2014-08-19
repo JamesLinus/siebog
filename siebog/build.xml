@@ -5,7 +5,10 @@
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="env.HOSTNAME" value="${env.COMPUTERNAME}" />
 	
-	<property name="siebog.file" value="${basedir}/${ant.project.name}.war" />
+	<property name="siebog.file" value="${env.JBOSS_HOME}/../siebog.war" />
+	<property name="agents.file" value="${env.JBOSS_HOME}/../siebog-agents.war" />
+	<property name="start.file" value="${env.JBOSS_HOME}/../siebog-start.jar" />
+	<property name="start.modules" value="./wildfly-9.x/modules/system/layers/base" />
 	
 	<property name="jboss.cli" value="${env.JBOSS_HOME}/bin/jboss-cli.sh" />
 	<property name="controller" value="remoting://localhost" />
@@ -29,12 +32,28 @@
 	
 	<target name="package">
 		<delete file="${siebog.file}" />
+		<delete file="${agents.file}" />
+		<delete file="${start.file}" />
+		
 		<war destfile="${siebog.file}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="war" includes="WEB-INF/classes/**" />
 			<fileset dir="war" includes="WEB-INF/jboss-web.xml" />
 			<fileset dir="war" includes="*.html" />
 			<fileset dir="war" includes="css/**,font/**,img/**,js/**" />
 		</war>
+		
+		<war destfile="${agents.file}" webxml="../siebog-agents/war/WEB-INF/web.xml" manifest="../siebog-agents/war/META-INF/MANIFEST.MF">
+			<fileset dir="../siebog-agents/war" includes="WEB-INF/classes/**" />
+			<fileset dir="../siebog-agents/war" includes="WEB-INF/jboss-web.xml" />
+		</war>
+		
+        <jar destfile="${start.file}">
+            <manifest>
+                <attribute name="Main-Class" value="siebog.server.NodeStarter"/>
+                <attribute name="Class-Path" value=". ./wildfly-9.x/bin/client/jboss-cli-client.jar ${start.modules}/org/jboss/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${start.modules}/org/jboss/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${start.modules}/org/jboss/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
+            </manifest>
+            <fileset dir="../siebog-start/bin"/>
+        </jar>
 	</target>
 
 	<target name="sonar">
@@ -45,23 +64,43 @@
 		<sonar:sonar />
 	</target>
 
-	<target name="undeploy">
+	<target name="undeploy-siebog">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='undeploy ${ant.project.name}.war --server-groups=xjaf2x-group' />
+			<arg value='undeploy siebog.war --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
 
-	<target name="deploy" depends="package, undeploy">
+	<target name="deploy-siebog" depends="package, undeploy-siebog">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${controller}" />
-			<arg value='deploy ${siebog.file} --name=${ant.project.name}.war --server-groups=xjaf2x-group' />
+			<arg value='deploy ${siebog.file} --name=siebog.war --server-groups=xjaf2x-group' />
 		</exec>
 	</target>
+	
+	<target name="undeploy-agents">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${controller}" />
+			<arg value='undeploy siebog-agents.war --server-groups=xjaf2x-group' />
+		</exec>
+	</target>
+	
+	<target name="deploy-agents" depends="package, undeploy-agents">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${controller}" />
+			<arg value='deploy ${agents.file} --name=siebog-agents.war --server-groups=xjaf2x-group' />
+		</exec>
+	</target>
+	
+	<target name="deploy-all" depends="deploy-siebog, deploy-agents" />
 
 	<target name="dist" depends="package">
 		<mkdir dir="${dist.temp.dir}" />
@@ -80,7 +119,8 @@
 		
 		<!-- copy binaries -->
 		<copy todir="${dist.temp.dir}">
-			<fileset dir="${basedir}" includes="siebog.war,start-node.bat,start-node.sh,LICENSE.txt,NOTICE.txt" />
+			<fileset dir="${env.JBOSS_HOME}/.." includes="siebog.war,siebog-agents.war,siebog-start.jar" />
+			<fileset dir="${basedir}/.." includes="LICENSE.txt,NOTICE.txt" />
 		</copy>
 		
 		<!-- pack -->

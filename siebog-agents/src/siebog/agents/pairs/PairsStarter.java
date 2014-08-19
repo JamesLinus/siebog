@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.pairs.client;
+package siebog.agents.pairs;
 
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
@@ -28,6 +28,8 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import siebog.agents.Module;
+import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.base.AID;
 import siebog.server.xjaf.base.AgentClass;
@@ -36,7 +38,6 @@ import siebog.server.xjaf.fipa.acl.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
 import siebog.server.xjaf.managers.AgentManagerI;
 import siebog.server.xjaf.managers.MessageManagerI;
-import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**
  * Entry point for the Sender-Receiver case study.
@@ -64,7 +65,7 @@ public class PairsStarter
 		int primeLimit = Integer.parseInt(args[2]);
 		int contentLength = Integer.parseInt(args[3]);
 
-		XjafCluster.init(true);
+		SiebogCluster.init();
 
 		List<AID> senders = new ArrayList<>();
 		AgentManagerI agm = Global.getAgentManager();
@@ -73,7 +74,7 @@ public class PairsStarter
 			// receiver
 			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit,
 				"numIterations->" + numIterations);
-			AgentClass rcAgClass = new AgentClass(Global.SERVER, "Receiver");
+			AgentClass rcAgClass = new AgentClass(Module.NAME, "Receiver");
 			AID rcAid = agm.start(rcAgClass, "R" + i, rcArgs);
 			// sender
 			AgentInitArgs snArgs = new AgentInitArgs(
@@ -81,7 +82,7 @@ public class PairsStarter
 				"contentLength->" + contentLength,
 				"rcvrAid->" +rcAid.toString(),
 				"resultsServiceAddr->" + addr);
-			AgentClass snAgClass = new AgentClass(Global.SERVER, "Sender");
+			AgentClass snAgClass = new AgentClass(Module.NAME, "Sender");
 			AID snAid = agm.start(snAgClass, "S" + i, snArgs);
 			senders.add(snAid);
 		}

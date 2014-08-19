@@ -18,19 +18,20 @@
  * and limitations under the License.
  */
 
-package siebog.agents.ping.client;
+package siebog.agents.ping;
 
 import java.io.IOException;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import siebog.agents.Module;
+import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.base.AID;
 import siebog.server.xjaf.base.AgentClass;
 import siebog.server.xjaf.fipa.acl.ACLMessage;
 import siebog.server.xjaf.fipa.acl.Performative;
 import siebog.server.xjaf.managers.AgentManagerI;
-import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**
  *
@@ -48,10 +49,10 @@ public class PingPongStarter
 	 */
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
-		XjafCluster.init(true);
+		SiebogCluster.init();
 		final AgentManagerI agm = Global.getAgentManager();
-		AID ping = agm.start(new AgentClass(Global.SERVER, "Ping"), "Ping", null);
-		agm.start(new AgentClass(Global.SERVER, "Pong"), "Pong", null);
+		AID ping = agm.start(new AgentClass(Module.NAME, "Ping"), "Ping", null);
+		agm.start(new AgentClass(Module.NAME, "Pong"), "Pong", null);
 		
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(ping);

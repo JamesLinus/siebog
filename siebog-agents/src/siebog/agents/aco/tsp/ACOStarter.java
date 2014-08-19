@@ -18,17 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.agents.aco.tsp.client;
+package siebog.agents.aco.tsp;
 
 import java.io.IOException;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import siebog.agents.Module;
+import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.base.AgentClass;
 import siebog.server.xjaf.managers.AgentInitArgs;
 import siebog.server.xjaf.managers.AgentManagerI;
-import siebog.server.xjaf.utils.config.XjafCluster;
 
 /**
  * Entry point for ACO example.
@@ -46,17 +47,17 @@ public class ACOStarter
 			return;
 		}
 		
-		XjafCluster.init(true);
+		SiebogCluster.init();
 		
 		final AgentManagerI agm = Global.getAgentManager();
-		AgentClass mapClass = new AgentClass(Global.SERVER, "Map");
+		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
 		agm.start(mapClass, "Map", mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i)
 		{
-			AgentClass agClass = new AgentClass(Global.SERVER, "Ant");
+			AgentClass agClass = new AgentClass(Module.NAME, "Ant");
 			agm.start(agClass, "Ant" + i, null);
 		}
 	}

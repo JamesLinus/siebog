@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.utils.config;
+package siebog.server.config;
 
 import org.jboss.ejb.client.ClusterNodeSelector;
 

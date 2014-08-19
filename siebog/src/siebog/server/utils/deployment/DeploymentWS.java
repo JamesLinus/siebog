@@ -18,21 +18,20 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.utils.deployment;
+package siebog.server.utils.deployment;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 /**
@@ -59,9 +58,9 @@ public class DeploymentWS
 					+ form.getApplicationName() + ".jar";
 			saveFile(form.getFileInput(), folderurl, fileName);
 			output = "File saved to server location : " + fileName;
-			File file = new File(fileName);
-			InetAddress addr = InetAddress.getByName(form.getMasterNodeAddress());
-			Deployment.deploy(addr, file, form.getApplicationName());
+			//File file = new File(fileName);
+			//InetAddress addr = InetAddress.getByName(form.getMasterNodeAddress());
+			//Deployment.deploy(addr, file, form.getApplicationName());
 			return Response.status(200).entity(output).build();
 		} catch (Exception e)
 		{

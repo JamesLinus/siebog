@@ -13,7 +13,7 @@ class EventManager {
 	
 	val NUM_DISPATCHERS = 1
 	for (i <- 0 until NUM_DISPATCHERS)
-		new EventDispatcher(list, observers).start
+		new EDT(list, observers).start
 	
 	def addEvent(event: Event): Unit = 
 		list synchronized { 

@@ -18,12 +18,11 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.utils.deployment;
+package siebog.server;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -38,7 +37,6 @@ import org.wildfly.plugin.deployment.domain.Domain;
 import org.wildfly.plugin.deployment.domain.DomainDeployment;
 import org.wildfly.plugin.deployment.domain.DomainDeployment.Status;
 import org.wildfly.plugin.deployment.domain.DomainDeployment.Type;
-import siebog.server.xjaf.Global;
 
 /**
  *
@@ -77,13 +75,5 @@ public class Deployment
 		DomainDeployment deployment = new DomainDeployment(client, domain, file, name,
 				Type.FORCE_DEPLOY, null, MatchPatternStrategy.FIRST);
 		return deployment.execute();
-	}
-
-	public static void main(String[] args) throws UnknownHostException,
-			DeploymentExecutionException, DeploymentFailureException
-	{
-		File f = new File("/home/dejan/dev/siebog/trunk/siebog/siebog.ear");
-		Status status = deploy(InetAddress.getByName("localhost"), f, "siebog");
-		System.out.println(status);
 	}
 }

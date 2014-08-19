@@ -21,22 +21,26 @@
 package siebog.server.dnars.events
 
 import scala.collection.mutable.ListBuffer
-
 import siebog.server.xjaf.Global
 import siebog.server.xjaf.base.AID
 import siebog.server.xjaf.fipa.acl.ACLMessage
 import siebog.server.xjaf.fipa.acl.Performative
 import siebog.server.xjaf.dnarslayer.Event
+import java.util.logging.Logger
+import java.util.logging.Level
 
 /**
- *
+ * Implementation of the Event Dispatch Thread.
+ * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends Thread {
+class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends Thread {
+	val logger = Logger.getLogger(classOf[EDT].getName)
+	
 	override def run: Unit = {
 		while (!Thread.interrupted()) {
 			try {
-				var events = new Array[Event](0)
+				var events: Array[Event] = null
 				list synchronized {
 					while (list.length == 0)
 						list.wait
@@ -47,8 +51,8 @@ class EventDispatcher(val list: ListBuffer[Event], val observers: ListBuffer[AID
 			} catch {
 				case _: InterruptedException =>
 					return
-				case e: Throwable =>
-					e.printStackTrace()
+				case ex: Exception =>
+					logger.log(Level.WARNING, "Exception in EDT.", ex)
 			}
 		}
 	}

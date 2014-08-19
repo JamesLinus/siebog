@@ -27,8 +27,8 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.jgroups.JChannel;
 import org.jgroups.ReceiverAdapter;
-import siebog.server.xjaf.utils.config.RelayInfo;
-import siebog.server.xjaf.utils.config.XjafCluster;
+import siebog.server.SiebogCluster;
+import siebog.server.config.RelayInfo;
 
 /**
  * Default connection manager implementation.
@@ -45,14 +45,14 @@ public class ConnectionManager implements ConnectionManagerI
 	@PostConstruct
 	public void postConstruct() 
 	{
-		RelayInfo relay = XjafCluster.get().getRelay();
+		RelayInfo relay = SiebogCluster.getConfig().getRelay();
 		if (relay == null)
 			logger.info("Relay not specified, support for remote clusters disabled");
 		else
 		{
 			try
 			{
-				channel = new JChannel(XjafCluster.class.getResource("/site-config.xml"));
+				channel = new JChannel(SiebogCluster.class.getResource("/site-config.xml"));
 				channel.connect("xjaf-global-cluster");
 				channel.setReceiver(new ReceiverAdapter() {
 					

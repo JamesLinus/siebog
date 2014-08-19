@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.Global;
+import siebog.agents.Module;
 import siebog.server.xjaf.base.AID;
 import siebog.server.xjaf.base.Agent;
 import siebog.server.xjaf.base.AgentClass;
@@ -90,7 +90,7 @@ public class Swarm extends Agent
 		{
 			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX,
 					"maxx->" + maxX);
-			agm.start(new AgentClass(Global.SERVER, "Particle"), "Particle" + i, mapArgs);
+			agm.start(new AgentClass(Module.NAME, "Particle"), "Particle" + i, mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");

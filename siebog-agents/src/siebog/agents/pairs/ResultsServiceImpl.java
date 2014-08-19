@@ -1,4 +1,4 @@
-package siebog.agents.pairs.client;
+package siebog.agents.pairs;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import siebog.agents.pairs.ResultsServiceI;
 
 /**
  * Implementation of a RMI service that will receive performance evaluation results.

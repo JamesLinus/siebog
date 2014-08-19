@@ -18,31 +18,54 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.utils.config;
+package siebog.server.utils.deployment;
 
 /**
- * Relay configuration, used to connect remote clusters.
- * 
- * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ *
+ * @author Rade
  */
-public class RelayInfo
+import java.io.InputStream;
+import javax.ws.rs.FormParam;
+
+public class MyMultipartForm
 {
-	private final String address;
-	private final String site;
+	@FormParam("file")
+	private InputStream fileInput;
 
-	public RelayInfo(String address, String site)
+	@FormParam("masternodeaddress")
+	private String masterNodeAddress;
+
+	@FormParam("applicationname")
+	private String applicationName;
+
+	public String getMasterNodeAddress()
 	{
-		this.address = address;
-		this.site = site;
+		return masterNodeAddress;
 	}
 
-	public String getAddress()
+	public void setMasternodeaddress(String masternodeaddress)
 	{
-		return address;
+		this.masterNodeAddress = masternodeaddress;
 	}
 
-	public String getSite()
+	public String getApplicationName()
 	{
-		return site;
+		return applicationName;
 	}
+
+	public void setApplicationName(String applicationName)
+	{
+		this.applicationName = applicationName;
+	}
+
+	public InputStream getFileInput()
+	{
+		return fileInput;
+	}
+
+	public void setFileInput(InputStream fileInput)
+	{
+		this.fileInput = fileInput;
+	}
+
 }

@@ -99,7 +99,8 @@ public class AgentManager implements AgentManagerI
 
 		try
 		{
-			createNew(agClass, aid, args.toStringMap());
+			final Map<String, String> argsMap = args != null ? args.toStringMap() : null; 
+			createNew(agClass, aid, argsMap);
 			logger.fine("Agent [" + aid + "] started.");
 			return aid;
 		} catch (Exception ex)
