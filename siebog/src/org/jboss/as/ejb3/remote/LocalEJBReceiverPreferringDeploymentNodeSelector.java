@@ -31,7 +31,8 @@ public class LocalEJBReceiverPreferringDeploymentNodeSelector implements Deploym
 	private int index;
 
 	@Override
-	public String selectNode(String[] eligibleNodes, String appName, String moduleName, String distinctName)
+	public String selectNode(String[] eligibleNodes, String appName, String moduleName,
+			String distinctName)
 	{
 		return eligibleNodes[index++ % eligibleNodes.length];
 	}

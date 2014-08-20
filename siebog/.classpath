@@ -14,14 +14,26 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
+	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/compile/infinispan-commons-6.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="lib/compile/infinispan-core-6.0.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/infinispan-commons-6.0.2.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/compile/infinispan-core-6.0.2.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/compile/jaxrs-api-3.0.8.Final.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -37,7 +49,11 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-ejb-client-2.0.1.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/compile/jboss-ejb3-ext-api-2.1.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -48,7 +64,11 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/compile/jboss-msc-1.2.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-msc-1.2.2.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/compile/resteasy-multipart-provider-3.0.8.Final.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -64,15 +84,31 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/module/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/module/jade.jar"/>
-	<classpathentry kind="lib" path="lib/module/astyanax-cassandra-1.56.37.jar"/>
+	<classpathentry kind="lib" path="lib/module/json-simple-1.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/jade.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/astyanax-cassandra-1.56.37.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/module/astyanax-core-1.56.37.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -83,48 +119,160 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/module/blueprints-core-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/module/cassandra-all-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/cassandra-thrift-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/colt-1.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/module/commons-codec-1.7.jar"/>
-	<classpathentry kind="lib" path="lib/module/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/module/commons-configuration-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/module/commons-lang-2.5.jar"/>
-	<classpathentry kind="lib" path="lib/module/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/module/gremlin-java-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/module/gremlin-scala-2.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/guava-14.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/module/high-scale-lib-1.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/hppc-0.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/jackson-core-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/jackson-mapper-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/jena-core-2.11.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/joda-time-1.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/module/kryo-2.21-shaded.jar"/>
+	<classpathentry kind="lib" path="lib/module/blueprints-core-2.4.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/cassandra-all-1.2.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/cassandra-thrift-1.2.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/colt-1.2.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/commons-codec-1.7.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/commons-collections-3.2.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/commons-configuration-1.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/commons-lang-2.5.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/commons-logging-1.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/gremlin-java-2.4.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/gremlin-scala-2.4.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/guava-14.0.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/high-scale-lib-1.1.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/hppc-0.4.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/jackson-core-asl-1.9.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/jackson-mapper-asl-1.9.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/jena-core-2.11.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/joda-time-1.6.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/kryo-2.21-shaded.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/module/libthrift-0.7.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/module/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="lib/module/log4j-1.2.17.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/module/metrics-core-3.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/module/pipes-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/module/slf4j-api-1.7.6.jar"/>
-	<classpathentry kind="lib" path="lib/module/slf4j-log4j12-1.7.6.jar"/>
-	<classpathentry kind="lib" path="lib/module/spatial4j-0.3.jar"/>
-	<classpathentry kind="lib" path="lib/module/titan-cassandra-0.4.4.jar"/>
-	<classpathentry kind="lib" path="lib/module/titan-core-0.4.4.jar"/>
+	<classpathentry kind="lib" path="lib/module/pipes-2.4.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/slf4j-api-1.7.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/slf4j-log4j12-1.7.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/spatial4j-0.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/titan-cassandra-0.4.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/titan-core-0.4.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/module/xercesImpl-2.11.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/module/xml-apis-1.4.01.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/module/xml-apis-1.4.01.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

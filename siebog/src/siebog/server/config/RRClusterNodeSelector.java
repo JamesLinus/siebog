@@ -34,6 +34,7 @@ public class RRClusterNodeSelector implements ClusterNodeSelector
 	@Override
 	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes)
 	{
+		
 		return availableNodes[index++ % availableNodes.length];
 	}
 

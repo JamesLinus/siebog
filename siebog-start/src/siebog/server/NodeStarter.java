@@ -141,7 +141,6 @@ public class NodeStarter
 		// @formatter:on
 
 		org.jboss.as.process.Main.start(jbossArgs);
-		waitForServer(ADDR, NAME, "slave");
 	}
 
 	private static void waitForServer(String address, String serverName, String hostName)
@@ -377,9 +376,9 @@ public class NodeStarter
 				// TODO: check if already deployed
 				doDeploy(root, Global.SERVER);
 				doDeploy(root, "siebog-agents");
+				logger.info("Siebog node ready.");
 			} else
 				runSlave();
-			logger.info("Siebog node ready.");
 		} catch (IllegalArgumentException ex)
 		{
 			logger.info(ex.getMessage());

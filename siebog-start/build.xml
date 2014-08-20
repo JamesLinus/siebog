@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="package" name="siebog-start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
+	<property environment="env" />
+	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+	<property name="bin.dir" value="bin" />
+	<property file="../siebog/build.properties" />
+	
+	<property name="starter.modules" value="./wildfly-9.x/modules/system/layers/base/org/jboss" />
+	
+	<target name="package">
+		<delete file="${starter.path}" />
+        <jar destfile="${starter.path}">
+            <manifest>
+                <attribute name="Main-Class" value="siebog.server.NodeStarter"/>
+                <attribute name="Class-Path" value=". ./wildfly-9.x/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
+            </manifest>
+            <fileset dir="${bin.dir}"/>
+        </jar>
+	</target>
+
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="../siebog/lib/sonar-ant-task-2.2.jar" />
+		</taskdef>
+
+		<sonar:sonar />
+	</target>
+</project>

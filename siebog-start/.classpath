@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="/siebog/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="/siebog/lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="/siebog/lib/compile/jboss-cli-client.jar"/>
+	<classpathentry kind="lib" path="/siebog/lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

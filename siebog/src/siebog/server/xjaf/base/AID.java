@@ -21,7 +21,6 @@
 package siebog.server.xjaf.base;
 
 import java.io.Serializable;
-import siebog.server.xjaf.Global;
 
 /**
  * Agent identifier, consists of the runtime name and the platform identifier, in the form of
@@ -45,11 +44,11 @@ public final class AID implements Serializable
 	 */
 	public AID(String nameHap)
 	{
-		int n = nameHap.indexOf('@');
+		int n = nameHap.lastIndexOf('@');
 		if (n == -1)
 		{
 			name = nameHap;
-			hap = Global.getNodeName();
+			hap = "cluster"; // Global.getNodeName();
 			str = name + '@' + hap;
 		} else if (n > 0 && n < nameHap.length() - 1)
 		{
