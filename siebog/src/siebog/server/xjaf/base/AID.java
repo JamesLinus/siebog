@@ -39,8 +39,6 @@ public final class AID implements Serializable
 	/**
 	 * Accepts a string in the form of "name@hap", or just "name", in which case the current host's
 	 * name will be used as hap.
-	 * 
-	 * @param nameHap
 	 */
 	public AID(String nameHap)
 	{
