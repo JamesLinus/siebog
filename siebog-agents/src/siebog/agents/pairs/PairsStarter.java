@@ -31,13 +31,13 @@ import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.AgentClass;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.AgentClass;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
-import siebog.server.xjaf.managers.AgentManagerI;
-import siebog.server.xjaf.managers.MessageManagerI;
+import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.MessageManager;
 
 /**
  * Entry point for the Sender-Receiver case study.
@@ -68,7 +68,7 @@ public class PairsStarter
 		SiebogCluster.init();
 
 		List<AID> senders = new ArrayList<>();
-		AgentManagerI agm = Global.getAgentManager();
+		AgentManager agm = Global.getAgentManager();
 		for (int i = 0; i < numPairs; i++)
 		{
 			// receiver
@@ -90,7 +90,7 @@ public class PairsStarter
 		Registry reg = LocateRegistry.createRegistry(1099);
 		reg.rebind("ResultsService", new ResultsServiceImpl(numPairs));
 
-		MessageManagerI msm = Global.getMessageManager();
+		MessageManager msm = Global.getMessageManager();
 		for (AID aid : senders)
 		{
 			ACLMessage msg = new ACLMessage(Performative.REQUEST);

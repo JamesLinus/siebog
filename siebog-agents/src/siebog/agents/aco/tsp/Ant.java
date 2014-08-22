@@ -29,12 +29,12 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.agents.Module;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.base.AgentClass;
-import siebog.server.xjaf.base.AgentI;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.AgentClass;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 
 /**
  * Implementation of an ant.
@@ -43,8 +43,8 @@ import siebog.server.xjaf.fipa.acl.Performative;
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
 @Stateful
-@Remote(AgentI.class)
-public class Ant extends Agent
+@Remote(Agent.class)
+public class Ant extends AgentBase
 {
 	private static final long serialVersionUID = 8886978416763257091L;
 	private static final Logger logger = Logger.getLogger(Ant.class.getName());

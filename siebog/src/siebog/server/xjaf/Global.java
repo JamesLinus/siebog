@@ -38,12 +38,12 @@ import org.infinispan.manager.CacheContainer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.AgentI;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.managers.AgentManagerImpl;
 import siebog.server.xjaf.managers.AgentManager;
-import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.managers.MessageManagerImpl;
 import siebog.server.xjaf.managers.MessageManager;
-import siebog.server.xjaf.managers.MessageManagerI;
 
 /**
  * Global constants and utility functions.
@@ -62,9 +62,9 @@ public abstract class Global
 		MASTER_NAME = "xjaf-master";
 
 	private static final String AgentManagerLookup = "ejb:/" + SERVER + "//"
-			+ AgentManager.class.getSimpleName() + "!" + AgentManagerI.class.getName();
+			+ AgentManagerImpl.class.getSimpleName() + "!" + AgentManager.class.getName();
 	private static final String MessageManagerLookup = "ejb:/" + SERVER + "//"
-			+ MessageManager.class.getSimpleName() + "!" + MessageManagerI.class.getName();
+			+ MessageManagerImpl.class.getSimpleName() + "!" + MessageManager.class.getName();
 	private static final Logger logger = Logger.getLogger(Global.class.getName());
 	private static Context context;
 	private static final JSONParser jsonParser = new JSONParser();
@@ -87,33 +87,33 @@ public abstract class Global
 		return context;
 	}
 
-	public static AgentManagerI getAgentManager() throws IllegalStateException
+	public static AgentManager getAgentManager() throws IllegalStateException
 	{
 		try
 		{
-			return (AgentManagerI) getContext().lookup(AgentManagerLookup);
+			return (AgentManager) getContext().lookup(AgentManagerLookup);
 		} catch (NamingException ex)
 		{
 			throw new IllegalStateException("Failed to lookup agent manager.", ex);
 		}
 	}
 
-	public static MessageManagerI getMessageManager() throws IllegalStateException
+	public static MessageManager getMessageManager() throws IllegalStateException
 	{
 		try
 		{
-			return (MessageManagerI) getContext().lookup(MessageManagerLookup);
+			return (MessageManager) getContext().lookup(MessageManagerLookup);
 		} catch (NamingException ex)
 		{
 			throw new IllegalStateException("Failed to lookup message manager.", ex);
 		}
 	}
 
-	public static Cache<AID, AgentI> getRunningAgents() throws NamingException
+	public static Cache<AID, Agent> getRunningAgents() throws NamingException
 	{
 		CacheContainer container = (CacheContainer) getContext().lookup(
 				"java:jboss/infinispan/container/xjaf2x-cache");
-		Cache<AID, AgentI> cache = container.getCache("running-agents");
+		Cache<AID, Agent> cache = container.getCache("running-agents");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");
 		return cache;

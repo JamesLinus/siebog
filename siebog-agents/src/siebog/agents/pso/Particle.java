@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.base.AgentI;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 
 /**
  * 
@@ -37,8 +37,8 @@ import siebog.server.xjaf.fipa.acl.Performative;
  * @author <a href="mailto:simic.dragan@hotmail.com">Dragan Simic</a>
  */
 @Stateful
-@Remote(AgentI.class)
-public class Particle extends Agent {
+@Remote(Agent.class)
+public class Particle extends AgentBase {
 
 	private static final long serialVersionUID = -4667142176673603367L;
 
@@ -97,7 +97,7 @@ public class Particle extends Agent {
 	private double r1, r2;
 
 	/**
-	 * @see xjaf2x.server.agm.Agent#onInit(java.io.Serializable[])
+	 * @see AgentBase.server.agm.Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
 	protected void onInit(Map<String, String> args) {
@@ -160,7 +160,7 @@ public class Particle extends Agent {
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see xjaf2x.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see AgentBase.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
 	 */
 	@Override
 	protected void onMessage(ACLMessage message) {

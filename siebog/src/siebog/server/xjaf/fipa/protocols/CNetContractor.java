@@ -20,8 +20,8 @@
 
 package siebog.server.xjaf.fipa.protocols;
 
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.fipa.ACLMessage;
 
 /**
  * Base class for <a
@@ -30,7 +30,7 @@ import siebog.server.xjaf.fipa.acl.ACLMessage;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class CNetContractor extends Agent
+public abstract class CNetContractor extends AgentBase
 {
 	private static final long serialVersionUID = 1L;
 

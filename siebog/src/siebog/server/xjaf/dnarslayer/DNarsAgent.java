@@ -21,15 +21,15 @@
 package siebog.server.xjaf.dnarslayer;
 
 import java.util.Map;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends Agent 
+public abstract class DNarsAgent extends AgentBase 
 {
 	private static final long serialVersionUID = 1L;
 	protected DNarsGraphI graph;

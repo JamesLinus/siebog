@@ -22,10 +22,10 @@ package siebog.agents.ping;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.base.AgentI;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 
 /**
  * Example of a pong agent. 
@@ -33,8 +33,8 @@ import siebog.server.xjaf.fipa.acl.Performative;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
-@Remote(AgentI.class)
-public class Pong extends Agent
+@Remote(Agent.class)
+public class Pong extends AgentBase
 {
 	private static final long serialVersionUID = 1L;
 	private int number = 0;

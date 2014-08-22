@@ -1,6 +1,6 @@
 package siebog.server.xjaf.dnarslayer;
 
-import siebog.server.xjaf.base.AID;
+import siebog.server.xjaf.core.AID;
 
 public interface DNarsGraphI
 {

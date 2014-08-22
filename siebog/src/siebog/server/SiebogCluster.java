@@ -38,34 +38,27 @@ import siebog.server.xjaf.Global;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class SiebogCluster
-{
+public class SiebogCluster {
 	private static final Logger logger = Logger.getLogger(SiebogCluster.class.getName());
 	private static NodeConfig config;
 	private static boolean initialized;
-	
-	public static NodeConfig getConfig()
-	{
-		if (config == null)
-		{
-			try
-			{
+
+	public static NodeConfig getConfig() {
+		if (config == null) {
+			try {
+				// TODO if file not found, use default settings
 				config = new NodeConfig();
-			} catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				throw new IllegalStateException("Unable to initialize " + SiebogCluster.class.getSimpleName(), ex);
 			}
 		}
 		return config;
 	}
 
-	public static synchronized void init() 
-	{
-		if (!initialized)
-		{
+	public static synchronized void init() {
+		if (!initialized) {
 			final Set<String> clusterNodes = getConfig().getClusterNodes();
-			if (clusterNodes == null || clusterNodes.size() == 0)
-			{
+			if (clusterNodes == null || clusterNodes.size() == 0) {
 				logger.warning("Trying to initialize without specifying cluster nodes.");
 				return;
 			}
@@ -82,8 +75,7 @@ public class SiebogCluster
 
 			StringBuilder connections = new StringBuilder();
 			String sep = "";
-			for (String str : clusterNodes)
-			{
+			for (String str : clusterNodes) {
 				String addr = "C_" + str.replace('.', '_');
 				final String id = "remote.connection." + addr;
 

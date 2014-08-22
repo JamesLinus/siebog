@@ -23,17 +23,17 @@ package siebog.agents.dnars;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.base.AgentI;
+import siebog.server.xjaf.core.Agent;
 import siebog.server.xjaf.dnarslayer.DNarsAgent;
 import siebog.server.xjaf.dnarslayer.Event;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
+import siebog.server.xjaf.fipa.ACLMessage;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
-@Remote(AgentI.class)
+@Remote(Agent.class)
 public class DNarsPing extends DNarsAgent
 {
 	private static final long serialVersionUID = 1L;

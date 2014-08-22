@@ -27,11 +27,11 @@ import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.AgentClass;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
-import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.AgentClass;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
+import siebog.server.xjaf.managers.AgentManager;
 
 /**
  *
@@ -50,7 +50,7 @@ public class PingPongStarter
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, NamingException
 	{
 		SiebogCluster.init();
-		final AgentManagerI agm = Global.getAgentManager();
+		final AgentManager agm = Global.getAgentManager();
 		AID ping = agm.start(new AgentClass(Module.NAME, "Ping"), "Ping", null);
 		agm.start(new AgentClass(Module.NAME, "Pong"), "Pong", null);
 		

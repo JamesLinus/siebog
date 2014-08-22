@@ -1,3 +1,35 @@
+class XJAF
+	this.getAgClasses = (onSuccess, onError) ->
+		$.ajax "rest/agents/classes"
+			type: "GET"
+			dataType: "json"
+			success: onSuccess
+			error: onError
+	this.getRunning = (onSuccess, onError) ->
+		$.ajax "rest/agents/running"
+			type: "GET"
+			dataType: "json"
+			success: onSuccess
+			error: onError
+	this.start = (agClass, name, onSuccess, onError) ->
+		$.ajax "rest/agents/running/#{agClass}/#{name}"
+			type: "PUT"		
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			success: onSuccess
+			error: onError
+	this.getPerformatives = (onSuccess, onError) ->
+		$.ajax "rest/messages"
+			type : "GET",
+			dataType : "json",
+			success : onSuccess,
+			error: onError
+	this.post = (msg, onSuccess, onError) ->
+		$.ajax "rest/messages"
+			type: "POST"
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			success: onSuccess
+			error: onError
+
 class AID
 	constructor: (@name, @hap) -> @str = "#{@name}@#{@hap}"
 

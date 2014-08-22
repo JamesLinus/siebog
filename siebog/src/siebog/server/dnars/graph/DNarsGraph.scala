@@ -1,20 +1,20 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one 
- * or more contributor license agreements. See the NOTICE file 
- * distributed with this work for additional information regarding 
- * copyright ownership. The ASF licenses this file to you under 
- * the Apache License, Version 2.0 (the "License"); you may not 
- * use this file except in compliance with the License. You may 
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may
  * obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, 
- * software distributed under the License is distributed on an 
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
- * either express or implied. 
- * 
- * See the License for the specific language governing permissions 
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.
+ *
+ * See the License for the specific language governing permissions
  * and limitations under the License.
  */
 
@@ -39,19 +39,19 @@ import siebog.server.dnars.base.Term
 import siebog.server.dnars.base.Truth
 import siebog.server.dnars.events.EventManager
 import siebog.server.dnars.graph.DNarsVertex.wrap
-import siebog.server.xjaf.base.AID
+import siebog.server.xjaf.core.AID
 import siebog.server.xjaf.dnarslayer.DNarsGraphI
 
 /**
- * Wrapper around the ScalaGraph class. Inspired by 
+ * Wrapper around the ScalaGraph class. Inspired by
  * <a href="https://github.com/mpollmeier/gremlin-scala">gremlin/scala project</a>.
- * 
+ *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) with DNarsGraphI {
 	val statements = new StatementManager(this)
 	val eventManager = new EventManager()
-	
+
 	def getV(term: Term): Option[Vertex] = {
 		val vertex = V.has("term", term.id).toList
 		vertex match {
@@ -61,7 +61,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	}
 
 	/**
-	 * Returns a vertex that corresponds to the given term. 
+	 * Returns a vertex that corresponds to the given term.
 	 * If the vertex does not exist, it will added to the graph.
 	 */
 	def getOrAddV(term: Term): Vertex = {
@@ -73,13 +73,13 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 				added
 		}
 	}
-	
+
 	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge = {
 		val edge = subj.addEdge(copula, pred)
 		DNarsEdge(edge).truth = truth
 		edge
 	}
-	
+
 	def getE(st: Statement): Option[Edge] = {
 		val s = getV(st.subj)
 		val p = getV(st.pred)
@@ -96,29 +96,31 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 			}
 		}
 	}
-	
+
 	/**
 	 * Debugging purposes only.
 	 */
 	def printEdges(): Unit = {
-		val list = E.map { e => {
-			val s: DNarsVertex = e.getVertex(Direction.OUT)
-			val p: DNarsVertex = e.getVertex(Direction.IN)
-			val c = e.getLabel
-			val t = DNarsEdge(e).truth
-			val st = Statement(s.term, c, p.term, t)
-			// print only the packed version
-			statements.pack(st) match {
-				case List() => st
-				case List(h, _) => h
+		val list = E.map { e =>
+			{
+				val s: DNarsVertex = e.getVertex(Direction.OUT)
+				val p: DNarsVertex = e.getVertex(Direction.IN)
+				val c = e.getLabel
+				val t = DNarsEdge(e).truth
+				val st = Statement(s.term, c, p.term, t)
+				// print only the packed version
+				statements.pack(st) match {
+					case List() => st
+					case List(h, _) => h
+				}
 			}
-		} }.toSet
+		}.toSet
 		println(s"---------------- Graph dump [domain=$domain] ----------------")
 		for (st <- list)
 			println(st)
 		println("------------------- Done -------------------")
 	}
-	
+
 	/**
 	 * Debugging purposes only.
 	 */
@@ -127,26 +129,26 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		V.as("x").inE.sideEffect { e => count += 1 }.back("x").outE.sideEffect { e => count += 1 }.iterate
 		count
 	}
-	
+
 	def shutdown(clear: Boolean = false) = {
 		graph.shutdown()
 		if (clear)
 			graph match {
-			case tg: TitanGraph => 
-				TitanCleanup.clear(tg)
-			case any: Any => 
-				throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
-		}
+				case tg: TitanGraph =>
+					TitanCleanup.clear(tg)
+				case any: Any =>
+					throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
+			}
 	}
-	
-	override def addObserver(aid: AID): Unit = 
+
+	override def addObserver(aid: AID): Unit =
 		eventManager.addObserver(aid)
-	
-	override def addStatement(st: String): Unit = 
+
+	override def addStatement(st: String): Unit =
 		try {
 			statements.add(StatementParser(st))
 		} catch {
-			case e: Throwable => 
+			case e: Throwable =>
 				throw new IllegalArgumentException(e.getMessage)
 		}
 }
@@ -164,18 +166,18 @@ object DNarsGraphFactory {
 		try {
 			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
 		} catch {
-			case _: IllegalArgumentException => 
-			case e: Throwable => throw e 
+			case _: IllegalArgumentException =>
+			case e: Throwable => throw e
 		}
 		try {
 			graph.makeKey("label").dataType(classOf[String]).indexed("standard", classOf[Edge]).make()
 		} catch {
-			case _: IllegalArgumentException => 
-			case e: Throwable => throw e 
+			case _: IllegalArgumentException =>
+			case e: Throwable => throw e
 		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
-	
+
 	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")

@@ -23,10 +23,10 @@ package siebog.agents.pairs;
 import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.base.AgentI;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 
 /**
  * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers
@@ -35,8 +35,8 @@ import siebog.server.xjaf.fipa.acl.Performative;
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
-@Remote(AgentI.class)
-public class Receiver extends Agent
+@Remote(Agent.class)
+public class Receiver extends AgentBase
 {
 	private static final long serialVersionUID = -677935957265970587L;
 	private int primeLimit;

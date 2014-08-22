@@ -25,12 +25,12 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.agents.Module;
-import siebog.server.xjaf.base.AID;
-import siebog.server.xjaf.base.Agent;
-import siebog.server.xjaf.base.AgentClass;
-import siebog.server.xjaf.base.AgentI;
-import siebog.server.xjaf.fipa.acl.ACLMessage;
-import siebog.server.xjaf.fipa.acl.Performative;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.AgentClass;
+import siebog.server.xjaf.fipa.ACLMessage;
+import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
 
 /**
@@ -41,8 +41,8 @@ import siebog.server.xjaf.managers.AgentInitArgs;
  * @author <a href="mailto:simic.dragan@hotmail.com">Dragan Simic</a>
  */
 @Stateful
-@Remote(AgentI.class)
-public class Swarm extends Agent
+@Remote(Agent.class)
+public class Swarm extends AgentBase
 {
 
 	private static final long serialVersionUID = -7864076456995372014L;
@@ -67,7 +67,7 @@ public class Swarm extends Agent
 
 	/**
 	 * 
-	 * @see xjaf2x.server.agm.Agent#onInit(java.io.Serializable[])
+	 * @see xjaf2x.server.agm.AgentBase#onInit(java.io.Serializable[])
 	 */
 	@Override
 	protected void onInit(Map<String, String> args)
@@ -137,7 +137,7 @@ public class Swarm extends Agent
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see xjaf2x.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see xjaf2x.server.agm.AgentBase#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
 	 */
 	@Override
 	protected void onMessage(ACLMessage message)

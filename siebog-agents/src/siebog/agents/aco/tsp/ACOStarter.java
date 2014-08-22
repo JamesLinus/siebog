@@ -27,9 +27,9 @@ import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
 import siebog.server.xjaf.Global;
-import siebog.server.xjaf.base.AgentClass;
+import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.managers.AgentInitArgs;
-import siebog.server.xjaf.managers.AgentManagerI;
+import siebog.server.xjaf.managers.AgentManager;
 
 /**
  * Entry point for ACO example.
@@ -49,7 +49,7 @@ public class ACOStarter
 		
 		SiebogCluster.init();
 		
-		final AgentManagerI agm = Global.getAgentManager();
+		final AgentManager agm = Global.getAgentManager();
 		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
 		agm.start(mapClass, "Map", mapArgs);
