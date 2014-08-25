@@ -30,8 +30,7 @@ import org.hornetq.utils.json.JSONObject;
  * 
  * @author <a href="mailto:simic.dragan@hotmail.com">Dragan Simic</a>
  */
-public class PsoMessage implements Serializable
-{
+public class PsoMessage implements Serializable {
 
 	private static final long serialVersionUID = 4722728917078327109L;
 
@@ -47,8 +46,7 @@ public class PsoMessage implements Serializable
 	 * @param fitness
 	 * @param position
 	 */
-	public PsoMessage(String action, double fitness, double[] position)
-	{
+	public PsoMessage(String action, double fitness, double[] position) {
 		super();
 		this.action = action;
 		this.fitness = fitness;
@@ -59,51 +57,41 @@ public class PsoMessage implements Serializable
 	/**
 	 * @return the action
 	 */
-	public String getAction()
-	{
+	public String getAction() {
 		return action;
 	}
 
 	/**
 	 * @return the fitness
 	 */
-	public double getFitness()
-	{
+	public double getFitness() {
 		return fitness;
 	}
 
 	/**
 	 * @return the position
 	 */
-	public double[] getPosition()
-	{
+	public double[] getPosition() {
 		return position;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		JSONObject obj = new JSONObject();
-		try
-		{
+		try {
 			obj.put("action", action);
 			obj.put("fitness", fitness);
 			obj.put("position", position);
-		} catch (JSONException ex)
-		{
+		} catch (JSONException ex) {
 		}
 		return obj.toString();
 	}
 
-	public static PsoMessage valueOf(String jsonString)
-	{
-		try
-		{
+	public static PsoMessage valueOf(String jsonString) {
+		try {
 			JSONObject obj = new JSONObject(jsonString);
-			return new PsoMessage(obj.getString("action"), obj.getDouble("fitness"),
-					(double[]) obj.get("position"));
-		} catch (JSONException ex)
-		{
+			return new PsoMessage(obj.getString("action"), obj.getDouble("fitness"), (double[]) obj.get("position"));
+		} catch (JSONException ex) {
 			ex.printStackTrace();
 			return null;
 		}

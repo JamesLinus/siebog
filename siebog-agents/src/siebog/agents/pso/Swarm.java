@@ -27,7 +27,7 @@ import javax.ejb.Stateful;
 import siebog.agents.Module;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
@@ -42,8 +42,7 @@ import siebog.server.xjaf.managers.AgentInitArgs;
  */
 @Stateful
 @Remote(Agent.class)
-public class Swarm extends AgentBase
-{
+public class Swarm extends XjafAgent {
 
 	private static final long serialVersionUID = -7864076456995372014L;
 	private static final Logger logger = Logger.getLogger(Swarm.class.getName());
@@ -67,11 +66,10 @@ public class Swarm extends AgentBase
 
 	/**
 	 * 
-	 * @see xjaf2x.server.agm.AgentBase#onInit(java.io.Serializable[])
+	 * @see xjaf2x.server.agm.XjafAgent#onInit(java.io.Serializable[])
 	 */
 	@Override
-	protected void onInit(Map<String, String> args)
-	{
+	protected void onInit(Map<String, String> args) {
 
 		logger.info("PsoStarter agent running.");
 
@@ -86,10 +84,8 @@ public class Swarm extends AgentBase
 		logger.fine("Number of particles in swarm = " + numberParticles);
 
 		logger.fine("Initializing swarm with random positions/solutions.");
-		for (int i = 0; i < numberParticles; ++i)
-		{
-			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX,
-					"maxx->" + maxX);
+		for (int i = 0; i < numberParticles; ++i) {
+			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX, "maxx->" + maxX);
 			agm.start(new AgentClass(Module.NAME, "Particle"), "Particle" + i, mapArgs);
 		}
 
@@ -101,16 +97,13 @@ public class Swarm extends AgentBase
 	/**
 	 * One iteration of the whole swarm. Finishes execution if numberIterations is reached.
 	 */
-	private void iterate()
-	{
-		if (iteration < numberIterations)
-		{
+	private void iterate() {
+		if (iteration < numberIterations) {
 			iteration++;
 			iteratedParticles = 0;
 
 			// request iteration from all particles
-			for (int i = 0; i < numberParticles; ++i)
-			{
+			for (int i = 0; i < numberParticles; ++i) {
 
 				// find particle
 				AID particleAID = agm.getAIDByName("Particle" + i);
@@ -119,16 +112,15 @@ public class Swarm extends AgentBase
 				ACLMessage message = new ACLMessage();
 				message.setPerformative(Performative.REQUEST);
 
-				PsoMessage psoMessage = new PsoMessage(PsoMessage.ITERATE_PARTICLE,
-						bestGlobalFitness, bestGlobalPosition);
+				PsoMessage psoMessage = new PsoMessage(PsoMessage.ITERATE_PARTICLE, bestGlobalFitness,
+						bestGlobalPosition);
 				message.setContent(psoMessage.toString());
 				message.setSender(myAid);
 				message.addReceiver(particleAID);
 				msm.post(message);
 
 			}
-		} else
-		{
+		} else {
 			finish();
 		}
 
@@ -137,21 +129,17 @@ public class Swarm extends AgentBase
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see xjaf2x.server.agm.AgentBase#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see xjaf2x.server.agm.XjafAgent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
 	 */
 	@Override
-	protected void onMessage(ACLMessage message)
-	{
+	protected void onMessage(ACLMessage message) {
 
 		PsoMessage psoMessage = PsoMessage.valueOf(message.getContent());
 
-		if (message.getPerformative() == Performative.REQUEST)
-		{
+		if (message.getPerformative() == Performative.REQUEST) {
 
-			if (psoMessage.getAction().equals(PsoMessage.UPDATE_GLOBAL_SOLUTION))
-			{
-				if (psoMessage.getFitness() < bestGlobalFitness)
-				{
+			if (psoMessage.getAction().equals(PsoMessage.UPDATE_GLOBAL_SOLUTION)) {
+				if (psoMessage.getFitness() < bestGlobalFitness) {
 					// logger.info("Updated best result. AID: " + message.getSender() +
 					// " , fitness: "
 					// + psoMessage.getFitness());
@@ -160,12 +148,10 @@ public class Swarm extends AgentBase
 				}
 			}
 
-		} else if (message.getPerformative() == Performative.INFORM)
-		{
+		} else if (message.getPerformative() == Performative.INFORM) {
 			// count responses from articles, so that we know when to proceed to next iteration
 			iteratedParticles++;
-			if (iteratedParticles == numberParticles)
-			{
+			if (iteratedParticles == numberParticles) {
 				iterate();
 			}
 		}
@@ -174,21 +160,18 @@ public class Swarm extends AgentBase
 	/**
 	 * Prints results and terminates all agents (particles and swarm)
 	 */
-	private void finish()
-	{
+	private void finish() {
 
 		// print results
 		logger.info("Processing complete");
 		logger.info("Final best fitness = " + bestGlobalFitness);
 		logger.info("Best position/solution: ");
-		for (int i = 0; i < bestGlobalPosition.length; ++i)
-		{
+		for (int i = 0; i < bestGlobalPosition.length; ++i) {
 			logger.info("x" + i + " = " + String.format("%.16f", bestGlobalPosition[i]));
 		}
 
 		// stop all particles
-		for (int i = 0; i < numberParticles; ++i)
-		{
+		for (int i = 0; i < numberParticles; ++i) {
 
 			// find particle
 			AID particleAID = agm.getAIDByName("Particle" + i);

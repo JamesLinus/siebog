@@ -20,14 +20,16 @@
 
 package siebog.server.dnars.events
 
+import java.util.logging.Level
+import java.util.logging.Logger
+
 import scala.collection.mutable.ListBuffer
-import siebog.server.xjaf.Global
+
 import siebog.server.xjaf.core.AID
+import siebog.server.xjaf.dnarslayer.Event
 import siebog.server.xjaf.fipa.ACLMessage
 import siebog.server.xjaf.fipa.Performative
-import siebog.server.xjaf.dnarslayer.Event
-import java.util.logging.Logger
-import java.util.logging.Level
+import siebog.server.xjaf.managers.ManagerFactory
 
 /**
  * Implementation of the Event Dispatch Thread.
@@ -64,6 +66,6 @@ class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends T
 		observers synchronized {
 			observers.foreach { aid => acl.addReceiver(aid) }
 		}
-		Global.getMessageManager().post(acl)
+		ManagerFactory.getMessageManager().post(acl)
 	}
 }

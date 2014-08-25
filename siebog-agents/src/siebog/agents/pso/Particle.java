@@ -26,7 +26,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -38,7 +38,7 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Particle extends AgentBase {
+public class Particle extends XjafAgent {
 
 	private static final long serialVersionUID = -4667142176673603367L;
 
@@ -97,7 +97,7 @@ public class Particle extends AgentBase {
 	private double r1, r2;
 
 	/**
-	 * @see AgentBase.server.agm.Agent#onInit(java.io.Serializable[])
+	 * @see XjafAgent.server.agm.Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
 	protected void onInit(Map<String, String> args) {
@@ -160,7 +160,7 @@ public class Particle extends AgentBase {
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see AgentBase.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see XjafAgent.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
 	 */
 	@Override
 	protected void onMessage(ACLMessage message) {
@@ -172,20 +172,20 @@ public class Particle extends AgentBase {
 
 				// logger.warning("Particle [" + myAid + "] got the iterate request" );
 				iteration(psoMessage.getFitness(), psoMessage.getPosition());
-				
+
 				// reply to the swarm that the iteration is finished
 				ACLMessage reply = message.makeReply(Performative.INFORM);
 				reply.setSender(myAid);
 				message.addReceiver(swarmAID);
 				msm.post(reply);
 			}
-		} 
+		}
 	}
 
 	/**
 	 * Represents one iteration of a Particle. <br>
-	 * Calculates new velocity, position and fitness, and updates local and global best position and fitness if
-	 * necessary.
+	 * Calculates new velocity, position and fitness, and updates local and global best position and
+	 * fitness if necessary.
 	 * 
 	 * @param bestGlobalFitness
 	 * @param bestGlobalPosition
@@ -232,7 +232,7 @@ public class Particle extends AgentBase {
 
 		// set new fitness
 		fitness = newFitness;
-		
+
 		// log line for debugging
 		logger.warning("Particle [" + myAid + "] iteration fitness: " + fitness);
 
@@ -257,8 +257,7 @@ public class Particle extends AgentBase {
 	/**
 	 * function to solve (minimize)
 	 * 
-	 * @param x
-	 *            potential solutions (array[dimension])
+	 * @param x potential solutions (array[dimension])
 	 * @return result (fitness)
 	 */
 	private double objectiveFunction(double[] x) {

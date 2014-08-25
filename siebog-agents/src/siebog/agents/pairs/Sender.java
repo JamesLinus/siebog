@@ -30,7 +30,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -43,8 +43,7 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Sender extends AgentBase
-{
+public class Sender extends XjafAgent {
 	private static final long serialVersionUID = -5648061637952026195L;
 	private int numIterations;
 	private int iterationIndex;
@@ -54,8 +53,7 @@ public class Sender extends AgentBase
 	private long totalTime;
 
 	@Override
-	protected void onInit(Map<String, String> args)
-	{
+	protected void onInit(Map<String, String> args) {
 		receiver = new AID(args.get("rcvrAid"));
 		numIterations = Integer.parseInt(args.get("numIterations"));
 		// create message content
@@ -65,40 +63,32 @@ public class Sender extends AgentBase
 	}
 
 	@Override
-	protected void onMessage(ACLMessage msg)
-	{
-		if (msg.getPerformative() == Performative.REQUEST)
-		{
+	protected void onMessage(ACLMessage msg) {
+		if (msg.getPerformative() == Performative.REQUEST) {
 			iterationIndex = 0;
 			totalTime = 0;
 			postMsg();
-		} else
-		{
+		} else {
 			++iterationIndex;
 			totalTime += System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
 			if (iterationIndex < numIterations)
 				postMsg();
-			else
-			{
+			else {
 				long avg = totalTime / numIterations;
-				try
-				{
+				try {
 					Registry reg = LocateRegistry.getRegistry(resultsServiceAddr);
-					ResultsServiceI results = (ResultsServiceI) reg.lookup("ResultsService");
+					ResultsService results = (ResultsService) reg.lookup("ResultsService");
 					results.add(avg, myAid.getHap());
-				} catch (RemoteException | NotBoundException ex)
-				{
+				} catch (RemoteException | NotBoundException ex) {
 					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);
-				} finally
-				{
+				} finally {
 					agm.stop(myAid);
 				}
 			}
 		}
 	}
 
-	private void postMsg()
-	{
+	private void postMsg() {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.setSender(myAid);
 		msg.addReceiver(receiver);
@@ -107,8 +97,7 @@ public class Sender extends AgentBase
 		msm.post(msg);
 	}
 
-	private String makeContent(int length)
-	{
+	private String makeContent(int length) {
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = 0; i < length; i++)
 			sb.append("A");

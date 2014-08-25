@@ -18,28 +18,17 @@
  * and limitations under the License.
  */
 
-package siebog.client.admin.client;
+package siebog.agents.pairs;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
- * TODO add a description
- * 
+ * Remote interface of the RMI service that will be accpeptin message round-trip times from Sender
+ * agents.
+ *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class AIDDesc extends JavaScriptObject {
-	protected AIDDesc() {
-	}
-
-	public final native String getName() /*-{
-		return this.name;
-	}-*/;
-
-	public final native String getHap() /*-{
-		return this.hap;
-	}-*/;
-
-	public final native String getId() /*-{
-		return this.id;
-	}-*/;
+public interface ResultsService extends Remote {
+	void add(long rtt, String nodeName) throws RemoteException;
 }

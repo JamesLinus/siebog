@@ -25,8 +25,8 @@ package siebog.server.xjaf.fipa;
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  */
-public enum Performative
-{
+public enum Performative {
+	//@formatter:off
 	ACCEPT_PROPOSAL,
 	AGREE, 
 	CANCEL, 
@@ -49,4 +49,5 @@ public enum Performative
 	REQUEST_WHEN, 
 	REQUEST_WHENEVER, 
 	SUBSCRIBE
+	//@formatter:on
 }

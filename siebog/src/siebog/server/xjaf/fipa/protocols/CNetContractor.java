@@ -20,25 +20,21 @@
 
 package siebog.server.xjaf.fipa.protocols;
 
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 
 /**
- * Base class for <a
- * href="http://www.fipa.org/specs/fipa00029/SC00029H.pdf">FIPA Contract Net</a>
+ * Base class for <a href="http://www.fipa.org/specs/fipa00029/SC00029H.pdf">FIPA Contract Net</a>
  * contractor/participant agents.
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class CNetContractor extends AgentBase
-{
+public abstract class CNetContractor extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void onMessage(ACLMessage message)
-	{
-		switch (message.getPerformative())
-		{
+	public void onMessage(ACLMessage message) {
+		switch (message.getPerformative()) {
 		case CALL_FOR_PROPOSAL:
 			ACLMessage reply = getProposal(message);
 			if (reply != null)

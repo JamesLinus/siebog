@@ -31,10 +31,6 @@ import siebog.server.xjaf.fipa.ACLMessage;
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface Agent extends Serializable {
-	/**
-	 * The remaining
-	 */
-
 	void init(AID aid, Map<String, String> args);
 
 	void handleMessage(ACLMessage msg);

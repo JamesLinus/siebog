@@ -25,18 +25,19 @@ package siebog.server.xjaf;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface Matchable<T>
-{
+public interface Matchable<T> {
 	/**
 	 * Determines whether this object matches the provided pattern. In general, the following
 	 * algorithm is used:
 	 * 
-	 * <pre><code>
+	 * <pre>
+	 * <code>
 	 * for (each non-null field f in pattern)
 	 *   if (!this.f.matches(pattern.f))
 	 *     return false;
 	 * return true;
-	 * </code></pre>
+	 * </code>
+	 * </pre>
 	 * 
 	 * @param pattern
 	 * @return

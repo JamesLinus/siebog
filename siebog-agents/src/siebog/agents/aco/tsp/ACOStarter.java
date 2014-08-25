@@ -26,10 +26,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.managers.AgentInitArgs;
 import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.ManagerFactory;
 
 /**
  * Entry point for ACO example.
@@ -37,26 +37,23 @@ import siebog.server.xjaf.managers.AgentManager;
  * @author <a href="mailto:tntvteod@neobee.net">Teodor Najdan Trifunov</a>
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
-public class ACOStarter 
-{
-	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException, SAXException
-	{
-		if (args.length != 2)
-		{
+public class ACOStarter {
+	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException,
+			SAXException {
+		if (args.length != 2) {
 			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
 			return;
 		}
-		
+
 		SiebogCluster.init();
-		
-		final AgentManager agm = Global.getAgentManager();
+
+		final AgentManager agm = ManagerFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
 		agm.start(mapClass, "Map", mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());
-		for (int i = 1; i <= nAnts; ++i)
-		{
+		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Module.NAME, "Ant");
 			agm.start(agClass, "Ant" + i, null);
 		}

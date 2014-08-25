@@ -30,13 +30,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
 import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.ManagerFactory;
 import siebog.server.xjaf.managers.MessageManager;
 
 /**
@@ -44,17 +44,13 @@ import siebog.server.xjaf.managers.MessageManager;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class PairsStarter
-{
+public class PairsStarter {
 
-	public static void main(String[] args) throws NamingException, IOException,
-			ParserConfigurationException, SAXException
-	{
+	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException,
+			SAXException {
 		String addr = System.getProperty("java.rmi.server.hostname");
-		if (args.length != 4 || addr == null)
-		{
-			System.out.println("I need 4 arguments: NumOfPairs NumIterations "
-					+ "PrimeLimit MsgContentLen");
+		if (args.length != 4 || addr == null) {
+			System.out.println("I need 4 arguments: NumOfPairs NumIterations " + "PrimeLimit MsgContentLen");
 			System.out.println("In addition, set the property java.rmi.server.hostname "
 					+ "to the address of this computer.");
 			return;
@@ -68,20 +64,15 @@ public class PairsStarter
 		SiebogCluster.init();
 
 		List<AID> senders = new ArrayList<>();
-		AgentManager agm = Global.getAgentManager();
-		for (int i = 0; i < numPairs; i++)
-		{
+		AgentManager agm = ManagerFactory.getAgentManager();
+		for (int i = 0; i < numPairs; i++) {
 			// receiver
-			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit,
-				"numIterations->" + numIterations);
+			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit, "numIterations->" + numIterations);
 			AgentClass rcAgClass = new AgentClass(Module.NAME, "Receiver");
 			AID rcAid = agm.start(rcAgClass, "R" + i, rcArgs);
 			// sender
-			AgentInitArgs snArgs = new AgentInitArgs(
-				"numIterations->" + numIterations,
-				"contentLength->" + contentLength,
-				"rcvrAid->" +rcAid.toString(),
-				"resultsServiceAddr->" + addr);
+			AgentInitArgs snArgs = new AgentInitArgs("numIterations->" + numIterations, "contentLength->"
+					+ contentLength, "rcvrAid->" + rcAid.toString(), "resultsServiceAddr->" + addr);
 			AgentClass snAgClass = new AgentClass(Module.NAME, "Sender");
 			AID snAid = agm.start(snAgClass, "S" + i, snArgs);
 			senders.add(snAid);
@@ -90,9 +81,8 @@ public class PairsStarter
 		Registry reg = LocateRegistry.createRegistry(1099);
 		reg.rebind("ResultsService", new ResultsServiceImpl(numPairs));
 
-		MessageManager msm = Global.getMessageManager();
-		for (AID aid : senders)
-		{
+		MessageManager msm = ManagerFactory.getMessageManager();
+		for (AID aid : senders) {
 			ACLMessage msg = new ACLMessage(Performative.REQUEST);
 			msg.addReceiver(aid);
 			msm.post(msg);

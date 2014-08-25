@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.utils.deployment;
+package siebog.server.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,31 +39,26 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
  * @author <a href="rade.milovanovic@hotmail.com">Rade Milovanovic</a>
  */
 @Path("/")
-public class DeploymentWS
-{
+public class DeploymentWS {
 	private static final Logger logger = Logger.getLogger(DeploymentWS.class.getName());
 
 	@POST
 	@Consumes("multipart/form-data")
 	@Path("/deployagent")
-	public Response deployAgent(@MultipartForm MyMultipartForm form)
-	{
+	public Response deployAgent(@MultipartForm MyMultipartForm form) {
 		String output;
-		try
-		{
+		try {
 			URL location = DeploymentWS.class.getProtectionDomain().getCodeSource().getLocation();
 			System.out.println(location.getFile());
 			String folderurl = location.toString().substring(5) + "/tmp/";
-			String fileName = folderurl + form.getMasterNodeAddress() + "_"
-					+ form.getApplicationName() + ".jar";
+			String fileName = folderurl + form.getMasterNodeAddress() + "_" + form.getApplicationName() + ".jar";
 			saveFile(form.getFileInput(), folderurl, fileName);
 			output = "File saved to server location : " + fileName;
-			//File file = new File(fileName);
-			//InetAddress addr = InetAddress.getByName(form.getMasterNodeAddress());
-			//Deployment.deploy(addr, file, form.getApplicationName());
+			// File file = new File(fileName);
+			// InetAddress addr = InetAddress.getByName(form.getMasterNodeAddress());
+			// Deployment.deploy(addr, file, form.getApplicationName());
 			return Response.status(200).entity(output).build();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			output = "Error";
 			logger.log(Level.INFO, "Error while deploying agent.", e);
 			return Response.status(400).entity(output).build();
@@ -71,11 +66,9 @@ public class DeploymentWS
 
 	}
 
-	private void saveFile(InputStream uploadedInputStream, String folderurl, String serverLocation)
-	{
+	private void saveFile(InputStream uploadedInputStream, String folderurl, String serverLocation) {
 
-		try
-		{
+		try {
 			new File(folderurl).mkdirs();
 
 			OutputStream outpuStream = new FileOutputStream(new File(serverLocation));
@@ -83,14 +76,12 @@ public class DeploymentWS
 			byte[] bytes = new byte[1024];
 
 			outpuStream = new FileOutputStream(new File(serverLocation));
-			while ((read = uploadedInputStream.read(bytes)) != -1)
-			{
+			while ((read = uploadedInputStream.read(bytes)) != -1) {
 				outpuStream.write(bytes, 0, read);
 			}
 			outpuStream.flush();
 			outpuStream.close();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			logger.log(Level.INFO, "Error while saving file - [" + folderurl + "] .", e);
 		}
 	}

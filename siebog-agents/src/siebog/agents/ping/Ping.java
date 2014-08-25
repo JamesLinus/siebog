@@ -24,7 +24,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -35,23 +35,17 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Ping extends AgentBase
-{
+public class Ping extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void onMessage(ACLMessage msg)
-	{
-		if (msg.getPerformative() == Performative.REQUEST)
-		{
+	protected void onMessage(ACLMessage msg) {
+		if (msg.getPerformative() == Performative.REQUEST) {
 			logger.info(myAid.toString());
 			// send a request to the Pong agent
 			final String content = msg.getContent().toString();
 			AID pongAid = new AID(content);
-			ACLMessage pongMsg = new ACLMessage(Performative.REQUEST);
-			pongMsg.setSender(myAid);
-			pongMsg.addReceiver(pongAid);
-			msm.post(pongMsg); // msm -> message manager
+			msm.post(myAid, pongAid, null, null); // msm -> message manager
 			// wait for the reply in a blocking fashion
 			ACLMessage reply = receiveWait(0);
 			logger.info("Pong says: " + reply.getContent());

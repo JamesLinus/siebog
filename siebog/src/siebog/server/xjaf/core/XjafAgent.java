@@ -37,9 +37,9 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.ManagerFactory;
 import siebog.server.xjaf.managers.MessageManager;
 
 /**
@@ -49,7 +49,7 @@ import siebog.server.xjaf.managers.MessageManager;
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  */
 @Lock(LockType.READ)
-public abstract class AgentBase implements Agent {
+public abstract class XjafAgent implements Agent {
 	private static final long serialVersionUID = 1L;
 	// the access timeout is needed only when the system is under a heavy load.
 	// under normal circumstances, all methods should return as quickly as possible
@@ -72,8 +72,8 @@ public abstract class AgentBase implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void init(AID aid, Map<String, String> args) {
 		myAid = aid;
-		agm = Global.getAgentManager();
-		msm = Global.getMessageManager();
+		agm = ManagerFactory.getAgentManager();
+		msm = ManagerFactory.getMessageManager();
 		queue = new LinkedBlockingQueue<>();
 		// a reference to myself
 		try {
@@ -191,7 +191,7 @@ public abstract class AgentBase implements Agent {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		return myAid.equals(((AgentBase) obj).myAid);
+		return myAid.equals(((XjafAgent) obj).myAid);
 	}
 
 	@Override

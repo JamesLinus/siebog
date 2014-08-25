@@ -223,7 +223,7 @@ public class Admin implements EntryPoint {
 			builder.sendRequest("", new RequestCallback() {
 				@Override
 				public void onResponseReceived(Request req, Response resp) {
-					JsArray<AIDDesc> result = JsonUtils.unsafeEval(resp.getText());
+					JsArray<AIDWrapper> result = JsonUtils.unsafeEval(resp.getText());
 					final int n = result.length();
 					ListGridRecord[] rec = new ListGridRecord[n];
 					for (int i = 0; i < n; i++)

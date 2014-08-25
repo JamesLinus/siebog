@@ -29,7 +29,7 @@ import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.SubmitItem;
 
 /**
- * TODO add a description
+ * An HTML form for posting ACLMessages.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -58,7 +58,7 @@ public class MessagingForm {
 		return form;
 	}
 
-	public void onRunningList(JsArray<AIDDesc> running) {
+	public void onRunningList(JsArray<AIDWrapper> running) {
 		final int n = running.length();
 		LinkedHashMap<String, String> map = new LinkedHashMap<>();
 		for (int i = 0; i < n; i++) {

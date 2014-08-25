@@ -37,30 +37,25 @@ import siebog.server.config.RelayInfo;
  */
 @Stateless
 @Remote(ConnectionManager.class)
-public class ConnectionManagerImpl implements ConnectionManager
-{
+public class ConnectionManagerImpl implements ConnectionManager {
 	private static final Logger logger = Logger.getLogger(ConnectionManagerImpl.class.getName());
 	private JChannel channel;
-	
+
 	@PostConstruct
-	public void postConstruct() 
-	{
+	public void postConstruct() {
 		RelayInfo relay = SiebogCluster.getConfig().getRelay();
 		if (relay == null)
 			logger.info("Relay not specified, support for remote clusters disabled");
-		else
-		{
-			try
-			{
+		else {
+			try {
 				channel = new JChannel(SiebogCluster.class.getResource("/site-config.xml"));
 				channel.connect("xjaf-global-cluster");
 				channel.setReceiver(new ReceiverAdapter() {
-					
+
 				});
 				if (logger.isLoggable(Level.INFO))
 					logger.info("ConnectionManager initialized");
-			} catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				logger.log(Level.SEVERE, "Unable to create channel", ex);
 			}
 		}

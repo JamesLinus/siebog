@@ -26,38 +26,34 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.AgentClass;
-import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.ManagerFactory;
+import siebog.server.xjaf.managers.MessageManager;
 
 /**
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class PingPongStarter
-{
-
+public class PingPongStarter {
 	/**
 	 * @param args
-	 * @throws NamingException 
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
+	 * @throws NamingException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, NamingException
-	{
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException,
+			NamingException {
 		SiebogCluster.init();
-		final AgentManager agm = Global.getAgentManager();
+		final AgentManager agm = ManagerFactory.getAgentManager();
 		AID ping = agm.start(new AgentClass(Module.NAME, "Ping"), "Ping", null);
 		agm.start(new AgentClass(Module.NAME, "Pong"), "Pong", null);
-		
-		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.addReceiver(ping);
-		msg.setContent("Pong");
-		Global.getMessageManager().post(msg);
+
+		MessageManager msm = ManagerFactory.getMessageManager();
+		msm.post(null, ping, Performative.REQUEST, "Pong");
 	}
 
 }

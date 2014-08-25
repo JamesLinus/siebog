@@ -31,7 +31,7 @@ import javax.ejb.Stateful;
 import siebog.agents.Module;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
@@ -44,8 +44,7 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Ant extends AgentBase
-{
+public class Ant extends XjafAgent {
 	private static final long serialVersionUID = 8886978416763257091L;
 	private static final Logger logger = Logger.getLogger(Ant.class.getName());
 	// AID of the agent maintaining the world graph.
@@ -90,8 +89,7 @@ public class Ant extends AgentBase
 	private final Random rnd = new Random();
 
 	@Override
-	protected void onInit(Map<String, String> args)
-	{
+	protected void onInit(Map<String, String> args) {
 		mapAID = agm.getAIDByName("Map");
 
 		ACLMessage message = new ACLMessage();
@@ -104,10 +102,8 @@ public class Ant extends AgentBase
 	}
 
 	@Override
-	public void onMessage(ACLMessage message)
-	{
-		if ("MapSize".equals(message.getInReplyTo()))
-		{
+	public void onMessage(ACLMessage message) {
+		if ("MapSize".equals(message.getInReplyTo())) {
 			mapSize = Integer.parseInt(message.getContent());
 			// choose starting map node randomly
 			currentMapPosIndex = new Random().nextInt(mapSize);
@@ -124,17 +120,14 @@ public class Ant extends AgentBase
 			return;
 		}
 
-		switch (phase)
-		{
-		case 1:
-		{
+		switch (phase) {
+		case 1: {
 			ACLMessage request = new ACLMessage(Performative.REQUEST);
 			potentialNodeIndices = getPotentialNodeIndices().trim();
 
 			currentMapPosIndex = getCurrentMapPosIndex();
 
-			request.setContent("PheromoneLevels? " + currentMapPosIndex + " "
-					+ potentialNodeIndices);
+			request.setContent("PheromoneLevels? " + currentMapPosIndex + " " + potentialNodeIndices);
 			request.addReceiver(mapAID);
 			request.setSender(myAid);
 			msm.post(request);
@@ -142,8 +135,7 @@ public class Ant extends AgentBase
 			phase = 2;
 			break;
 		}
-		case 2:
-		{
+		case 2: {
 			int newNodeIndex = 0;
 
 			// response contains a header and alternating numbers designating pheromone level and
@@ -154,8 +146,7 @@ public class Ant extends AgentBase
 			java.util.Map<Integer, Float> pheromones = new HashMap<>();
 			java.util.Map<Integer, Float> weights = new HashMap<>();
 			float total = 0f;
-			for (int i = 1; i < parts.length; i += 2)
-			{
+			for (int i = 1; i < parts.length; i += 2) {
 				float weight = Float.parseFloat(parts[i + 1]);
 				float pheromoneLevel = Float.parseFloat(parts[i]);
 				float val = (float) (Math.pow(pheromoneLevel, alpha) * Math.pow(1 / weight, beta));
@@ -173,8 +164,7 @@ public class Ant extends AgentBase
 			double random = rnd.nextDouble();
 			int i = 1;
 			float val = probabilities.get(i);
-			while (i < probabilities.size())
-			{
+			while (i < probabilities.size()) {
 				if (random < val)
 					break;
 				else
@@ -196,42 +186,36 @@ public class Ant extends AgentBase
 			// initiate local pheromone update
 			ACLMessage localUpdate = new ACLMessage(Performative.INFORM);
 			localUpdate.addReceiver(mapAID);
-			localUpdate.setContent("UpdateLocalPheromone " + currentMapPosIndex + " "
-					+ newNodeIndex + " " + ksi);
+			localUpdate.setContent("UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex + " " + ksi);
 
 			// advance the phase as required (if tour complete, continue with phase 3, otherwise,
 			// repeat phase 1)
-			if (getTourSoFarSize() == getMapSize())
-			{
+			if (getTourSoFarSize() == getMapSize()) {
 				int firstMapPosIndex = getFirstMapPosIndex();
 				addNodeToTour(firstMapPosIndex);
 
 				ACLMessage edgeWeightReq = new ACLMessage(Performative.REQUEST);
 				edgeWeightReq.addReceiver(mapAID);
-				edgeWeightReq.setContent("EdgeWeight? " + currentMapPosIndex + " "
-						+ firstMapPosIndex);
+				edgeWeightReq.setContent("EdgeWeight? " + currentMapPosIndex + " " + firstMapPosIndex);
 				edgeWeightReq.setSender(myAid);
 				msm.post(edgeWeightReq);
 
 				currentMapPosIndex = firstMapPosIndex;
 
 				phase = 3;
-			} else
-			{
+			} else {
 				phase = 1;
 				msm.post(message);
 			}
 			break;
 		}
-		case 3:
-		{
+		case 3: {
 			addWeightToTour(Float.parseFloat((String) message.getContent()));
 			phase = 4;
 			msm.post(message);
 			break;
 		}
-		case 4:
-		{
+		case 4: {
 			ACLMessage updateBest = new ACLMessage(Performative.INFORM);
 			updateBest.addReceiver(mapAID);
 			StringBuilder tourSoFar = new StringBuilder();
@@ -254,8 +238,7 @@ public class Ant extends AgentBase
 		default: // phase == 5
 		{
 			int nextNodeIndex = removeLastNode();
-			if (nextNodeIndex == -1)
-			{
+			if (nextNodeIndex == -1) {
 				phase = 6;
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
@@ -271,8 +254,8 @@ public class Ant extends AgentBase
 			updatePheromone.addReceiver(mapAID);
 			// float val = (1 - ro) * oldValue + ro * delta; // final formula is constructed in Map
 			// agent (for simplicity of oldValue retrieval)
-			updatePheromone.setContent("UpdatePheromone " + currentMapPosIndex + " "
-					+ nextNodeIndex + " " + (1 - ro) + " " + ro * delta);
+			updatePheromone.setContent("UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex + " " + (1 - ro)
+					+ " " + ro * delta);
 			updatePheromone.setSender(myAid);
 			msm.post(updatePheromone);
 
@@ -283,23 +266,19 @@ public class Ant extends AgentBase
 		}
 	}
 
-	public int getTourSoFarSize()
-	{
+	public int getTourSoFarSize() {
 		return tourSoFar.size();
 	}
 
-	public int getMapSize()
-	{
+	public int getMapSize() {
 		return mapSize;
 	}
 
-	public void addNodeToTour(int nodeIndex)
-	{
+	public void addNodeToTour(int nodeIndex) {
 		tourSoFar.add(nodeIndex);
 	}
 
-	public void addWeightToTour(float weight)
-	{
+	public void addWeightToTour(float weight) {
 		tourSoFarWeights.add(weight);
 		totalWeightSoFar += weight;
 	}
@@ -307,8 +286,7 @@ public class Ant extends AgentBase
 	/**
 	 * @return space-delimited indices of unvisited nodes.
 	 */
-	public String getPotentialNodeIndices()
-	{
+	public String getPotentialNodeIndices() {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < mapSize; ++i)
 			if (!tourSoFar.contains(i))
@@ -320,29 +298,25 @@ public class Ant extends AgentBase
 	/**
 	 * @return index of the map node (in map's 'nodes' list) this ant is currently at.
 	 */
-	public int getCurrentMapPosIndex()
-	{
+	public int getCurrentMapPosIndex() {
 		return currentMapPosIndex;
 	}
 
 	/**
 	 * Set value as the current map position index.
 	 */
-	public void setCurrentMapPosIndex(int value)
-	{
+	public void setCurrentMapPosIndex(int value) {
 		currentMapPosIndex = value;
 	}
 
 	/**
 	 * @return index of the first node that was visited on the current tour.
 	 */
-	public int getFirstMapPosIndex()
-	{
+	public int getFirstMapPosIndex() {
 		return tourSoFar.get(0);
 	}
 
-	public float getTotalWeightSoFar()
-	{
+	public float getTotalWeightSoFar() {
 		return totalWeightSoFar;
 	}
 
@@ -350,8 +324,7 @@ public class Ant extends AgentBase
 	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is
 	 *         already empty.
 	 */
-	public int removeLastNode()
-	{
+	public int removeLastNode() {
 
 		if (tourSoFar.size() != 0)
 			return tourSoFar.remove(tourSoFar.size() - 1);
@@ -363,8 +336,7 @@ public class Ant extends AgentBase
 	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1,
 	 *         if the list is already empty;
 	 */
-	public float removeLastWeight()
-	{
+	public float removeLastWeight() {
 		if (tourSoFarWeights.size() != 0)
 			return tourSoFarWeights.remove(tourSoFarWeights.size() - 1);
 		else
@@ -374,8 +346,7 @@ public class Ant extends AgentBase
 	/**
 	 * @return tourSoFar element with index 'index'.
 	 */
-	public int getTourNode(int index)
-	{
+	public int getTourNode(int index) {
 		return tourSoFar.get(index);
 	}
 
@@ -383,8 +354,7 @@ public class Ant extends AgentBase
 	 * Agent clean-up.
 	 */
 	@Override
-	protected void onTerminate()
-	{
+	protected void onTerminate() {
 		logger.fine("Ant terminated.");
 	}
 }

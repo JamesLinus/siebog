@@ -25,7 +25,6 @@ package siebog.server.xjaf.managers;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface ConnectionManager
-{
+public interface ConnectionManager {
 
 }

@@ -31,7 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 
 /**
@@ -44,7 +44,7 @@ import siebog.server.xjaf.fipa.ACLMessage;
 @Path("/guiagent")
 @Produces(MediaType.APPLICATION_JSON)
 @LocalBean
-public class GUIAgent extends AgentBase {
+public class GUIAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	private static final Queue<ACLMessage> received = new LinkedBlockingQueue<>();
 

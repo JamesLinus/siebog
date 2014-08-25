@@ -34,19 +34,16 @@ import siebog.server.xjaf.fipa.ACLMessage;
  */
 @Stateful
 @Remote(Agent.class)
-public class DNarsPing extends DNarsAgent
-{
+public class DNarsPing extends DNarsAgent {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void onEvents(Event[] event)
-	{
+	public void onEvents(Event[] event) {
 		System.out.println(Arrays.toString(event));
 	}
 
 	@Override
-	protected void onMessage(ACLMessage msg)
-	{
+	protected void onMessage(ACLMessage msg) {
 		graph.addStatement("cat -> animal (1.0, 0.9)");
 	}
 }

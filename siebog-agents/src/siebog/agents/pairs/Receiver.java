@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -36,22 +36,19 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Receiver extends AgentBase
-{
+public class Receiver extends XjafAgent {
 	private static final long serialVersionUID = -677935957265970587L;
 	private int primeLimit;
 	private int numIterations;
 
 	@Override
-	protected void onInit(Map<String, String> args)
-	{
+	protected void onInit(Map<String, String> args) {
 		primeLimit = Integer.parseInt(args.get("primeLimit"));
 		numIterations = Integer.parseInt(args.get("numIterations"));
 	}
 
 	@Override
-	protected void onMessage(ACLMessage msg)
-	{
+	protected void onMessage(ACLMessage msg) {
 		--numIterations;
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.setSender(myAid);
@@ -61,14 +58,11 @@ public class Receiver extends AgentBase
 			agm.stop(myAid);
 	}
 
-	private int process()
-	{
+	private int process() {
 		int primes = 0;
-		for (int i = 1; i <= primeLimit; i++)
-		{
+		for (int i = 1; i <= primeLimit; i++) {
 			int j = 2;
-			while (j <= i)
-			{
+			while (j <= i) {
 				if (i % j == 0)
 					break;
 				++j;

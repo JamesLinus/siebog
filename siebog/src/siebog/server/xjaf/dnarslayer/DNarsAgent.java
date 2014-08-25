@@ -21,7 +21,7 @@
 package siebog.server.xjaf.dnarslayer;
 
 import java.util.Map;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -29,33 +29,27 @@ import siebog.server.xjaf.fipa.Performative;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends AgentBase 
-{
+public abstract class DNarsAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	protected DNarsGraphI graph;
-	
+
 	@Override
-	protected void onInit(Map<String, String> args)
-	{
+	protected void onInit(Map<String, String> args) {
 		super.onInit(args);
 		String domain = (String) args.get("domain");
 		if (domain == null)
 			domain = myAid.toString();
-		try
-		{
+		try {
 			graph = DNarsGraphFactory.create(domain);
 			graph.addObserver(myAid);
-		} catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	protected boolean filter(ACLMessage msg)
-	{
-		if (msg.getPerformative() == Performative.INFORM)
-		{
+	protected boolean filter(ACLMessage msg) {
+		if (msg.getPerformative() == Performative.INFORM) {
 			// TODO : String to Event[]
 			// Event[] events = (Event[]) msg.getContent();
 			onEvents(null);
@@ -63,6 +57,6 @@ public abstract class DNarsAgent extends AgentBase
 		}
 		return true;
 	}
-	
+
 	protected abstract void onEvents(Event[] events);
 }

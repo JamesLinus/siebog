@@ -21,11 +21,9 @@
 package siebog.agents;
 
 /**
- * TODO : add a description
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class Module
-{
+public class Module {
 	public static final String NAME = "siebog-agents";
 }

@@ -13,25 +13,20 @@ import org.jboss.resteasy.annotations.Form;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class AgentInitArgs implements Serializable
-{
-	public static class Arg implements Serializable
-	{
+public class AgentInitArgs implements Serializable {
+	public static class Arg implements Serializable {
 		private static final long serialVersionUID = 1L;
 		@FormParam("value")
 		private String value;
 
-		public Arg()
-		{
+		public Arg() {
 		}
 
-		public Arg(String value)
-		{
+		public Arg(String value) {
 			this.value = value;
 		}
 
-		public String getValue()
-		{
+		public String getValue() {
 			return value;
 		}
 	}
@@ -39,39 +34,34 @@ public class AgentInitArgs implements Serializable
 	private static final long serialVersionUID = 1L;
 	@Form(prefix = "arg")
 	private Map<String, Arg> args;
-	
-	public AgentInitArgs()
-	{
+
+	public AgentInitArgs() {
 		args = new HashMap<>();
 	}
-	
+
 	/**
 	 * Accepts an array of strings in form of "key->value".
+	 * 
 	 * @param keyValues
 	 */
-	public AgentInitArgs(String... keyValues)
-	{
+	public AgentInitArgs(String... keyValues) {
 		args = new HashMap<>(keyValues.length);
-		for (String str: keyValues)
-		{
+		for (String str : keyValues) {
 			String[] kv = str.split("->");
 			args.put(kv[0], new Arg(kv[1]));
 		}
 	}
 
-	public void put(String key, String value)
-	{
+	public void put(String key, String value) {
 		args.put(key, new Arg(value));
 	}
 
-	public String get(String key)
-	{
+	public String get(String key) {
 		Arg arg = args.get(key);
 		return arg != null ? arg.value : null;
 	}
 
-	public Map<String, String> toStringMap()
-	{
+	public Map<String, String> toStringMap() {
 		Map<String, String> map = new HashMap<>(args.size());
 		for (Entry<String, Arg> e : args.entrySet())
 			map.put(e.getKey(), e.getValue().getValue());

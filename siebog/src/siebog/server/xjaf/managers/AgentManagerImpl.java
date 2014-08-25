@@ -44,6 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
+import siebog.server.utils.ContextFactory;
 import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
@@ -65,16 +66,15 @@ import siebog.server.xjaf.core.AgentClass;
 public class AgentManagerImpl implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerImpl.class.getName());
-	private Context jndiContext;
 	private Cache<AID, Agent> runningAgents;
 
 	@PostConstruct
 	public void postConstruct() {
 		try {
-			jndiContext = Global.getContext();
 			runningAgents = Global.getRunningAgents();
-		} catch (Exception ex) {
+		} catch (IllegalStateException ex) {
 			logger.log(Level.SEVERE, "AgentManager initialization error.", ex);
+			throw ex;
 		}
 	}
 
@@ -82,8 +82,7 @@ public class AgentManagerImpl implements AgentManager {
 	@Path("/running/{agClass}/{name}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public AID start(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
-			@Form AgentInitArgs args) {
+	public AID start(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name, @Form AgentInitArgs args) {
 		AID aid = new AID(name);
 		// is it running already?
 		if (runningAgents.containsKey(aid)) {
@@ -119,22 +118,20 @@ public class AgentManagerImpl implements AgentManager {
 		}
 	}
 
-	private void createNew(AgentClass agClass, AID aid, Map<String, String> args)
-			throws NamingException {
+	private void createNew(AgentClass agClass, AID aid, Map<String, String> args) throws NamingException {
 		// build the JNDI lookup string
 		final String view = Agent.class.getName();
-		String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(),
-				agClass.getEjbName(), view);
+		String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(), view);
 		String jndiNameStateful = jndiNameStateless + "?stateful";
 
 		Agent agent = null;
 		try {
-			agent = (Agent) jndiContext.lookup(jndiNameStateful);
+			agent = (Agent) ContextFactory.lookup(jndiNameStateful);
 		} catch (NamingException ex) {
 			final Throwable cause = ex.getCause();
 			if (cause == null || !(cause instanceof IllegalStateException))
 				throw ex;
-			agent = (Agent) jndiContext.lookup(jndiNameStateless);
+			agent = (Agent) ContextFactory.lookup(jndiNameStateless);
 		}
 
 		// the order of the next two statements matters. if we call init first and the agent
@@ -148,14 +145,15 @@ public class AgentManagerImpl implements AgentManager {
 	@Path("/classes")
 	@Override
 	public List<AgentClass> getDeployed() {
+		final Context ctx = ContextFactory.get();
 		List<AgentClass> result = new ArrayList<>();
 		final String intf = "!" + Agent.class.getName();
 		final String exp = "java:jboss/exported/";
 		try {
-			NamingEnumeration<NameClassPair> moduleList = jndiContext.list(exp);
+			NamingEnumeration<NameClassPair> moduleList = ctx.list(exp);
 			while (moduleList.hasMore()) {
 				String module = moduleList.next().getName();
-				NamingEnumeration<NameClassPair> agentList = jndiContext.list(exp + "/" + module);
+				NamingEnumeration<NameClassPair> agentList = ctx.list(exp + "/" + module);
 				while (agentList.hasMore()) {
 					String ejbName = agentList.next().getName();
 					if (ejbName != null && ejbName.endsWith(intf)) {

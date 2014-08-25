@@ -36,8 +36,7 @@ import siebog.server.xjaf.core.AID;
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class ACLMessage implements Serializable
-{
+public class ACLMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Denotes the type of the communicative act of the ACL message.
@@ -99,20 +98,17 @@ public class ACLMessage implements Serializable
 	@FormParam("replyBy")
 	private long replyBy;
 
-	public ACLMessage()
-	{
+	public ACLMessage() {
 		this(Performative.NOT_UNDERSTOOD);
 	}
 
-	public ACLMessage(Performative performative)
-	{
+	public ACLMessage(Performative performative) {
 		this.performative = performative;
 		receivers = new ArrayList<>();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public ACLMessage(String jsonString) throws JSONException
-	{
+	public ACLMessage(String jsonString) throws JSONException {
 		JSONObject obj = new JSONObject(jsonString);
 		performative = (Performative) obj.get("performative");
 		sender = (AID) obj.get("sender");
@@ -129,23 +125,19 @@ public class ACLMessage implements Serializable
 		replyBy = obj.getLong("replyBy");
 	}
 
-	public Performative getPerformative()
-	{
+	public Performative getPerformative() {
 		return performative;
 	}
 
-	public void setPerformative(Performative performative)
-	{
+	public void setPerformative(Performative performative) {
 		this.performative = performative;
 	}
 
-	public ACLMessage makeReply()
-	{
+	public ACLMessage makeReply() {
 		return makeReply(performative);
 	}
 
-	public ACLMessage makeReply(Performative performative)
-	{
+	public ACLMessage makeReply(Performative performative) {
 		ACLMessage reply = new ACLMessage(performative);
 		// receiver
 		reply.addReceiver(replyTo != null ? replyTo : sender);
@@ -160,147 +152,118 @@ public class ACLMessage implements Serializable
 		return reply;
 	}
 
-	public AID getSender()
-	{
+	public AID getSender() {
 		return sender;
 	}
 
-	public void setSender(AID sender)
-	{
+	public void setSender(AID sender) {
 		this.sender = sender;
 	}
 
-	public String getContent()
-	{
+	public String getContent() {
 		return content;
 	}
 
-	public void setContent(String content)
-	{
+	public void setContent(String content) {
 		this.content = content;
 	}
 
-	public String getLanguage()
-	{
+	public String getLanguage() {
 		return language;
 	}
 
-	public void setLanguage(String language)
-	{
+	public void setLanguage(String language) {
 		this.language = language;
 	}
 
-	public String getEncoding()
-	{
+	public String getEncoding() {
 		return encoding;
 	}
 
-	public void setEncoding(String encoding)
-	{
+	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
 
-	public String getOntology()
-	{
+	public String getOntology() {
 		return ontology;
 	}
 
-	public void setOntology(String ontology)
-	{
+	public void setOntology(String ontology) {
 		this.ontology = ontology;
 	}
 
-	public String getProtocol()
-	{
+	public String getProtocol() {
 		return protocol;
 	}
 
-	public void setProtocol(String protocol)
-	{
+	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 
-	public String getConversationId()
-	{
+	public String getConversationId() {
 		return conversationId;
 	}
 
-	public void setConversationId(String conversationId)
-	{
+	public void setConversationId(String conversationId) {
 		this.conversationId = conversationId;
 	}
 
-	public String getReplyWith()
-	{
+	public String getReplyWith() {
 		return replyWith;
 	}
 
-	public void setReplyWith(String replyWith)
-	{
+	public void setReplyWith(String replyWith) {
 		this.replyWith = replyWith;
 	}
 
-	public String getInReplyTo()
-	{
+	public String getInReplyTo() {
 		return inReplyTo;
 	}
 
-	public void setInReplyTo(String inReplyTo)
-	{
+	public void setInReplyTo(String inReplyTo) {
 		this.inReplyTo = inReplyTo;
 	}
 
-	public long getReplyBy()
-	{
+	public long getReplyBy() {
 		return replyBy;
 	}
 
-	public void setReplyBy(long replyBy)
-	{
+	public void setReplyBy(long replyBy) {
 		this.replyBy = replyBy;
 	}
 
-	public AID getReplyTo()
-	{
+	public AID getReplyTo() {
 		return replyTo;
 	}
 
-	public void setReplyTo(AID replyTo)
-	{
+	public void setReplyTo(AID replyTo) {
 		this.replyTo = replyTo;
 	}
 
-	public List<AID> getReceivers()
-	{
+	public List<AID> getReceivers() {
 		return receivers;
 	}
 
-	public void setReceivers(List<AID> receivers)
-	{
+	public void setReceivers(List<AID> receivers) {
 		this.receivers = receivers;
 	}
 
-	public void addReceiver(AID receiver)
-	{
+	public void addReceiver(AID receiver) {
 		receivers.add(receiver);
 	}
 
-	public void removeReceiver(AID receiver)
-	{
+	public void removeReceiver(AID receiver) {
 		receivers.remove(receiver);
 	}
 
-	public void clearReceivers()
-	{
+	public void clearReceivers() {
 		receivers.clear();
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		JSONObject obj = new JSONObject();
-		try
-		{
+		try {
 			obj.put("performative", performative);
 			obj.put("sender", sender);
 			obj.put("receivers", receivers);
@@ -314,8 +277,7 @@ public class ACLMessage implements Serializable
 			obj.put("replyWith", replyWith);
 			obj.put("inReplyTo", inReplyTo);
 			obj.put("replyBy", replyBy);
-		} catch (JSONException ex)
-		{
+		} catch (JSONException ex) {
 		}
 		return obj.toString();
 	}

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
@@ -41,8 +41,7 @@ import siebog.server.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Map extends AgentBase
-{
+public class Map extends XjafAgent {
 	private static final long serialVersionUID = 4998652517108886246L;
 	private static final Logger logger = Logger.getLogger(Map.class.getName());
 	// TSP graph (given by a set of (x,y)-points).
@@ -63,54 +62,43 @@ public class Map extends AgentBase
 	private static final int MAX_STATIONARY_ITERATIONS = 500;
 
 	@Override
-	protected void onInit(java.util.Map<String, String> args)
-	{
+	protected void onInit(java.util.Map<String, String> args) {
 		logger.fine("Map opened.");
 		loadMap(args.get("fileName").toString());
 	}
 
 	@Override
-	protected void onMessage(ACLMessage message)
-	{
+	protected void onMessage(ACLMessage message) {
 		final String content = (String) message.getContent();
 		ACLMessage reply = message.makeReply(Performative.INFORM);
-		if (message.getPerformative() == Performative.REQUEST)
-		{
-			if (content.equals("MapSize?"))
-			{
+		if (message.getPerformative() == Performative.REQUEST) {
+			if (content.equals("MapSize?")) {
 				reply.setContent(getMapSize() + "");
-			} else if (content.startsWith("PheromoneLevels?"))
-			{
+			} else if (content.startsWith("PheromoneLevels?")) {
 				String[] parts = content.split(" ");
 				StringBuilder pheromoneLevels = new StringBuilder();
 
 				int i = Integer.parseInt(parts[1]);
 				pheromoneLevels.append("PheromoneLevels:");
-				for (int j = 2; j < parts.length; ++j)
-				{
+				for (int j = 2; j < parts.length; ++j) {
 					int newJ = Integer.parseInt(parts[j]);
 					pheromoneLevels.append(" ").append(getPheromoneLevel(i, newJ)).append(" ")
 							.append(getEdgeWeight(i, newJ));
 				}
 				reply.setContent(pheromoneLevels.toString());
-			} else if (content.startsWith("EdgeWeight?"))
-			{
+			} else if (content.startsWith("EdgeWeight?")) {
 				String[] parts = content.split(" ");
-				reply.setContent(String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]),
-						Integer.parseInt(parts[2]))));
+				reply.setContent(String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))));
 			}
 			msm.post(reply);
-		} else if (message.getPerformative() == Performative.INFORM)
-		{
-			if (content.startsWith("UpdateBestTour"))
-			{
+		} else if (message.getPerformative() == Performative.INFORM) {
+			if (content.startsWith("UpdateBestTour")) {
 				String[] parts = content.split(" ");
 				float newTourWeight = Float.parseFloat(parts[1]);
 
 				nIterationsBestTourNotUpdated++;
 
-				if (bestTourWeight > newTourWeight)
-				{
+				if (bestTourWeight > newTourWeight) {
 					nIterationsBestTourNotUpdated = 0;
 
 					bestTourWeight = newTourWeight;
@@ -118,21 +106,19 @@ public class Map extends AgentBase
 					bestTour.clear();
 					for (int i = 2; i < parts.length; ++i)
 						bestTour.add(Integer.parseInt(parts[i]) + 1);
-					
+
 					logger.warning("Best tour so far has weight: " + bestTourWeight);
 					logger.warning("Best tour so far: " + bestTour);
 				}
 				if (nIterationsBestTourNotUpdated == MAX_STATIONARY_ITERATIONS)
 					logger.warning("Done.");
-			} else if (content.startsWith("UpdatePheromone"))
-			{
+			} else if (content.startsWith("UpdatePheromone")) {
 				String[] parts = content.split(" ");
 				int i = Integer.parseInt(parts[1]);
 				int j = Integer.parseInt(parts[2]);
-				setPheromoneLevel(i, j, Float.parseFloat(parts[3]) * getPheromoneLevel(i, j)
-						+ Float.parseFloat(parts[4]));
-			} else if (content.startsWith("UpdateLocalPheromone"))
-			{
+				setPheromoneLevel(i, j,
+						Float.parseFloat(parts[3]) * getPheromoneLevel(i, j) + Float.parseFloat(parts[4]));
+			} else if (content.startsWith("UpdateLocalPheromone")) {
 				String[] parts = content.split(" ");
 				int i = Integer.parseInt(parts[1]);
 				int j = Integer.parseInt(parts[2]);
@@ -146,12 +132,10 @@ public class Map extends AgentBase
 	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial
 	 * pheromone level tau0 which is set for each edge in 'pheromone' matrix.
 	 */
-	private void loadMap(String fileName)
-	{
+	private void loadMap(String fileName) {
 		nodes = new ArrayList<>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(fileName)))
-		{
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			// skip preliminary info
 			for (int i = 0; i < 6; ++i)
 				reader.readLine();
@@ -159,15 +143,13 @@ public class Map extends AgentBase
 			// load the map
 			String line = null;
 			String[] parts = null;
-			while (!(line = reader.readLine()).equals("EOF"))
-			{
+			while (!(line = reader.readLine()).equals("EOF")) {
 				parts = line.split(" ");
 				nodes.add(new Node(Float.parseFloat(parts[1]), Float.parseFloat(parts[2])));
 			}
 
 			// print the map
-			if (logger.isLoggable(Level.FINE))
-			{
+			if (logger.isLoggable(Level.FINE)) {
 				logger.fine("Map: ");
 				StringBuilder sb = new StringBuilder();
 				for (Node n : nodes)
@@ -183,8 +165,7 @@ public class Map extends AgentBase
 			for (int i = 0; i < n; ++i)
 				for (int j = 0; j < n; ++j)
 					pheromone[i][j] = tau0;
-		} catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "", ex);
 		}
 	}
@@ -192,8 +173,7 @@ public class Map extends AgentBase
 	/**
 	 * @return average edge weight (Euclid2D) of the currently loaded map.
 	 */
-	private float getAverageWeight()
-	{
+	private float getAverageWeight() {
 		float result = 0f;
 		int n = nodes.size();
 		for (int i = 0; i < n; ++i)
@@ -202,41 +182,35 @@ public class Map extends AgentBase
 		return result / (n * n);
 	}
 
-	public Integer getMapSize()
-	{
+	public Integer getMapSize() {
 		return nodes.size();
 	}
 
 	/**
 	 * @return current pheromone level of the edge between nodes i and j.
 	 */
-	public float getPheromoneLevel(int i, int j)
-	{
+	public float getPheromoneLevel(int i, int j) {
 		return pheromone[i][j];
 	}
 
 	/**
 	 * Set pheromone level of (i,j)-edge to 'val'.
 	 */
-	public void setPheromoneLevel(int i, int j, float val)
-	{
+	public void setPheromoneLevel(int i, int j, float val) {
 		pheromone[i][j] = val;
 	}
 
 	/**
 	 * @return weight of the (i,j) edge (Euclid2D distance between node i and node j).
 	 */
-	public float getEdgeWeight(int i, int j)
-	{
+	public float getEdgeWeight(int i, int j) {
 		Node ni = nodes.get(i);
 		Node nj = nodes.get(j);
-		return (float) (Math.sqrt(Math.pow(ni.getX() - nj.getX(), 2)
-				+ Math.pow(ni.getY() - nj.getY(), 2)));
+		return (float) (Math.sqrt(Math.pow(ni.getX() - nj.getX(), 2) + Math.pow(ni.getY() - nj.getY(), 2)));
 	}
 
 	@Override
-	protected void onTerminate()
-	{
+	protected void onTerminate() {
 		logger.fine("Map closed.");
 	}
 }

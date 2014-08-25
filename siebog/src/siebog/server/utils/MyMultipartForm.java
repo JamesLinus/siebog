@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.utils.deployment;
+package siebog.server.utils;
 
 /**
  *
@@ -27,8 +27,7 @@ package siebog.server.utils.deployment;
 import java.io.InputStream;
 import javax.ws.rs.FormParam;
 
-public class MyMultipartForm
-{
+public class MyMultipartForm {
 	@FormParam("file")
 	private InputStream fileInput;
 
@@ -38,33 +37,27 @@ public class MyMultipartForm
 	@FormParam("applicationname")
 	private String applicationName;
 
-	public String getMasterNodeAddress()
-	{
+	public String getMasterNodeAddress() {
 		return masterNodeAddress;
 	}
 
-	public void setMasternodeaddress(String masternodeaddress)
-	{
+	public void setMasternodeaddress(String masternodeaddress) {
 		this.masterNodeAddress = masternodeaddress;
 	}
 
-	public String getApplicationName()
-	{
+	public String getApplicationName() {
 		return applicationName;
 	}
 
-	public void setApplicationName(String applicationName)
-	{
+	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
 	}
 
-	public InputStream getFileInput()
-	{
+	public InputStream getFileInput() {
 		return fileInput;
 	}
 
-	public void setFileInput(InputStream fileInput)
-	{
+	public void setFileInput(InputStream fileInput) {
 		this.fileInput = fileInput;
 	}
 

@@ -23,25 +23,23 @@ package siebog.agents.ping;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.AgentBase;
+import siebog.server.xjaf.core.XjafAgent;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 
 /**
- * Example of a pong agent. 
+ * Example of a pong agent.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
 @Remote(Agent.class)
-public class Pong extends AgentBase
-{
+public class Pong extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	private int number = 0;
-	
+
 	@Override
-	protected void onMessage(ACLMessage msg)
-	{
+	protected void onMessage(ACLMessage msg) {
 		logger.info(myAid.toString());
 		// reply with an auto-increasing content
 		ACLMessage reply = msg.makeReply(Performative.INFORM);

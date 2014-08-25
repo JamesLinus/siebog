@@ -18,16 +18,28 @@
  * and limitations under the License.
  */
 
-package siebog.server;
+package siebog.client.admin.client;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- *
+ * JS-based wrapper for the XJAF's AID class.
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@ApplicationPath("/rest")
-public class SiebogRestApp extends Application {
+public class AIDWrapper extends JavaScriptObject {
+	protected AIDWrapper() {
+	}
 
+	public final native String getName() /*-{
+		return this.name;
+	}-*/;
+
+	public final native String getHap() /*-{
+		return this.hap;
+	}-*/;
+
+	public final native String getId() /*-{
+		return this.id;
+	}-*/;
 }

@@ -26,32 +26,30 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.agents.Module;
 import siebog.server.SiebogCluster;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
+import siebog.server.xjaf.managers.ManagerFactory;
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class DNarsPingStarter
-{
-	public static void main(String[] args) throws IOException, ParserConfigurationException,
-			SAXException, NamingException
-	{
+public class DNarsPingStarter {
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException,
+			NamingException {
 		SiebogCluster.init();
-		
+
 		AgentInitArgs agArgs = new AgentInitArgs("domain->dnars");
-		
+
 		AgentClass agClass = new AgentClass(Module.NAME, "DNarsPing");
-		
-		AID aid = Global.getAgentManager().start(agClass, "dnars", agArgs);
-		
+
+		AID aid = ManagerFactory.getAgentManager().start(agClass, "dnars", agArgs);
+
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(aid);
-		Global.getMessageManager().post(msg);
+		ManagerFactory.getMessageManager().post(msg);
 	}
 }

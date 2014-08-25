@@ -94,7 +94,17 @@ public class MessageManagerImpl implements MessageManager {
 	}
 
 	@Override
+	public void post(AID sender, AID receiver, Performative performative, String content) {
+		ACLMessage msg = new ACLMessage(performative);
+		msg.setSender(sender);
+		msg.addReceiver(receiver);
+		msg.setContent(content);
+		post(msg);
+	}
+
+	@Override
 	public String ping() {
 		return "Pong from " + Global.getNodeName();
 	}
+
 }
