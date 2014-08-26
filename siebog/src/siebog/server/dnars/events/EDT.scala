@@ -22,14 +22,13 @@ package siebog.server.dnars.events
 
 import java.util.logging.Level
 import java.util.logging.Logger
-
 import scala.collection.mutable.ListBuffer
-
 import siebog.server.xjaf.core.AID
 import siebog.server.xjaf.dnarslayer.Event
 import siebog.server.xjaf.fipa.ACLMessage
 import siebog.server.xjaf.fipa.Performative
 import siebog.server.xjaf.managers.ManagerFactory
+import siebog.server.SiebogCluster
 
 /**
  * Implementation of the Event Dispatch Thread.

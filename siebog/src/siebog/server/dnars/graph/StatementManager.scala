@@ -33,6 +33,7 @@ import siebog.server.dnars.base.Statement
 import siebog.server.dnars.graph.DNarsEdge.wrap
 import siebog.server.dnars.graph.DNarsVertex.wrap
 import siebog.server.xjaf.dnarslayer.Event
+import scala.collection.mutable.ListBuffer
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -53,11 +54,10 @@ class StatementManager(val graph: DNarsGraph) {
 					val invStat = Statement(st.pred, Similar, st.subj, st.truth)
 					val invEdge: DNarsEdge = graph.getE(invStat).get
 					invEdge.truth = truth
-				}
-				else {
+				} else {
 					// are there any structural transformations?
 					unpack(st) match {
-						case List(su1, su2) => 
+						case List(su1, su2) =>
 							val e1: DNarsEdge = graph.getE(su1).get
 							val e2: DNarsEdge = graph.getE(su2).get
 							e1.truth = truth
@@ -88,7 +88,7 @@ class StatementManager(val graph: DNarsGraph) {
 				graph.eventManager.addEvent(event)
 		}
 	}
-	
+
 	def addAll(st: Seq[Statement]): Unit = {
 		graph.eventManager.paused = true
 		try {
@@ -117,27 +117,25 @@ class StatementManager(val graph: DNarsGraph) {
 	/**
 	 * For testing purposes only. Returns all statements in the graph.
 	 */
-	def getAll: Array[Statement] = {
+	def getAll: List[Statement] = {
 		val edges = graph.E.toList
 		val n = edges.size
-		val st = new Array[Statement](n)
-		var i = 0
+		val st = new ListBuffer[Statement]()
 		for (e <- edges) {
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
 			val edge: DNarsEdge = e
-			st(i) = Statement(s.term, edge.copula, p.term, edge.truth)
-			i += 1
+			st += Statement(s.term, edge.copula, p.term, edge.truth)
 		}
-		st
+		st.toList
 	}
 
 	/**
 	 * Performs structural transformation of a statement that includes compound
-	 * terms with the product connector (e.g. "(cat x bird) -> eat" or 
+	 * terms with the product connector (e.g. "(cat x bird) -> eat" or
 	 * "dissolve -> (water x salt)").
 	 *
-	 * @return List of 2 images, or an empty list if the input statement does not 
+	 * @return List of 2 images, or an empty list if the input statement does not
 	 * match any of the given forms.
 	 */
 	def unpack(st: Statement): List[Statement] = st match {
@@ -161,13 +159,13 @@ class StatementManager(val graph: DNarsGraph) {
 			val p2 = t2
 			//
 			List(Statement(s1, Inherit, p1, truth), Statement(s2, Inherit, p2, truth))
-		case _ => 
+		case _ =>
 			List()
 	}
 
 	/**
 	 * Unpacks the given statement and adds its images to the graph.
-	 * 
+	 *
 	 * @return true if the statement could be transformed, false otherwise.
 	 */
 	def unpackAndAdd(graph: DNarsGraph, st: Statement): Boolean = unpack(st) match {
@@ -180,8 +178,8 @@ class StatementManager(val graph: DNarsGraph) {
 	}
 
 	/**
-	 * (Re)Combines intentional and extentional images back into statements, 
-	 * e.g. "cat -> (/ eat * bird)" becomes "(x cat bird) -> eat)". The other 
+	 * (Re)Combines intentional and extentional images back into statements,
+	 * e.g. "cat -> (/ eat * bird)" becomes "(x cat bird) -> eat)". The other
 	 * intentional/extentional image is created as well, in this example
 	 * "bird -> (/ eat cat *)".
 	 */
@@ -210,10 +208,10 @@ class StatementManager(val graph: DNarsGraph) {
 			val cp2 = CompoundTerm(IntImage, List(rel, Placeholder, subj2))
 			//
 			List(Statement(rel, Inherit, cp1, truth), Statement(cp2, Inherit, subj1, truth))
-		case _ => 
+		case _ =>
 			List()
 	}
-	
+
 	def packAndAdd(graph: DNarsGraph, st: Statement): Boolean = pack(st) match {
 		case List(st1, st2) =>
 			addE(st1)
