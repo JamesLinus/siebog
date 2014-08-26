@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Radigost Examples</title>
+<script type="text/javascript" src="/siebog/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/siebog/radigost.js"></script>
+<script type="text/javascript">
+var radigost = new Radigost("Examples");
+
+function runHelloWorld() {
+	function HWObserver() {
+	}
+	HWObserver.prototype = new AgentObserver();
+	HWObserver.prototype.onStep = function(aid, msg) {
+		alert(msg);
+	}
+	var aid = radigost.start("HelloWorld.js", "HelloWorld", new HWObserver());
+	var msg = new ACLMessage(ACLPerformative.REQUEST);
+	msg.receivers.push(aid);
+	radigost.post(msg);
+}
+
+function runMobileAgent() {
+	radigost.start("MobileAgent.js", "MobileAgent");
+}
+</script>
+</head>
+<body>
+	<div>
+		<a href="#" onclick="runHelloWorld()">Hello World</a>
+	</div>
+	<div>
+		<a href="#" onclick="runMobileAgent()">Mobile Agent</a>
+	</div>
+</body>
+</html>
