@@ -3,7 +3,7 @@ package siebog.server.radigost.websocket;
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import siebog.server.xjaf.managers.ManagerFactory;
+import siebog.server.utils.ManagerFactory;
 
 @ServerEndpoint("/websocket")
 public class WebSocketEndpoint {

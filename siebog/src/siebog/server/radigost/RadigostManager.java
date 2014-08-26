@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import siebog.server.radigost.entities.AgentState;
 import siebog.server.radigost.websocket.bridges.BridgeException;
-import siebog.server.xjaf.managers.ManagerFactory;
+import siebog.server.utils.ManagerFactory;
 
 /**
  * 

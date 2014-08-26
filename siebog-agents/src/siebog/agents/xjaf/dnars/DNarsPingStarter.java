@@ -26,12 +26,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.agents.xjaf.Module;
 import siebog.server.SiebogCluster;
+import siebog.server.utils.ManagerFactory;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.AgentClass;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.fipa.Performative;
 import siebog.server.xjaf.managers.AgentInitArgs;
-import siebog.server.xjaf.managers.ManagerFactory;
 
 /**
  *

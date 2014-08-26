@@ -37,9 +37,9 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import siebog.server.utils.ManagerFactory;
 import siebog.server.xjaf.fipa.ACLMessage;
 import siebog.server.xjaf.managers.AgentManager;
-import siebog.server.xjaf.managers.ManagerFactory;
 import siebog.server.xjaf.managers.MessageManager;
 
 /**

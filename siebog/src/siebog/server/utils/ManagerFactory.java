@@ -18,16 +18,19 @@
  * and limitations under the License.
  */
 
-package siebog.server.xjaf.managers;
+package siebog.server.utils;
 
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
 import siebog.server.radigost.websocket.bridges.BridgeManager;
-import siebog.server.utils.ContextFactory;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
+import siebog.server.xjaf.managers.AgentManager;
+import siebog.server.xjaf.managers.AgentManagerImpl;
+import siebog.server.xjaf.managers.MessageManager;
+import siebog.server.xjaf.managers.MessageManagerImpl;
 
 /**
  * 

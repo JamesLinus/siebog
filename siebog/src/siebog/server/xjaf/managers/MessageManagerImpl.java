@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
+import siebog.server.utils.ManagerFactory;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
 import siebog.server.xjaf.fipa.ACLMessage;

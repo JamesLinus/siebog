@@ -12,13 +12,13 @@
 		<delete file="${starter.path}" />
         <jar destfile="${starter.path}">
             <manifest>
-                <attribute name="Main-Class" value="siebog.server.NodeStarter"/>
+                <attribute name="Main-Class" value="siebog.core.NodeStarter"/>
                 <attribute name="Class-Path" value=". ./wildfly-9.x/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
             </manifest>
             <fileset dir="${bin.dir}"/>
         </jar>
 	</target>
-
+	
 	<target name="sonar">
 		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
 			<classpath path="../siebog/lib/sonar-ant-task-2.2.jar" />

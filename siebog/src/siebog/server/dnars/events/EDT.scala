@@ -27,7 +27,7 @@ import siebog.server.xjaf.core.AID
 import siebog.server.xjaf.dnarslayer.Event
 import siebog.server.xjaf.fipa.ACLMessage
 import siebog.server.xjaf.fipa.Performative
-import siebog.server.xjaf.managers.ManagerFactory
+import siebog.server.utils.ManagerFactory
 import siebog.server.SiebogCluster
 
 /**
