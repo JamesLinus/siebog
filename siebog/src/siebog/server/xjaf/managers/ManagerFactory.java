@@ -21,8 +21,13 @@
 package siebog.server.xjaf.managers;
 
 import javax.naming.NamingException;
+import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
+import siebog.core.Global;
+import siebog.server.radigost.websocket.bridges.BridgeManager;
 import siebog.server.utils.ContextFactory;
-import siebog.server.xjaf.Global;
+import siebog.server.xjaf.core.AID;
+import siebog.server.xjaf.core.Agent;
 
 /**
  * 
@@ -33,8 +38,10 @@ public abstract class ManagerFactory {
 			+ AgentManagerImpl.class.getSimpleName() + "!" + AgentManager.class.getName();
 	private static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ MessageManagerImpl.class.getSimpleName() + "!" + MessageManager.class.getName();
+	private static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
+			+ BridgeManager.class.getSimpleName();
 
-	public static AgentManager getAgentManager() throws IllegalStateException {
+	public static AgentManager getAgentManager() {
 		try {
 			return (AgentManager) ContextFactory.lookup(AgentManagerLookup);
 		} catch (NamingException ex) {
@@ -42,11 +49,32 @@ public abstract class ManagerFactory {
 		}
 	}
 
-	public static MessageManager getMessageManager() throws IllegalStateException {
+	public static MessageManager getMessageManager() {
 		try {
 			return (MessageManager) ContextFactory.lookup(MessageManagerLookup);
 		} catch (NamingException ex) {
 			throw new IllegalStateException("Failed to lookup message manager.", ex);
+		}
+	}
+
+	public static BridgeManager getBridgeManager() {
+		try {
+			return (BridgeManager) ContextFactory.lookup(BridgeManagerLookup);
+		} catch (NamingException ex) {
+			throw new IllegalStateException("Failed to lookup bridge manager.", ex);
+		}
+	}
+
+	public static Cache<AID, Agent> getRunningAgents() {
+		try {
+			final String name = "java:jboss/infinispan/container/xjaf2x-cache";
+			CacheContainer container = (CacheContainer) ContextFactory.lookup(name);
+			Cache<AID, Agent> cache = container.getCache("running-agents");
+			if (cache == null)
+				throw new IllegalStateException("Cannot load cache running-agents.");
+			return cache;
+		} catch (NamingException ex) {
+			throw new IllegalStateException("Cannot lookup xjaf2x-cache.");
 		}
 	}
 }

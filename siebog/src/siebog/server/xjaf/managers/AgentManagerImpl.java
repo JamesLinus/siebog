@@ -45,7 +45,6 @@ import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.server.utils.ContextFactory;
-import siebog.server.xjaf.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
 import siebog.server.xjaf.core.AgentClass;
@@ -59,10 +58,10 @@ import siebog.server.xjaf.core.AgentClass;
  */
 @Stateless
 @Remote(AgentManager.class)
+@LocalBean
 @Path("/agents")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@LocalBean
 public class AgentManagerImpl implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerImpl.class.getName());
@@ -71,7 +70,7 @@ public class AgentManagerImpl implements AgentManager {
 	@PostConstruct
 	public void postConstruct() {
 		try {
-			runningAgents = Global.getRunningAgents();
+			runningAgents = ManagerFactory.getRunningAgents();
 		} catch (IllegalStateException ex) {
 			logger.log(Level.SEVERE, "AgentManager initialization error.", ex);
 			throw ex;

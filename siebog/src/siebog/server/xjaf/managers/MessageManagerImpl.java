@@ -36,7 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
-import siebog.server.xjaf.Global;
+import siebog.core.Global;
 import siebog.server.xjaf.core.AID;
 import siebog.server.xjaf.core.Agent;
 import siebog.server.xjaf.fipa.ACLMessage;
@@ -61,7 +61,7 @@ public class MessageManagerImpl implements MessageManager {
 	@PostConstruct
 	public void postConstruct() {
 		try {
-			runningAgents = Global.getRunningAgents();
+			runningAgents = ManagerFactory.getRunningAgents();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "MessageManager initialization error.", ex);
 		}

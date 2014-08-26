@@ -28,10 +28,8 @@ import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import siebog.server.config.NodeConfig;
-import siebog.server.config.RRClusterNodeSelector;
-import siebog.server.config.RRDeploymentNodeSelector;
-import siebog.server.xjaf.Global;
+import siebog.core.Global;
+import siebog.core.config.NodeConfig;
 
 /**
  * Helper class for global cluster initialization.
