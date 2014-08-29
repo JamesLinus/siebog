@@ -18,15 +18,15 @@
  * and limitations under the License.
  */
 
-package siebog.server.dnars
+package siebog.dnars
 
-import siebog.server.dnars.base.Statement
+import siebog.dnars.base.Statement
 import scala.collection.mutable.ListBuffer
-import siebog.server.dnars.graph.DNarsGraph
-import siebog.server.dnars.base.StatementParser
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.base.StatementParser
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import siebog.server.dnars.base.Copula
+import siebog.dnars.base.Copula
 import scala.collection.mutable.ArrayBuffer
 
 /**

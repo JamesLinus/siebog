@@ -18,18 +18,19 @@
  * and limitations under the License.
  */
 
-package siebog.server.dnars.inference
+package siebog.dnars.inference
 
 import org.junit.Test
-import siebog.server.dnars.graph.DNarsGraphFactory
-import siebog.server.dnars.TestUtils.TEST_KEYSPACE
-import siebog.server.dnars.TestUtils.createAndAdd
-import siebog.server.dnars.TestUtils.create
-import siebog.server.dnars.TestUtils.invert
-import siebog.server.dnars.base.StatementParser
-import siebog.server.dnars.TestUtils.assertGraph
+import siebog.dnars.inference.ForwardInference;
+import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.TestUtils.TEST_KEYSPACE
+import siebog.dnars.TestUtils.createAndAdd
+import siebog.dnars.TestUtils.create
+import siebog.dnars.TestUtils.invert
+import siebog.dnars.base.StatementParser
+import siebog.dnars.TestUtils.assertGraph
 import scala.collection.mutable.ListBuffer
-import siebog.server.dnars.base.Statement
+import siebog.dnars.base.Statement
 
 /**
  *

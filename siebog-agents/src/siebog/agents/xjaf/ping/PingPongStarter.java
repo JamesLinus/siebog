@@ -24,14 +24,14 @@ import java.io.IOException;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import siebog.SiebogCluster;
 import siebog.agents.xjaf.Module;
-import siebog.server.SiebogCluster;
-import siebog.server.utils.ManagerFactory;
-import siebog.server.xjaf.core.AID;
-import siebog.server.xjaf.core.AgentClass;
-import siebog.server.xjaf.fipa.Performative;
-import siebog.server.xjaf.managers.AgentManager;
-import siebog.server.xjaf.managers.MessageManager;
+import siebog.utils.ManagerFactory;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentManager;
+import siebog.xjaf.managers.MessageManager;
 
 /**
  *

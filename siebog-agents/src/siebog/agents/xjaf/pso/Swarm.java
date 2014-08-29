@@ -25,13 +25,13 @@ import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.agents.xjaf.Module;
-import siebog.server.xjaf.core.AID;
-import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.XjafAgent;
-import siebog.server.xjaf.core.AgentClass;
-import siebog.server.xjaf.fipa.ACLMessage;
-import siebog.server.xjaf.fipa.Performative;
-import siebog.server.xjaf.managers.AgentInitArgs;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.core.XjafAgent;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 

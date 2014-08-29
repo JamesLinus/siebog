@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.core.AID;
-import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.XjafAgent;
-import siebog.server.xjaf.fipa.ACLMessage;
-import siebog.server.xjaf.fipa.Performative;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.XjafAgent;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 

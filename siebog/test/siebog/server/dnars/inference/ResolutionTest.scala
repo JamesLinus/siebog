@@ -18,17 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.server.dnars.inference
+package siebog.dnars.inference
 
 import org.junit.Test
-import siebog.server.dnars.graph.DNarsGraphFactory
-import siebog.server.dnars.TestUtils.TEST_KEYSPACE
-import siebog.server.dnars.TestUtils.createAndAdd
-import siebog.server.dnars.base.AtomicTerm
-import siebog.server.dnars.base.StatementParser
+import siebog.dnars.inference.Resolution;
+import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.TestUtils.TEST_KEYSPACE
+import siebog.dnars.TestUtils.createAndAdd
+import siebog.dnars.base.AtomicTerm
+import siebog.dnars.base.StatementParser
 import org.junit.Assert.assertEquals
-import siebog.server.dnars.graph.DNarsGraph
-import siebog.server.dnars.base.Term
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.base.Term
 
 /**
  *

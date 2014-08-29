@@ -23,10 +23,10 @@ package siebog.agents.xjaf.pairs;
 import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.server.xjaf.core.Agent;
-import siebog.server.xjaf.core.XjafAgent;
-import siebog.server.xjaf.fipa.ACLMessage;
-import siebog.server.xjaf.fipa.Performative;
+import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.XjafAgent;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers

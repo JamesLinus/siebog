@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.server.dnars.base
+package siebog.dnars.base
 
 import org.junit.Assert.assertTrue
 import org.junit.Test
