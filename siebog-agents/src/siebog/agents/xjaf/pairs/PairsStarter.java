@@ -69,12 +69,12 @@ public class PairsStarter {
 			// receiver
 			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit, "numIterations->" + numIterations);
 			AgentClass rcAgClass = new AgentClass(Module.NAME, "Receiver");
-			AID rcAid = agm.start(rcAgClass, "R" + i, rcArgs);
+			AID rcAid = agm.startAgent(rcAgClass, "R" + i, rcArgs);
 			// sender
 			AgentInitArgs snArgs = new AgentInitArgs("numIterations->" + numIterations, "contentLength->"
 					+ contentLength, "rcvrAid->" + rcAid.toString(), "resultsServiceAddr->" + addr);
 			AgentClass snAgClass = new AgentClass(Module.NAME, "Sender");
-			AID snAid = agm.start(snAgClass, "S" + i, snArgs);
+			AID snAid = agm.startAgent(snAgClass, "S" + i, snArgs);
 			senders.add(snAid);
 		}
 

@@ -82,7 +82,7 @@ public class Sender extends XjafAgent {
 				} catch (RemoteException | NotBoundException ex) {
 					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);
 				} finally {
-					agm.stop(myAid);
+					agm.stopAgent(myAid);
 				}
 			}
 		}

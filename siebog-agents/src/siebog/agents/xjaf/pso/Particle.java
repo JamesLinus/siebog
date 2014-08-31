@@ -142,7 +142,7 @@ public class Particle extends XjafAgent {
 		bestFitness = fitness;
 
 		// get the reference to the Starter (main) PSO agent
-		AID swarmAID = agm.getAIDByName("Swarm");
+		AID swarmAID = agm.getAIDByRuntimeName("Swarm");
 
 		// compose the message
 		ACLMessage message = new ACLMessage();

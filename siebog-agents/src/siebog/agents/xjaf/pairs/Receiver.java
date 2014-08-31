@@ -55,7 +55,7 @@ public class Receiver extends XjafAgent {
 		reply.setContent(msg.getContent() + "" + process());
 		msm.post(reply);
 		if (numIterations <= 0)
-			agm.stop(myAid);
+			agm.stopAgent(myAid);
 	}
 
 	private int process() {

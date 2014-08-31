@@ -86,7 +86,7 @@ public class Swarm extends XjafAgent {
 		logger.fine("Initializing swarm with random positions/solutions.");
 		for (int i = 0; i < numberParticles; ++i) {
 			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX, "maxx->" + maxX);
-			agm.start(new AgentClass(Module.NAME, "Particle"), "Particle" + i, mapArgs);
+			agm.startAgent(new AgentClass(Module.NAME, "Particle"), "Particle" + i, mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");
@@ -106,7 +106,7 @@ public class Swarm extends XjafAgent {
 			for (int i = 0; i < numberParticles; ++i) {
 
 				// find particle
-				AID particleAID = agm.getAIDByName("Particle" + i);
+				AID particleAID = agm.getAIDByRuntimeName("Particle" + i);
 
 				// compose message
 				ACLMessage message = new ACLMessage();
@@ -174,15 +174,15 @@ public class Swarm extends XjafAgent {
 		for (int i = 0; i < numberParticles; ++i) {
 
 			// find particle
-			AID particleAID = agm.getAIDByName("Particle" + i);
+			AID particleAID = agm.getAIDByRuntimeName("Particle" + i);
 
 			// Looks like 'stop' is not yet implemented, so it is not working yet
 			// All particles should be stopped/terminated at this point
-			agm.stop(particleAID);
+			agm.stopAgent(particleAID);
 		}
 
 		// do we need to terminate swarm?
-		agm.stop(myAid);
+		agm.stopAgent(myAid);
 	}
 
 }

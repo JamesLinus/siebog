@@ -22,9 +22,8 @@ package siebog.xjaf.managers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -34,10 +33,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
-import siebog.utils.ManagerFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -57,16 +54,8 @@ import siebog.xjaf.fipa.Performative;
 @LocalBean
 public class MessageManagerImpl implements MessageManager {
 	private static final Logger logger = Logger.getLogger(MessageManagerImpl.class.getName());
-	private Cache<AID, Agent> runningAgents;
-
-	@PostConstruct
-	public void postConstruct() {
-		try {
-			runningAgents = ManagerFactory.getRunningAgents();
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "MessageManager initialization error.", ex);
-		}
-	}
+	@EJB
+	private static RunningAgents runningAgents;
 
 	@GET
 	@Path("/")
@@ -85,12 +74,13 @@ public class MessageManagerImpl implements MessageManager {
 	public void post(@Form ACLMessage msg) {
 		for (AID aid : msg.getReceivers()) {
 			if (aid == null)
-				continue;
-			Agent agent = runningAgents.get(aid);
-			if (agent != null)
+				throw new IllegalArgumentException("Receiver AID cannot be null.");
+			try {
+				Agent agent = runningAgents.getAgentReference(aid);
 				agent.handleMessage(msg);
-			else
-				logger.info("Agent not running: [" + aid + "]");
+			} catch (IllegalArgumentException ex) {
+				logger.info(ex.getMessage());
+			}
 		}
 	}
 

@@ -22,11 +22,9 @@ package siebog.xjaf.managers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -42,10 +40,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.utils.ContextFactory;
-import siebog.utils.ManagerFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -66,33 +62,24 @@ import siebog.xjaf.core.AgentClass;
 public class AgentManagerImpl implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerImpl.class.getName());
-	private Cache<AID, Agent> runningAgents;
-
-	@PostConstruct
-	public void postConstruct() {
-		try {
-			runningAgents = ManagerFactory.getRunningAgents();
-		} catch (IllegalStateException ex) {
-			logger.log(Level.SEVERE, "AgentManager initialization error.", ex);
-			throw ex;
-		}
-	}
+	@EJB
+	private static RunningAgents runningAgents;
 
 	@PUT
 	@Path("/running/{agClass}/{name}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public AID start(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name, @Form AgentInitArgs args) {
+	public AID startAgent(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
+			@Form AgentInitArgs args) {
 		AID aid = new AID(name);
 		// is it running already?
-		if (runningAgents.containsKey(aid)) {
+		if (runningAgents.isRunning(aid)) {
 			logger.info("Already running: [" + aid + "]");
 			return aid;
 		}
 
 		try {
-			final Map<String, String> argsMap = args != null ? args.toStringMap() : null;
-			createNew(agClass, aid, argsMap);
+			runningAgents.start(agClass, aid, args);
 			logger.fine("Agent [" + aid + "] started.");
 			return aid;
 		} catch (Exception ex) {
@@ -101,50 +88,17 @@ public class AgentManagerImpl implements AgentManager {
 		}
 	}
 
-	/**
-	 * Terminates an active agent.
-	 * 
-	 * @param aid AID object.
-	 */
 	@DELETE
 	@Path("/running/{aid}")
 	@Override
-	public void stop(@PathParam("aid") AID aid) {
-		Agent agent = runningAgents.get(aid);
-		if (agent != null) {
-			// TODO : implement this
-			// runningAgents.remove(aid);
-			// agent.terminate();
-		}
-	}
-
-	private void createNew(AgentClass agClass, AID aid, Map<String, String> args) throws NamingException {
-		// build the JNDI lookup string
-		final String view = Agent.class.getName();
-		String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(), view);
-		String jndiNameStateful = jndiNameStateless + "?stateful";
-
-		Agent agent = null;
-		try {
-			agent = (Agent) ContextFactory.lookup(jndiNameStateful);
-		} catch (NamingException ex) {
-			final Throwable cause = ex.getCause();
-			if (cause == null || !(cause instanceof IllegalStateException))
-				throw ex;
-			agent = (Agent) ContextFactory.lookup(jndiNameStateless);
-		}
-
-		// the order of the next two statements matters. if we call init first and the agent
-		// sends a message from there, it sometimes happens that the reply arrives before we
-		// register the AID. also some agents might wish to terminate themselves inside init.
-		runningAgents.put(aid, agent);
-		agent.init(aid, args);
+	public void stopAgent(@PathParam("aid") AID aid) {
+		runningAgents.stop(aid);
 	}
 
 	@GET
 	@Path("/classes")
 	@Override
-	public List<AgentClass> getDeployed() {
+	public List<AgentClass> getAvailableAgentClasses() {
 		final Context ctx = ContextFactory.get();
 		List<AgentClass> result = new ArrayList<>();
 		final String intf = "!" + Agent.class.getName();
@@ -173,19 +127,12 @@ public class AgentManagerImpl implements AgentManager {
 	@GET
 	@Path("/running")
 	@Override
-	public List<AID> getRunning() {
-		final Set<AID> keys = runningAgents.keySet();
-		List<AID> aids = new ArrayList<>(keys.size());
-		aids.addAll(keys);
-		return aids;
+	public List<AID> getRunningAgents() {
+		return runningAgents.getAIDs();
 	}
 
 	@Override
-	public AID getAIDByName(String name) {
-		List<AID> running = getRunning();
-		for (AID aid : running)
-			if (aid.getName().equals(name))
-				return aid;
-		return null;
+	public AID getAIDByRuntimeName(String runtimeName) {
+		return runningAgents.getAIDByRuntimeName(runtimeName);
 	}
 }

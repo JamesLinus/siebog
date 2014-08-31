@@ -46,7 +46,7 @@ public class DNarsPingStarter {
 
 		AgentClass agClass = new AgentClass(Module.NAME, "DNarsPing");
 
-		AID aid = ManagerFactory.getAgentManager().start(agClass, "dnars", agArgs);
+		AID aid = ManagerFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(aid);

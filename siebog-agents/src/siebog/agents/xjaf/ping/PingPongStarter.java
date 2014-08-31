@@ -49,8 +49,8 @@ public class PingPongStarter {
 			NamingException {
 		SiebogCluster.init();
 		final AgentManager agm = ManagerFactory.getAgentManager();
-		AID ping = agm.start(new AgentClass(Module.NAME, "Ping"), "Ping", null);
-		agm.start(new AgentClass(Module.NAME, "Pong"), "Pong", null);
+		AID ping = agm.startAgent(new AgentClass(Module.NAME, "Ping"), "Ping", null);
+		agm.startAgent(new AgentClass(Module.NAME, "Pong"), "Pong", null);
 
 		MessageManager msm = ManagerFactory.getMessageManager();
 		msm.post(null, ping, Performative.REQUEST, "Pong");

@@ -21,12 +21,8 @@
 package siebog.utils;
 
 import javax.naming.NamingException;
-import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
 import siebog.radigost.websocket.bridges.BridgeManager;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
 import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.AgentManagerImpl;
 import siebog.xjaf.managers.MessageManager;
@@ -65,19 +61,6 @@ public abstract class ManagerFactory {
 			return (BridgeManager) ContextFactory.lookup(BridgeManagerLookup);
 		} catch (NamingException ex) {
 			throw new IllegalStateException("Failed to lookup bridge manager.", ex);
-		}
-	}
-
-	public static Cache<AID, Agent> getRunningAgents() {
-		try {
-			final String name = "java:jboss/infinispan/container/xjaf2x-cache";
-			CacheContainer container = (CacheContainer) ContextFactory.lookup(name);
-			Cache<AID, Agent> cache = container.getCache("running-agents");
-			if (cache == null)
-				throw new IllegalStateException("Cannot load cache running-agents.");
-			return cache;
-		} catch (NamingException ex) {
-			throw new IllegalStateException("Cannot lookup xjaf2x-cache.");
 		}
 	}
 }

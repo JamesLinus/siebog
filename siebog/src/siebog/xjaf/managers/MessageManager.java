@@ -25,7 +25,7 @@ import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
 /**
- * Remote interface for the message manager.
+ * Remote interface of the message manager.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

@@ -50,12 +50,12 @@ public class ACOStarter {
 		final AgentManager agm = ManagerFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
-		agm.start(mapClass, "Map", mapArgs);
+		agm.startAgent(mapClass, "Map", mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Module.NAME, "Ant");
-			agm.start(agClass, "Ant" + i, null);
+			agm.startAgent(agClass, "Ant" + i, null);
 		}
 	}
 }

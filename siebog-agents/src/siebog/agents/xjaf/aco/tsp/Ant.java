@@ -90,7 +90,7 @@ public class Ant extends XjafAgent {
 
 	@Override
 	protected void onInit(Map<String, String> args) {
-		mapAID = agm.getAIDByName("Map");
+		mapAID = agm.getAIDByRuntimeName("Map");
 
 		ACLMessage message = new ACLMessage();
 		message.setPerformative(Performative.REQUEST);
@@ -243,8 +243,8 @@ public class Ant extends XjafAgent {
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
 				AgentClass agClass = new AgentClass(Module.NAME, "Ant");
-				agm.start(agClass, name, null);
-				agm.stop(myAid);
+				agm.startAgent(agClass, name, null);
+				agm.stopAgent(myAid);
 				return;
 			}
 

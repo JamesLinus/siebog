@@ -3,17 +3,22 @@
 <project default="package" name="siebog-start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="bin.dir" value="bin" />
-	<property file="../siebog/build.properties" />
+	<property file="build.properties" />
 	
-	<property name="starter.modules" value="./wildfly-9.x/modules/system/layers/base/org/jboss" />
+	<property name="server.name" value="wildfly-9.x" />
+	<property name="starter.modules" value="./${server.name}/modules/system/layers/base/org/jboss" />
 	
 	<target name="package">
+		<ant dir="../siebog" />
+		<ant dir="../siebog-agents" />
+		
 		<delete file="${starter.path}" />
         <jar destfile="${starter.path}">
             <manifest>
                 <attribute name="Main-Class" value="siebog.core.NodeStarter"/>
-                <attribute name="Class-Path" value=". ./wildfly-9.x/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
+                <attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
             </manifest>
             <fileset dir="${bin.dir}"/>
         </jar>
@@ -25,5 +30,32 @@
 		</taskdef>
 
 		<sonar:sonar />
+	</target>
+	
+	<target name="dist" depends="package">
+		<property name="dist.siebog.dir" value="${dist.dir}/siebog" />
+		<property name="dist.file" value="${dist.dir}/siebog.zip" />
+		
+		<delete file="${dist.file}" />
+		<delete dir="${dist.siebog.dir}" />
+		<mkdir dir="${dist.siebog.dir}" />
+		
+		<mkdir dir="${dist.siebog.dir}"/>
+		<copy todir="${dist.siebog.dir}/${server.name}">
+			<fileset dir="wildfly-base" includes="**" />
+		</copy>
+		<mkdir dir="${dist.siebog.dir}/${server.name}/modules/system/layers/base/sibog-core" />
+		<copy todir="${dist.siebog.dir}/${server.name}/modules/system/layers/base/sibog-core">
+			<fileset dir="lib/module" includes="*" />
+		</copy>
+		<copy todir="${dist.siebog.dir}" file="${siebog.path}" />
+		<copy todir="${dist.siebog.dir}" file="${agents.path}" />
+		<copy todir="${dist.siebog.dir}" file="${starter.path}" />
+		<copy todir="${dist.siebog.dir}" file="../LICENSE" />
+		<copy todir="${dist.siebog.dir}" file="../NOTICE" />
+		<copy todir="${dist.siebog.dir}" file="../README.md" />
+		
+		<zip destfile="${dist.file}" basedir="${dist.dir}" includes="siebog/**" />
+		<delete dir="${dist.siebog.dir}" />
 	</target>
 </project>

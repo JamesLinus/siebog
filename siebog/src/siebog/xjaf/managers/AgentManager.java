@@ -31,37 +31,19 @@ import siebog.xjaf.core.AgentClass;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface AgentManager extends Serializable {
-	/**
-	 * Starts a new agent.
-	 * 
-	 * @param agClass AgentClass object.
-	 * @param name Runtime name.
-	 * @param args Optional initialization arguments to be passed to the agent.
-	 * @return AID of the new agent.
-	 * @throws IllegalArgumentException if the agent could not be started.
-	 */
-	AID start(AgentClass agClass, String name, AgentInitArgs args);
+	AID startAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
+
+	void stopAgent(AID aid);
+
+	List<AID> getRunningAgents();
 
 	/**
-	 * Terminates an active agent.
 	 * 
-	 * @param aid AID object.
+	 * @param runtimeName
+	 * @return
+	 * @throws IllegalArgumentException if no such running agent.
 	 */
-	void stop(AID aid);
+	AID getAIDByRuntimeName(String runtimeName);
 
-	/**
-	 * Returns the list of running agents.
-	 * 
-	 * @return List of agent AIDs.
-	 */
-	List<AID> getRunning();
-
-	AID getAIDByName(String name);
-
-	/**
-	 * Returns the list of deployed agents.
-	 * 
-	 * @return List of AIDs, with runtime names set to null.
-	 */
-	List<AgentClass> getDeployed();
+	List<AgentClass> getAvailableAgentClasses();
 }
