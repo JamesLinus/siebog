@@ -53,11 +53,15 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	val eventManager = new EventManager()
 
 	def getV(term: Term): Option[Vertex] = {
-		val vertex = V.has("term", term.id).toList
-		vertex match {
+		/*V.has("term", term.id).toList match {
 			case h :: Nil => Some(h)
 			case _ => None
-		}
+		}*/
+		val i = this.query().has("term", term.id).vertices().iterator()
+		if (i.hasNext())
+			Some(i.next())
+		else
+			None
 	}
 
 	/**
@@ -130,15 +134,13 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		count
 	}
 
-	def shutdown(clear: Boolean = false) = {
-		graph.shutdown()
-		if (clear)
-			graph match {
-				case tg: TitanGraph =>
-					TitanCleanup.clear(tg)
-				case any: Any =>
-					throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
-			}
+	def shutdown(): Unit = graph.shutdown()
+
+	def clear(): Unit = graph match {
+		case tg: TitanGraph =>
+			TitanCleanup.clear(tg)
+		case any: Any =>
+			throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
 	}
 
 	override def addObserver(aid: AID): Unit =
@@ -169,12 +171,6 @@ object DNarsGraphFactory {
 			case _: IllegalArgumentException =>
 			case e: Throwable => throw e
 		}
-		try {
-			graph.makeKey("label").dataType(classOf[String]).indexed("standard", classOf[Edge]).make()
-		} catch {
-			case _: IllegalArgumentException =>
-			case e: Throwable => throw e
-		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 
@@ -182,7 +178,7 @@ object DNarsGraphFactory {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
-		// storage.machine-id-appendix
+		// TODO add storage.machine-id-appendix
 		conf.setProperty("storage.keyspace", domain)
 		// custom serializers
 		/*conf.setProperty("attributes.allow-all", "true")

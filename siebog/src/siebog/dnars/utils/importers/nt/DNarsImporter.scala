@@ -18,7 +18,7 @@ import siebog.dnars.graph.DNarsEdge
 object DNarsImporter {
 	val map = Map[String, Long]()
 	var idCounter = 0L
-	
+
 	def apply(args: Array[String]): Unit = {
 		if (args.length != 2) {
 			println("I need 2 arguments: InputFile DomainName")
@@ -29,7 +29,6 @@ object DNarsImporter {
 
 		println(s"Reading from $input...")
 		val cfg = new HashMap[String, Any]
-		//cfg.put("storage.batch-loading", "true")
 		val graph = DNarsGraphFactory.create(domain, cfg)
 		val bg = BatchGraph.wrap(graph, 1000)
 		try {
@@ -47,24 +46,28 @@ object DNarsImporter {
 							add(bg, st2)
 						case _ =>
 					}
-					
+
 					counter += 1
 					if (counter % 512 == 0)
 						println(s"Imported $counter statements...")
 				}
-			println(s"Done. Total: $counter statements.")
+			println(s"Done. Total: ${counter * 3} statements.")
+		} catch {
+			case ex: Throwable =>
+				ex.printStackTrace
 		} finally {
-			graph.shutdown()
+			graph.shutdown
+			System.exit(0)
 		}
 	}
-	
+
 	private def add(graph: TransactionalGraph, st: Statement): Unit = {
 		val s = getOrAdd(graph, st.subj)
 		val p = getOrAdd(graph, st.pred)
 		val e = graph.addEdge(null, s, p, st.copula)
 		DNarsEdge(e).truth = st.truth
 	}
-	
+
 	private def getOrAdd(graph: TransactionalGraph, term: Term): Vertex = {
 		var id: Long = map.getOrElse(term.id, -1)
 		var v: Vertex = null

@@ -21,7 +21,6 @@
 package siebog.dnars.inference
 
 import org.junit.Test
-import siebog.dnars.inference.ForwardInference;
 import siebog.dnars.graph.DNarsGraphFactory
 import siebog.dnars.TestUtils.TEST_KEYSPACE
 import siebog.dnars.TestUtils.createAndAdd
@@ -61,7 +60,8 @@ class ForwardInferenceTest {
 				StatementParser("feline -> animal " + kb(0).truth.analogy(kb(4).truth, false)))
 			assertGraph(graph, kb.toList, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -92,7 +92,8 @@ class ForwardInferenceTest {
 				invert(st))
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -126,7 +127,8 @@ class ForwardInferenceTest {
 				StatementParser("lion -> feline " + kb(3).truth.analogy(kb(4).truth, false)))
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -151,7 +153,8 @@ class ForwardInferenceTest {
 				StatementParser("bird -> (/ eat tiger *) " + ded))
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 }

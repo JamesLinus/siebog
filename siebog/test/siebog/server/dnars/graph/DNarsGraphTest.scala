@@ -21,7 +21,9 @@
 package siebog.dnars.graph
 
 import scala.collection.mutable.ListBuffer
-import siebog.dnars.graph.DNarsGraphFactory;
+
+import org.junit.Test
+
 import siebog.dnars.TestUtils.TEST_KEYSPACE
 import siebog.dnars.TestUtils.assertGraph
 import siebog.dnars.TestUtils.createAndAdd
@@ -29,7 +31,6 @@ import siebog.dnars.TestUtils.invert
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Truth
-import org.junit.Test
 
 /**
  *
@@ -52,7 +53,8 @@ class DNarsGraphTest {
 
 			assertGraph(graph, st, Seq(invert(st(1))))
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -88,7 +90,8 @@ class DNarsGraphTest {
 				StatementParser("(\\ hate dog *) -> cat " + t(3))) // @formatter:on
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -107,7 +110,8 @@ class DNarsGraphTest {
 				StatementParser("(\\ dissolve water *) -> salt (1.0, 0.9)")) // @formatter:on
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 
@@ -134,7 +138,8 @@ class DNarsGraphTest {
 				StatementParser("(\\ hate dog *) -> cat (1.0, 0.9)")) // @formatter:on
 			assertGraph(graph, kb, res)
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 }

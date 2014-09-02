@@ -20,16 +20,16 @@
 
 package siebog.dnars.inference
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import siebog.dnars.inference.Resolution;
-import siebog.dnars.graph.DNarsGraphFactory
+
 import siebog.dnars.TestUtils.TEST_KEYSPACE
 import siebog.dnars.TestUtils.createAndAdd
 import siebog.dnars.base.AtomicTerm
 import siebog.dnars.base.StatementParser
-import org.junit.Assert.assertEquals
-import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.base.Term
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.graph.DNarsGraphFactory
 
 /**
  *
@@ -52,7 +52,8 @@ class ResolutionTest {
 			assertAnswer(graph, "developer ~ ?", AtomicTerm("job"))
 			assertAnswer(graph, "? ~ developer", AtomicTerm("job"))
 		} finally {
-			graph.shutdown(true)
+			graph.shutdown
+			graph.clear
 		}
 	}
 

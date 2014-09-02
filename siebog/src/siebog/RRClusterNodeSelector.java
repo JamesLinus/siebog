@@ -27,15 +27,11 @@ import org.jboss.ejb.client.ClusterNodeSelector;
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RRClusterNodeSelector implements ClusterNodeSelector
-{
+public class RRClusterNodeSelector implements ClusterNodeSelector {
 	private int index;
-	
+
 	@Override
-	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes)
-	{
-		
+	public String selectNode(String clusterName, String[] connectedNodes, String[] availableNodes) {
 		return availableNodes[index++ % availableNodes.length];
 	}
-
 }

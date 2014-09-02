@@ -32,6 +32,7 @@ import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsVertex
 import siebog.dnars.graph.DNarsVertex.wrap
 import scala.collection.mutable.ListBuffer
+import java.util.concurrent.LinkedBlockingQueue
 
 /**
  * Syllogistic forward inference rules. The following table represents the summary
@@ -48,6 +49,9 @@ import scala.collection.mutable.ListBuffer
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 object ForwardInference {
+	/**
+	 * Returns a list of conclusions for the given set of input statements.
+	 */
 	def conclusions(graph: DNarsGraph, input: Seq[Statement]): List[Statement] = {
 		var res = ListBuffer[Statement]()
 		for (st <- input) {
@@ -60,6 +64,9 @@ object ForwardInference {
 		res.toList
 	}
 
+	/**
+	 * Includes the given set of statements in the graph, applying forward inference rules along the way.
+	 */
 	def include(graph: DNarsGraph, input: List[Statement]): Unit = {
 		val c = conclusions(graph, input)
 		graph.statements.addAll(input ::: c)
