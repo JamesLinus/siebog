@@ -20,8 +20,11 @@
 
 package siebog.admin.client;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.http.client.Request;
@@ -31,164 +34,117 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.util.ValueCallback;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
-import com.smartgwt.client.widgets.events.ClickEvent;
-import com.smartgwt.client.widgets.events.ClickHandler;
-import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.SelectionChangedHandler;
-import com.smartgwt.client.widgets.grid.events.SelectionEvent;
+import com.smartgwt.client.widgets.grid.ColumnTree;
 import com.smartgwt.client.widgets.layout.HLayout;
-import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.tree.Tree;
+import com.smartgwt.client.widgets.tree.TreeNode;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class Admin implements EntryPoint {
-	private ListGrid classes;
-	private ListGrid running;
-	private IButton reloadClasses;
+	private ColumnTree agents;
+	private IButton reloadAgents;
 	private IButton start;
-	private IButton reloadRunning;
 	private MessagingForm msgForm;
 
 	@Override
 	public void onModuleLoad() {
+		agents = new ColumnTree();
+		agents.setWidth("80%");
+		agents.setHeight100();
+		agents.setShowHeaders(true);
+		agents.setShowNodeCount(true);
+		agents.setLoadDataOnDemand(false);
+
+		msgForm = new MessagingForm();
+		msgForm.setWidth("20%");
+
+		HLayout main = new HLayout();
+		main.setWidth(800);
+		main.setHeight100();
+		main.setMembersMargin(8);
+		main.addMembers(agents, msgForm);
+
+		reloadAgents();
+		// startGuiAgent();
+		reloadRunning();
+		updateControls();
+
 		HLayout root = new HLayout();
 		root.setWidth100();
 		root.setHeight(600);
 		root.setAlign(Alignment.CENTER);
-
-		HLayout ag = new HLayout();
-		ag.setWidth100();
-		ag.setHeight("50%");
-		ag.setMembersMargin(8);
-		ag.addMembers(makeClasses(), makeRunning());
-
-		msgForm = new MessagingForm();
-
-		VLayout v = new VLayout();
-		v.setWidth(800);
-		v.setMembersMargin(8);
-
-		v.addMembers(ag, msgForm.get());
-
-		reloadClasses();
-		startGuiAgent();
-		reloadRunning();
-		updateControls();
-		root.addMember(v);
+		root.addMember(main);
 		root.draw();
 	}
 
-	private Canvas makeClasses() {
-		classes = createGrid();
+	private void makeClasses() {
+		/*
+		 * reloadAgents = new IButton("Reload", new ClickHandler() {
+		 * 
+		 * @Override public void onClick(ClickEvent event) { reloadAgents(); } }); start = new IButton("Start", new
+		 * ClickHandler() {
+		 * 
+		 * @Override public void onClick(ClickEvent event) { final ListGridRecord rec = classes.getSelectedRecord(); if
+		 * (rec != null) SC.askforValue("Start new agent", "Runtime name for the new agent?", new ValueCallback() {
+		 * 
+		 * @Override public void execute(String value) { if (value != null) { String agClass =
+		 * rec.getAttribute("module") + '$' + rec.getAttribute("ejbName"); startNewAgent(agClass, value); } } }); } });
+		 * 
+		 * controls.addMembers(reloadAgents, start);
+		 */
 
-		ListGridField module = new ListGridField("module", "Module");
-		ListGridField ejbName = new ListGridField("ejbName", "Class");
-		classes.setFields(module, ejbName);
-
-		reloadClasses = new IButton("Reload", new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				reloadClasses();
-			}
-		});
-		start = new IButton("Start", new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				final ListGridRecord rec = classes.getSelectedRecord();
-				if (rec != null)
-					SC.askforValue("Start new agent", "Runtime name for the new agent?", new ValueCallback() {
-						@Override
-						public void execute(String value) {
-							if (value != null) {
-								String agClass = rec.getAttribute("module") + '$' + rec.getAttribute("ejbName");
-								startNewAgent(agClass, value);
-							}
-						}
-					});
-			}
-		});
-
-		HLayout controls = new HLayout();
-		controls.setMembersMargin(16);
-		controls.addMembers(reloadClasses, start);
-
-		VLayout v = new VLayout();
-		v.setWidth("50%");
-		v.addMember(controls);
-		v.addMember(classes);
-		return v;
 	}
 
-	private Canvas makeRunning() {
-		running = createGrid();
-
-		ListGridField name = new ListGridField("id", "Name");
-		running.setFields(name);
-
-		reloadRunning = new IButton("Reload", new ClickHandler() {
+	private void reloadAgents() {
+		RequestBuilderUtil.get("rest/agents/classes", new RequestCallback() {
 			@Override
-			public void onClick(ClickEvent event) {
-				reloadRunning();
-			}
-		});
+			public void onResponseReceived(Request req, Response resp) {
+				Tree tree = new Tree();
+				tree.setModelType(TreeModelType.PARENT);
+				tree.setIdField("id");
+				tree.setParentIdField("parent");
+				tree.setNameProperty("name");
+				final String ROOT_ID = "1";
+				tree.setRootValue(ROOT_ID);
 
-		HLayout controls = new HLayout();
-		controls.setMembersMargin(16);
-		controls.addMembers(reloadRunning);
-
-		VLayout v = new VLayout();
-		v.setWidth("50%");
-		v.addMembers(controls, running);
-		return v;
-	}
-
-	private ListGrid createGrid() {
-		ListGrid grid = new ListGrid();
-		grid.setShowAllRecords(true);
-		grid.setHeight100();
-		grid.setCanEdit(false);
-		grid.addSelectionChangedHandler(new SelectionChangedHandler() {
-			@Override
-			public void onSelectionChanged(SelectionEvent event) {
+				JsArray<AgentClassWrapper> result = JsonUtils.unsafeEval(resp.getText());
+				tree.setData(getAgentNodes(result, ROOT_ID));
+				agents.setData(tree);
 				updateControls();
 			}
+
+			@Override
+			public void onError(Request req, Throwable ex) {
+				updateControls();
+				ex.printStackTrace();
+			}
 		});
-		return grid;
 	}
 
-	private void reloadClasses() {
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "rest/agents/classes");
-		builder.setHeader("Content-Type", "application/json");
-		try {
-			builder.sendRequest("", new RequestCallback() {
-				@Override
-				public void onResponseReceived(Request req, Response resp) {
-					JsArray<JavaScriptObject> result = JsonUtils.unsafeEval(resp.getText());
-					final int n = result.length();
-					ListGridRecord[] rec = new ListGridRecord[n];
-					for (int i = 0; i < n; i++)
-						rec[i] = new ListGridRecord(result.get(i));
-					classes.setData(rec);
-					updateControls();
-				}
-
-				@Override
-				public void onError(Request req, Throwable ex) {
-					updateControls();
-					ex.printStackTrace();
-				}
-			});
-		} catch (RequestException ex) {
-			ex.printStackTrace();
+	private TreeNode[] getAgentNodes(JsArray<AgentClassWrapper> array, String rootId) {
+		final int n = array.length();
+		Set<String> addedModules = new HashSet<>();
+		List<TreeNode> nodes = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			final AgentClassWrapper agClass = array.get(i);
+			final String module = agClass.getModule();
+			final String ejbName = agClass.getEjbName();
+			if (addedModules.add(module)) {
+				TreeNode node = new AgentTreeNode(module, rootId, module);
+				node.setIcon("../img/module.png");
+				nodes.add(node);
+			}
+			TreeNode node = new AgentTreeNode(module + ejbName, module, ejbName);
+			node.setIcon("../img/agent.png");
+			nodes.add(node);
 		}
+		return nodes.toArray(new TreeNode[0]);
 	}
 
 	private void startNewAgent(String agClass, String name) {
@@ -217,35 +173,22 @@ public class Admin implements EntryPoint {
 	}
 
 	private void reloadRunning() {
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "rest/agents/running");
-		builder.setHeader("Content-Type", "application/json");
-		try {
-			builder.sendRequest("", new RequestCallback() {
-				@Override
-				public void onResponseReceived(Request req, Response resp) {
-					JsArray<AIDWrapper> result = JsonUtils.unsafeEval(resp.getText());
-					final int n = result.length();
-					ListGridRecord[] rec = new ListGridRecord[n];
-					for (int i = 0; i < n; i++)
-						rec[i] = new ListGridRecord(result.get(i));
-					running.setData(rec);
-					msgForm.onRunningList(result);
-					updateControls();
-				}
-
-				@Override
-				public void onError(Request req, Throwable ex) {
-					updateControls();
-					ex.printStackTrace();
-				}
-			});
-		} catch (RequestException ex) {
-			ex.printStackTrace();
-		}
+		/*
+		 * RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "rest/agents/running");
+		 * builder.setHeader("Content-Type", "application/json"); try { builder.sendRequest("", new RequestCallback() {
+		 * 
+		 * @Override public void onResponseReceived(Request req, Response resp) { JsArray<AIDWrapper> result =
+		 * JsonUtils.unsafeEval(resp.getText()); final int n = result.length(); ListGridRecord[] rec = new
+		 * ListGridRecord[n]; for (int i = 0; i < n; i++) rec[i] = new ListGridRecord(result.get(i));
+		 * running.setData(rec); msgForm.onRunningList(result); updateControls(); }
+		 * 
+		 * @Override public void onError(Request req, Throwable ex) { updateControls(); ex.printStackTrace(); } }); }
+		 * catch (RequestException ex) { ex.printStackTrace(); }
+		 */
 	}
 
 	private void updateControls() {
-		start.setDisabled(classes.getSelectedRecord() == null);
+		// start.setDisabled(agents.getSelectedRecord() == null);
 	}
 
 	private void startGuiAgent() {

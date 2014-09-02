@@ -43,8 +43,19 @@ import siebog.xjaf.core.AgentClass;
 @LocalBean
 @Startup
 public class RunningAgents {
-	private static class RunningAgentRec {
-		Agent ref;
+	public static class RunningAgentRec {
+		private AgentClass agClass;
+		private AID aid;
+		// no getter for this one, since we don't want it serialized into JSON
+		private Agent ref;
+
+		public AgentClass getAgClass() {
+			return agClass;
+		}
+
+		public AID getAid() {
+			return aid;
+		}
 	}
 
 	private Cache<AID, RunningAgentRec> cache;
@@ -83,6 +94,8 @@ public class RunningAgents {
 		}
 
 		RunningAgentRec rec = new RunningAgentRec();
+		rec.agClass = agClass;
+		rec.aid = aid;
 		rec.ref = agent;
 		// the order of the next two statements matters. if we call init first and the agent
 		// sends a message from there, it sometimes happens that the reply arrives before we
@@ -103,15 +116,15 @@ public class RunningAgents {
 		return rec.ref;
 	}
 
-	public List<AID> getAIDs() {
-		return new ArrayList<>(cache.keySet());
+	public List<RunningAgentRec> getRunningAgents() {
+		return new ArrayList<>(cache.values());
 	}
 
 	public AID getAIDByRuntimeName(String runtimeName) {
-		final List<AID> aids = getAIDs();
-		for (AID aid : aids)
-			if (aid.getName().equals(runtimeName))
-				return aid;
+		final List<RunningAgentRec> running = getRunningAgents();
+		for (RunningAgentRec rec : running)
+			if (rec.aid.getName().equals(runtimeName))
+				return rec.aid;
 		throw new IllegalArgumentException("No such agent: " + runtimeName);
 	}
 }

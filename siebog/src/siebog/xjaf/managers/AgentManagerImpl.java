@@ -45,6 +45,7 @@ import siebog.utils.ContextFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.managers.RunningAgents.RunningAgentRec;
 
 /**
  * Default agent manager implementation.
@@ -127,8 +128,8 @@ public class AgentManagerImpl implements AgentManager {
 	@GET
 	@Path("/running")
 	@Override
-	public List<AID> getRunningAgents() {
-		return runningAgents.getAIDs();
+	public List<RunningAgentRec> getRunningAgents() {
+		return runningAgents.getRunningAgents();
 	}
 
 	@Override
