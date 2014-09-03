@@ -34,6 +34,7 @@ import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsVertex.wrap
 import siebog.xjaf.dnarslayer.Event
 import scala.collection.mutable.ListBuffer
+import siebog.dnars.base.CompoundTerm
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -41,7 +42,7 @@ import scala.collection.mutable.ListBuffer
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class StatementManager(val graph: DNarsGraph) {
-	def add(st: Statement): Unit = {
+	def add(st: Statement): Unit = if (validStatement(st)) {
 		// TODO : when adding statements, consider that "S~P <=> S->P & P->S" and "S~P => S->P"
 		val existing = graph.getE(st)
 		existing match {
@@ -92,10 +93,27 @@ class StatementManager(val graph: DNarsGraph) {
 	def addAll(st: Seq[Statement]): Unit = {
 		graph.eventManager.paused = true
 		try {
-			for (s <- st) add(s)
+			for (s <- st)
+				add(s)
 		} finally {
 			graph.eventManager.paused = false
 		}
+	}
+
+	/**
+	 * Checks if the given statement is valid. For now, it only checks compound terms with product connectors.
+	 */
+	def validStatement(st: Statement): Boolean = (st.subj, st.copula, st.pred) match {
+		case (CompoundTerm(Product, _), _, CompoundTerm(_, _)) =>
+			false // predicate should be an atomic term
+		case (CompoundTerm(_, _), _, CompoundTerm(Inherit, _)) =>
+			false // subject should be an atomic term
+		case (CompoundTerm(Product, _), Similar, AtomicTerm(_)) =>
+			false // copula should be inheritance
+		case (AtomicTerm(_), Similar, CompoundTerm(Product, _)) =>
+			false // copula should be inheritance
+		case _ =>
+			true
 	}
 
 	/**
@@ -103,7 +121,7 @@ class StatementManager(val graph: DNarsGraph) {
 	 *
 	 * @throws IllegalArgumentException if the statement is not found, or if it has different truth-value.
 	 */
-	def check(st: Statement): Unit = {
+	def assert(st: Statement): Unit = {
 		graph.getE(st) match {
 			case None =>
 				throw new IllegalArgumentException("Not found.");

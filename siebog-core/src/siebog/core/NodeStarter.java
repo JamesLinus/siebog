@@ -23,7 +23,6 @@ package siebog.core;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -289,21 +288,20 @@ public class NodeStarter {
 
 	private static File getRootFolder() throws IOException {
 		/*
-		 * String root = ""; java.security.CodeSource codeSource =
-		 * NodeStarter.class.getProtectionDomain() .getCodeSource(); try { String path =
-		 * codeSource.getLocation().toURI().getPath(); File jarFile = new File(path); if
-		 * (path.lastIndexOf(".jar") > 0) root = jarFile.getParentFile().getPath(); else // get out
-		 * of sibog-starter/bin root = jarFile.getParentFile().getParentFile().getPath(); } catch
-		 * (Exception ex) { } root = root.replace('\\', '/'); return new File(root);
+		 * String root = ""; java.security.CodeSource codeSource = NodeStarter.class.getProtectionDomain()
+		 * .getCodeSource(); try { String path = codeSource.getLocation().toURI().getPath(); File jarFile = new
+		 * File(path); if (path.lastIndexOf(".jar") > 0) root = jarFile.getParentFile().getPath(); else // get out of
+		 * sibog-starter/bin root = jarFile.getParentFile().getParentFile().getPath(); } catch (Exception ex) { } root =
+		 * root.replace('\\', '/'); return new File(root);
 		 */
 		return new File(NodeConfig.getJBossHome(), "..");
 	}
 
-	private static void doDeploy(File root, String name) throws UnknownHostException, DeploymentExecutionException,
-			DeploymentFailureException {
+	private static void doDeploy(File root, String name) throws DeploymentExecutionException,
+			DeploymentFailureException, IOException {
 		final String appName = name + ".war";
 		File file = new File(root, appName);
-		logger.info("Deploying " + file.getAbsolutePath());
+		logger.info("Deploying " + file.getCanonicalPath());
 		InetAddress addr = InetAddress.getByName(config.getAddress());
 		Deployment.deploy(addr, file, appName);
 	}

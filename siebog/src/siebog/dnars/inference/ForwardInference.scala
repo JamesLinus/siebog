@@ -93,7 +93,7 @@ object ForwardInference {
 					else
 						edge.truth.analogy(st.truth, false)
 				val derived = Statement(st.subj, Inherit, p, derivedTruth)
-				res += derived
+				append(graph, res, derived)
 			}
 		}
 		res.toList
@@ -111,10 +111,12 @@ object ForwardInference {
 			val p = vertex.term
 			if (st.subj != p) {
 				val edge: DNarsEdge = e
-				if (st.copula == Inherit)
-					res += Statement(st.subj, Inherit, p, edge.truth.analogy(st.truth, true))
-				else
-					res += Statement(st.subj, Similar, p, edge.truth.resemblance(st.truth))
+				val derived =
+					if (st.copula == Inherit)
+						Statement(st.subj, Inherit, p, edge.truth.analogy(st.truth, true))
+					else
+						Statement(st.subj, Similar, p, edge.truth.resemblance(st.truth))
+				append(graph, res, derived)
 			}
 		}
 		res.toList
@@ -134,12 +136,12 @@ object ForwardInference {
 				val edge: DNarsEdge = e
 				if (st.copula == Inherit) {
 					val abd = edge.truth.abduction(st.truth)
-					res += Statement(st.subj, Inherit, p, abd)
+					append(graph, res, Statement(st.subj, Inherit, p, abd))
 					val cmp = edge.truth.comparison(st.truth)
-					res += Statement(st.subj, Similar, p, cmp)
+					append(graph, res, Statement(st.subj, Similar, p, cmp))
 				} else {
 					val ana = edge.truth.analogy(st.truth, false)
-					res += Statement(p, Inherit, st.subj, ana)
+					append(graph, res, Statement(p, Inherit, st.subj, ana))
 				}
 			}
 		}
@@ -158,9 +160,9 @@ object ForwardInference {
 				if (st.pred != p) {
 					val edge: DNarsEdge = e
 					val ind = edge.truth.induction(st.truth)
-					res += Statement(st.pred, Inherit, p, ind)
+					append(graph, res, Statement(st.pred, Inherit, p, ind))
 					val cmp = edge.truth.comparison(st.truth)
-					res += Statement(st.pred, Similar, p, cmp)
+					append(graph, res, Statement(st.pred, Similar, p, cmp))
 				}
 			}
 		}
@@ -179,10 +181,14 @@ object ForwardInference {
 				if (st.pred != p) {
 					val edge: DNarsEdge = e
 					val ana = edge.truth.analogy(st.truth, true)
-					res += Statement(p, Inherit, st.pred, ana)
+					append(graph, res, Statement(p, Inherit, st.pred, ana))
 				}
 			}
 		}
 		res.toList
 	}
+
+	private def append(graph: DNarsGraph, res: ListBuffer[Statement], st: Statement): Unit =
+		if (graph.statements.validStatement(st))
+			res += st
 }

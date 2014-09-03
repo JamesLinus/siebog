@@ -22,12 +22,8 @@ package siebog.dnars.inference
 
 import org.junit.Test
 import siebog.dnars.graph.DNarsGraphFactory
-import siebog.dnars.TestUtils.TEST_KEYSPACE
-import siebog.dnars.TestUtils.createAndAdd
-import siebog.dnars.TestUtils.create
-import siebog.dnars.TestUtils.invert
+import siebog.dnars.TestUtils._
 import siebog.dnars.base.StatementParser
-import siebog.dnars.TestUtils.assertGraph
 import scala.collection.mutable.ListBuffer
 import siebog.dnars.base.Statement
 
