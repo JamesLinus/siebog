@@ -240,39 +240,7 @@ public class NodeStarter {
 		}
 
 		// ok, create the file
-		writeConfigFile(configFile, isMaster, address, slaveNodes, master, slaveName, portOffset);
-	}
-
-	private static void writeConfigFile(File configFile, boolean isMaster, String address, Set<String> slaveNodes,
-			String master, String slaveName, int portOffset) throws IOException {
-		String str = Global.readFile(NodeStarter.class.getResourceAsStream("xjaf-config.txt"));
-		str = str.replace("%mode%", isMaster ? "master" : "slave");
-		str = str.replace("%address%", address);
-		if (isMaster) {
-			StringBuilder slaves = new StringBuilder();
-			if (slaveNodes != null) {
-				String comma = "";
-				for (String sl : slaveNodes) {
-					slaves.append(comma).append(sl);
-					if (comma.equals(""))
-						comma = ",";
-				}
-			}
-			str = str.replace("%slave_list%", slaves.toString());
-			str = str.replace("%master_addr%", "");
-			str = str.replace("%port_offset%", "");
-			str = str.replace("%slave_name%", "");
-		} else {
-			String masterAddr = "master=\"" + master + "\"";
-			str = str.replace("%master_addr%", masterAddr);
-			str = str.replace("%slave_list%", "");
-			str = str.replace("%slave_name%", "name=\"" + slaveName + "\"");
-			if (portOffset >= 0)
-				str = str.replace("%port_offset%", "port-offset=\"" + portOffset + "\"");
-			else
-				str = str.replace("%port_offset%", "");
-		}
-		Global.writeFile(configFile, str);
+		config.makeConfigFile(isMaster, address, slaveNodes, master, slaveName, portOffset);
 	}
 
 	private static void printUsage() {
@@ -294,7 +262,7 @@ public class NodeStarter {
 		 * sibog-starter/bin root = jarFile.getParentFile().getParentFile().getPath(); } catch (Exception ex) { } root =
 		 * root.replace('\\', '/'); return new File(root);
 		 */
-		return new File(NodeConfig.getJBossHome(), "..");
+		return new File(config.getJBossHome(), "..");
 	}
 
 	private static void doDeploy(File root, String name) throws DeploymentExecutionException,
@@ -310,18 +278,13 @@ public class NodeStarter {
 		Global.printVersion();
 		try {
 			final File root = getRootFolder();
-			final File configFile = NodeConfig.getConfigFile();
+			config = NodeConfig.get();
 			if (args.length > 0) {
 				logger.info("Building configuration from command-line arguments.");
-				createConfigFromArgs(args, configFile);
-			} else if (!configFile.exists()) // use the default settings
-			{
-				logger.info("Using default configuration (master node @ localhost).");
-				writeConfigFile(configFile, true, "localhost", null, null, "", -1);
+				createConfigFromArgs(args, config.getConfigFile2());
 			}
-			config = new NodeConfig();
 
-			jbossHome = NodeConfig.getJBossHome();
+			jbossHome = config.getJBossHome();
 			if (config.isMaster()) {
 				runMaster();
 				// TODO: check if already deployed

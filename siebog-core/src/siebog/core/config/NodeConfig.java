@@ -19,9 +19,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import siebog.core.Global;
+import siebog.core.NodeStarter;
 
 public class NodeConfig {
 	private static final Logger logger = Logger.getLogger(NodeConfig.class.getName());
+	private File configFile;
 	private boolean isMaster;
 	private String address;
 	private String master;
@@ -29,21 +32,30 @@ public class NodeConfig {
 	private Set<String> clusterNodes;
 	private RelayInfo relay;
 	private String slaveName;
+	private static NodeConfig instance;
 
-	public NodeConfig() throws SAXException, IOException, ParserConfigurationException {
-		final File cfg = getConfigFile();
-		logger.info("Loading configuration from " + cfg.getAbsolutePath());
-		if (!cfg.exists())
-			;// writeDefaults(cfg);
+	public static synchronized NodeConfig get() throws SAXException, IOException, ParserConfigurationException {
+		if (instance == null)
+			instance = new NodeConfig();
+		return instance;
+	}
+
+	private NodeConfig() throws SAXException, IOException, ParserConfigurationException {
+		configFile = new File(getJBossHome(), "../xjaf-config.xml");
+		logger.info("Loading configuration from " + configFile.getCanonicalPath());
+		if (!configFile.exists()) {
+			logger.info("Creating default configuration file " + configFile.getCanonicalPath());
+			makeConfigFile(true, "localhost", null, "", "", -1);
+		}
 		validateConfig();
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		try (InputStream is = new FileInputStream(getConfigFile())) {
+		try (InputStream is = new FileInputStream(configFile)) {
 			Document doc = builder.parse(is);
 			loadConfig(doc);
 		}
 	}
 
-	public static File getJBossHome() throws IOException {
+	public File getJBossHome() throws IOException {
 		// TODO : make sure it works if there are spaces in the path
 		String jbossHome = System.getenv("JBOSS_HOME");
 		if (jbossHome == null || jbossHome.length() == 0 || !new File(jbossHome).isDirectory())
@@ -52,15 +64,15 @@ public class NodeConfig {
 		return new File(jbossHome);
 	}
 
-	public static File getConfigFile() throws IOException {
-		return new File(getJBossHome(), "../xjaf-config.xml");
+	public File getConfigFile2() {
+		return configFile;
 	}
 
 	private void validateConfig() throws SAXException, IOException {
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema schema = schemaFactory.newSchema(getClass().getResource("xjaf-server.xsd"));
 		Validator validator = schema.newValidator();
-		validator.validate(new StreamSource(getConfigFile()));
+		validator.validate(new StreamSource(configFile));
 	}
 
 	private void loadConfig(Document doc) throws SAXException {
@@ -152,5 +164,37 @@ public class NodeConfig {
 
 	public String getSlaveName() {
 		return slaveName;
+	}
+
+	public void makeConfigFile(boolean isMaster, String address, Set<String> slaveNodes, String master,
+			String slaveName, int portOffset) throws IOException {
+		String str = Global.readFile(NodeStarter.class.getResourceAsStream("xjaf-config.txt"));
+		str = str.replace("%mode%", isMaster ? "master" : "slave");
+		str = str.replace("%address%", address);
+		if (isMaster) {
+			StringBuilder slaves = new StringBuilder();
+			if (slaveNodes != null) {
+				String comma = "";
+				for (String sl : slaveNodes) {
+					slaves.append(comma).append(sl);
+					if (comma.equals(""))
+						comma = ",";
+				}
+			}
+			str = str.replace("%slave_list%", slaves.toString());
+			str = str.replace("%master_addr%", "");
+			str = str.replace("%port_offset%", "");
+			str = str.replace("%slave_name%", "");
+		} else {
+			String masterAddr = "master=\"" + master + "\"";
+			str = str.replace("%master_addr%", masterAddr);
+			str = str.replace("%slave_list%", "");
+			str = str.replace("%slave_name%", "name=\"" + slaveName + "\"");
+			if (portOffset >= 0)
+				str = str.replace("%port_offset%", "port-offset=\"" + portOffset + "\"");
+			else
+				str = str.replace("%port_offset%", "");
+		}
+		Global.writeFile(configFile, str);
 	}
 }

@@ -38,28 +38,20 @@ import siebog.core.config.NodeConfig;
  */
 public class SiebogCluster {
 	private static final Logger logger = Logger.getLogger(SiebogCluster.class.getName());
-	private static NodeConfig config;
 	private static boolean initialized;
-
-	public static NodeConfig getConfig() {
-		if (config == null) {
-			try {
-				// TODO if file not found, use default settings
-				config = new NodeConfig();
-			} catch (Exception ex) {
-				throw new IllegalStateException("Unable to initialize " + SiebogCluster.class.getSimpleName(), ex);
-			}
-		}
-		return config;
-	}
 
 	public static synchronized void init() {
 		if (!initialized) {
-			final Set<String> clusterNodes = getConfig().getClusterNodes();
-			if (clusterNodes == null || clusterNodes.size() == 0) {
-				logger.warning("Trying to initialize without specifying cluster nodes.");
-				return;
+			NodeConfig nodeConfig;
+			try {
+				nodeConfig = NodeConfig.get();
+			} catch (Exception ex) {
+				throw new IllegalArgumentException("Error while reading the configuration file.", ex);
 			}
+
+			Set<String> clusterNodes = nodeConfig.getClusterNodes();
+			if (clusterNodes == null || clusterNodes.size() == 0)
+				throw new IllegalArgumentException("Trying to initialize without specifying cluster nodes.");
 
 			Properties p = new Properties();
 			p.put("endpoint.name", "client-endpoint");

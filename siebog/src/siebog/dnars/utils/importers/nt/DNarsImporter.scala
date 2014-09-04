@@ -48,7 +48,7 @@ object DNarsImporter {
 				}
 				if (counter % 1024 == 0)
 					println(s"Imported $counter statements...")
-				if (counter % 1048576 == 0) {
+				if (counter % 262144 == 0) {
 					graph.shutdown
 					graph = DNarsGraphFactory.create(domain, cfg)
 					saveLastLine(line)

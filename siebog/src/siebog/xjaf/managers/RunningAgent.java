@@ -18,29 +18,44 @@
  * and limitations under the License.
  */
 
-package siebog.admin.client;
+package siebog.xjaf.managers;
 
-import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.fields.DataSourceTextField;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class AgentDataSource extends DataSource {
-	private static final String DATASOURCE_ID = "agentDataSource";
+public class RunningAgent {
+	private AgentClass agClass;
+	private AID aid;
+	// no getter for this one, since we don't want it serialized into JSON
+	private Agent ref;
 
-	public AgentDataSource() {
-		setID(DATASOURCE_ID);
-		DataSourceTextField module = new DataSourceTextField("module", "Module");
-		module.setPrimaryKey(true);
-		module.setRequired(true);
+	public AgentClass getAgClass() {
+		return agClass;
+	}
 
-		DataSourceTextField agClass = new DataSourceTextField("ejbName", "Class");
-		agClass.setRequired(true);
-		agClass.setForeignKey(DATASOURCE_ID + ".module");
+	public void setAgClass(AgentClass agClass) {
+		this.agClass = agClass;
+	}
 
-		setFields(module, agClass);
-		setClientOnly(true);
+	public AID getAid() {
+		return aid;
+	}
+
+	public void setAid(AID aid) {
+		this.aid = aid;
+	}
+
+	public void setRef(Agent ref) {
+		this.ref = ref;
+	}
+
+	public void deliverMessage(ACLMessage msg) {
+		ref.handleMessage(msg);
 	}
 }

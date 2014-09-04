@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.List;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.managers.RunningAgents.RunningAgentRec;
 
 /**
  * Remote interface of the agent manager.
@@ -36,7 +35,7 @@ public interface AgentManager extends Serializable {
 
 	void stopAgent(AID aid);
 
-	List<RunningAgentRec> getRunningAgents();
+	List<RunningAgent> getRunningAgents();
 
 	/**
 	 * 

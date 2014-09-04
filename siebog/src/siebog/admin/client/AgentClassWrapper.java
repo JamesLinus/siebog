@@ -38,4 +38,8 @@ public class AgentClassWrapper extends JavaScriptObject {
 	public final native String getEjbName() /*-{
 		return this.ejbName;
 	}-*/;
+
+	public final native String getFullId() /*-{
+		return this.module + "$" + this.ejbName;
+	}-*/;
 }

@@ -22,9 +22,9 @@ package siebog.xjaf.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -40,12 +40,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
 import org.jboss.resteasy.annotations.Form;
 import siebog.utils.ContextFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.managers.RunningAgents.RunningAgentRec;
 
 /**
  * Default agent manager implementation.
@@ -63,8 +64,19 @@ import siebog.xjaf.managers.RunningAgents.RunningAgentRec;
 public class AgentManagerImpl implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerImpl.class.getName());
-	@EJB
-	private static RunningAgents runningAgents;
+	private static Cache<AID, RunningAgent> cache;
+
+	static {
+		try {
+			final String name = "java:jboss/infinispan/container/xjaf2x-cache";
+			CacheContainer container = (CacheContainer) ContextFactory.lookup(name);
+			cache = container.getCache("running-agents");
+			if (cache == null)
+				throw new IllegalStateException("Cannot load cache running-agents.");
+		} catch (NamingException ex) {
+			throw new IllegalStateException("Cannot lookup xjaf2x-cache.", ex);
+		}
+	}
 
 	@PUT
 	@Path("/running/{agClass}/{name}")
@@ -74,13 +86,37 @@ public class AgentManagerImpl implements AgentManager {
 			@Form AgentInitArgs args) {
 		AID aid = new AID(name);
 		// is it running already?
-		if (runningAgents.isRunning(aid)) {
+		if (cache.containsKey(aid)) {
 			logger.info("Already running: [" + aid + "]");
 			return aid;
 		}
 
 		try {
-			runningAgents.start(agClass, aid, args);
+			// build the JNDI lookup string
+			final String view = Agent.class.getName();
+			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(), view);
+			String jndiNameStateful = jndiNameStateless + "?stateful";
+
+			Agent agent = null;
+			try {
+				agent = (Agent) ContextFactory.lookup(jndiNameStateful);
+			} catch (NamingException ex) {
+				final Throwable cause = ex.getCause();
+				if (cause == null || !(cause instanceof IllegalStateException))
+					throw ex;
+				agent = (Agent) ContextFactory.lookup(jndiNameStateless);
+			}
+
+			RunningAgent rec = new RunningAgent();
+			rec.setAgClass(agClass);
+			rec.setAid(aid);
+			rec.setRef(agent);
+			// the order of the next two statements matters. if we call init first and the agent
+			// sends a message from there, it sometimes happens that the reply arrives before we
+			// register the AID. also some agents might wish to terminate themselves inside init.
+			cache.put(aid, rec);
+			final Map<String, String> argsMap = args != null ? args.toStringMap() : null;
+			agent.init(aid, argsMap);
 			logger.fine("Agent [" + aid + "] started.");
 			return aid;
 		} catch (Exception ex) {
@@ -93,7 +129,7 @@ public class AgentManagerImpl implements AgentManager {
 	@Path("/running/{aid}")
 	@Override
 	public void stopAgent(@PathParam("aid") AID aid) {
-		runningAgents.stop(aid);
+		// TODO Implement 'agent stop'
 	}
 
 	@GET
@@ -128,12 +164,23 @@ public class AgentManagerImpl implements AgentManager {
 	@GET
 	@Path("/running")
 	@Override
-	public List<RunningAgentRec> getRunningAgents() {
-		return runningAgents.getRunningAgents();
+	public List<RunningAgent> getRunningAgents() {
+		return new ArrayList<>(cache.values());
+	}
+
+	public RunningAgent getRunningAgent(AID aid) {
+		RunningAgent rec = cache.get(aid);
+		if (rec != null)
+			return rec;
+		throw new IllegalArgumentException("No such AID: " + aid);
 	}
 
 	@Override
 	public AID getAIDByRuntimeName(String runtimeName) {
-		return runningAgents.getAIDByRuntimeName(runtimeName);
+		final List<RunningAgent> running = getRunningAgents();
+		for (RunningAgent rec : running)
+			if (rec.getAid().getName().equals(runtimeName))
+				return rec.getAid();
+		throw new IllegalArgumentException("No such agent: " + runtimeName);
 	}
 }

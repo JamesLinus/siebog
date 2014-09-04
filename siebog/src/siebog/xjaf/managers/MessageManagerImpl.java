@@ -36,7 +36,6 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -55,7 +54,7 @@ import siebog.xjaf.fipa.Performative;
 public class MessageManagerImpl implements MessageManager {
 	private static final Logger logger = Logger.getLogger(MessageManagerImpl.class.getName());
 	@EJB
-	private static RunningAgents runningAgents;
+	private AgentManagerImpl agentManager;
 
 	@GET
 	@Path("/")
@@ -76,8 +75,8 @@ public class MessageManagerImpl implements MessageManager {
 			if (aid == null)
 				throw new IllegalArgumentException("Receiver AID cannot be null.");
 			try {
-				Agent agent = runningAgents.getAgentReference(aid);
-				agent.handleMessage(msg);
+				RunningAgent rec = agentManager.getRunningAgent(aid);
+				rec.deliverMessage(msg);
 			} catch (IllegalArgumentException ex) {
 				logger.info(ex.getMessage());
 			}
