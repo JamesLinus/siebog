@@ -11,29 +11,25 @@ object RDF2Narsese {
 		}
 		val input = args(0)
 		val output = args(1)
-		
+
 		println(s"Reading from $input...")
 		val out = new PrintWriter(output)
 		try {
-			val total = NTReader.read(input, (st, counter) => {
-				out.println("<(*," +
-					getStr(st.getSubject) + "," +
-					getStr(st.getObject) + ") --> " +
-					getStr(st.getPredicate) + 
-					">. %1.0;0.9%")
-				val completed = counter + 1
-				if (completed % 4096 == 0) 
-					println(s"Converted $completed statements...")
+			val total = NTReader.read(input, (line, st, counter) => {
+				val str = s"<(*,${st.subj.id},${st.pred.id})-->${st.copula}>. %1.0;0.9%"
+				out.println(str)
+				if (counter % 4096 == 0)
+					println(s"Converted $counter statements...")
 				true
 			})
-			
+
 			println(s"Done. Total: $total statements.")
 		} finally {
 			out.close()
 		}
 	}
-	
-	private def getStr(node: RDFNode): String = 
+
+	private def getStr(node: RDFNode): String =
 		node.toString
 			.trim
 			.replaceAll("""\s""", "_")

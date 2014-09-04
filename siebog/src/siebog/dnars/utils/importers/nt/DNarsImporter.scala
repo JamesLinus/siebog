@@ -7,13 +7,19 @@ import siebog.dnars.base.Statement
 import siebog.dnars.base.Term
 import siebog.dnars.graph.DNarsVertex
 import java.util.HashMap
-import com.tinkerpop.blueprints.util.wrappers.batch.BatchGraph
-import com.tinkerpop.blueprints.util.wrappers.batch.VertexIDType
 import scala.collection.mutable.Map
 import com.tinkerpop.blueprints.Vertex
 import siebog.dnars.graph.DNarsGraph
-import com.tinkerpop.blueprints.TransactionalGraph
 import siebog.dnars.graph.DNarsEdge
+import com.hp.hpl.jena.rdf.model.ModelFactory
+import java.io.StringReader
+import com.hp.hpl.jena.rdf.model.RDFNode
+import siebog.dnars.base.AtomicTerm
+import siebog.dnars.base.CompoundTerm
+import siebog.dnars.base.Connector._
+import siebog.dnars.base.Copula._
+import siebog.dnars.base.Truth
+import java.io.PrintWriter
 
 object DNarsImporter {
 	val map = Map[String, Long]()
@@ -29,29 +35,27 @@ object DNarsImporter {
 
 		println(s"Reading from $input...")
 		val cfg = new HashMap[String, Any]
-		val graph = DNarsGraphFactory.create(domain, cfg)
-		val bg = BatchGraph.wrap(graph, 1000)
+		var graph = DNarsGraphFactory.create(domain, cfg)
+		graph.eventManager.paused = true
 		try {
-			graph.eventManager.paused = true
-			var counter = 0
-			Source
-				.fromFile(input)
-				.getLines
-				.foreach { line =>
-					val st = StatementParser(line)
-					add(bg, st)
-					graph.statements.unpack(st) match {
-						case List(st1, st2) =>
-							add(bg, st1)
-							add(bg, st2)
-						case _ =>
-					}
-
-					counter += 1
-					if (counter % 512 == 0)
-						println(s"Imported $counter statements...")
+			val total = NTReader.read(input, (line, statement, counter) => {
+				add(graph, statement)
+				graph.statements.unpack(statement) match {
+					case List(st1, st2) =>
+						add(graph, st1)
+						add(graph, st2)
+					case _ =>
 				}
-			println(s"Done. Total: ${counter * 3} statements.")
+				if (counter % 1024 == 0)
+					println(s"Imported $counter statements...")
+				if (counter % 1048576 == 0) {
+					graph.shutdown
+					graph = DNarsGraphFactory.create(domain, cfg)
+					saveLastLine(line)
+				}
+				true
+			})
+			println(s"Done. Total: ${total * 3} statements.")
 		} catch {
 			case ex: Throwable =>
 				ex.printStackTrace
@@ -61,24 +65,20 @@ object DNarsImporter {
 		}
 	}
 
-	private def add(graph: TransactionalGraph, st: Statement): Unit = {
-		val s = getOrAdd(graph, st.subj)
-		val p = getOrAdd(graph, st.pred)
+	private def add(graph: DNarsGraph, st: Statement): Unit = {
+		val s = graph.getOrAddV(st.subj)
+		val p = graph.getOrAddV(st.pred)
 		val e = graph.addEdge(null, s, p, st.copula)
 		DNarsEdge(e).truth = st.truth
 	}
 
-	private def getOrAdd(graph: TransactionalGraph, term: Term): Vertex = {
-		var id: Long = map.getOrElse(term.id, -1)
-		var v: Vertex = null
-		if (id > 0)
-			v = graph.getVertex(id)
-		else {
-			idCounter += 1
-			v = graph.addVertex(idCounter)
-			map.put(term.id, v.getId().asInstanceOf[Long])
-			DNarsVertex(v).term = term
+	private def saveLastLine(line: String): Unit = {
+		val out = new PrintWriter("last_line");
+		try {
+			out.println(line)
+		} finally {
+			out.close
 		}
-		v
 	}
+
 }
