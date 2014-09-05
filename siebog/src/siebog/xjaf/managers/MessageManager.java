@@ -31,21 +31,12 @@ import siebog.xjaf.fipa.Performative;
  */
 public interface MessageManager {
 	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to
-	 * process the message.
+	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to process the message.
 	 * 
 	 * @param message ACLMessage instance.
 	 */
 	void post(ACLMessage message);
 
-	/**
-	 * A convenience method.
-	 * 
-	 * @param sender
-	 * @param receiver
-	 * @param performative
-	 * @param content
-	 */
 	void post(AID sender, AID receiver, Performative performative, String content);
 
 	String ping();

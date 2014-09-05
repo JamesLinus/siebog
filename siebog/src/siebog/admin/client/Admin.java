@@ -44,6 +44,8 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ColumnTree;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.NodeSelectedEvent;
+import com.smartgwt.client.widgets.grid.events.NodeSelectedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.SectionStack;
@@ -58,6 +60,7 @@ import com.smartgwt.client.widgets.tree.TreeNode;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class Admin implements EntryPoint {
+	private static final int COLUMN_MODULE = 0;
 	private static final int COLUMN_CLASSES = 1;
 	private ColumnTree agents;
 	private IButton reloadAgents;
@@ -72,6 +75,12 @@ public class Admin implements EntryPoint {
 		agents.setShowHeaders(true);
 		agents.setShowNodeCount(true);
 		agents.setLoadDataOnDemand(false);
+		agents.addNodeSelectedHandler(new NodeSelectedHandler() {
+			@Override
+			public void onNodeSelected(NodeSelectedEvent event) {
+				updateControls();
+			}
+		});
 
 		msgForm = new MessagingForm();
 		msgForm.setWidth100();
@@ -107,7 +116,7 @@ public class Admin implements EntryPoint {
 		updateControls();
 
 		SectionStackSection agentsSection = new SectionStackSection();
-		agentsSection.setTitle("Available modules and agent classes");
+		agentsSection.setTitle("Available agents");
 		agentsSection.setExpanded(true);
 		HLayout h = new HLayout();
 		h.setWidth100();
@@ -160,8 +169,11 @@ public class Admin implements EntryPoint {
 				tree.setRootValue(ROOT_ID);
 
 				JsArray<AgentClassWrapper> result = JsonUtils.unsafeEval(resp.getText());
-				tree.setData(getAgentNodes(result, ROOT_ID));
+				final TreeNode[] nodes = getAgentNodes(result, ROOT_ID);
+				tree.setData(nodes);
 				agents.setData(tree);
+				if (nodes.length > 0)
+					agents.selectRecord(0, true, COLUMN_MODULE);
 				updateControls();
 			}
 
@@ -224,7 +236,7 @@ public class Admin implements EntryPoint {
 
 			@Override
 			public void onResponseReceived(Request req, Response resp) {
-				JsArray<AIDWrapper> result = JsonUtils.unsafeEval(resp.getText());
+				JsArray<RunningAgentWrapper> result = JsonUtils.unsafeEval(resp.getText());
 				final int n = result.length();
 				ListGridRecord[] rec = new ListGridRecord[n];
 				for (int i = 0; i < n; i++)

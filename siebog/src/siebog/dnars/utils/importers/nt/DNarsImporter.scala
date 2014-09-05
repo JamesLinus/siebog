@@ -28,34 +28,43 @@ object DNarsImporter {
 	def apply(args: Array[String]): Unit = {
 		if (args.length != 2) {
 			println("I need 2 arguments: InputFile DomainName")
+			println("InputFile is either NT or DNARS. If NT, it will first be converted into DNARS.")
 			return
 		}
-		val input = args(0)
+		var input = args(0)
 		val domain = args(1)
 
-		println(s"Reading from $input...")
+		if (input.toLowerCase().endsWith(".nt"))
+			input = NT2DNars.convert(input)
+
+		println(s"Importing from $input...")
 		val cfg = new HashMap[String, Any]
 		var graph = DNarsGraphFactory.create(domain, cfg)
 		graph.eventManager.paused = true
 		try {
-			val total = NTReader.read(input, (line, statement, counter) => {
-				add(graph, statement)
-				graph.statements.unpack(statement) match {
-					case List(st1, st2) =>
-						add(graph, st1)
-						add(graph, st2)
-					case _ =>
+			var counter = 0
+			Source
+				.fromFile(input)
+				.getLines
+				.foreach { line =>
+					val statement = StatementParser(line)
+					add(graph, statement)
+					graph.statements.unpack(statement) match {
+						case List(st1, st2) =>
+							add(graph, st1)
+							add(graph, st2)
+						case _ =>
+					}
+
+					counter += 1
+					if (counter % 16384 == 0)
+						println(s"Imported $counter statements...")
+					if (counter % 262144 == 0) {
+						graph.shutdown
+						graph = DNarsGraphFactory.create(domain, cfg)
+					}
 				}
-				if (counter % 1024 == 0)
-					println(s"Imported $counter statements...")
-				if (counter % 262144 == 0) {
-					graph.shutdown
-					graph = DNarsGraphFactory.create(domain, cfg)
-					saveLastLine(line)
-				}
-				true
-			})
-			println(s"Done. Total: ${total * 3} statements.")
+			println(s"Done. Total: ${counter * 3} statements.")
 		} catch {
 			case ex: Throwable =>
 				ex.printStackTrace

@@ -104,7 +104,7 @@ public class Ant extends XjafAgent {
 	@Override
 	public void onMessage(ACLMessage message) {
 		if ("MapSize".equals(message.getInReplyTo())) {
-			mapSize = Integer.parseInt(message.getContent());
+			mapSize = Integer.parseInt(message.getContentAsString());
 			// choose starting map node randomly
 			currentMapPosIndex = new Random().nextInt(mapSize);
 
@@ -140,7 +140,7 @@ public class Ant extends XjafAgent {
 
 			// response contains a header and alternating numbers designating pheromone level and
 			// edge weight for every applicable edge
-			String[] parts = ((String) message.getContent()).split(" ");
+			String[] parts = message.getContentAsString().split(" ");
 
 			// set pheromone and weight hashmaps
 			java.util.Map<Integer, Float> pheromones = new HashMap<>();
@@ -210,7 +210,7 @@ public class Ant extends XjafAgent {
 			break;
 		}
 		case 3: {
-			addWeightToTour(Float.parseFloat((String) message.getContent()));
+			addWeightToTour(Float.parseFloat(message.getContentAsString()));
 			phase = 4;
 			msm.post(message);
 			break;
@@ -321,8 +321,7 @@ public class Ant extends XjafAgent {
 	}
 
 	/**
-	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is
-	 *         already empty.
+	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is already empty.
 	 */
 	public int removeLastNode() {
 
@@ -333,8 +332,8 @@ public class Ant extends XjafAgent {
 	}
 
 	/**
-	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1,
-	 *         if the list is already empty;
+	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1, if the list is
+	 *         already empty;
 	 */
 	public float removeLastWeight() {
 		if (tourSoFarWeights.size() != 0)

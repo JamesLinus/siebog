@@ -23,23 +23,14 @@ package siebog.admin.client;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * JS-based wrapper for the XJAF's AID class.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class AIDWrapper extends JavaScriptObject {
-	protected AIDWrapper() {
+public class RunningAgentWrapper extends JavaScriptObject {
+	protected RunningAgentWrapper() {
 	}
 
-	public final native String getName() /*-{
-		return this.name;
-	}-*/;
-
-	public final native String getHap() /*-{
-		return this.hap;
-	}-*/;
-
-	public final native String getId() /*-{
-		return this.id;
+	public final native String getAid() /*-{
+		return this.aid.id;
 	}-*/;
 }

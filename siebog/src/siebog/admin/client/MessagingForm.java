@@ -72,6 +72,7 @@ public class MessagingForm extends DynamicForm {
 		conversationId = new TextItem("conversationId", "Conversation ID");
 		replyWith = new TextItem("replyWith", "Reply with");
 		replyBy = new TextItem("replyBy", "Reply by");
+		replyBy.setDefaultValue(0);
 		send = new SubmitItem("send", "Send ACL message");
 
 		setMethod(FormMethod.POST);
@@ -101,13 +102,13 @@ public class MessagingForm extends DynamicForm {
 		});
 	}
 
-	public void onRunningList(JsArray<AIDWrapper> running) {
+	public void onRunningList(JsArray<RunningAgentWrapper> running) {
 		final int n = running.length();
 		LinkedHashMap<String, String> map = new LinkedHashMap<>();
 		map.put("", "");
 		for (int i = 0; i < n; i++) {
-			String id = running.get(i).getId();
-			map.put(id, id);
+			String aid = running.get(i).getAid();
+			map.put(aid, aid);
 		}
 		sender.setValueMap(map);
 		receivers.setValueMap(map);

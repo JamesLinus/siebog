@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
 import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLContent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -88,7 +89,7 @@ public class MessageManagerImpl implements MessageManager {
 		ACLMessage msg = new ACLMessage(performative);
 		msg.setSender(sender);
 		msg.addReceiver(receiver);
-		msg.setContent(content);
+		msg.setContent(new ACLContent(content));
 		post(msg);
 	}
 

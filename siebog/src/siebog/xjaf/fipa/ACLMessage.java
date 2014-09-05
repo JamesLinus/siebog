@@ -29,9 +29,8 @@ import org.hornetq.utils.json.JSONObject;
 import siebog.xjaf.core.AID;
 
 /**
- * Represents a FIPA ACL message. Refer to <a
- * href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message Structure
- * Specification</a> for more details.
+ * Represents a FIPA ACL message. Refer to <a href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message
+ * Structure Specification</a> for more details.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -62,7 +61,7 @@ public class ACLMessage implements Serializable {
 	// Denotes the content of the message; equivalently denotes the
 	// object of the action.
 	@FormParam("content")
-	private String content;
+	private ACLContent content;
 	// Denotes the language in which the content parameter is expressed.
 	@FormParam("language")
 	private String language;
@@ -114,7 +113,7 @@ public class ACLMessage implements Serializable {
 		sender = (AID) obj.get("sender");
 		receivers = (List<AID>) obj.get("receivers");
 		replyTo = (AID) obj.get("replyTo");
-		content = obj.getString("content");
+		content = (ACLContent) obj.get("content");
 		language = obj.getString("language");
 		encoding = obj.getString("encoding");
 		ontology = obj.getString("ontology");
@@ -160,12 +159,20 @@ public class ACLMessage implements Serializable {
 		this.sender = sender;
 	}
 
-	public String getContent() {
+	public ACLContent getContent() {
 		return content;
 	}
 
-	public void setContent(String content) {
+	public void setContent(ACLContent content) {
 		this.content = content;
+	}
+
+	public String getContentAsString() {
+		return content.toString();
+	}
+
+	public void setContent(String content) {
+		this.content = new ACLContent(content);
 	}
 
 	public String getLanguage() {

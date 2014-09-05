@@ -163,7 +163,7 @@ public class NodeStarter {
 		}
 	}
 
-	private static void createConfigFromArgs(String[] args, File configFile) throws IOException, SAXException,
+	private static void createConfigFromArgs(String[] args) throws IOException, SAXException,
 			ParserConfigurationException {
 		boolean isMaster = false;
 		String address = null, master = null, slaveName = null;
@@ -277,11 +277,11 @@ public class NodeStarter {
 	public static void main(String[] args) {
 		Global.printVersion();
 		try {
-			final File root = getRootFolder();
 			config = NodeConfig.get();
+			final File root = getRootFolder();
 			if (args.length > 0) {
 				logger.info("Building configuration from command-line arguments.");
-				createConfigFromArgs(args, config.getConfigFile2());
+				createConfigFromArgs(args);
 			}
 
 			jbossHome = config.getJBossHome();

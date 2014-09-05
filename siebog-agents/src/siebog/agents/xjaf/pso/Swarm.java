@@ -35,8 +35,7 @@ import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 
- * Implementation of an PSO starter agent. It initializes all the Particles, and keeps track of the
- * results.
+ * Implementation of an PSO starter agent. It initializes all the Particles, and keeps track of the results.
  * 
  * @author <a href="mailto:simic.dragan@hotmail.com">Dragan Simic</a>
  */
@@ -134,7 +133,7 @@ public class Swarm extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage message) {
 
-		PsoMessage psoMessage = PsoMessage.valueOf(message.getContent());
+		PsoMessage psoMessage = PsoMessage.valueOf(message.getContentAsString());
 
 		if (message.getPerformative() == Performative.REQUEST) {
 

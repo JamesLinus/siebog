@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf;
+package siebog.agents.xjaf;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;

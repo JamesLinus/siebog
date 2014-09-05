@@ -18,28 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.admin.client;
+package siebog.xjaf.fipa;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import java.io.Serializable;
 
 /**
- * JS-based wrapper for the XJAF's AgentClass.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class AgentClassWrapper extends JavaScriptObject {
-	protected AgentClassWrapper() {
+public class ACLContent implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private String content;
+
+	public ACLContent(String jsonString) {
+		this.content = jsonString;
 	}
 
-	public final native String getModule() /*-{
-		return this.module;
-	}-*/;
-
-	public final native String getEjbName() /*-{
-		return this.ejbName;
-	}-*/;
-
-	public final native String getFullId() /*-{
-		return this.module + "$" + this.ejbName;
-	}-*/;
+	public String toString() {
+		return content;
+	}
 }

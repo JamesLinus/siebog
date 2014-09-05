@@ -16,10 +16,10 @@ object RDF2Narsese {
 		val out = new PrintWriter(output)
 		try {
 			val total = NTReader.read(input, (line, st, counter) => {
-				val str = s"<(*,${st.subj.id},${st.pred.id})-->${st.copula}>. %1.0;0.9%"
+				/*val str = s"<(*,${st.subj.id},${st.pred.id})-->${st.copula}>. %1.0;0.9%"
 				out.println(str)
 				if (counter % 4096 == 0)
-					println(s"Converted $counter statements...")
+					println(s"Converted $counter statements...")*/
 				true
 			})
 

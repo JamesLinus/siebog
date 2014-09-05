@@ -165,7 +165,7 @@ public class Particle extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage message) {
 
-		PsoMessage psoMessage = PsoMessage.valueOf(message.getContent());
+		PsoMessage psoMessage = PsoMessage.valueOf(message.getContentAsString());
 
 		if (message.getPerformative() == Performative.REQUEST) {
 			if (psoMessage.getAction().equals(PsoMessage.ITERATE_PARTICLE)) {
@@ -184,8 +184,8 @@ public class Particle extends XjafAgent {
 
 	/**
 	 * Represents one iteration of a Particle. <br>
-	 * Calculates new velocity, position and fitness, and updates local and global best position and
-	 * fitness if necessary.
+	 * Calculates new velocity, position and fitness, and updates local and global best position and fitness if
+	 * necessary.
 	 * 
 	 * @param bestGlobalFitness
 	 * @param bestGlobalPosition

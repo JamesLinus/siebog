@@ -69,7 +69,7 @@ public class Map extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage message) {
-		final String content = (String) message.getContent();
+		final String content = message.getContentAsString();
 		ACLMessage reply = message.makeReply(Performative.INFORM);
 		if (message.getPerformative() == Performative.REQUEST) {
 			if (content.equals("MapSize?")) {
@@ -129,8 +129,8 @@ public class Map extends XjafAgent {
 	}
 
 	/**
-	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial
-	 * pheromone level tau0 which is set for each edge in 'pheromone' matrix.
+	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial pheromone level tau0
+	 * which is set for each edge in 'pheromone' matrix.
 	 */
 	private void loadMap(String fileName) {
 		nodes = new ArrayList<>();

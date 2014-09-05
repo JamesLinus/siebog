@@ -42,8 +42,9 @@ public class NodeConfig {
 
 	private NodeConfig() throws SAXException, IOException, ParserConfigurationException {
 		configFile = new File(getJBossHome(), "../xjaf-config.xml");
-		logger.info("Loading configuration from " + configFile.getCanonicalPath());
-		if (!configFile.exists()) {
+		if (configFile.exists())
+			logger.info("Loading configuration from " + configFile.getCanonicalPath());
+		else {
 			logger.info("Creating default configuration file " + configFile.getCanonicalPath());
 			makeConfigFile(true, "localhost", null, "", "", -1);
 		}
@@ -56,15 +57,14 @@ public class NodeConfig {
 	}
 
 	public File getJBossHome() throws IOException {
-		// TODO : make sure it works if there are spaces in the path
-		String jbossHome = System.getenv("JBOSS_HOME");
-		if (jbossHome == null || jbossHome.length() == 0 || !new File(jbossHome).isDirectory())
+		File jbossHome = new File(System.getenv("JBOSS_HOME"));
+		File modules = new File(jbossHome, "jboss-modules.jar");
+		if (!modules.exists())
 			throw new IOException("Environment variable JBOSS_HOME not set.");
-		jbossHome = jbossHome.replace('\\', '/');
-		return new File(jbossHome);
+		return jbossHome;
 	}
 
-	public File getConfigFile2() {
+	public File getConfigFile() {
 		return configFile;
 	}
 

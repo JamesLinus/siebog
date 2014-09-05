@@ -43,7 +43,7 @@ public class Ping extends XjafAgent {
 		if (msg.getPerformative() == Performative.REQUEST) {
 			logger.info(myAid.toString());
 			// send a request to the Pong agent
-			final String content = msg.getContent().toString();
+			final String content = msg.getContentAsString();
 			AID pongAid = new AID(content);
 			msm.post(myAid, pongAid, null, null); // msm -> message manager
 			// wait for the reply in a blocking fashion
