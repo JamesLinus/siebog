@@ -251,6 +251,7 @@ public class NodeStarter {
 		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
 		System.out.println("\t--name:\t\tIf SLAVE, the name of this slave node.");
 		System.out.println("\t--port-offset:\t\tIf SLAVE, optional, socket port offset.");
+		// TODO check if the list of slaves is really needed
 		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated " + "list of all or at least one slave node.");
 	}
 
