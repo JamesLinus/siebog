@@ -26,23 +26,23 @@ The archive includes the [WildFly](http://wildfly.org) enterprise application se
 Please note that Siebog requires Java SE Development Kit (JDK) version 8 to run. The Java Runtime Environment (JRE) will not suffice. You may [download the latest JDK here](http://www.oracle.com/technetwork/java/javase/downloads/index.html). To make sure the correct Java version is used, you should set an environment variable named JAVA\_HOME to point to the JDK installation folder
 (e.g. *C:\Program Files\Java\jdk1.8.0_20* on Windows, or */usr/lib/jvm/java-8-oracle* on Linux).
 
-Finally, to start Siebog, go to the unpacked folder, and execute `java -jar siebog-start.jar`. Then, you may go to [http://localhost:8080/siebog](http://localhost:8080/siebog) to access the admin client. From there, you may explore the framework's functionalities and run some of the bundled example agents. For more information about writing your own agents, please consult the source code.
+Finally, to start Siebog, go to the unpacked folder, and execute `java -jar siebog-start.jar`. Once you see the message *INFO: Siebog node ready.* visit the client application at [http://localhost:8080/siebog](http://localhost:8080/siebog). From there, you may explore the framework's functionalities and run some of the bundled example agents. For more information about writing your own agents, please consult the source code.
 
 Running Siebog in a cluster
 -------
 
-Siebog operates in a symmetric cluster: each node is connected to every other node. A single node is recognized as the *master* and can be used to remotely control the cluster. Other nodes are named *slaves*.
+Siebog operates in a symmetric cluster: each node is connected to every other node. A single node is recognized as the *master* and can be used to remotely control the cluster. Other nodes are called *slaves*.
 
 By default, the `start-siebog` utility runs a single master node on localhost. This behavior can be changed through program arguments:
 
  * --mode: *master* or *slave* (default: master)
  * --address: Network address of this computer (default: localhost)
- * --master: If mode==slave, the master's network address (required)
- * --name: If mode==slave, the unique name of this slave node (required)
- * --port-offset: If mode==slave, socket port offset (optional)
- * --slaves: If mode==master, a comma-separated list of at least one slave address (required if there are slaves)
+ * --master: If mode=slave, the master's network address (required)
+ * --name: If mode=slave, the unique name of this slave node (required)
+ * --port-offset: If mode=slave, socket port offset (optional)
+ * --slaves: If mode=master, a comma-separated list of at least one slave address (required if there are slaves)
  
-The port offset allows you to run multiple (slave) nodes on a single machine. Simply specify a high-enough value for each node (e.g. 100, 200, etc.). And make sure you have enough RAM :)
+The port offset allows you to run multiple nodes on a single machine. Simply specify a high-enough value for each slave node (e.g. 100, 200, etc.). And make sure you have enough RAM :)
 
 Contact
 -------
