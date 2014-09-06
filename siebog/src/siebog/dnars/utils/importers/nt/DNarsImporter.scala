@@ -28,18 +28,14 @@ object DNarsImporter {
 	def apply(args: Array[String]): Unit = {
 		if (args.length != 2) {
 			println("I need 2 arguments: InputFile DomainName")
-			println("InputFile is either NT or DNARS. If NT, it will first be converted into DNARS.")
 			return
 		}
-		var input = args(0)
+		val input = args(0)
 		val domain = args(1)
-
-		if (input.toLowerCase().endsWith(".nt"))
-			input = NT2DNars.convert(input)
 
 		println(s"Importing from $input...")
 		val cfg = new HashMap[String, Any]
-		var graph = DNarsGraphFactory.create(domain, cfg)
+		val graph = DNarsGraphFactory.create(domain, cfg)
 		graph.eventManager.paused = true
 		try {
 			var counter = 0
@@ -57,11 +53,9 @@ object DNarsImporter {
 					}
 
 					counter += 1
-					if (counter % 16384 == 0)
-						println(s"Imported $counter statements...")
-					if (counter % 262144 == 0) {
-						graph.shutdown
-						graph = DNarsGraphFactory.create(domain, cfg)
+					if (counter % 16384 == 0) {
+						print("\r                                              ")
+						print(s"\rImported $counter statements...")
 					}
 				}
 			println(s"Done. Total: ${counter * 3} statements.")

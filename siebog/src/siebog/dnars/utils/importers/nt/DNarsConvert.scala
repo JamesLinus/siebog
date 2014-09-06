@@ -20,44 +20,60 @@
 
 package siebog.dnars.utils.importers.nt
 
+import java.io.File
 import java.io.PrintWriter
-import siebog.dnars.base.Statement
-import siebog.dnars.base.CompoundTerm
-import siebog.dnars.base.Truth
-import siebog.dnars.base.StatementParser
+
 import com.hp.hpl.jena.rdf.model.RDFNode
+
 import siebog.dnars.base.AtomicTerm
-import siebog.dnars.base.Copula._
-import siebog.dnars.base.Connector._
+import siebog.dnars.base.CompoundTerm
+import siebog.dnars.base.Connector.Product
+import siebog.dnars.base.Copula.Inherit
+import siebog.dnars.base.Statement
+import siebog.dnars.base.StatementParser
+import siebog.dnars.base.Truth
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-object NT2DNars {
-	def convert(ntInput: String): String = {
-		val n = ntInput.lastIndexOf('.')
-		val output = ntInput.substring(0, n) + ".dnars"
-		val out = new PrintWriter(output)
+object DNarsConvert {
+
+	def main(args: Array[String]): Unit = {
+		if (args.length != 3) {
+			println("I need three arguments: InputFile OutputFolder LinesPerFile")
+			return
+		}
+
+		val input = new File(args(0))
+		val outDir = new File(args(1))
+		val linesPerFile = args(2).toInt
+
+		val n = input.getName.lastIndexOf('.')
+		val fileName = input.getName.substring(0, n)
+
+		var fileIndex = 0
+		var outStream = newPrintWriter(outDir, fileName, fileIndex)
 		try {
-			val total = NTReader.read(ntInput, (line, ntStat, counter) => {
-				try {
-					val statement = toDNarsStatement(ntStat)
-					out.println(statement.toString)
-					if (counter % 65536 == 0)
-						println(s"Converted $counter statements...")
-				} catch {
-					case ex: Exception =>
-						println(s"Error while converting statement $line")
-						ex.printStackTrace
+			NTReader.read(input.getAbsolutePath(), (_, ntStat, counter) => {
+				val statement = toDNarsStatement(ntStat)
+				outStream.println(statement.toString)
+				if (counter % linesPerFile == 0) {
+					outStream.close
+					fileIndex += 1
+					outStream = newPrintWriter(outDir, fileName, fileIndex)
 				}
 				true
 			})
-			println(s"Done. Converted $total statements.")
-			output
 		} finally {
-			out.close
+			outStream.close
 		}
+	}
+
+	private def newPrintWriter(dir: File, fileName: String, index: Int): PrintWriter = {
+		val f = new File(dir, s"$fileName-$index.dnars")
+		println(s"Writing to $f")
+		new PrintWriter(f)
 	}
 
 	private def toDNarsStatement(ntStat: com.hp.hpl.jena.rdf.model.Statement): Statement = {
@@ -83,4 +99,5 @@ object NT2DNars {
 			.replace(")", "}")
 		AtomicTerm(str)
 	}
+
 }

@@ -9,5 +9,5 @@ siebog/war/WEB-INF/deploy
 siebog/war/admin
 siebog/.cache
 siebog/dnars-import.jar
-siebog/dnars-rdf2dnars.jar
 siebog/dnars-tools-lib
+siebog/dnars-convert.jar
