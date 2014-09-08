@@ -18,44 +18,38 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.dnarslayer;
+package siebog.jasonee;
 
-import java.util.Map;
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
+import org.w3c.dom.Document;
+import jason.control.ExecutionControl;
+import jason.control.ExecutionControlInfraTier;
+import jason.runtime.RuntimeServicesInfraTier;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends XjafAgent {
-	private static final long serialVersionUID = 1L;
-	protected DNarsGraphI graph;
+public class SiebogExecutionControl implements ExecutionControlInfraTier {
+	private ExecutionControl userController;
 
 	@Override
-	protected void onInit(Map<String, String> args) {
-		super.onInit(args);
-		String domain = (String) args.get("domain");
-		if (domain == null)
-			domain = myAid.toString();
-		try {
-			graph = DNarsGraphFactory.create(domain);
-			graph.addObserver(myAid);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	public void informAgToPerformCycle(String agName, int cycle) {
+		// TODO Auto-generated method stub
 	}
 
-	protected boolean filter(ACLMessage msg) {
-		if (msg.getPerformative() == Performative.INFORM) {
-			// TODO : String to Event[]
-			// Event[] events = (Event[]) msg.getContent();
-			onEvents(null);
-			return false;
-		}
-		return true;
+	@Override
+	public void informAllAgsToPerformCycle(int cycle) {
+		// TODO Auto-generated method stub
 	}
 
-	protected abstract void onEvents(Event[] events);
+	@Override
+	public Document getAgState(String agName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RuntimeServicesInfraTier getRuntimeServices() {
+		return new SiebogRuntimeServices();
+	}
 }

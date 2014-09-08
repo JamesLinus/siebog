@@ -22,10 +22,7 @@ import siebog.dnars.base.Truth
 import java.io.PrintWriter
 
 object DNarsImporter {
-	val map = Map[String, Long]()
-	var idCounter = 0L
-
-	def apply(args: Array[String]): Unit = {
+	def main(args: Array[String]): Unit = {
 		if (args.length != 2) {
 			println("I need 2 arguments: InputFile DomainName")
 			return
@@ -34,8 +31,7 @@ object DNarsImporter {
 		val domain = args(1)
 
 		println(s"Importing from $input...")
-		val cfg = new HashMap[String, Any]
-		val graph = DNarsGraphFactory.create(domain, cfg)
+		val graph = DNarsGraphFactory.create(domain)
 		graph.eventManager.paused = true
 		try {
 			var counter = 0
@@ -74,14 +70,4 @@ object DNarsImporter {
 		val e = graph.addEdge(null, s, p, st.copula)
 		DNarsEdge(e).truth = st.truth
 	}
-
-	private def saveLastLine(line: String): Unit = {
-		val out = new PrintWriter("last_line");
-		try {
-			out.println(line)
-		} finally {
-			out.close
-		}
-	}
-
 }

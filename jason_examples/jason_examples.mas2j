@@ -1,0 +1,10 @@
+MAS jason_examples {
+
+	infrastructure: Centralised
+
+	agents:
+		agent1 sample_agent;
+
+	aslSourcePath:
+		"src/asl";
+}

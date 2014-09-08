@@ -24,6 +24,8 @@ import siebog.core.NodeStarter;
 
 public class NodeConfig {
 	private static final Logger logger = Logger.getLogger(NodeConfig.class.getName());
+	private File jbossHome;
+	private File rootFolder;
 	private File configFile;
 	private boolean isMaster;
 	private String address;
@@ -34,34 +36,53 @@ public class NodeConfig {
 	private String slaveName;
 	private static NodeConfig instance;
 
-	public static synchronized NodeConfig get() throws SAXException, IOException, ParserConfigurationException {
+	public static synchronized NodeConfig get(String[] args) {
 		if (instance == null)
-			instance = new NodeConfig();
+			instance = new NodeConfig(args);
 		return instance;
 	}
 
-	private NodeConfig() throws SAXException, IOException, ParserConfigurationException {
-		configFile = new File(getJBossHome(), "../xjaf-config.xml");
-		if (configFile.exists())
-			logger.info("Loading configuration from " + configFile.getCanonicalPath());
-		else {
-			logger.info("Creating default configuration file " + configFile.getCanonicalPath());
-			makeConfigFile(true, "localhost", null, "", "", -1);
-		}
-		validateConfig();
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		try (InputStream is = new FileInputStream(configFile)) {
-			Document doc = builder.parse(is);
-			loadConfig(doc);
+	public static synchronized NodeConfig get() {
+		return get(null);
+
+	}
+
+	private NodeConfig(String[] args) {
+		try {
+			if (args != null && args.length > 0)
+				createFromArgs(args);
+			// get JBoss home folder
+			jbossHome = new File(System.getenv("JBOSS_HOME"));
+			// make sure it is set correctly
+			File modules = new File(jbossHome, "jboss-modules.jar");
+			if (!modules.exists())
+				throw new IOException("Environment variable JBOSS_HOME not set.");
+			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
+			// configuration file
+			configFile = new File(getRootFolder(), "xjaf-config.xml");
+			if (configFile.exists())
+				logger.info("Loading configuration from " + configFile);
+			else {
+				logger.info("Creating default configuration file " + configFile.toString());
+				makeConfigFile(true, "localhost", null, "", "", -1);
+			}
+			validateConfig();
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			try (InputStream is = new FileInputStream(configFile)) {
+				Document doc = builder.parse(is);
+				loadConfig(doc);
+			}
+		} catch (SAXException | IOException | ParserConfigurationException ex) {
+			throw new IllegalArgumentException("Error while initializing node configuration.", ex);
 		}
 	}
 
-	public File getJBossHome() throws IOException {
-		File jbossHome = new File(System.getenv("JBOSS_HOME"));
-		File modules = new File(jbossHome, "jboss-modules.jar");
-		if (!modules.exists())
-			throw new IOException("Environment variable JBOSS_HOME not set.");
+	public File getJBossHome() {
 		return jbossHome;
+	}
+
+	public File getRootFolder() {
+		return rootFolder;
 	}
 
 	public File getConfigFile() {
@@ -196,5 +217,84 @@ public class NodeConfig {
 				str = str.replace("%port_offset%", "");
 		}
 		Global.writeFile(configFile, str);
+	}
+
+	public void createFromArgs(String[] args) throws IOException, SAXException, ParserConfigurationException {
+		boolean isMaster = false;
+		String address = null, master = null, slaveName = null;
+		int portOffset = -1;
+		Set<String> slaveNodes = new HashSet<>();
+		boolean hasSlaveNodes = false;
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+			int n = arg.indexOf('=');
+			if (n <= 0 || n >= arg.length() - 1)
+				throw new IllegalArgumentException("Invalid argument: " + arg);
+			String name = arg.substring(0, n).toLowerCase();
+			String value = arg.substring(n + 1);
+
+			switch (name) {
+			case "--mode":
+				switch (value.toLowerCase()) {
+				case "master":
+					isMaster = true;
+					break;
+				case "slave":
+					isMaster = false;
+					break;
+				default:
+					throw new IllegalArgumentException("Unsupported mode: " + value);
+				}
+				break;
+			case "--address":
+				address = value;
+				break;
+			case "--master":
+				master = value;
+				break;
+			case "--slaves":
+				hasSlaveNodes = true;
+				String[] cc = value.split(",");
+				for (String s : cc)
+					slaveNodes.add(s);
+				break;
+			case "--port-offset":
+				portOffset = Integer.parseInt(value);
+				if (portOffset < 0 || portOffset > 65535)
+					throw new IllegalArgumentException("Port offset should be in the range of [0..65535].");
+				break;
+			case "--name":
+				slaveName = value;
+				break;
+			case "--help":
+			case "help":
+			case "--h":
+			case "h":
+				throw new IllegalArgumentException();
+			}
+		}
+
+		if (address == null)
+			throw new IllegalArgumentException("Please specify the address of this node.");
+
+		if (isMaster) {
+			if (master != null)
+				throw new IllegalArgumentException("Master address should be specified " + "on the master node only.");
+			if (portOffset >= 0)
+				throw new IllegalArgumentException("Port offset should be specified " + "on the slave node only.");
+			if (slaveName != null)
+				throw new IllegalArgumentException("Slave name should not be specified " + "on the master node.");
+		} else {
+			if (hasSlaveNodes)
+				throw new IllegalArgumentException("The list of slave nodes should "
+						+ "be specified only on the master node.");
+			if (master == null)
+				throw new IllegalArgumentException("Please specify the master node's address.");
+			if (slaveName == null)
+				throw new IllegalArgumentException("Please specify the name of this slave node.");
+		}
+
+		// ok, create the file
+		makeConfigFile(isMaster, address, slaveNodes, master, slaveName, portOffset);
 	}
 }

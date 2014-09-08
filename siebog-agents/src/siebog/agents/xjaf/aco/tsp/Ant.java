@@ -102,7 +102,7 @@ public class Ant extends XjafAgent {
 	}
 
 	@Override
-	public void onMessage(ACLMessage message) {
+	protected void onMessage(ACLMessage message) {
 		if ("MapSize".equals(message.getInReplyTo())) {
 			mapSize = Integer.parseInt(message.getContentAsString());
 			// choose starting map node randomly
@@ -353,7 +353,7 @@ public class Ant extends XjafAgent {
 	 * Agent clean-up.
 	 */
 	@Override
-	protected void onTerminate() {
+	public void onTerminate() {
 		logger.fine("Ant terminated.");
 	}
 }

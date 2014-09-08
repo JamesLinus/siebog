@@ -210,7 +210,7 @@ public class Map extends XjafAgent {
 	}
 
 	@Override
-	protected void onTerminate() {
+	public void onTerminate() {
 		logger.fine("Map closed.");
 	}
 }

@@ -79,5 +79,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/siebog-core/lib/module/jason.jar" sourcepath="/Jason/src"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

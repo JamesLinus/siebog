@@ -7,7 +7,8 @@
 	<property name="bin.dir" value="bin" />
 	<property file="build.properties" />
 	
-	<property name="starter.modules" value="./${server.name}/modules/system/layers/base/org/jboss" />
+	<property name="wildfly.modules" value="./${server.name}/modules/system/layers/base" />
+	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
 	
 	<target name="package">
 		<ant dir="../siebog" />
@@ -16,8 +17,8 @@
 		<delete file="${starter.path}" />
         <jar destfile="${starter.path}">
             <manifest>
-                <attribute name="Main-Class" value="siebog.core.NodeStarter"/>
-                <attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar"/>
+                <attribute name="Main-Class" value="siebog.core.Siebog"/>
+                <attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar"/>
             </manifest>
             <fileset dir="${bin.dir}"/>
         </jar>

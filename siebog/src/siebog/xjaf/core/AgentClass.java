@@ -29,13 +29,27 @@ import java.io.Serializable;
  */
 public class AgentClass implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final char SEPARATOR = '$';
+	public static final char SEPARATOR = '$';
 	private final String module;
 	private final String ejbName;
 
 	public AgentClass(String module, String ejbName) {
 		this.module = module;
 		this.ejbName = ejbName;
+	}
+
+	/**
+	 * Receives module and ejbName as a single string, separated by the SEPARATOR constant.
+	 * 
+	 * @param moduleAndEjbName
+	 * @throws IllegalArgumentException
+	 */
+	public AgentClass(String moduleAndEjbName) {
+		int n = moduleAndEjbName.indexOf(SEPARATOR);
+		if (n <= 0 || n >= moduleAndEjbName.length() - 1)
+			throw new IllegalArgumentException("Expected module" + SEPARATOR + "ejbName.");
+		module = moduleAndEjbName.substring(0, n);
+		ejbName = moduleAndEjbName.substring(n + 1);
 	}
 
 	public String getModule() {
