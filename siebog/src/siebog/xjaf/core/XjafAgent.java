@@ -22,22 +22,20 @@ package siebog.xjaf.core;
 
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import siebog.utils.ContextFactory;
 import siebog.utils.ManagerFactory;
+import siebog.utils.XjafExecutorService;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.MessageManager;
@@ -55,17 +53,14 @@ public abstract class XjafAgent implements Agent {
 	// under normal circumstances, all methods should return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
-	private Agent myself;
+	protected Agent myself;
 	protected AID myAid;
 	protected AgentManager agm;
 	protected MessageManager msm;
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
-	// TODO : replace with the managed executor service of Java EE 7
-	private static final ExecutorService executor = Executors.newCachedThreadPool();
-	@Resource(name = "sessionContext")
-	private SessionContext context;
+	protected XjafExecutorService executor;
 
 	@Override
 	@Lock(LockType.WRITE)
@@ -77,9 +72,9 @@ public abstract class XjafAgent implements Agent {
 		queue = new LinkedBlockingQueue<>();
 		// a reference to myself
 		try {
-			InitialContext ctx = new InitialContext();
-			SessionContext ejbCtx = (SessionContext) ctx.lookup("java:comp/EJBContext");
+			SessionContext ejbCtx = ContextFactory.lookup("java:comp/EJBContext", SessionContext.class);
 			myself = ejbCtx.getBusinessObject(Agent.class);
+			executor = XjafExecutorService.get();
 		} catch (NamingException ex) {
 			logger.log(Level.WARNING, "Unable to obtain a reference to the business object.", ex);
 		}
@@ -125,7 +120,7 @@ public abstract class XjafAgent implements Agent {
 			processing = false;
 		else {
 			processing = true;
-			executor.submit(new Runnable() {
+			executor.execute(new Runnable() {
 				@Override
 				public void run() {
 					// TODO : check if the access to onMessage is protected
@@ -156,13 +151,12 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
-	 * for the message to become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
+	 * become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
-	 *            account and the method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
-	 *         is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
+	 *            method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
@@ -200,8 +194,7 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering
-	 * function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.

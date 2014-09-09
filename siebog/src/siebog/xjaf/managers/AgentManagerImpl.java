@@ -69,7 +69,7 @@ public class AgentManagerImpl implements AgentManager {
 	static {
 		try {
 			final String name = "java:jboss/infinispan/container/xjaf2x-cache";
-			CacheContainer container = (CacheContainer) ContextFactory.lookup(name);
+			CacheContainer container = ContextFactory.lookup(name, CacheContainer.class);
 			cache = container.getCache("running-agents");
 			if (cache == null)
 				throw new IllegalStateException("Cannot load cache running-agents.");
@@ -99,12 +99,12 @@ public class AgentManagerImpl implements AgentManager {
 
 			Agent agent = null;
 			try {
-				agent = (Agent) ContextFactory.lookup(jndiNameStateful);
+				agent = ContextFactory.lookup(jndiNameStateful, Agent.class);
 			} catch (NamingException ex) {
 				final Throwable cause = ex.getCause();
 				if (cause == null || !(cause instanceof IllegalStateException))
 					throw ex;
-				agent = (Agent) ContextFactory.lookup(jndiNameStateless);
+				agent = ContextFactory.lookup(jndiNameStateless, Agent.class);
 			}
 
 			RunningAgent rec = new RunningAgent();

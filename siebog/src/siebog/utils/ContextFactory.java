@@ -49,7 +49,8 @@ public abstract class ContextFactory {
 		return context;
 	}
 
-	public static Object lookup(String name) throws NamingException {
-		return get().lookup(name);
+	@SuppressWarnings("unchecked")
+	public static <T> T lookup(String name, Class<T> c) throws NamingException {
+		return (T) get().lookup(name);
 	}
 }

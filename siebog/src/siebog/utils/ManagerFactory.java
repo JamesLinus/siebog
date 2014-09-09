@@ -42,7 +42,7 @@ public abstract class ManagerFactory {
 
 	public static AgentManager getAgentManager() {
 		try {
-			return (AgentManager) ContextFactory.lookup(AgentManagerLookup);
+			return ContextFactory.lookup(AgentManagerLookup, AgentManager.class);
 		} catch (NamingException ex) {
 			throw new IllegalStateException("Failed to lookup agent manager.", ex);
 		}
@@ -50,7 +50,7 @@ public abstract class ManagerFactory {
 
 	public static MessageManager getMessageManager() {
 		try {
-			return (MessageManager) ContextFactory.lookup(MessageManagerLookup);
+			return ContextFactory.lookup(MessageManagerLookup, MessageManager.class);
 		} catch (NamingException ex) {
 			throw new IllegalStateException("Failed to lookup message manager.", ex);
 		}
@@ -58,7 +58,7 @@ public abstract class ManagerFactory {
 
 	public static BridgeManager getBridgeManager() {
 		try {
-			return (BridgeManager) ContextFactory.lookup(BridgeManagerLookup);
+			return ContextFactory.lookup(BridgeManagerLookup, BridgeManager.class);
 		} catch (NamingException ex) {
 			throw new IllegalStateException("Failed to lookup bridge manager.", ex);
 		}

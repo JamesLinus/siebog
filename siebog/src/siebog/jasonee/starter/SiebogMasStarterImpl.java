@@ -30,14 +30,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import siebog.core.Global;
+import siebog.jasonee.SiebogAgent;
 import siebog.jasonee.SiebogEnvironment;
 import siebog.utils.ManagerFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
 
 /**
@@ -57,7 +62,6 @@ public class SiebogMasStarterImpl implements SiebogMasStarter {
 		createAgs(project, env);
 		createController();
 		startAgs();
-		startSyncMode();
 	}
 
 	private MAS2JProject loadProject(String fileName) {
@@ -85,11 +89,19 @@ public class SiebogMasStarterImpl implements SiebogMasStarter {
 				String runtimeName = agp.name;
 				if (agp.qty > 1)
 					runtimeName += (i + 1);
-				AgentClass agClass = new AgentClass(agp.agClass.getClassName());
-				// TODO Where are the agent initialization arguments?
-				AID aid = agm.startAgent(agClass, runtimeName, null);
-			}
 
+				AgentClass agClass = new AgentClass(Global.SERVER, SiebogAgent.class.getSimpleName());
+				AgentInitArgs args = new AgentInitArgs();
+				args.put("agentNameInMas2j", agp.name);
+				args.put("mas2jFileName", agp.asSource.getAbsolutePath());
+				agm.startAgent(agClass, runtimeName, args);
+			}
 		}
+	}
+
+	private void createController() {
+	}
+
+	private void startAgs() {
 	}
 }

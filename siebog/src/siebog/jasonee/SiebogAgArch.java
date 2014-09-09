@@ -20,12 +20,33 @@
 
 package siebog.jasonee;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import siebog.xjaf.fipa.ACLMessage;
 import jason.architecture.AgArch;
+import jason.asSemantics.Agent;
+import jason.mas2j.AgentParameters;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogAgArch extends AgArch {
+	private Deque<ACLMessage> mailbox = new LinkedList<>();
 
+	public void init(AgentParameters agp) throws Exception {
+		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
+				agp.getAsSetts(false, false));
+		insertAgArch(this);
+		createCustomArchs(agp.getAgArchClasses());
+	}
+
+	public void reasoningCycle() {
+		getTS().reasoningCycle();
+	}
+
+	public void onMessage(ACLMessage msg) {
+		mailbox.add(msg);
+	}
 }
