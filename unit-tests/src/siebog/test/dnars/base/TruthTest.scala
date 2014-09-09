@@ -18,10 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.dnars.base
+package siebog.test.dnars.base
 
 import org.junit.Assert.assertTrue
 import org.junit.Test
+
+import siebog.dnars.base.Truth
 
 /**
  *

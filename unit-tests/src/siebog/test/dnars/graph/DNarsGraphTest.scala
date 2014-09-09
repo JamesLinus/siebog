@@ -18,19 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.dnars.graph
+package siebog.test.dnars.graph
 
 import scala.collection.mutable.ListBuffer
-
 import org.junit.Test
-
-import siebog.dnars.TestUtils.TEST_KEYSPACE
-import siebog.dnars.TestUtils.assertGraph
-import siebog.dnars.TestUtils.createAndAdd
-import siebog.dnars.TestUtils.invert
+import siebog.test.dnars.DNarsTestUtils.TEST_KEYSPACE
+import siebog.test.dnars.DNarsTestUtils.assertGraph
+import siebog.test.dnars.DNarsTestUtils.createAndAdd
+import siebog.test.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Truth
+import siebog.dnars.graph.DNarsGraphFactory
 
 /**
  *

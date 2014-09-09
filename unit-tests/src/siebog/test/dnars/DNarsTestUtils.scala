@@ -18,22 +18,24 @@
  * and limitations under the License.
  */
 
-package siebog.dnars
+package siebog.test.dnars
 
-import siebog.dnars.base.Statement
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.ListBuffer
-import siebog.dnars.graph.DNarsGraph
-import siebog.dnars.base.StatementParser
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+
 import siebog.dnars.base.Copula
-import scala.collection.mutable.ArrayBuffer
+import siebog.dnars.base.Statement
+import siebog.dnars.base.StatementParser
+import siebog.dnars.graph.DNarsGraph
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-object TestUtils {
+object DNarsTestUtils {
 	val TEST_KEYSPACE = "TestUtils123"
 
 	def createAndAdd(graph: DNarsGraph, statements: String*): Array[Statement] = {
