@@ -22,7 +22,7 @@ package siebog.jasonee;
 
 import java.util.Arrays;
 import java.util.Collection;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
@@ -36,7 +36,7 @@ import jason.runtime.RuntimeServicesInfraTier;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogEnvironment implements EnvironmentInfraTier {
-	private static final MessageManager msm = ManagerFactory.getMessageManager();
+	private static final MessageManager msm = ObjectFactory.getMessageManager();
 	private boolean running = true;
 
 	@Override

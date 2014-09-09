@@ -50,7 +50,11 @@ public abstract class ContextFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T lookup(String name, Class<T> c) throws NamingException {
-		return (T) get().lookup(name);
+	public static <T> T lookup(String name, Class<T> c) {
+		try {
+			return (T) get().lookup(name);
+		} catch (NamingException ex) {
+			throw new IllegalStateException("Failed to lookup " + name, ex);
+		}
 	}
 }

@@ -42,13 +42,7 @@ public class SiebogCluster {
 
 	public static synchronized void init() {
 		if (!initialized) {
-			NodeConfig nodeConfig;
-			try {
-				nodeConfig = NodeConfig.get();
-			} catch (Exception ex) {
-				throw new IllegalArgumentException("Error while reading the configuration file.", ex);
-			}
-
+			NodeConfig nodeConfig = NodeConfig.get();
 			Set<String> clusterNodes = nodeConfig.getClusterNodes();
 			if (clusterNodes == null || clusterNodes.size() == 0)
 				throw new IllegalArgumentException("Trying to initialize without specifying cluster nodes.");

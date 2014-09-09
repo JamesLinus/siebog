@@ -30,7 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogCluster;
 import siebog.agents.xjaf.Module;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
@@ -64,7 +64,7 @@ public class PairsStarter {
 		SiebogCluster.init();
 
 		List<AID> senders = new ArrayList<>();
-		AgentManager agm = ManagerFactory.getAgentManager();
+		AgentManager agm = ObjectFactory.getAgentManager();
 		for (int i = 0; i < numPairs; i++) {
 			// receiver
 			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit, "numIterations->" + numIterations);
@@ -81,7 +81,7 @@ public class PairsStarter {
 		Registry reg = LocateRegistry.createRegistry(1099);
 		reg.rebind("ResultsService", new ResultsServiceImpl(numPairs));
 
-		MessageManager msm = ManagerFactory.getMessageManager();
+		MessageManager msm = ObjectFactory.getMessageManager();
 		for (AID aid : senders) {
 			ACLMessage msg = new ACLMessage(Performative.REQUEST);
 			msg.addReceiver(aid);

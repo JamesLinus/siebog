@@ -24,17 +24,13 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-import javax.naming.NamingException;
-import siebog.utils.ContextFactory;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.utils.XjafExecutorService;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentManager;
@@ -67,17 +63,12 @@ public abstract class XjafAgent implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void init(AID aid, Map<String, String> args) {
 		myAid = aid;
-		agm = ManagerFactory.getAgentManager();
-		msm = ManagerFactory.getMessageManager();
+		agm = ObjectFactory.getAgentManager();
+		msm = ObjectFactory.getMessageManager();
 		queue = new LinkedBlockingQueue<>();
 		// a reference to myself
-		try {
-			SessionContext ejbCtx = ContextFactory.lookup("java:comp/EJBContext", SessionContext.class);
-			myself = ejbCtx.getBusinessObject(Agent.class);
-			executor = XjafExecutorService.get();
-		} catch (NamingException ex) {
-			logger.log(Level.WARNING, "Unable to obtain a reference to the business object.", ex);
-		}
+		myself = ObjectFactory.getSessionContext().getBusinessObject(Agent.class);
+		executor = ObjectFactory.getExecutorService();
 		onInit(args);
 	}
 

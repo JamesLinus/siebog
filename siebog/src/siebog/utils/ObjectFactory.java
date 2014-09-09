@@ -20,47 +20,58 @@
 
 package siebog.utils;
 
-import javax.naming.NamingException;
+import javax.ejb.SessionContext;
+import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
 import siebog.radigost.websocket.bridges.BridgeManager;
+import siebog.xjaf.core.AID;
 import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.AgentManagerImpl;
 import siebog.xjaf.managers.MessageManager;
 import siebog.xjaf.managers.MessageManagerImpl;
+import siebog.xjaf.managers.RunningAgent;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class ManagerFactory {
+public abstract class ObjectFactory {
 	private static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ AgentManagerImpl.class.getSimpleName() + "!" + AgentManager.class.getName();
 	private static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ MessageManagerImpl.class.getSimpleName() + "!" + MessageManager.class.getName();
 	private static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ BridgeManager.class.getSimpleName();
+	private static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
+			+ XjafExecutorService.class.getSimpleName() + "!" + XjafExecutorService.class.getName();
 
 	public static AgentManager getAgentManager() {
-		try {
-			return ContextFactory.lookup(AgentManagerLookup, AgentManager.class);
-		} catch (NamingException ex) {
-			throw new IllegalStateException("Failed to lookup agent manager.", ex);
-		}
+		return ContextFactory.lookup(AgentManagerLookup, AgentManager.class);
 	}
 
 	public static MessageManager getMessageManager() {
-		try {
-			return ContextFactory.lookup(MessageManagerLookup, MessageManager.class);
-		} catch (NamingException ex) {
-			throw new IllegalStateException("Failed to lookup message manager.", ex);
-		}
+		return ContextFactory.lookup(MessageManagerLookup, MessageManager.class);
 	}
 
 	public static BridgeManager getBridgeManager() {
-		try {
-			return ContextFactory.lookup(BridgeManagerLookup, BridgeManager.class);
-		} catch (NamingException ex) {
-			throw new IllegalStateException("Failed to lookup bridge manager.", ex);
-		}
+		return ContextFactory.lookup(BridgeManagerLookup, BridgeManager.class);
+	}
+
+	public static XjafExecutorService getExecutorService() {
+		return ContextFactory.lookup(ExecutorServiceLookup, XjafExecutorService.class);
+	}
+
+	public static SessionContext getSessionContext() {
+		return ContextFactory.lookup("java:comp/EJBContext", SessionContext.class);
+	}
+
+	public static Cache<AID, RunningAgent> getRunningAgentsCache() {
+		final String name = "java:jboss/infinispan/container/xjaf2x-cache";
+		CacheContainer container = ContextFactory.lookup(name, CacheContainer.class);
+		Cache<AID, RunningAgent> cache = container.getCache("running-agents");
+		if (cache == null)
+			throw new IllegalStateException("Cannot load cache running-agents.");
+		return cache;
 	}
 }

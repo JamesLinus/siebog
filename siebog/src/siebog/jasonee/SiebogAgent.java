@@ -20,18 +20,10 @@
 
 package siebog.jasonee;
 
-import jason.asSyntax.directives.DirectiveProcessor;
-import jason.asSyntax.directives.Include;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
-import jason.mas2j.parser.ParseException;
-import jason.mas2j.parser.mas2j;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.xjaf.core.Agent;
@@ -47,49 +39,43 @@ import siebog.xjaf.fipa.ACLMessage;
 public class SiebogAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	private SiebogAgArch arch;
+	private long repeatingId;
 
 	@Override
 	protected void onInit(Map<String, String> args) {
-		final String agentNameInMas2j = args.get("agentNameInMas2j");
-		final String fileName = args.get("mas2jFileName");
-		AgentParameters agp = getAgentParams(agentNameInMas2j, fileName);
+		final String agentName = args.get("agentName");
+		final String mas2jFileName = args.get("mas2jFileName");
+		AgentParameters agp = getAgentParams(agentName, new File(mas2jFileName));
 		arch = new SiebogAgArch();
 		try {
 			arch.init(agp);
 		} catch (Exception ex) {
 			throw new IllegalStateException("Error during agent architecture initialization.", ex);
 		}
-
-		final Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				arch.reasoningCycle();
-			}
-		};
-		executor.executeRepeating(task, 500, 500, TimeUnit.MILLISECONDS);
+		repeatingId = executor.registerHeartbeat(myAid, 500);
 	}
 
-	private AgentParameters getAgentParams(String agentName, String mas2jFileName) {
-		try (InputStream in = new FileInputStream(mas2jFileName)) {
-			mas2j parser = new mas2j(in);
-			MAS2JProject project = parser.mas();
-			project.setupDefault();
-
-			project.registerDirectives();
-			((Include) DirectiveProcessor.getDirective("include")).setSourcePath(project.getSourcePaths());
-
-			AgentParameters agp = project.getAg(mas2jFileName);
-			if (agp == null)
-				throw new IllegalArgumentException("Agent " + agentName + " is not defined.");
-			agp.fixSrc(project.getSourcePaths(), null);
-			return agp;
-		} catch (IOException | ParseException ex) {
-			throw new IllegalArgumentException("Error while reading " + mas2jFileName, ex);
-		}
+	private AgentParameters getAgentParams(String agentName, File mas2jFile) {
+		MAS2JProject project = Mas2jProjectFactory.load(mas2jFile);
+		AgentParameters agp = project.getAg(agentName);
+		if (agp == null)
+			throw new IllegalArgumentException("Agent " + agentName + " is not defined.");
+		// TODO Use the correct urlPrefix here
+		// agp.fixSrc(project.getSourcePaths(), "/home/dejan/dev/siebog/jason_examples/src/asl/");
+		agp.asSource = new File("/home/dejan/dev/siebog/jason_examples/src/asl/sample_agent.asl");
+		return agp;
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		arch.onMessage(msg);
+		if (executor.isHearbeat(msg))
+			arch.reasoningCycle();
+		else
+			arch.onMessage(msg);
+	}
+
+	@Override
+	protected void onTerminate() {
+		executor.cancelRepeating(repeatingId);
 	}
 }

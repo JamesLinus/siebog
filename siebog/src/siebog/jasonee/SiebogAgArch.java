@@ -20,13 +20,12 @@
 
 package siebog.jasonee;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import siebog.xjaf.fipa.ACLMessage;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.mas2j.AgentParameters;
+import java.util.Deque;
+import java.util.LinkedList;
+import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 

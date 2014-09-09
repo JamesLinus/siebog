@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import siebog.radigost.entities.AgentState;
 import siebog.radigost.websocket.bridges.BridgeException;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
@@ -67,7 +67,7 @@ public class RadigostManager {
 	@Path("/bridge")
 	public Response createBridge(@QueryParam("name") String name, @QueryParam("host") String host) {
 		try {
-			ManagerFactory.getBridgeManager().runBridge(name, host);
+			ObjectFactory.getBridgeManager().runBridge(name, host);
 		} catch (BridgeException ex) {
 			logger.log(Level.WARNING, "Error while creating a bridge.", ex);
 			String msg = ex.getCause().getClass().getName() + ": " + ex.getCause().getMessage();

@@ -8,7 +8,7 @@ public class Siebog {
 	private static final Logger logger = Logger.getLogger(Siebog.class.getName());
 
 	private static void printUsage() {
-		System.out.println("USAGE: " + NodeStarter.class.getSimpleName() + " [args]");
+		System.out.println("USAGE: " + NodeStarter.class.getSimpleName() + " args");
 		System.out.println("args:");
 		System.out.println("\t--mode:\t\tMASTER or SLAVE");
 		System.out.println("\t--address:\t\tNetwork address of this computer.");

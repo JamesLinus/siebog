@@ -1,10 +1,10 @@
 MAS jason_examples {
 
-	infrastructure: Centralised
+	infrastructure: Siebog
 
 	agents:
-		agent1 sample_agent;
-
+		agent2 sample_agent;
+		
 	aslSourcePath:
 		"src/asl";
 }

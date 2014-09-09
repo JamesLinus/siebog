@@ -3,7 +3,7 @@ package siebog.radigost.websocket;
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 
 @ServerEndpoint("/websocket")
 public class WebSocketEndpoint {
@@ -17,8 +17,8 @@ public class WebSocketEndpoint {
 		if (message.charAt(0) == 0xff) {
 			final String name = message.substring(1, 4);
 			final String value = message.substring(5);
-			ManagerFactory.getBridgeManager().onRadigostCommand(client, name, value);
+			ObjectFactory.getBridgeManager().onRadigostCommand(client, name, value);
 		} else
-			ManagerFactory.getBridgeManager().onMessageFromRadigost(message);
+			ObjectFactory.getBridgeManager().onMessageFromRadigost(message);
 	}
 }

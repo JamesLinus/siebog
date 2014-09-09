@@ -18,14 +18,38 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.starter;
+package siebog.jasonee;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import jason.asSyntax.directives.DirectiveProcessor;
+import jason.asSyntax.directives.Include;
+import jason.mas2j.MAS2JProject;
+import jason.mas2j.parser.ParseException;
+import jason.mas2j.parser.mas2j;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface SiebogMasStarter {
-	void start(String projectFileName);
+public class Mas2jProjectFactory {
+	public static MAS2JProject load(File mas2jFile) {
+		try (InputStream in = new FileInputStream(mas2jFile)) {
+			mas2j parser = new mas2j(in);
+			MAS2JProject project = parser.mas();
+
+			project.setupDefault();
+			project.registerDirectives();
+			((Include) DirectiveProcessor.getDirective("include")).setSourcePath(project.getSourcePaths());
+
+			// TODO Replace with the correct urlPrefix
+			// project.fixAgentsSrc(???);
+
+			return project;
+		} catch (IOException | ParseException ex) {
+			throw new IllegalArgumentException("Error while loading " + mas2jFile, ex);
+		}
+	}
 }

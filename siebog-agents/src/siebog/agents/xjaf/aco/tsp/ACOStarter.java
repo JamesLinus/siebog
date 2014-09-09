@@ -26,7 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogCluster;
 import siebog.agents.xjaf.Module;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
@@ -47,7 +47,7 @@ public class ACOStarter {
 
 		SiebogCluster.init();
 
-		final AgentManager agm = ManagerFactory.getAgentManager();
+		final AgentManager agm = ObjectFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
 		agm.startAgent(mapClass, "Map", mapArgs);

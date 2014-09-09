@@ -18,29 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.starter;
+package siebog.jasonee;
 
-import jason.asSyntax.directives.DirectiveProcessor;
-import jason.asSyntax.directives.Include;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
-import jason.mas2j.parser.ParseException;
-import jason.mas2j.parser.mas2j;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
+import java.io.File;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
-import siebog.jasonee.SiebogAgent;
-import siebog.jasonee.SiebogEnvironment;
-import siebog.utils.ManagerFactory;
-import siebog.xjaf.core.AID;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
@@ -50,39 +44,27 @@ import siebog.xjaf.managers.AgentManager;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateless
-@Remote(SiebogMasStarter.class)
-public class SiebogMasStarterImpl implements SiebogMasStarter {
-	private static final AgentManager agm = ManagerFactory.getAgentManager();
-
+@Remote(JasonEEStarter.class)
+@LocalBean
+@Path("/jasonee")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class JasonEEStarterImpl implements JasonEEStarter {
+	@POST
+	@Path("/")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public void start(String projectFileName) {
-		MAS2JProject project = loadProject(projectFileName);
+	public void start(@FormParam("mas2jFileName") String mas2jFileName) {
+		MAS2JProject project = Mas2jProjectFactory.load(new File(mas2jFileName));
 		// create environment
 		SiebogEnvironment env = new SiebogEnvironment();
-		createAgs(project, env);
+		createAgs(mas2jFileName, project, env);
 		createController();
 		startAgs();
 	}
 
-	private MAS2JProject loadProject(String fileName) {
-		try (InputStream in = new FileInputStream(fileName)) {
-			mas2j parser = new mas2j(in);
-			MAS2JProject project = parser.mas();
-
-			// TODO Check if I need to call this project initialization methods
-			// project.setupDefault();
-			// project.registerDirectives();
-			// ((Include)DirectiveProcessor.getDirective("include")).setSourcePath(project.getSourcePaths());
-
-			// project.fixAgentsSrc(urlPrefix);
-
-			return project;
-		} catch (IOException | ParseException ex) {
-			throw new IllegalArgumentException("Error while loading " + fileName, ex);
-		}
-	}
-
-	private void createAgs(MAS2JProject project, SiebogEnvironment env) {
+	private void createAgs(String mas2jFileName, MAS2JProject project, SiebogEnvironment env) {
+		AgentManager agm = ObjectFactory.getAgentManager();
 		final List<AgentParameters> agents = project.getAgents();
 		for (AgentParameters agp : agents) {
 			for (int i = 0; i < agp.qty; i++) {
@@ -92,8 +74,8 @@ public class SiebogMasStarterImpl implements SiebogMasStarter {
 
 				AgentClass agClass = new AgentClass(Global.SERVER, SiebogAgent.class.getSimpleName());
 				AgentInitArgs args = new AgentInitArgs();
-				args.put("agentNameInMas2j", agp.name);
-				args.put("mas2jFileName", agp.asSource.getAbsolutePath());
+				args.put("agentName", agp.name);
+				args.put("mas2jFileName", mas2jFileName);
 				agm.startAgent(agClass, runtimeName, args);
 			}
 		}

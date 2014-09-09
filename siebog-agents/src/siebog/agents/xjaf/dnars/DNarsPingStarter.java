@@ -26,7 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogCluster;
 import siebog.agents.xjaf.Module;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
@@ -46,10 +46,10 @@ public class DNarsPingStarter {
 
 		AgentClass agClass = new AgentClass(Module.NAME, "DNarsPing");
 
-		AID aid = ManagerFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
+		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(aid);
-		ManagerFactory.getMessageManager().post(msg);
+		ObjectFactory.getMessageManager().post(msg);
 	}
 }

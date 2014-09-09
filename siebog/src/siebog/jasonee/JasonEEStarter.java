@@ -18,46 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers;
-
-import java.io.Serializable;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
+package siebog.jasonee;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RunningAgent implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private AgentClass agClass;
-	private AID aid;
-	// no getter for this one, since we don't want it serialized into JSON
-	private Agent ref;
-
-	public AgentClass getAgClass() {
-		return agClass;
-	}
-
-	public void setAgClass(AgentClass agClass) {
-		this.agClass = agClass;
-	}
-
-	public AID getAid() {
-		return aid;
-	}
-
-	public void setAid(AID aid) {
-		this.aid = aid;
-	}
-
-	public void setRef(Agent ref) {
-		this.ref = ref;
-	}
-
-	public void deliverMessage(ACLMessage msg) {
-		ref.handleMessage(msg);
-	}
+public interface JasonEEStarter {
+	void start(String projectFileName);
 }

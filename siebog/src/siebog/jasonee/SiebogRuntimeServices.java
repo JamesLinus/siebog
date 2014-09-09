@@ -28,7 +28,7 @@ import jason.runtime.Settings;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
@@ -40,7 +40,7 @@ import siebog.xjaf.managers.RunningAgent;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogRuntimeServices implements RuntimeServicesInfraTier {
-	private static final AgentManager agm = ManagerFactory.getAgentManager();
+	private static final AgentManager agm = ObjectFactory.getAgentManager();
 
 	@Override
 	public String createAgent(String agName, String agSource, String agClass, List<String> archClasses,

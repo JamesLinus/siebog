@@ -49,8 +49,6 @@ public class NodeConfig {
 
 	private NodeConfig(String[] args) {
 		try {
-			if (args != null && args.length > 0)
-				createFromArgs(args);
 			// get JBoss home folder
 			jbossHome = new File(System.getenv("JBOSS_HOME"));
 			// make sure it is set correctly
@@ -60,6 +58,10 @@ public class NodeConfig {
 			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
 			// configuration file
 			configFile = new File(getRootFolder(), "xjaf-config.xml");
+
+			if (args != null && args.length > 0)
+				createFromArgs(args);
+
 			if (configFile.exists())
 				logger.info("Loading configuration from " + configFile);
 			else {

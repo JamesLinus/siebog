@@ -26,7 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogCluster;
 import siebog.agents.xjaf.Module;
-import siebog.utils.ManagerFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.Performative;
@@ -48,11 +48,11 @@ public class PingPongStarter {
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException,
 			NamingException {
 		SiebogCluster.init();
-		final AgentManager agm = ManagerFactory.getAgentManager();
+		final AgentManager agm = ObjectFactory.getAgentManager();
 		AID ping = agm.startAgent(new AgentClass(Module.NAME, "Ping"), "Ping", null);
 		agm.startAgent(new AgentClass(Module.NAME, "Pong"), "Pong", null);
 
-		MessageManager msm = ManagerFactory.getMessageManager();
+		MessageManager msm = ObjectFactory.getMessageManager();
 		msm.post(null, ping, Performative.REQUEST, "Pong");
 	}
 

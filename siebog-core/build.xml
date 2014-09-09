@@ -38,7 +38,6 @@
 		
 		<delete file="${dist.file}" />
 		<delete dir="${dist.siebog.dir}" />
-		<mkdir dir="${dist.siebog.dir}" />
 		
 		<mkdir dir="${dist.siebog.dir}"/>
 		<copy todir="${dist.siebog.dir}/${server.name}">

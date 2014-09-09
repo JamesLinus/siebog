@@ -41,9 +41,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
 import org.jboss.resteasy.annotations.Form;
 import siebog.utils.ContextFactory;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -64,19 +64,7 @@ import siebog.xjaf.core.AgentClass;
 public class AgentManagerImpl implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerImpl.class.getName());
-	private static Cache<AID, RunningAgent> cache;
-
-	static {
-		try {
-			final String name = "java:jboss/infinispan/container/xjaf2x-cache";
-			CacheContainer container = ContextFactory.lookup(name, CacheContainer.class);
-			cache = container.getCache("running-agents");
-			if (cache == null)
-				throw new IllegalStateException("Cannot load cache running-agents.");
-		} catch (NamingException ex) {
-			throw new IllegalStateException("Cannot lookup xjaf2x-cache.", ex);
-		}
-	}
+	private static Cache<AID, RunningAgent> cache = ObjectFactory.getRunningAgentsCache();
 
 	@PUT
 	@Path("/running/{agClass}/{name}")
@@ -100,7 +88,7 @@ public class AgentManagerImpl implements AgentManager {
 			Agent agent = null;
 			try {
 				agent = ContextFactory.lookup(jndiNameStateful, Agent.class);
-			} catch (NamingException ex) {
+			} catch (IllegalStateException ex) {
 				final Throwable cause = ex.getCause();
 				if (cause == null || !(cause instanceof IllegalStateException))
 					throw ex;

@@ -27,7 +27,7 @@ import siebog.xjaf.core.AID
 import siebog.xjaf.dnarslayer.Event
 import siebog.xjaf.fipa.ACLMessage
 import siebog.xjaf.fipa.Performative
-import siebog.utils.ManagerFactory
+import siebog.utils.ObjectFactory
 import siebog.SiebogCluster
 
 /**
@@ -65,6 +65,6 @@ class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends T
 		observers synchronized {
 			observers.foreach { aid => acl.addReceiver(aid) }
 		}
-		ManagerFactory.getMessageManager().post(acl)
+		ObjectFactory.getMessageManager().post(acl)
 	}
 }
