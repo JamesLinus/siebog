@@ -24,7 +24,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Map;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -33,11 +32,12 @@ import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
- * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number
- * of iterations can be performed, averaging calculated RTTs in order reduce any noise in the
- * results. In any case, the end RTT is reported to a RMI service.
+ * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number of iterations can be
+ * performed, averaging calculated RTTs in order reduce any noise in the results. In any case, the end RTT is reported
+ * to a RMI service.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -53,7 +53,7 @@ public class Sender extends XjafAgent {
 	private long totalTime;
 
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 		receiver = new AID(args.get("rcvrAid"));
 		numIterations = Integer.parseInt(args.get("numIterations"));
 		// create message content

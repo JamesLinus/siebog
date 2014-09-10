@@ -20,7 +20,6 @@
 
 package siebog.agents.xjaf.pso;
 
-import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -68,7 +67,7 @@ public class Swarm extends XjafAgent {
 	 * @see xjaf2x.server.agm.XjafAgent#onInit(java.io.Serializable[])
 	 */
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 
 		logger.info("PsoStarter agent running.");
 

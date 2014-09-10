@@ -22,7 +22,6 @@ package siebog.xjaf.managers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
@@ -87,12 +86,12 @@ public class AgentManagerImpl implements AgentManager {
 
 			Agent agent = null;
 			try {
-				agent = ContextFactory.lookup(jndiNameStateful, Agent.class);
+				agent = ObjectFactory.lookup(jndiNameStateful, Agent.class);
 			} catch (IllegalStateException ex) {
 				final Throwable cause = ex.getCause();
 				if (cause == null || !(cause instanceof IllegalStateException))
 					throw ex;
-				agent = ContextFactory.lookup(jndiNameStateless, Agent.class);
+				agent = ObjectFactory.lookup(jndiNameStateless, Agent.class);
 			}
 
 			RunningAgent rec = new RunningAgent();
@@ -103,8 +102,7 @@ public class AgentManagerImpl implements AgentManager {
 			// sends a message from there, it sometimes happens that the reply arrives before we
 			// register the AID. also some agents might wish to terminate themselves inside init.
 			cache.put(aid, rec);
-			final Map<String, String> argsMap = args != null ? args.toStringMap() : null;
-			agent.init(aid, argsMap);
+			agent.init(aid, args);
 			logger.fine("Agent [" + aid + "] started.");
 			return aid;
 		} catch (Exception ex) {

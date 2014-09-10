@@ -20,17 +20,17 @@
 
 package siebog.agents.xjaf.pairs;
 
-import java.util.Map;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
- * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers
- * in the [1..primeLimit] interval.
+ * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers in the
+ * [1..primeLimit] interval.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -42,7 +42,7 @@ public class Receiver extends XjafAgent {
 	private int numIterations;
 
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 		primeLimit = Integer.parseInt(args.get("primeLimit"));
 		numIterations = Integer.parseInt(args.get("numIterations"));
 	}

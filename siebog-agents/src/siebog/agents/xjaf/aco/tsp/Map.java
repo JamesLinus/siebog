@@ -32,6 +32,7 @@ import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Implementation of a map, in form of an agent.
@@ -62,7 +63,7 @@ public class Map extends XjafAgent {
 	private static final int MAX_STATIONARY_ITERATIONS = 500;
 
 	@Override
-	protected void onInit(java.util.Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 		logger.fine("Map opened.");
 		loadMap(args.get("fileName").toString());
 	}

@@ -18,34 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.utils;
+package siebog.jasonee;
 
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
+import jason.environment.EnvironmentInfraTier;
+import java.io.Serializable;
+import java.util.List;
+import siebog.xjaf.core.AID;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class ContextFactory {
-	private static final Logger logger = Logger.getLogger(ContextFactory.class.getName());
-	private static Context context;
+public interface JasonEEEnvironment extends EnvironmentInfraTier, Serializable {
+	void init(String userEnvClass, String[] userEnvParams);
 
-	static {
-		try {
-			Hashtable<String, Object> jndiProps = new Hashtable<>();
-			jndiProps.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-			context = new InitialContext(jndiProps);
-		} catch (NamingException ex) {
-			logger.log(Level.SEVERE, "Context initialization error.", ex);
-		}
-	}
+	List<Literal> getPercepts(AID aid);
 
-	public static Context get() {
-		return context;
-	}
+	void scheduleAction(AID aid, Structure action, String replyWith);
 }

@@ -20,7 +20,6 @@
 
 package siebog.agents.xjaf.pso;
 
-import java.util.Map;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -29,6 +28,7 @@ import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 
@@ -100,7 +100,7 @@ public class Particle extends XjafAgent {
 	 * @see XjafAgent.server.agm.Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 
 		// read arguments
 		dimension = Integer.parseInt(args.get("dimension"));

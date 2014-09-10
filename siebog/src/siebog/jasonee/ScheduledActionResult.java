@@ -20,46 +20,22 @@
 
 package siebog.jasonee;
 
-import jason.architecture.AgArch;
-import jason.asSemantics.Agent;
-import jason.mas2j.AgentParameters;
-import java.util.Deque;
-import java.util.LinkedList;
-import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.ACLContent;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class SiebogAgArch extends AgArch {
-	private SiebogAgent agent;
-	private Deque<ACLMessage> mailbox = new LinkedList<>();
+public class ScheduledActionResult extends ACLContent {
+	private static final long serialVersionUID = 1L;
+	private boolean success;
 
-	public void init(AgentParameters agp, SiebogAgent agent) throws Exception {
-		this.agent = agent;
-
-		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
-				agp.getAsSetts(false, false));
-		insertAgArch(this);
-		createCustomArchs(agp.getAgArchClasses());
+	public ScheduledActionResult(boolean success) {
+		super("" + success);
+		this.success = success;
 	}
 
-	public void reasoningCycle() {
-		getTS().reasoningCycle();
-	}
-
-	public void onMessage(ACLMessage msg) {
-		mailbox.add(msg);
-		wake();
-	}
-
-	@Override
-	public void sleep() {
-		agent.sleep();
-	}
-
-	@Override
-	public void wake() {
-		agent.wakeUp();
+	public boolean isSuccess() {
+		return success;
 	}
 }

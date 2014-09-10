@@ -23,14 +23,14 @@ package siebog.jasonee;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
 import java.io.File;
-import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.utils.HeartbeatHandle;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
+import siebog.xjaf.fipa.ACLContent;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 
@@ -39,18 +39,19 @@ import siebog.xjaf.fipa.ACLMessage;
 @Stateful
 @Remote(Agent.class)
 @LocalBean
-public class SiebogAgent extends XjafAgent {
+public class JasonEEAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private SiebogAgArch arch;
+	private JasonEEAgArch arch;
 
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 		final String agentName = args.get("agentName");
 		final String mas2jFileName = args.get("mas2jFileName");
+		final String env = args.get("env");
 		AgentParameters agp = getAgentParams(agentName, new File(mas2jFileName));
-		arch = new SiebogAgArch();
+		arch = new JasonEEAgArch();
 		try {
-			arch.init(agp, this);
+			arch.init(agp, this, env);
 		} catch (Exception ex) {
 			throw new IllegalStateException("Error during agent architecture initialization.", ex);
 		}
@@ -63,8 +64,8 @@ public class SiebogAgent extends XjafAgent {
 		if (agp == null)
 			throw new IllegalArgumentException("Agent " + agentName + " is not defined.");
 		// TODO Use the correct urlPrefix here
-		// agp.fixSrc(project.getSourcePaths(), "/home/dejan/dev/siebog/jason_examples/src/asl/");
-		agp.asSource = new File("/home/dejan/dev/siebog/jason_examples/src/asl/sample_agent.asl");
+		// agp.fixSrc(project.getSourcePaths(), ???);
+		agp.asSource = new File(mas2jFile.getParent(), project.getSourcePaths().get(0) + "/" + agp.asSource.getName());
 		return agp;
 	}
 
@@ -75,7 +76,11 @@ public class SiebogAgent extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		arch.onMessage(msg);
+		final ACLContent content = msg.getContent();
+		if (content != null && content instanceof ScheduledActionResult)
+			arch.onActionFeedback(msg);
+		else
+			arch.onMessage(msg);
 	}
 
 	public void sleep() {
@@ -84,5 +89,9 @@ public class SiebogAgent extends XjafAgent {
 
 	public void wakeUp() {
 		registerHeartbeat();
+	}
+
+	public ACLMessage ask(ACLMessage msg) {
+		return null;
 	}
 }

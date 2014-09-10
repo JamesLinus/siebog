@@ -20,24 +20,13 @@
 
 package siebog.jasonee;
 
-import jason.infra.InfrastructureFactory;
-import jason.jeditplugin.MASLauncherInfraTier;
-import jason.runtime.RuntimeServicesInfraTier;
+import jason.architecture.AgArch;
+import java.io.Serializable;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class SiebogFactory implements InfrastructureFactory {
-
-	@Override
-	public MASLauncherInfraTier createMASLauncher() {
-		// TODO Implement createMASLauncher()
-		return null;
-	}
-
-	@Override
-	public RuntimeServicesInfraTier createRuntimeServices() {
-		return new SiebogRuntimeServices();
-	}
+public interface JasonEEInfraBuilder extends Serializable {
+	AgArch createAgArch(String className);
 }

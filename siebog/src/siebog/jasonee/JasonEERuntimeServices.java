@@ -39,7 +39,7 @@ import siebog.xjaf.managers.RunningAgent;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class SiebogRuntimeServices implements RuntimeServicesInfraTier {
+public class JasonEERuntimeServices implements RuntimeServicesInfraTier {
 	private static final AgentManager agm = ObjectFactory.getAgentManager();
 
 	@Override

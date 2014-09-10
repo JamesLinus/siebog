@@ -18,44 +18,36 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.dnarslayer;
+package siebog.jasonee;
 
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import org.infinispan.Cache;
+import siebog.utils.ObjectFactory;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class DNarsAgent extends XjafAgent {
+@Stateless
+@Remote(JasonEEApp.class)
+public class JasonEEAppImpl implements JasonEEApp {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraphI graph;
+	private static Cache<String, JasonEEEnvironment> envs;
+
+	static {
+		envs = ObjectFactory.getJasonEEEnvironmentCache();
+	}
 
 	@Override
-	protected void onInit(AgentInitArgs args) {
-		super.onInit(args);
-		String domain = args.get("domain");
-		if (domain == null)
-			domain = myAid.toString();
-		try {
-			graph = DNarsGraphFactory.create(domain);
-			graph.addObserver(myAid);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	public JasonEEEnvironment getEnv(String name) {
+		return envs.get(name);
 	}
 
-	protected boolean filter(ACLMessage msg) {
-		if (msg.getPerformative() == Performative.INFORM) {
-			// TODO : String to Event[]
-			// Event[] events = (Event[]) msg.getContent();
-			onEvents(null);
-			return false;
-		}
-		return true;
+	@Override
+	public String putEnv(JasonEEEnvironment env) {
+		String name = "Env" + System.currentTimeMillis();
+		envs.put(name, env);
+		return name;
 	}
-
-	protected abstract void onEvents(Event[] events);
 }

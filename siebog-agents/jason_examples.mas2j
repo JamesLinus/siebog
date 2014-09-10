@@ -1,0 +1,16 @@
+MAS jason_examples {
+
+	infrastructure: Siebog
+	
+	agents:
+		agent2 
+			sample_agent 
+			[
+				module = "siebog-agents",
+				infraBuilder = JasonEEExamplesInfraBuilder
+			]
+			agentArchClass MyAgentArch;
+		
+	aslSourcePath:
+		"asl";
+}

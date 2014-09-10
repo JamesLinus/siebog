@@ -8,12 +8,12 @@ import javax.ws.rs.FormParam;
 import org.jboss.resteasy.annotations.Form;
 
 /**
- * Wrapper class for agent initialization arguments. See <a
- * href="https://issues.jboss.org/browse/RESTEASY-821">RESTEASY-821</a> for more details.
+ * Wrapper class for agent initialization arguments.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class AgentInitArgs implements Serializable {
+	// cannot use String directly, see https://issues.jboss.org/browse/RESTEASY-821
 	public static class Arg implements Serializable {
 		private static final long serialVersionUID = 1L;
 		@FormParam("value")

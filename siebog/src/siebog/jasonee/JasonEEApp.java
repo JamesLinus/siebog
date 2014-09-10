@@ -20,36 +20,14 @@
 
 package siebog.jasonee;
 
-import org.w3c.dom.Document;
-import jason.control.ExecutionControl;
-import jason.control.ExecutionControlInfraTier;
-import jason.runtime.RuntimeServicesInfraTier;
+import java.io.Serializable;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class SiebogExecutionControl implements ExecutionControlInfraTier {
-	private ExecutionControl userController;
+public interface JasonEEApp extends Serializable {
+	JasonEEEnvironment getEnv(String name);
 
-	@Override
-	public void informAgToPerformCycle(String agName, int cycle) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void informAllAgsToPerformCycle(int cycle) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public Document getAgState(String agName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RuntimeServicesInfraTier getRuntimeServices() {
-		return new SiebogRuntimeServices();
-	}
+	String putEnv(JasonEEEnvironment env);
 }

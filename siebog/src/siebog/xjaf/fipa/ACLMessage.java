@@ -159,20 +159,28 @@ public class ACLMessage implements Serializable {
 		this.sender = sender;
 	}
 
-	public ACLContent getContent() {
-		return content;
-	}
-
 	public void setContent(ACLContent content) {
 		this.content = content;
+	}
+
+	public void setContent(String content) {
+		this.content = new ACLContent(content);
+	}
+
+	public void setContent(boolean content) {
+		setContent(content + "");
+	}
+
+	public ACLContent getContent() {
+		return content;
 	}
 
 	public String getContentAsString() {
 		return content.toString();
 	}
 
-	public void setContent(String content) {
-		this.content = new ACLContent(content);
+	public boolean getContentAsBool() {
+		return Boolean.parseBoolean(content.toString());
 	}
 
 	public String getLanguage() {

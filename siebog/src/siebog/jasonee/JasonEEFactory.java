@@ -18,40 +18,26 @@
  * and limitations under the License.
  */
 
-package siebog.utils;
+package siebog.jasonee;
 
-import siebog.xjaf.fipa.ACLContent;
+import jason.infra.InfrastructureFactory;
+import jason.jeditplugin.MASLauncherInfraTier;
+import jason.runtime.RuntimeServicesInfraTier;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class HeartbeatHandle extends ACLContent {
-	private static final long serialVersionUID = 1L;
-	private final Long counter;
+public class JasonEEFactory implements InfrastructureFactory {
 
-	public HeartbeatHandle(long counter) {
-		super("hb" + counter);
-		this.counter = counter;
-	}
-
-	public long getCounter() {
-		return counter;
+	@Override
+	public MASLauncherInfraTier createMASLauncher() {
+		// TODO Implement createMASLauncher()
+		return null;
 	}
 
 	@Override
-	public int hashCode() {
-		return counter.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (obj.getClass() != getClass())
-			return false;
-		return ((HeartbeatHandle) obj).counter == counter;
+	public RuntimeServicesInfraTier createRuntimeServices() {
+		return new JasonEERuntimeServices();
 	}
 }

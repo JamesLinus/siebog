@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.utils;
+package siebog.xjaf.core;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.concurrent.ManagedExecutorService;
-import siebog.xjaf.core.AID;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 

@@ -20,7 +20,6 @@
 
 package siebog.xjaf.core;
 
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -30,10 +29,9 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
-import siebog.utils.HeartbeatHandle;
 import siebog.utils.ObjectFactory;
-import siebog.utils.XjafExecutorService;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.MessageManager;
 
@@ -63,7 +61,7 @@ public abstract class XjafAgent implements Agent {
 	@Override
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
-	public void init(AID aid, Map<String, String> args) {
+	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
 		agm = ObjectFactory.getAgentManager();
 		msm = ObjectFactory.getMessageManager();
@@ -74,7 +72,7 @@ public abstract class XjafAgent implements Agent {
 		onInit(args);
 	}
 
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 	}
 
 	/**
@@ -218,5 +216,9 @@ public abstract class XjafAgent implements Agent {
 			executor.cancelHeartbeat(heartbeat);
 			heartbeat = null;
 		}
+	}
+
+	public AID getAid() {
+		return myAid;
 	}
 }

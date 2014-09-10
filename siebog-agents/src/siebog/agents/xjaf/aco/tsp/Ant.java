@@ -23,7 +23,6 @@ package siebog.agents.xjaf.aco.tsp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
@@ -35,6 +34,7 @@ import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Implementation of an ant.
@@ -89,7 +89,7 @@ public class Ant extends XjafAgent {
 	private final Random rnd = new Random();
 
 	@Override
-	protected void onInit(Map<String, String> args) {
+	protected void onInit(AgentInitArgs args) {
 		mapAID = agm.getAIDByRuntimeName("Map");
 
 		ACLMessage message = new ACLMessage();
