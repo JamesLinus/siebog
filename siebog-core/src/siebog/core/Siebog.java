@@ -38,7 +38,7 @@ public class Siebog {
 			logger.info(ex.getMessage());
 			printUsage();
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "", ex);
+			logger.log(Level.SEVERE, "Failed to start the node.", ex);
 		}
 	}
 }

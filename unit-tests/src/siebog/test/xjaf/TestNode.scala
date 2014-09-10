@@ -19,5 +19,5 @@ class SlaveNode(override val dir: File, override val address: String, val name: 
 	val masterAddr: String, val portOffset: Int) extends TestNode(dir, false, address) {
 
 	override def getArgs: List[String] =
-		super.getArgs ::: List(s"--name=$name", s"--master=$masterAddr", s"--portOffset=$portOffset")
+		super.getArgs ::: List(s"--name=$name", s"--master=$masterAddr", s"--port-offset=$portOffset")
 }
