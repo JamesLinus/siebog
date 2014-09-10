@@ -24,8 +24,10 @@ import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
 import java.io.File;
 import java.util.Map;
+import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.utils.HeartbeatHandle;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -36,10 +38,10 @@ import siebog.xjaf.fipa.ACLMessage;
  */
 @Stateful
 @Remote(Agent.class)
+@LocalBean
 public class SiebogAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	private SiebogAgArch arch;
-	private long repeatingId;
 
 	@Override
 	protected void onInit(Map<String, String> args) {
@@ -48,11 +50,11 @@ public class SiebogAgent extends XjafAgent {
 		AgentParameters agp = getAgentParams(agentName, new File(mas2jFileName));
 		arch = new SiebogAgArch();
 		try {
-			arch.init(agp);
+			arch.init(agp, this);
 		} catch (Exception ex) {
 			throw new IllegalStateException("Error during agent architecture initialization.", ex);
 		}
-		repeatingId = executor.registerHeartbeat(myAid, 500);
+		wakeUp();
 	}
 
 	private AgentParameters getAgentParams(String agentName, File mas2jFile) {
@@ -67,15 +69,20 @@ public class SiebogAgent extends XjafAgent {
 	}
 
 	@Override
-	protected void onMessage(ACLMessage msg) {
-		if (executor.isHearbeat(msg))
-			arch.reasoningCycle();
-		else
-			arch.onMessage(msg);
+	protected void onHeartbeat() {
+		arch.reasoningCycle();
 	}
 
 	@Override
-	protected void onTerminate() {
-		executor.cancelRepeating(repeatingId);
+	protected void onMessage(ACLMessage msg) {
+		arch.onMessage(msg);
+	}
+
+	public void sleep() {
+		cancelHeartbeat();
+	}
+
+	public void wakeUp() {
+		registerHeartbeat();
 	}
 }

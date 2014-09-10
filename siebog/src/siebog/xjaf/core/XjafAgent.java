@@ -30,6 +30,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import siebog.utils.HeartbeatHandle;
 import siebog.utils.ObjectFactory;
 import siebog.utils.XjafExecutorService;
 import siebog.xjaf.fipa.ACLMessage;
@@ -56,7 +57,8 @@ public abstract class XjafAgent implements Agent {
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
-	protected XjafExecutorService executor;
+	private XjafExecutorService executor;
+	private HeartbeatHandle heartbeat;
 
 	@Override
 	@Lock(LockType.WRITE)
@@ -82,6 +84,9 @@ public abstract class XjafAgent implements Agent {
 	 */
 	protected abstract void onMessage(ACLMessage msg);
 
+	protected void onHeartbeat() {
+	}
+
 	protected void onTerminate() {
 	}
 
@@ -99,6 +104,7 @@ public abstract class XjafAgent implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void processNextMessage() {
 		if (terminated) {
+			cancelHeartbeat();
 			onTerminate();
 			// remove statful beans
 			if (getClass().getAnnotation(Stateful.class) != null)
@@ -115,8 +121,16 @@ public abstract class XjafAgent implements Agent {
 				@Override
 				public void run() {
 					// TODO : check if the access to onMessage is protected
-					if (filter(msg))
-						onMessage(msg);
+					if (executor.isHearbeatMessage(msg)) {
+						boolean valid = executor.isValidHeartbeatHandle((HeartbeatHandle) msg.getContent());
+						if (valid && msg.getContent().equals(heartbeat)) {
+							onHeartbeat();
+							executor.signalHeartbeat(msg);
+						}
+					} else {
+						if (filter(msg))
+							onMessage(msg);
+					}
 					myself.processNextMessage(); // will acquire lock
 				}
 			});
@@ -192,5 +206,17 @@ public abstract class XjafAgent implements Agent {
 	 */
 	protected boolean filter(ACLMessage msg) {
 		return true;
+	}
+
+	protected void registerHeartbeat() {
+		if (heartbeat == null)
+			heartbeat = executor.registerHeartbeat(myAid, 500);
+	}
+
+	protected void cancelHeartbeat() {
+		if (heartbeat != null) {
+			executor.cancelHeartbeat(heartbeat);
+			heartbeat = null;
+		}
 	}
 }

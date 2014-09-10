@@ -2,10 +2,12 @@
 
 /* Initial beliefs and rules */
 
+value(5).
+
 /* Initial goals */
 
-!start.
++value(0) : true <- .print("done").
++value(N) : N > 0 <- .print(N); -value(N); +value(N - 1).
 
 /* Plans */
 
-+!start : true <- .print("hello world.").

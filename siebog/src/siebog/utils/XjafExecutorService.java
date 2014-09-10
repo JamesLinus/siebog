@@ -21,17 +21,14 @@
 package siebog.utils;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
@@ -44,45 +41,50 @@ import siebog.xjaf.fipa.Performative;
 @Singleton
 @LocalBean
 public class XjafExecutorService {
-	private static final String REPEAT_CONTENT = "repeat";
 	@Resource(lookup = "java:jboss/ee/concurrency/executor/default")
 	private ManagedExecutorService executor;
-	@Resource(lookup = "java:jboss/ee/concurrency/scheduler/default")
-	private ManagedScheduledExecutorService scheduledExecutor;
-	private AtomicLong repeatingId = new AtomicLong();
-	private Map<Long, ScheduledFuture<?>> repeating = Collections
-			.synchronizedMap(new HashMap<Long, ScheduledFuture<?>>());
+	private AtomicLong hbCounter = new AtomicLong();
+	private Set<HeartbeatHandle> heartbeats = Collections.synchronizedSet(new HashSet<HeartbeatHandle>());
 
 	public Future<?> execute(Runnable task) {
 		return executor.submit(task);
 	}
 
-	public long registerHeartbeat(AID aid, long delayMilliseconds) {
-		final long id = repeatingId.incrementAndGet();
+	public HeartbeatHandle registerHeartbeat(AID aid, long delayMilliseconds) {
+		HeartbeatHandle handle = new HeartbeatHandle(hbCounter.incrementAndGet());
 		final ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.addReceiver(aid);
-		msg.setContent(REPEAT_CONTENT);
-		final Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				ObjectFactory.getMessageManager().post(msg);
-			}
-		};
-		ScheduledFuture<?> future = scheduledExecutor.scheduleAtFixedRate(task, delayMilliseconds, 1,
-				TimeUnit.MILLISECONDS);
-		repeating.put(id, future);
-		return id;
+		msg.setContent(handle);
+		heartbeats.add(handle);
+		signalHeartbeat(msg);
+		return handle;
 	}
 
-	public boolean isHearbeat(ACLMessage msg) {
-		return msg.getPerformative() == Performative.REQUEST && REPEAT_CONTENT.equals(msg.getContentAsString());
-	}
-
-	public void cancelRepeating(long id) {
-		ScheduledFuture<?> future = repeating.get(id);
-		if (future != null) {
-			future.cancel(false);
-			repeating.remove(id);
+	public boolean signalHeartbeat(final ACLMessage msg) {
+		HeartbeatHandle handle = (HeartbeatHandle) msg.getContent();
+		if (isValidHeartbeatHandle(handle)) {
+			execute(new Runnable() {
+				@Override
+				public void run() {
+					ObjectFactory.getMessageManager().post(msg);
+				}
+			});
+			return true;
 		}
+		return false;
+	}
+
+	public boolean isHearbeatMessage(ACLMessage msg) {
+		return (msg.getPerformative() == Performative.REQUEST) && (msg.getContent() != null)
+				&& (msg.getContent() instanceof HeartbeatHandle);
+	}
+
+	public boolean isValidHeartbeatHandle(HeartbeatHandle handle) {
+		return handle != null && heartbeats.contains(handle);
+	}
+
+	public void cancelHeartbeat(HeartbeatHandle handle) {
+		if (handle != null)
+			heartbeats.remove(handle);
 	}
 }

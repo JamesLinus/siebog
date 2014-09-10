@@ -18,42 +18,40 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.fipa;
+package siebog.utils;
 
-import java.io.Serializable;
+import siebog.xjaf.fipa.ACLContent;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class ACLContent implements Serializable {
+public class HeartbeatHandle extends ACLContent {
 	private static final long serialVersionUID = 1L;
-	private String content;
+	private final Long counter;
 
-	public ACLContent(String content) {
-		this.content = content;
+	public HeartbeatHandle(long counter) {
+		super("hb" + counter);
+		this.counter = counter;
+	}
+
+	public long getCounter() {
+		return counter;
 	}
 
 	@Override
 	public int hashCode() {
-		return content.hashCode();
+		return counter.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (obj == this)
+			return true;
+		if (obj.getClass() != getClass())
 			return false;
-		ACLContent other = (ACLContent) obj;
-		if (content == null)
-			return other.content == null;
-		return content.equals(other.content);
-	}
-
-	public String toString() {
-		return content;
+		return ((HeartbeatHandle) obj).counter == counter;
 	}
 }

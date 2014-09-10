@@ -32,9 +32,12 @@ import siebog.xjaf.fipa.ACLMessage;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogAgArch extends AgArch {
+	private SiebogAgent agent;
 	private Deque<ACLMessage> mailbox = new LinkedList<>();
 
-	public void init(AgentParameters agp) throws Exception {
+	public void init(AgentParameters agp, SiebogAgent agent) throws Exception {
+		this.agent = agent;
+
 		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
 				agp.getAsSetts(false, false));
 		insertAgArch(this);
@@ -47,5 +50,16 @@ public class SiebogAgArch extends AgArch {
 
 	public void onMessage(ACLMessage msg) {
 		mailbox.add(msg);
+		wake();
+	}
+
+	@Override
+	public void sleep() {
+		agent.sleep();
+	}
+
+	@Override
+	public void wake() {
+		agent.wakeUp();
 	}
 }
