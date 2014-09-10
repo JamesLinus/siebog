@@ -41,6 +41,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
+import siebog.core.Global;
 import siebog.utils.ContextFactory;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
@@ -130,6 +131,8 @@ public class AgentManagerImpl implements AgentManager {
 			NamingEnumeration<NameClassPair> moduleList = ctx.list(exp);
 			while (moduleList.hasMore()) {
 				String module = moduleList.next().getName();
+				if (module.equals(Global.SERVER))
+					continue;
 				NamingEnumeration<NameClassPair> agentList = ctx.list(exp + "/" + module);
 				while (agentList.hasMore()) {
 					String ejbName = agentList.next().getName();
