@@ -23,12 +23,13 @@ package siebog.jasonee;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
 import java.io.File;
-import javax.ejb.LocalBean;
+import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.jasonee.intf.JasonEEExecutionControl;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLContent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
 
@@ -38,23 +39,31 @@ import siebog.xjaf.managers.AgentInitArgs;
  */
 @Stateful
 @Remote(Agent.class)
-@LocalBean
 public class JasonEEAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private String execCtrlName;
+	private JasonEEExecutionControl execCtrl;
 	private JasonEEAgArch arch;
+	private boolean syncMode;
+	private int asyncCycleNum;
+	private boolean sleeping = false;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		final String agentName = args.get("agentName");
 		final String mas2jFileName = args.get("mas2jFileName");
-		final String env = args.get("env");
+		final String envName = args.get("envName");
+		execCtrlName = args.get("execCtrlName");
 		AgentParameters agp = getAgentParams(agentName, new File(mas2jFileName));
 		arch = new JasonEEAgArch();
 		try {
-			arch.init(agp, this, env);
+			arch.init(agp, this, envName);
 		} catch (Exception ex) {
-			throw new IllegalStateException("Error during agent architecture initialization.", ex);
+			final String msg = "Error while initializing agent architecture.";
+			logger.log(Level.SEVERE, msg, ex);
+			throw new IllegalStateException(msg, ex);
 		}
+		syncMode = arch.getTS().getSettings().isSync();
 		wakeUp();
 	}
 
@@ -70,28 +79,59 @@ public class JasonEEAgent extends XjafAgent {
 	}
 
 	@Override
-	protected void onHeartbeat() {
-		arch.reasoningCycle();
-	}
-
-	@Override
 	protected void onMessage(ACLMessage msg) {
-		final ACLContent content = msg.getContent();
-		if (content != null && content instanceof ScheduledActionResult)
-			arch.onActionFeedback(msg);
+		if (msg instanceof ReasoningCycleMessage)
+			onSyncCycle(((ReasoningCycleMessage) msg).getCycleNum());
+		else if (msg instanceof ActionFeedbackMessage)
+			arch.onActionFeedback((ActionFeedbackMessage) msg);
 		else
 			arch.onMessage(msg);
 	}
 
+	@Override
+	protected boolean onHeartbeat(String content) {
+		if (!sleeping) {
+			++asyncCycleNum;
+			arch.reasoningCycle();
+			return true;
+		}
+		return false;
+	}
+
+	private void onSyncCycle(int cycleNum) {
+		arch.reasoningCycle();
+		boolean isBreakpoint;
+		try {
+			isBreakpoint = arch.getTS().getC().getSelectedOption().getPlan().hasBreakpoint();
+		} catch (NullPointerException ex) {
+			isBreakpoint = false;
+		}
+		execCtrl().agentCycleFinished(myAid, isBreakpoint, cycleNum);
+	}
+
 	public void sleep() {
-		cancelHeartbeat();
+		if (syncMode)
+			execCtrl.remAgent(myAid);
+		else
+			sleeping = true;
 	}
 
 	public void wakeUp() {
-		registerHeartbeat();
+		if (syncMode)
+			execCtrl.addAgent(myAid);
+		else {
+			sleeping = false;
+			registerHeartbeat();
+		}
 	}
 
 	public ACLMessage ask(ACLMessage msg) {
 		return null;
+	}
+
+	private JasonEEExecutionControl execCtrl() {
+		if (execCtrl == null)
+			execCtrl = ObjectFactory.getJasonEEApp().getExecCtrl(execCtrlName);
+		return execCtrl;
 	}
 }

@@ -20,18 +20,21 @@
 
 package siebog.jasonee.intf;
 
+import jason.control.ExecutionControlInfraTier;
 import java.io.Serializable;
+import siebog.jasonee.UserExecutionControl;
+import siebog.xjaf.core.AID;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
+public interface JasonEEExecutionControl extends ExecutionControlInfraTier, Serializable {
+	void init(UserExecutionControl userExecCtrl);
 
-	String putEnv(JasonEEEnvironment env);
+	void addAgent(AID aid);
 
-	JasonEEExecutionControl getExecCtrl(String name);
+	void remAgent(AID aid);
 
-	String putExecCtrl(JasonEEExecutionControl ctrl);
+	void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum);
 }

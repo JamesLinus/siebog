@@ -24,9 +24,13 @@ import jason.architecture.AgArch;
 import java.io.Serializable;
 
 /**
+ * Remote object factory, used to create user-defined agent architecture, execution control, and
+ * environment. User applications should realize it in form of a stateless session EJB.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEInfraBuilder extends Serializable {
-	AgArch createAgArch(String className);
+public interface RemoteObjectFactory extends Serializable {
+	AgArch createAgArch(String className) throws Exception;
+
+	UserExecutionControl createExecutionControl(String className) throws Exception;
 }

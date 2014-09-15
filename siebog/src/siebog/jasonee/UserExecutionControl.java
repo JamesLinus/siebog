@@ -18,20 +18,28 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.jasonee;
 
 import java.io.Serializable;
 
 /**
+ * Base interface for user-defined execution control.
+ * <p>
+ * Execution sequence:
+ * <ul>
+ * <li>init
+ * <li>(receivedFinishedCycle)*
+ * <li>stop
+ * </ul>
+ * </p>
+ * Based on jason.control.ExecutionControl
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
+public interface UserExecutionControl extends Serializable {
+	public void init(String[] args);
 
-	String putEnv(JasonEEEnvironment env);
+	public void receiveFinishedCycle(String agName, boolean breakpoint, int cycle);
 
-	JasonEEExecutionControl getExecCtrl(String name);
-
-	String putExecCtrl(JasonEEExecutionControl ctrl);
+	public void stop();
 }

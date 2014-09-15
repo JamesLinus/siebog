@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.jasonee.intf;
 
 /**
  * 

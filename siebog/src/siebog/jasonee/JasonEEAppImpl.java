@@ -23,6 +23,9 @@ package siebog.jasonee;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.infinispan.Cache;
+import siebog.jasonee.intf.JasonEEApp;
+import siebog.jasonee.intf.JasonEEEnvironment;
+import siebog.jasonee.intf.JasonEEExecutionControl;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -34,9 +37,11 @@ import siebog.utils.ObjectFactory;
 public class JasonEEAppImpl implements JasonEEApp {
 	private static final long serialVersionUID = 1L;
 	private static Cache<String, JasonEEEnvironment> envs;
+	private static Cache<String, JasonEEExecutionControl> ctrls;
 
 	static {
-		envs = ObjectFactory.getJasonEEEnvironmentCache();
+		envs = ObjectFactory.getEnvironmentCache();
+		ctrls = ObjectFactory.getExecutionControlCache();
 	}
 
 	@Override
@@ -48,6 +53,18 @@ public class JasonEEAppImpl implements JasonEEApp {
 	public String putEnv(JasonEEEnvironment env) {
 		String name = "Env" + System.currentTimeMillis();
 		envs.put(name, env);
+		return name;
+	}
+
+	@Override
+	public JasonEEExecutionControl getExecCtrl(String name) {
+		return ctrls.get(name);
+	}
+
+	@Override
+	public String putExecCtrl(JasonEEExecutionControl ctrl) {
+		String name = "ExecCtrl" + System.currentTimeMillis();
+		ctrls.put(name, ctrl);
 		return name;
 	}
 }

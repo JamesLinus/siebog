@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
 	<classpathentry kind="lib" path="lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="lib/module/jason.jar" sourcepath="/Jason/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

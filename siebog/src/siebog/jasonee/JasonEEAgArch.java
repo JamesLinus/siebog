@@ -25,7 +25,6 @@ import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Message;
 import jason.asSyntax.Literal;
-import jason.infra.centralised.CentralisedAgArch;
 import jason.mas2j.AgentParameters;
 import jason.runtime.RuntimeServicesInfraTier;
 import java.util.Deque;
@@ -33,8 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import siebog.jasonee.intf.JasonEEEnvironment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 
@@ -43,50 +41,31 @@ import siebog.xjaf.fipa.ACLMessage;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class JasonEEAgArch extends AgArch {
-	private static final Logger logger = Logger.getLogger(JasonEEAgArch.class.getName());
 	private JasonEEAgent agent;
 	private Deque<ACLMessage> mailbox = new LinkedList<>();
 	private boolean running;
-	private JasonEEEnvironment env;
+	// the environment can/should not be serialized. in case the agent is transferred to another
+	// node, we will reconnect to it
+	private String envName;
+	private transient JasonEEEnvironment env;
 	private Map<String, ActionExec> scheduledActions;
 	private long actionId;
-	private JasonEEInfraBuilder builder;
 
-	public void init(AgentParameters agp, JasonEEAgent agent, String env) throws Exception {
+	public void init(AgentParameters agp, JasonEEAgent agent, String envName) throws Exception {
 		this.agent = agent;
-		this.env = ObjectFactory.getJasonEEApp().getEnv(env);
+		this.envName = envName;
 		scheduledActions = new HashMap<>();
 
 		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
 				agp.getAsSetts(false, false));
 		insertAgArch(this);
 
-		builder = ObjectFactory.getInfraBuilder(agp.getOption("module"), agp.getOption("infraBuilder"));
-		createCustomArchs(agp.getAgArchClasses());
+		final String module = agp.getOption("remObjFactModule");
+		final String ejb = agp.getOption("remObjFactEjb");
+		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejb);
+		createCustomArchs(remObjFact, agp.getAgArchClasses());
 
 		running = true;
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public void createCustomArchs(List<String> archs) throws Exception {
-		if (archs == null || archs.size() == 0)
-			return;
-		for (String agArchClass : archs) {
-			// user custom arch
-			if (!agArchClass.equals(AgArch.class.getName()) && !agArchClass.equals(CentralisedAgArch.class.getName())) {
-				try {
-					AgArch a = builder.createAgArch(agArchClass);
-					a.setTS(getTS()); // so a.init() can use TS
-					a.initAg(null, null, null, null); // for compatibility reasons
-					insertAgArch(a);
-					a.init();
-				} catch (Exception ex) {
-					logger.log(Level.SEVERE, "Cannot create custom agent architecture " + agArchClass, ex);
-					throw ex;
-				}
-			}
-		}
 	}
 
 	public void reasoningCycle() {
@@ -130,7 +109,7 @@ public class JasonEEAgArch extends AgArch {
 	public List<Literal> perceive() {
 		if (!running)
 			return null;
-		return env.getPercepts(agent.getAid());
+		return env().getPercepts(agent.getAid());
 	}
 
 	@Override
@@ -139,11 +118,11 @@ public class JasonEEAgArch extends AgArch {
 			return;
 		String replyWith = "rw" + (++actionId);
 		scheduledActions.put(replyWith, action);
-		env.scheduleAction(agent.getAid(), action.getActionTerm(), replyWith);
+		env().scheduleAction(agent.getAid(), action.getActionTerm(), replyWith);
 	}
 
-	public void onActionFeedback(ACLMessage msg) {
-		ActionExec action = scheduledActions.remove(msg.getInReplyTo());
+	public void onActionFeedback(ActionFeedbackMessage msg) {
+		ActionExec action = scheduledActions.remove(msg.getUserData());
 		if (action != null) {
 			action.setResult(msg.getContentAsBool());
 			getTS().getC().addFeedbackAction(action);
@@ -169,5 +148,24 @@ public class JasonEEAgArch extends AgArch {
 
 	public RuntimeServicesInfraTier getRuntimeServices() {
 		return new JasonEERuntimeServices();
+	}
+
+	private JasonEEEnvironment env() {
+		if (env == null)
+			env = ObjectFactory.getJasonEEApp().getEnv(envName);
+		return env;
+	}
+
+	@SuppressWarnings("deprecation")
+	private void createCustomArchs(RemoteObjectFactory remObjFact, List<String> archs) throws Exception {
+		if (archs == null || archs.size() == 0)
+			return;
+		for (String agArchClass : archs) {
+			AgArch a = remObjFact.createAgArch(agArchClass);
+			a.setTS(getTS()); // so a.init() can use TS
+			a.initAg(null, null, null, null); // for compatibility reasons
+			insertAgArch(a);
+			a.init();
+		}
 	}
 }

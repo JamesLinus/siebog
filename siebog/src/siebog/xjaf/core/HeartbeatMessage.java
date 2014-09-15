@@ -18,20 +18,26 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.xjaf.core;
 
-import java.io.Serializable;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
+public class HeartbeatMessage extends ACLMessage {
+	private static final long serialVersionUID = 1L;
+	private long handle;
 
-	String putEnv(JasonEEEnvironment env);
+	public HeartbeatMessage(AID aid, long handle) {
+		super(Performative.REQUEST);
+		addReceiver(aid);
+		this.handle = handle;
+	}
 
-	JasonEEExecutionControl getExecCtrl(String name);
-
-	String putExecCtrl(JasonEEExecutionControl ctrl);
+	public long getHandle() {
+		return handle;
+	}
 }

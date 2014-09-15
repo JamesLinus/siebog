@@ -25,6 +25,8 @@ import jason.mas2j.ClassParameters;
 import jason.mas2j.MAS2JProject;
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -34,11 +36,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.hornetq.utils.json.JSONArray;
-import scala.actors.threadpool.Arrays;
 import siebog.core.Global;
+import siebog.jasonee.intf.JasonEEEnvironment;
+import siebog.jasonee.intf.JasonEEExecutionControl;
+import siebog.jasonee.intf.JasonEEStarter;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
@@ -54,28 +56,63 @@ import siebog.xjaf.managers.AgentManager;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class JasonEEStarterImpl implements JasonEEStarter {
+	private static final Logger logger = Logger.getLogger(JasonEEStarterImpl.class.getName());
+	private MAS2JProject project;
+	private String remObjFactModule;
+	private String remObjFactEjb;
+	private RemoteObjectFactory remObjFact;
+	private String ctrlName;
+	private String envName;
+
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
 	public void start(@FormParam("mas2jFileName") String mas2jFileName) {
-		MAS2JProject project = Mas2jProjectFactory.load(new File(mas2jFileName));
-		String env = createEnvironment(project.getEnvClass());
-		createAgents(mas2jFileName, project, env);
+		project = Mas2jProjectFactory.load(new File(mas2jFileName));
+		createRemObjFact();
+
+		createExecutionControl();
+		createEnvironment();
+
+		createAgents(mas2jFileName);
 	}
 
-	private String createEnvironment(ClassParameters envClass) {
+	private void createRemObjFact() {
+		final List<AgentParameters> agents = project.getAgents();
+		for (AgentParameters agp : agents)
+			if (agp.name.equals("remoteObjectFactory")) {
+				String module = agp.getOption("module");
+				String ejbName = agp.getOption("object");
+				remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejbName);
+				return;
+			}
+		throw new IllegalArgumentException("Need to specify the RemoteObjectFactory object.");
+	}
+
+	private void createExecutionControl() {
+		JasonEEExecutionControl ctrl = ObjectFactory.getJasonEEExecutionControl();
+		final String userClassName = project.getControlClass().getClassName();
+		UserExecutionControl userExecCtrl = null;
+		if (userClassName != null && userClassName.length() > 0)
+			try {
+				userExecCtrl = remObjFact.createExecutionControl(userClassName);
+				userExecCtrl.init(project.getControlClass().getParametersArray());
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Unable to create user execution control " + userClassName, ex);
+			}
+		ctrl.init(userExecCtrl);
+		ctrlName = ObjectFactory.getJasonEEApp().putExecCtrl(ctrl);
+	}
+
+	private void createEnvironment() {
 		JasonEEEnvironment env = ObjectFactory.getJasonEEEnvironment();
-		env.init(envClass.getClassName(), envClass.getParametersArray());
-		return ObjectFactory.getJasonEEApp().putEnv(env);
+		final ClassParameters userEnvClass = project.getEnvClass();
+		env.init(userEnvClass.getClassName(), userEnvClass.getParametersArray());
+		envName = ObjectFactory.getJasonEEApp().putEnv(env);
 	}
 
-	private String getEnvParamsAsString(String[] params) {
-		JSONArray json = new JSONArray(Arrays.asList(params));
-		return json.toString();
-	}
-
-	private void createAgents(String mas2jFileName, MAS2JProject project, String env) {
+	private void createAgents(String mas2jFileName) {
 		AgentManager agm = ObjectFactory.getAgentManager();
 		final List<AgentParameters> agents = project.getAgents();
 		for (AgentParameters agp : agents) {
@@ -83,20 +120,16 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 				String runtimeName = agp.name;
 				if (agp.qty > 1)
 					runtimeName += (i + 1);
-
 				AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
 				AgentInitArgs args = new AgentInitArgs();
 				args.put("agentName", agp.name);
 				args.put("mas2jFileName", mas2jFileName);
-				args.put("env", env);
+				args.put("remObjFactModule", remObjFactModule);
+				args.put("remObjFactEjb", remObjFactEjb);
+				args.put("envName", envName);
+				args.put("execCtrlName", ctrlName);
 				agm.startAgent(agClass, runtimeName, args);
 			}
 		}
-	}
-
-	private void createController() {
-	}
-
-	private void startAgs() {
 	}
 }

@@ -22,15 +22,18 @@ package siebog.xjaf.fipa;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ws.rs.FormParam;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
+import scala.actors.threadpool.Arrays;
 import siebog.xjaf.core.AID;
 
 /**
- * Represents a FIPA ACL message. Refer to <a href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message
- * Structure Specification</a> for more details.
+ * Represents a FIPA ACL message. Refer to <a
+ * href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message Structure
+ * Specification</a> for more details.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -171,6 +174,10 @@ public class ACLMessage implements Serializable {
 		setContent(content + "");
 	}
 
+	public void setContent(int content) {
+		setContent(content + "");
+	}
+
 	public ACLContent getContent() {
 		return content;
 	}
@@ -181,6 +188,10 @@ public class ACLMessage implements Serializable {
 
 	public boolean getContentAsBool() {
 		return Boolean.parseBoolean(content.toString());
+	}
+
+	public int getContentAsInt() {
+		return Integer.parseInt(content.toString());
 	}
 
 	public String getLanguage() {
@@ -259,16 +270,26 @@ public class ACLMessage implements Serializable {
 		return receivers;
 	}
 
-	public void setReceivers(List<AID> receivers) {
-		this.receivers = receivers;
+	public void setReceivers(Collection<AID> receivers) {
+		this.receivers.clear();
+		this.receivers.addAll(receivers);
 	}
 
 	public void addReceiver(AID receiver) {
 		receivers.add(receiver);
 	}
 
+	@SuppressWarnings("unchecked")
+	public void addReceivers(AID... receivers) {
+		this.receivers.addAll(Arrays.asList(receivers));
+	}
+
 	public void removeReceiver(AID receiver) {
 		receivers.remove(receiver);
+	}
+
+	public void removeReceivers(AID... receivers) {
+		this.receivers.removeAll(Arrays.asList(receivers));
 	}
 
 	public void clearReceivers() {

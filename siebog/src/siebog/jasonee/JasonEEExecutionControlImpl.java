@@ -20,26 +20,49 @@
 
 package siebog.jasonee;
 
-import org.w3c.dom.Document;
-import jason.control.ExecutionControl;
-import jason.control.ExecutionControlInfraTier;
 import jason.runtime.RuntimeServicesInfraTier;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Remote;
+import javax.ejb.Stateful;
+import org.w3c.dom.Document;
+import siebog.jasonee.intf.JasonEEExecutionControl;
+import siebog.utils.ObjectFactory;
+import siebog.xjaf.core.AID;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class JasonEEExecutionControl implements ExecutionControlInfraTier {
-	private ExecutionControl userController;
+@Stateful
+@Remote(JasonEEExecutionControl.class)
+@Lock(LockType.WRITE)
+public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
+	private static final long serialVersionUID = 1L;
+	private Set<AID> agents;
+	private UserExecutionControl userExecCtrl;
+
+	@Override
+	public void init(UserExecutionControl userExecCtrl) {
+		agents = new HashSet<>();
+		this.userExecCtrl = userExecCtrl;
+	}
 
 	@Override
 	public void informAgToPerformCycle(String agName, int cycle) {
-		// TODO Auto-generated method stub
+		List<AID> aid = Collections.singletonList(new AID(agName));
+		ReasoningCycleMessage msg = new ReasoningCycleMessage(aid, cycle);
+		ObjectFactory.getMessageManager().post(msg);
 	}
 
 	@Override
 	public void informAllAgsToPerformCycle(int cycle) {
-		// TODO Auto-generated method stub
+		ReasoningCycleMessage msg = new ReasoningCycleMessage(agents, cycle);
+		ObjectFactory.getMessageManager().post(msg);
 	}
 
 	@Override
@@ -49,7 +72,23 @@ public class JasonEEExecutionControl implements ExecutionControlInfraTier {
 	}
 
 	@Override
+	public void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum) {
+		if (userExecCtrl != null)
+			userExecCtrl.receiveFinishedCycle(aid.toString(), isBreakpoint, cycleNum);
+	}
+
+	@Override
 	public RuntimeServicesInfraTier getRuntimeServices() {
 		return new JasonEERuntimeServices();
+	}
+
+	@Override
+	public void addAgent(AID aid) {
+		agents.add(aid);
+	}
+
+	@Override
+	public void remAgent(AID aid) {
+		agents.remove(aid);
 	}
 }

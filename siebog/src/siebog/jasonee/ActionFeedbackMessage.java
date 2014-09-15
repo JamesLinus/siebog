@@ -20,22 +20,30 @@
 
 package siebog.jasonee;
 
-import siebog.xjaf.fipa.ACLContent;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class ScheduledActionResult extends ACLContent {
+public class ActionFeedbackMessage extends ACLMessage {
 	private static final long serialVersionUID = 1L;
 	private boolean success;
+	private String userData;
 
-	public ScheduledActionResult(boolean success) {
-		super("" + success);
+	public ActionFeedbackMessage(AID aid, boolean success, String userData) {
+		super(Performative.REQUEST);
 		this.success = success;
+		this.userData = userData;
 	}
 
 	public boolean isSuccess() {
 		return success;
+	}
+
+	public String getUserData() {
+		return userData;
 	}
 }

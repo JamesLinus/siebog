@@ -56,7 +56,7 @@ public abstract class XjafAgent implements Agent {
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
 	private XjafExecutorService executor;
-	private HeartbeatHandle heartbeat;
+	private long hbHandle;
 
 	@Override
 	@Lock(LockType.WRITE)
@@ -82,7 +82,8 @@ public abstract class XjafAgent implements Agent {
 	 */
 	protected abstract void onMessage(ACLMessage msg);
 
-	protected void onHeartbeat() {
+	protected boolean onHeartbeat(String content) {
+		return false;
 	}
 
 	protected void onTerminate() {
@@ -102,7 +103,6 @@ public abstract class XjafAgent implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void processNextMessage() {
 		if (terminated) {
-			cancelHeartbeat();
 			onTerminate();
 			// remove statful beans
 			if (getClass().getAnnotation(Stateful.class) != null)
@@ -119,12 +119,12 @@ public abstract class XjafAgent implements Agent {
 				@Override
 				public void run() {
 					// TODO : check if the access to onMessage is protected
-					if (executor.isHearbeatMessage(msg)) {
-						boolean valid = executor.isValidHeartbeatHandle((HeartbeatHandle) msg.getContent());
-						if (valid && msg.getContent().equals(heartbeat)) {
-							onHeartbeat();
-							executor.signalHeartbeat(msg);
-						}
+					if (msg instanceof HeartbeatMessage) {
+						boolean repeat = onHeartbeat(msg.getContentAsString());
+						if (repeat)
+							executor.signalHeartbeat(hbHandle);
+						else
+							executor.cancelHeartbeat(hbHandle);
 					} else {
 						if (filter(msg))
 							onMessage(msg);
@@ -154,12 +154,13 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
-	 * become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
+	 * for the message to become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
-	 *            method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
+	 *            account and the method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
+	 *         is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
@@ -197,7 +198,8 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering
+	 * function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.
@@ -206,16 +208,12 @@ public abstract class XjafAgent implements Agent {
 		return true;
 	}
 
-	protected void registerHeartbeat() {
-		if (heartbeat == null)
-			heartbeat = executor.registerHeartbeat(myAid, 500);
+	protected void registerHeartbeat(String content) {
+		hbHandle = executor.registerHeartbeat(myAid, 500, content);
 	}
 
-	protected void cancelHeartbeat() {
-		if (heartbeat != null) {
-			executor.cancelHeartbeat(heartbeat);
-			heartbeat = null;
-		}
+	protected void registerHeartbeat() {
+		registerHeartbeat("");
 	}
 
 	public AID getAid() {

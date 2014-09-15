@@ -18,20 +18,28 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.jasonee;
 
-import java.io.Serializable;
+import java.util.Collection;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
+public class ReasoningCycleMessage extends ACLMessage {
+	private static final long serialVersionUID = 1L;
+	private int cycleNum;
 
-	String putEnv(JasonEEEnvironment env);
+	public ReasoningCycleMessage(Collection<AID> receivers, int cycleNum) {
+		super(Performative.REQUEST);
+		setReceivers(receivers);
+		this.cycleNum = cycleNum;
+	}
 
-	JasonEEExecutionControl getExecCtrl(String name);
-
-	String putExecCtrl(JasonEEExecutionControl ctrl);
+	public int getCycleNum() {
+		return cycleNum;
+	}
 }

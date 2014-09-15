@@ -31,10 +31,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.jasonee.intf.JasonEEEnvironment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 
@@ -72,10 +72,7 @@ public class JasonEEEnvironmentImpl implements JasonEEEnvironment {
 
 	@Override
 	public void actionExecuted(String agName, Structure actTerm, boolean success, Object infraData) {
-		ACLMessage msg = new ACLMessage(Performative.INFORM);
-		msg.addReceiver(new AID(agName));
-		msg.setInReplyTo((String) infraData);
-		msg.setContent(new ScheduledActionResult(success));
+		ACLMessage msg = new ActionFeedbackMessage(new AID(agName), success, (String) infraData);
 		ObjectFactory.getMessageManager().post(msg);
 	}
 
