@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.dnars;
+package siebog.agents.dnars.ping;
 
 import java.io.IOException;
 import javax.naming.NamingException;

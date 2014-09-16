@@ -39,8 +39,6 @@ import siebog.dnars.base.Term
 import siebog.dnars.base.Truth
 import siebog.dnars.events.EventManager
 import siebog.dnars.graph.DNarsVertex.wrap
-import siebog.xjaf.core.AID
-import siebog.xjaf.dnarslayer.DNarsGraphI
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -48,15 +46,11 @@ import siebog.xjaf.dnarslayer.DNarsGraphI
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) with DNarsGraphI {
+class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) {
 	val statements = new StatementManager(this)
 	val eventManager = new EventManager()
 
 	def getV(term: Term): Option[Vertex] = {
-		/*V.has("term", term.id).toList match {
-			case h :: Nil => Some(h)
-			case _ => None
-		}*/
 		val i = this.query().has("term", term.id).vertices().iterator()
 		if (i.hasNext())
 			Some(i.next())
@@ -143,16 +137,25 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 			throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
 	}
 
-	override def addObserver(aid: AID): Unit =
+	def addObserver(aid: String): Unit =
 		eventManager.addObserver(aid)
 
-	override def addStatement(st: String): Unit =
+	def removeObserver(aid: String): Unit =
+		eventManager.removeObserver(aid)
+
+	def addStatement(st: String): Unit =
 		try {
 			statements.add(StatementParser(st))
 		} catch {
 			case e: Throwable =>
 				throw new IllegalArgumentException(e.getMessage)
 		}
+
+	/**
+	 * Debugging purposes only.
+	 */
+	def getRandomVertex(): Vertex =
+		this.V.random(0.5).next
 }
 
 object DNarsGraph {

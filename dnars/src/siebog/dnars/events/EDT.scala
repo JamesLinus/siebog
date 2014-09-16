@@ -22,20 +22,15 @@ package siebog.dnars.events
 
 import java.util.logging.Level
 import java.util.logging.Logger
+
 import scala.collection.mutable.ListBuffer
-import siebog.xjaf.core.AID
-import siebog.xjaf.dnarslayer.Event
-import siebog.xjaf.fipa.ACLMessage
-import siebog.xjaf.fipa.Performative
-import siebog.utils.ObjectFactory
-import siebog.SiebogCluster
 
 /**
  * Implementation of the Event Dispatch Thread.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends Thread {
+class EDT(val list: ListBuffer[Event], val observers: ListBuffer[String]) extends Thread {
 	val logger = Logger.getLogger(classOf[EDT].getName)
 
 	override def run: Unit = {
@@ -59,12 +54,6 @@ class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends T
 	}
 
 	private def dispatch(events: Array[Event]): Unit = {
-		val acl = new ACLMessage(Performative.INFORM)
-		// TODO : Event[] to String
-		//acl.setContent(events)
-		observers synchronized {
-			observers.foreach { aid => acl.receivers.add(aid) }
-		}
-		ObjectFactory.getMessageManager().post(acl)
+		// TODO Implement event dispatching
 	}
 }

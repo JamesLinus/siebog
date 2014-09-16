@@ -20,6 +20,9 @@
 
 package siebog.xjaf.dnarslayer;
 
+import siebog.dnars.events.Event;
+import siebog.dnars.graph.DNarsGraph;
+import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
@@ -31,7 +34,7 @@ import siebog.xjaf.managers.AgentInitArgs;
  */
 public abstract class DNarsAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraphI graph;
+	protected DNarsGraph graph;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -40,8 +43,8 @@ public abstract class DNarsAgent extends XjafAgent {
 		if (domain == null)
 			domain = myAid.toString();
 		try {
-			graph = DNarsGraphFactory.create(domain);
-			graph.addObserver(myAid);
+			graph = DNarsGraphFactory.create(domain, null);
+			graph.addObserver(myAid.toString());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -57,5 +60,6 @@ public abstract class DNarsAgent extends XjafAgent {
 		return true;
 	}
 
-	protected abstract void onEvents(Event[] events);
+	protected void onEvents(Event[] events) {
+	}
 }

@@ -107,7 +107,7 @@ public class AgentManagerImpl implements AgentManager {
 			return aid;
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "Unable to start an agent of class " + agClass, ex);
-			return null;
+			throw ex;
 		}
 
 	}

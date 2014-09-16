@@ -19,8 +19,6 @@ import java.rmi.registry.LocateRegistry
 import siebog.xjaf.core.AID
 
 object XjafTestUtils {
-	val baseDir = new File("../siebog-core")
-	val address = "localhost"
 	var testAgentAid: AID = null
 
 	/**
@@ -30,51 +28,37 @@ object XjafTestUtils {
 	 * If fullBuild, the fuction will first invoke the Ant build script that builds
 	 * the deployment archive.
 	 */
-	def start(numNodes: Int, testDir: File, fullBuild: Boolean, msgQueue: BlockingQueue[ACLMessage]): Unit = {
+	def start(nodes: Seq[TestNode], fullBuild: Boolean, msgQueue: BlockingQueue[ACLMessage]): Unit = {
 		val reg = LocateRegistry.createRegistry(1099)
 		reg.rebind("TestAgentListener", new TestAgentListenerImpl(msgQueue))
 
-		val nodeDirs =
-			for (i <- 0 until numNodes)
-				yield new File(testDir, s"siebog$i")
-
 		if (fullBuild)
-			buildSiebog(nodeDirs)
+			buildSiebog(nodes)
 
-		startCluster(nodeDirs)
+		nodes.foreach { node =>
+			startNode(node)
+			Thread.sleep(1000)
+		}
 
 		SiebogCluster.init
 		val agClass = new AgentClass(Global.SERVER, "TestAgent")
-		val args = new AgentInitArgs(s"remoteHost->$address")
+		val args = new AgentInitArgs(s"remoteHost->localhost")
 		testAgentAid = ObjectFactory.getAgentManager().startAgent(agClass, "testAgent", args)
 	}
 
-	private def buildSiebog(nodeDirs: Seq[File]): Unit = {
+	private def buildSiebog(nodes: Seq[TestNode]): Unit = {
+		val baseDir = new File("../siebog-core")
 		val antCmd = Seq("ant", "dist")
 		val exitCode: Int = Process(antCmd, Some(baseDir)).!<
 		assertEquals(0, exitCode)
 
 		val srcDir = new File(baseDir, "dist/siebog")
-		nodeDirs.foreach { dstDir =>
-			if (dstDir.exists)
-				FileUtils.deleteDirectory(dstDir)
-			val created = dstDir.mkdirs
-			assertTrue("Cannot create " + dstDir, created)
-			FileUtils.copyDirectory(srcDir, dstDir)
-		}
-	}
-
-	private def startCluster(nodeDirs: Seq[File]): Unit = {
-		var i = 0
-		nodeDirs.foreach { nodeDir =>
-			val isMaster = i == 0
-			val node =
-				if (isMaster)
-					new MasterNode(nodeDir, address)
-				else
-					new SlaveNode(nodeDir, address, s"slave$i", address, 100 * i)
-			startNode(node)
-			i += 1
+		nodes.foreach { node =>
+			if (node.dir.exists)
+				FileUtils.deleteDirectory(node.dir)
+			val created = node.dir.mkdirs
+			assertTrue("Cannot create " + node.dir, created)
+			FileUtils.copyDirectory(srcDir, node.dir)
 		}
 	}
 
@@ -105,7 +89,6 @@ object XjafTestUtils {
 			obj.wait
 			assertTrue("Node failed to start.", startedOk)
 		}
-		Thread.sleep(1000)
 	}
 }
 

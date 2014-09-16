@@ -18,14 +18,14 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.dnars;
+package siebog.agents.dnars.ping;
 
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.dnars.events.Event;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.dnarslayer.DNarsAgent;
-import siebog.xjaf.dnarslayer.Event;
 import siebog.xjaf.fipa.ACLMessage;
 
 /**

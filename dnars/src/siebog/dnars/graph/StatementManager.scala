@@ -32,9 +32,10 @@ import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
 import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsVertex.wrap
-import siebog.xjaf.dnarslayer.Event
 import scala.collection.mutable.ListBuffer
 import siebog.dnars.base.CompoundTerm
+import siebog.dnars.events.Event
+import siebog.dnars.events.EventKind._
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -73,7 +74,7 @@ class StatementManager(val graph: DNarsGraph) {
 						}
 					}
 				}
-				val event = new Event(Event.Kind.UPDATED, st.toString)
+				val event = new Event(UPDATED, st.toString)
 				graph.eventManager.addEvent(event)
 			case None =>
 				addE(st)
@@ -85,7 +86,7 @@ class StatementManager(val graph: DNarsGraph) {
 					if (!unpacked)
 						packAndAdd(graph, st)
 				}
-				val event = new Event(Event.Kind.ADDED, st.toString)
+				val event = new Event(ADDED, st.toString)
 				graph.eventManager.addEvent(event)
 		}
 	}

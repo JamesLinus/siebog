@@ -24,11 +24,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -41,11 +44,17 @@ import siebog.utils.ObjectFactory;
 public class XjafExecutorService {
 	@Resource(lookup = "java:jboss/ee/concurrency/executor/default")
 	private ManagedExecutorService executor;
+	@Resource(lookup = "java:jboss/ee/concurrency/scheduler/default")
+	private ManagedScheduledExecutorService scheduler;
 	private AtomicLong hbCounter = new AtomicLong();
 	private Map<Long, HeartbeatMessage> heartbeats = Collections.synchronizedMap(new HashMap<Long, HeartbeatMessage>());
 
 	public Future<?> execute(Runnable task) {
 		return executor.submit(task);
+	}
+
+	public ScheduledFuture<?> execute(Runnable task, long delayMilliseconds) {
+		return scheduler.schedule(task, delayMilliseconds, TimeUnit.MILLISECONDS);
 	}
 
 	public long registerHeartbeat(AID aid, long delayMilliseconds, String content) {

@@ -13,18 +13,28 @@ import siebog.xjaf.fipa.ACLMessage
 import siebog.xjaf.fipa.Performative
 import org.junit.After
 
-class AgentsTest {
+class XjafAgentsTest {
 	val msgQueue = new LinkedBlockingQueue[ACLMessage]
 	val agentsModule = "siebog-agents"
 
 	@Before
-	def before(): Unit =
-		XjafTestUtils.start(1, new File("/home/dejan/tmp"), true, msgQueue)
+	def before(): Unit = {
+		val testDir = "/home/dejan/tmp"
+		val address = "localhost"
+
+		val nodes = List(
+			new MasterNode(new File(testDir, "siebog0"), address),
+			new SlaveNode(new File(testDir, "siebog1"), address, "slave1", masterAddr = address, portOffset = 100))
+
+		XjafTestUtils.start(nodes, fullBuild = true, msgQueue)
+	}
 
 	@Test
 	def testPingPong(): Unit = {
 		val agm = ObjectFactory.getAgentManager
+
 		val pingAid = agm.startAgent(new AgentClass(agentsModule, "Ping"), "Ping", null)
+
 		val pongName = "Pong"
 		agm.startAgent(new AgentClass(agentsModule, "Pong"), pongName, null)
 
@@ -36,8 +46,8 @@ class AgentsTest {
 		msm.post(message)
 
 		val reply = msgQueue.poll(1, TimeUnit.SECONDS)
-		assertNotNull(reply)
 
+		assertNotNull(reply)
 		assertEquals("Invalid performative: " + reply.performative, Performative.INFORM, reply.performative)
 	}
 

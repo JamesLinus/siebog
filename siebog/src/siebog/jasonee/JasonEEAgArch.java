@@ -44,10 +44,7 @@ public class JasonEEAgArch extends AgArch {
 	private JasonEEAgent agent;
 	private Deque<ACLMessage> mailbox = new LinkedList<>();
 	private boolean running;
-	// the environment can/should not be serialized. in case the agent is transferred to another
-	// node, we will reconnect to it
 	private String envName;
-	private transient JasonEEEnvironment env;
 	private Map<String, ActionExec> scheduledActions;
 	private long actionId;
 
@@ -146,14 +143,13 @@ public class JasonEEAgArch extends AgArch {
 		return agent.getAid().toString();
 	}
 
+	@Override
 	public RuntimeServicesInfraTier getRuntimeServices() {
 		return new JasonEERuntimeServices();
 	}
 
 	private JasonEEEnvironment env() {
-		if (env == null)
-			env = ObjectFactory.getJasonEEApp().getEnv(envName);
-		return env;
+		return ObjectFactory.getJasonEEApp().getEnv(envName);
 	}
 
 	@SuppressWarnings("deprecation")

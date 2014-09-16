@@ -11,6 +11,7 @@
 	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
 	
 	<target name="package">
+		<ant dir="../dnars" />
 		<ant dir="../siebog" />
 		<ant dir="../siebog-agents" />
 		
@@ -35,6 +36,7 @@
 	<target name="dist" depends="package">
 		<property name="dist.file" value="${dist.dir}/siebog.zip" />
 		<property name="dist.siebog.dir" value="${dist.dir}/siebog" />
+		<property name="siebog.module.dir" value="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
 		
 		<delete file="${dist.file}" />
 		<delete dir="${dist.siebog.dir}" />
@@ -43,20 +45,17 @@
 		<copy todir="${dist.siebog.dir}/${server.name}">
 			<fileset dir="wildfly-base" includes="**" />
 		</copy>
-		<mkdir dir="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
-		<copy todir="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main">
+		<mkdir dir="${siebog.module.dir}" />
+		<copy todir="${siebog.module.dir}">
 			<fileset dir="lib/module" includes="*" />
 		</copy>
-		<copy todir="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main" file="${starter.path}" />
+		<copy todir="${siebog.module.dir}" file="${starter.path}" />
+		<copy todir="${siebog.module.dir}" file="${dnars.path}" />
 		<move todir="${dist.siebog.dir}" file="${siebog.path}" />
 		<move todir="${dist.siebog.dir}" file="${agents.path}" />
 		<move todir="${dist.siebog.dir}" file="${starter.path}" />
 		<copy todir="${dist.siebog.dir}" file="../LICENSE" />
 		<copy todir="${dist.siebog.dir}" file="../NOTICE" />
 		<copy todir="${dist.siebog.dir}" file="../README.md" />
-	</target>
-		
-	<target name="upload" depends="dist">
-		<zip destfile="${dist.file}" basedir="${dist.dir}" includes="siebog/**" />
 	</target>
 </project>

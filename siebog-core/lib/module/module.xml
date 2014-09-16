@@ -61,6 +61,7 @@
         <resource-root path="xml-apis-1.4.01.jar" />
         <resource-root path="jason.jar" />
         <resource-root path="siebog-start.jar" />
+        <resource-root path="dnars.jar" />
     </resources>
     <dependencies>
         <module name="org.omg.api" />

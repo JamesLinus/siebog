@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="package" name="dnars" basedir=".">
+	<property environment="env" />
+	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+	<property name="bin.dir" value="bin" />
+	<property file="../siebog-core/build.properties" />
+
+	<target name="package">
+		<delete file="${dnars.path}" />
+		<jar destfile="${dnars.path}" basedir="${bin.dir}" includes="**" />
+	</target>
+</project>

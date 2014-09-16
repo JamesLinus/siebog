@@ -18,49 +18,17 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.agents.dnars.resspeedtest;
 
-import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import siebog.xjaf.core.AID;
 
 /**
- * Base interface for user-defined execution control.
- * <p>
- * Execution sequence:
- * <ul>
- * <li>init
- * <li>(receivedFinishedCycle)*
- * <li>stop
- * </ul>
- * </p>
- * Based on jason.control.ExecutionControl
  * 
+ *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class UserExecutionControl implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private boolean running = true;
-
-	public void init(String[] args) {
-	}
-
-	public void receiveFinishedCycle(String agName, boolean breakpoint, int cycle) {
-	}
-
-	public void stop() {
-		running = false;
-	}
-
-	public int getCycleTimeout() {
-		return 5000;
-	}
-
-	public void startNewCycle(int cycleNum) {
-	}
-
-	public void allAgsFinished() {
-	}
-
-	public boolean isRunning() {
-		return running;
-	}
+public interface SpeedResults extends Remote {
+	void add(AID aid, long timeMillis) throws RemoteException;
 }

@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import siebog.jasonee.intf.JasonEEExecutionControl;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
+import siebog.xjaf.core.XjafExecutorService;
 
 /**
  * 
@@ -43,7 +44,9 @@ import siebog.xjaf.core.AID;
 @Lock(LockType.WRITE)
 public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
 	private static final long serialVersionUID = 1L;
+	private int cycleNum;
 	private Set<AID> agents;
+	private int finished;
 	private UserExecutionControl userExecCtrl;
 
 	@Override
@@ -75,6 +78,29 @@ public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
 	public void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum) {
 		if (userExecCtrl != null)
 			userExecCtrl.receiveFinishedCycle(aid.toString(), isBreakpoint, cycleNum);
+		++finished;
+		if (finished >= agents.size()) {
+			if (userExecCtrl != null)
+				userExecCtrl.allAgsFinished();
+			startNewCycle();
+		}
+	}
+
+	private void startNewCycle() {
+		++cycleNum;
+		finished = 0;
+		if (userExecCtrl != null)
+			userExecCtrl.startNewCycle(cycleNum);
+
+		long timeout = userExecCtrl != null ? userExecCtrl.getCycleTimeout() : 5000;
+		final int scheduledCycleNum = cycleNum;
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+
+			}
+		};
+		ObjectFactory.getExecutorService().execute(task, timeout);
 	}
 
 	@Override

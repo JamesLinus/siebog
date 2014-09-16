@@ -80,5 +80,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/siebog-core/lib/module/jason.jar" sourcepath="/Jason/src"/>
+	<classpathentry kind="lib" path="/siebog-core/lib/module/scala-library.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
