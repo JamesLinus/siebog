@@ -26,6 +26,7 @@ import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Example of a pong agent.
@@ -36,14 +37,21 @@ import siebog.xjaf.fipa.Performative;
 @Remote(Agent.class)
 public class Pong extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private int number = 0;
+	private String nodeName;
+	private int counter;
+
+	@Override
+	protected void onInit(AgentInitArgs args) {
+		nodeName = getNodeName();
+		logger.info("Pong created on " + nodeName);
+	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		logger.info(myAid.toString());
-		// reply with an auto-increasing content
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.setContent("" + number++);
+		reply.userArgs.put("pongCreatedOn", nodeName);
+		reply.userArgs.put("pongWorkingOn", getNodeName());
+		reply.userArgs.put("pongCounter", ++counter);
 		msm.post(reply);
 	}
 }

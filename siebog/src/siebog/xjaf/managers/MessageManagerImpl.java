@@ -23,7 +23,6 @@ package siebog.xjaf.managers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -35,8 +34,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLContent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -48,14 +47,12 @@ import siebog.xjaf.fipa.Performative;
  */
 @Stateless
 @Remote(MessageManager.class)
+@LocalBean
 @Path("/messages")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@LocalBean
 public class MessageManagerImpl implements MessageManager {
 	private static final Logger logger = Logger.getLogger(MessageManagerImpl.class.getName());
-	@EJB
-	private AgentManagerImpl agentManager;
 
 	@GET
 	@Path("/")
@@ -72,25 +69,17 @@ public class MessageManagerImpl implements MessageManager {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
 	public void post(@Form ACLMessage msg) {
-		for (AID aid : msg.getReceivers()) {
+		final AgentManager agm = ObjectFactory.getAgentManager();
+		for (AID aid : msg.receivers) {
 			if (aid == null)
 				throw new IllegalArgumentException("Receiver AID cannot be null.");
 			try {
-				RunningAgent rec = agentManager.getRunningAgent(aid);
+				RunningAgent rec = agm.getRunningAgent(aid);
 				rec.deliverMessage(msg);
 			} catch (IllegalArgumentException ex) {
 				logger.info(ex.getMessage());
 			}
 		}
-	}
-
-	@Override
-	public void post(AID sender, AID receiver, Performative performative, String content) {
-		ACLMessage msg = new ACLMessage(performative);
-		msg.setSender(sender);
-		msg.addReceiver(receiver);
-		msg.setContent(new ACLContent(content));
-		post(msg);
 	}
 
 	@Override

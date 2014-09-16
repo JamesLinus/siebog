@@ -48,7 +48,7 @@ public abstract class DNarsAgent extends XjafAgent {
 	}
 
 	protected boolean filter(ACLMessage msg) {
-		if (msg.getPerformative() == Performative.INFORM) {
+		if (msg.performative == Performative.INFORM) {
 			// TODO : String to Event[]
 			// Event[] events = (Event[]) msg.getContent();
 			onEvents(null);

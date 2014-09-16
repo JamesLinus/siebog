@@ -4,6 +4,7 @@
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="bin.dir" value="war/WEB-INF/classes" />
+	<property name="dist.dir" value="../siebog-core/dist" />
 	<property file="../siebog-core/build.properties" />
 	
 	<target name="package">

@@ -84,7 +84,7 @@ public class PairsStarter {
 		MessageManager msm = ObjectFactory.getMessageManager();
 		for (AID aid : senders) {
 			ACLMessage msg = new ACLMessage(Performative.REQUEST);
-			msg.addReceiver(aid);
+			msg.receivers.add(aid);
 			msm.post(msg);
 		}
 	}

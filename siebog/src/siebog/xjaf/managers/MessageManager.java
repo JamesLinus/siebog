@@ -20,9 +20,7 @@
 
 package siebog.xjaf.managers;
 
-import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Remote interface of the message manager.
@@ -36,8 +34,6 @@ public interface MessageManager {
 	 * @param message ACLMessage instance.
 	 */
 	void post(ACLMessage message);
-
-	void post(AID sender, AID receiver, Performative performative, String content);
 
 	String ping();
 }

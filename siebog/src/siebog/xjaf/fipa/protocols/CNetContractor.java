@@ -34,7 +34,7 @@ public abstract class CNetContractor extends XjafAgent {
 
 	@Override
 	public void onMessage(ACLMessage message) {
-		switch (message.getPerformative()) {
+		switch (message.performative) {
 		case CALL_FOR_PROPOSAL:
 			ACLMessage reply = getProposal(message);
 			if (reply != null)

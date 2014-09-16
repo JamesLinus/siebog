@@ -93,18 +93,18 @@ public class Ant extends XjafAgent {
 		mapAID = agm.getAIDByRuntimeName("Map");
 
 		ACLMessage message = new ACLMessage();
-		message.setPerformative(Performative.REQUEST);
-		message.setContent("MapSize?");
-		message.setSender(myAid);
-		message.addReceiver(mapAID);
-		message.setReplyWith("MapSize");
+		message.performative = Performative.REQUEST;
+		message.content = "MapSize?";
+		message.sender = myAid;
+		message.receivers.add(mapAID);
+		message.replyWith = "MapSize";
 		msm.post(message);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage message) {
-		if ("MapSize".equals(message.getInReplyTo())) {
-			mapSize = Integer.parseInt(message.getContentAsString());
+		if ("MapSize".equals(message.inReplyTo)) {
+			mapSize = Integer.parseInt(message.content);
 			// choose starting map node randomly
 			currentMapPosIndex = new Random().nextInt(mapSize);
 
@@ -115,7 +115,7 @@ public class Ant extends XjafAgent {
 
 			phase = 1;
 			ACLMessage start = new ACLMessage(Performative.REQUEST);
-			start.addReceiver(myAid);
+			start.receivers.add(myAid);
 			msm.post(start);
 			return;
 		}
@@ -127,9 +127,9 @@ public class Ant extends XjafAgent {
 
 			currentMapPosIndex = getCurrentMapPosIndex();
 
-			request.setContent("PheromoneLevels? " + currentMapPosIndex + " " + potentialNodeIndices);
-			request.addReceiver(mapAID);
-			request.setSender(myAid);
+			request.content = "PheromoneLevels? " + currentMapPosIndex + " " + potentialNodeIndices;
+			request.receivers.add(mapAID);
+			request.sender = myAid;
 			msm.post(request);
 
 			phase = 2;
@@ -140,7 +140,7 @@ public class Ant extends XjafAgent {
 
 			// response contains a header and alternating numbers designating pheromone level and
 			// edge weight for every applicable edge
-			String[] parts = message.getContentAsString().split(" ");
+			String[] parts = message.content.split(" ");
 
 			// set pheromone and weight hashmaps
 			java.util.Map<Integer, Float> pheromones = new HashMap<>();
@@ -185,8 +185,8 @@ public class Ant extends XjafAgent {
 
 			// initiate local pheromone update
 			ACLMessage localUpdate = new ACLMessage(Performative.INFORM);
-			localUpdate.addReceiver(mapAID);
-			localUpdate.setContent("UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex + " " + ksi);
+			localUpdate.receivers.add(mapAID);
+			localUpdate.content = "UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex + " " + ksi;
 
 			// advance the phase as required (if tour complete, continue with phase 3, otherwise,
 			// repeat phase 1)
@@ -195,9 +195,9 @@ public class Ant extends XjafAgent {
 				addNodeToTour(firstMapPosIndex);
 
 				ACLMessage edgeWeightReq = new ACLMessage(Performative.REQUEST);
-				edgeWeightReq.addReceiver(mapAID);
-				edgeWeightReq.setContent("EdgeWeight? " + currentMapPosIndex + " " + firstMapPosIndex);
-				edgeWeightReq.setSender(myAid);
+				edgeWeightReq.receivers.add(mapAID);
+				edgeWeightReq.content = "EdgeWeight? " + currentMapPosIndex + " " + firstMapPosIndex;
+				edgeWeightReq.sender = myAid;
 				msm.post(edgeWeightReq);
 
 				currentMapPosIndex = firstMapPosIndex;
@@ -210,20 +210,20 @@ public class Ant extends XjafAgent {
 			break;
 		}
 		case 3: {
-			addWeightToTour(Float.parseFloat(message.getContentAsString()));
+			addWeightToTour(Float.parseFloat(message.content));
 			phase = 4;
 			msm.post(message);
 			break;
 		}
 		case 4: {
 			ACLMessage updateBest = new ACLMessage(Performative.INFORM);
-			updateBest.addReceiver(mapAID);
+			updateBest.receivers.add(mapAID);
 			StringBuilder tourSoFar = new StringBuilder();
 			for (int i = 0; i < getTourSoFarSize(); ++i)
 				tourSoFar.append(" ").append(getTourNode(i));
 			float tourWeight = getTotalWeightSoFar();
-			updateBest.setContent("UpdateBestTour " + tourWeight + tourSoFar.toString());
-			updateBest.setSender(myAid);
+			updateBest.content = "UpdateBestTour " + tourWeight + tourSoFar.toString();
+			updateBest.sender = myAid;
 			msm.post(updateBest);
 
 			delta = 1 / tourWeight;
@@ -251,12 +251,12 @@ public class Ant extends XjafAgent {
 			currentMapPosIndex = getCurrentMapPosIndex();
 
 			ACLMessage updatePheromone = new ACLMessage(Performative.INFORM);
-			updatePheromone.addReceiver(mapAID);
+			updatePheromone.receivers.add(mapAID);
 			// float val = (1 - ro) * oldValue + ro * delta; // final formula is constructed in Map
 			// agent (for simplicity of oldValue retrieval)
-			updatePheromone.setContent("UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex + " " + (1 - ro)
-					+ " " + ro * delta);
-			updatePheromone.setSender(myAid);
+			updatePheromone.content = "UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex + " " + (1 - ro)
+					+ " " + ro * delta;
+			updatePheromone.sender = myAid;
 			msm.post(updatePheromone);
 
 			setCurrentMapPosIndex(nextNodeIndex);

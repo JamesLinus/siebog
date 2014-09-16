@@ -20,6 +20,10 @@
 
 package siebog.agents.xjaf.ping;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.xjaf.core.AID;
@@ -27,6 +31,7 @@ import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Example of a ping agent.
@@ -37,18 +42,42 @@ import siebog.xjaf.fipa.Performative;
 @Remote(Agent.class)
 public class Ping extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private String nodeName;
+
+	@Override
+	protected void onInit(AgentInitArgs args) {
+		nodeName = getNodeName();
+		logger.info("Ping created on " + nodeName);
+	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		if (msg.getPerformative() == Performative.REQUEST) {
-			logger.info(myAid.toString());
+		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
-			final String content = msg.getContentAsString();
-			AID pongAid = new AID(content);
-			msm.post(myAid, pongAid, null, null); // msm -> message manager
-			// wait for the reply in a blocking fashion
-			ACLMessage reply = receiveWait(0);
-			logger.info("Pong says: " + reply.getContent());
+			AID pongAid = new AID(msg.content);
+			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
+			msgToPong.sender = myAid;
+			msgToPong.receivers.add(pongAid);
+			msm.post(msgToPong);
+
+			// wait for the message
+			ACLMessage msgFromPong = receiveWait(0);
+
+			Map<String, Serializable> args = new HashMap<>(msgFromPong.userArgs);
+			args.put("pingCreatedOn", nodeName);
+			args.put("pingWorkingOn", getNodeName());
+
+			// print info
+			logger.info("Ping-Pong interaction details:");
+			for (Entry<String, Serializable> e : args.entrySet())
+				logger.info(e.getKey() + " " + e.getValue());
+
+			// reply to the original sender (if any)
+			if (msg.canReplyTo()) {
+				ACLMessage reply = msg.makeReply(Performative.INFORM);
+				reply.userArgs = args;
+				msm.post(reply);
+			}
 		}
 	}
 }

@@ -29,15 +29,11 @@ import siebog.xjaf.fipa.Performative;
  */
 public class HeartbeatMessage extends ACLMessage {
 	private static final long serialVersionUID = 1L;
-	private long handle;
+	public long handle;
 
 	public HeartbeatMessage(AID aid, long handle) {
 		super(Performative.REQUEST);
-		addReceiver(aid);
+		receivers.add(aid);
 		this.handle = handle;
-	}
-
-	public long getHandle() {
-		return handle;
 	}
 }

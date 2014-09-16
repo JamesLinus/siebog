@@ -63,7 +63,7 @@ class EDT(val list: ListBuffer[Event], val observers: ListBuffer[AID]) extends T
 		// TODO : Event[] to String
 		//acl.setContent(events)
 		observers synchronized {
-			observers.foreach { aid => acl.addReceiver(aid) }
+			observers.foreach { aid => acl.receivers.add(aid) }
 		}
 		ObjectFactory.getMessageManager().post(acl)
 	}

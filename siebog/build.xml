@@ -4,13 +4,14 @@
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="bin.dir" value="war/WEB-INF/classes" />
+	<property name="dist.dir" value="${env.JBOSS_HOME}/.." />
 	<property file="../siebog-core/build.properties" />
 
 	<target name="package">
 		<delete file="${siebog.path}" />
 		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="war" includes="WEB-INF/classes/**" />
-			<fileset dir="war" includes="WEB-INF/jboss-web.xml" />
+			<fileset dir="war" includes="WEB-INF/*.xml" />
 			<fileset dir="war" includes="*.html,*.js" />
 			<fileset dir="war" includes="META-INF/**" />
 			<fileset dir="war" includes="admin/**,img/**" />
@@ -39,7 +40,7 @@
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
 			<arg value="--controller=${jboss.controller}" />
-			<arg value='deploy ${siebog.file} --name=${siebog.name} --server-groups=${server.group}' />
+			<arg value='deploy ${siebog.path} --name=${siebog.name} --server-groups=${server.group}' />
 		</exec>
 	</target>
 </project>

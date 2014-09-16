@@ -49,13 +49,13 @@ public class SiebogCluster {
 
 			Properties p = new Properties();
 			p.put("endpoint.name", "client-endpoint");
-			p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
+			// p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
 
 			p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 			p.put("remote.clusters", "ejb");
 			p.put("remote.cluster.ejb.username", Global.USERNAME);
 			p.put("remote.cluster.ejb.password", Global.PASSWORD);
-			p.put("remote.cluster.ejb.clusternode.selector", RRClusterNodeSelector.class.getName());
+			// p.put("remote.cluster.ejb.clusternode.selector", RRClusterNodeSelector.class.getName());
 
 			StringBuilder connections = new StringBuilder();
 			String sep = "";

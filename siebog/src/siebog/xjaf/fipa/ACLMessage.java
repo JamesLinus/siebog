@@ -22,83 +22,86 @@ package siebog.xjaf.fipa;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.ws.rs.FormParam;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
-import scala.actors.threadpool.Arrays;
 import siebog.xjaf.core.AID;
 
 /**
- * Represents a FIPA ACL message. Refer to <a
- * href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message Structure
- * Specification</a> for more details.
+ * Represents a FIPA ACL message. Refer to <a href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message
+ * Structure Specification</a> for more details.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class ACLMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private static final String USERARG_PREFIX = "X-";
 
 	// Denotes the type of the communicative act of the ACL message.
 	@FormParam("performative")
-	private Performative performative;
+	public Performative performative;
 
 	/* Participants in Communication */
 
 	// Denotes the identity of the sender of the message.
 	@FormParam("sender")
-	private AID sender;
+	public AID sender;
 	// Denotes the identity of the intended recipients of the message.
 	@FormParam("receivers")
-	private List<AID> receivers;
+	public List<AID> receivers;
 	// This parameter indicates that subsequent messages in this conversation
 	// thread are to be directed to the agent named in the reply-to parameter,
 	// instead of to the agent named in the sender parameter.
 	@FormParam("replyTo")
-	private AID replyTo;
+	public AID replyTo;
 
 	/* Description of Content */
 
 	// Denotes the content of the message; equivalently denotes the
 	// object of the action.
 	@FormParam("content")
-	private ACLContent content;
+	public String content;
+	public Map<String, Serializable> userArgs;
 	// Denotes the language in which the content parameter is expressed.
 	@FormParam("language")
-	private String language;
+	public String language;
 	// Denotes the specific encoding of the content language expression.
 	@FormParam("encoding")
-	private String encoding;
+	public String encoding;
 	// Denotes the ontology(s) used to give a meaning to the symbols in
 	// the content expression.
 	@FormParam("ontology")
-	private String ontology;
+	public String ontology;
 
 	/* Control of Conversation */
 
 	// Denotes the interaction protocol that the sending agent is
 	// employing with this ACL message.
 	@FormParam("protocol")
-	private String protocol;
+	public String protocol;
 	// Introduces an expression (a conversation identifier) which is used
 	// to identify the ongoing sequence of communicative acts that
 	// together form a conversation.
 	@FormParam("conversationId")
-	private String conversationId;
+	public String conversationId;
 	// Introduces an expression that will be used by the responding
 	// agent to identify this message.
 	@FormParam("replyWith")
-	private String replyWith;
+	public String replyWith;
 	// Denotes an expression that references an earlier action to which
 	// this message is a reply.
 	@FormParam("inReplyTo")
-	private String inReplyTo;
+	public String inReplyTo;
 	// Denotes a time and/or date expression which indicates the latest
 	// time by which the sending agent would like to receive a reply.
 	@FormParam("replyBy")
-	private long replyBy;
+	public long replyBy;
 
 	public ACLMessage() {
 		this(Performative.NOT_UNDERSTOOD);
@@ -107,6 +110,7 @@ public class ACLMessage implements Serializable {
 	public ACLMessage(Performative performative) {
 		this.performative = performative;
 		receivers = new ArrayList<>();
+		userArgs = new HashMap<>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,7 +120,7 @@ public class ACLMessage implements Serializable {
 		sender = (AID) obj.get("sender");
 		receivers = (List<AID>) obj.get("receivers");
 		replyTo = (AID) obj.get("replyTo");
-		content = (ACLContent) obj.get("content");
+		content = obj.getString("content");
 		language = obj.getString("language");
 		encoding = obj.getString("encoding");
 		ontology = obj.getString("ontology");
@@ -125,175 +129,38 @@ public class ACLMessage implements Serializable {
 		replyWith = obj.getString("replyWith");
 		inReplyTo = obj.getString("inReplyTo");
 		replyBy = obj.getLong("replyBy");
+		// user args
+		userArgs = new HashMap<>();
+		Iterator<String> i = obj.keys();
+		while (i.hasNext()) {
+			String key = i.next();
+			if (key.startsWith(USERARG_PREFIX)) {
+				String subKey = key.substring(USERARG_PREFIX.length());
+				Serializable value = (Serializable) obj.get(key);
+				userArgs.put(subKey, value);
+			}
+		}
 	}
 
-	public Performative getPerformative() {
-		return performative;
-	}
-
-	public void setPerformative(Performative performative) {
-		this.performative = performative;
-	}
-
-	public ACLMessage makeReply() {
-		return makeReply(performative);
+	public boolean canReplyTo() {
+		return sender != null || replyTo != null;
 	}
 
 	public ACLMessage makeReply(Performative performative) {
+		if (!canReplyTo())
+			throw new IllegalArgumentException("There's no-one to receive the reply.");
 		ACLMessage reply = new ACLMessage(performative);
 		// receiver
-		reply.addReceiver(replyTo != null ? replyTo : sender);
+		reply.receivers.add(replyTo != null ? replyTo : sender);
 		// description of content
-		reply.setLanguage(language);
-		reply.setOntology(ontology);
-		reply.setEncoding(encoding);
+		reply.language = language;
+		reply.ontology = ontology;
+		reply.encoding = encoding;
 		// control of conversation
-		reply.setProtocol(protocol);
-		reply.setConversationId(conversationId);
-		reply.setInReplyTo(replyWith);
+		reply.protocol = protocol;
+		reply.conversationId = conversationId;
+		reply.inReplyTo = replyWith;
 		return reply;
-	}
-
-	public AID getSender() {
-		return sender;
-	}
-
-	public void setSender(AID sender) {
-		this.sender = sender;
-	}
-
-	public void setContent(ACLContent content) {
-		this.content = content;
-	}
-
-	public void setContent(String content) {
-		this.content = new ACLContent(content);
-	}
-
-	public void setContent(boolean content) {
-		setContent(content + "");
-	}
-
-	public void setContent(int content) {
-		setContent(content + "");
-	}
-
-	public ACLContent getContent() {
-		return content;
-	}
-
-	public String getContentAsString() {
-		return content.toString();
-	}
-
-	public boolean getContentAsBool() {
-		return Boolean.parseBoolean(content.toString());
-	}
-
-	public int getContentAsInt() {
-		return Integer.parseInt(content.toString());
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	public String getOntology() {
-		return ontology;
-	}
-
-	public void setOntology(String ontology) {
-		this.ontology = ontology;
-	}
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
-
-	public String getConversationId() {
-		return conversationId;
-	}
-
-	public void setConversationId(String conversationId) {
-		this.conversationId = conversationId;
-	}
-
-	public String getReplyWith() {
-		return replyWith;
-	}
-
-	public void setReplyWith(String replyWith) {
-		this.replyWith = replyWith;
-	}
-
-	public String getInReplyTo() {
-		return inReplyTo;
-	}
-
-	public void setInReplyTo(String inReplyTo) {
-		this.inReplyTo = inReplyTo;
-	}
-
-	public long getReplyBy() {
-		return replyBy;
-	}
-
-	public void setReplyBy(long replyBy) {
-		this.replyBy = replyBy;
-	}
-
-	public AID getReplyTo() {
-		return replyTo;
-	}
-
-	public void setReplyTo(AID replyTo) {
-		this.replyTo = replyTo;
-	}
-
-	public List<AID> getReceivers() {
-		return receivers;
-	}
-
-	public void setReceivers(Collection<AID> receivers) {
-		this.receivers.clear();
-		this.receivers.addAll(receivers);
-	}
-
-	public void addReceiver(AID receiver) {
-		receivers.add(receiver);
-	}
-
-	@SuppressWarnings("unchecked")
-	public void addReceivers(AID... receivers) {
-		this.receivers.addAll(Arrays.asList(receivers));
-	}
-
-	public void removeReceiver(AID receiver) {
-		receivers.remove(receiver);
-	}
-
-	public void removeReceivers(AID... receivers) {
-		this.receivers.removeAll(Arrays.asList(receivers));
-	}
-
-	public void clearReceivers() {
-		receivers.clear();
 	}
 
 	@Override
@@ -313,6 +180,8 @@ public class ACLMessage implements Serializable {
 			obj.put("replyWith", replyWith);
 			obj.put("inReplyTo", inReplyTo);
 			obj.put("replyBy", replyBy);
+			for (Entry<String, Serializable> e : userArgs.entrySet())
+				obj.put(USERARG_PREFIX + e.getKey(), e.getValue());
 		} catch (JSONException ex) {
 		}
 		return obj.toString();

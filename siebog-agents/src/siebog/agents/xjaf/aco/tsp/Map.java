@@ -70,11 +70,11 @@ public class Map extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage message) {
-		final String content = message.getContentAsString();
+		final String content = message.content;
 		ACLMessage reply = message.makeReply(Performative.INFORM);
-		if (message.getPerformative() == Performative.REQUEST) {
+		if (message.performative == Performative.REQUEST) {
 			if (content.equals("MapSize?")) {
-				reply.setContent(getMapSize() + "");
+				reply.content = getMapSize() + "";
 			} else if (content.startsWith("PheromoneLevels?")) {
 				String[] parts = content.split(" ");
 				StringBuilder pheromoneLevels = new StringBuilder();
@@ -86,13 +86,13 @@ public class Map extends XjafAgent {
 					pheromoneLevels.append(" ").append(getPheromoneLevel(i, newJ)).append(" ")
 							.append(getEdgeWeight(i, newJ));
 				}
-				reply.setContent(pheromoneLevels.toString());
+				reply.content = pheromoneLevels.toString();
 			} else if (content.startsWith("EdgeWeight?")) {
 				String[] parts = content.split(" ");
-				reply.setContent(String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))));
+				reply.content = String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
 			}
 			msm.post(reply);
-		} else if (message.getPerformative() == Performative.INFORM) {
+		} else if (message.performative == Performative.INFORM) {
 			if (content.startsWith("UpdateBestTour")) {
 				String[] parts = content.split(" ");
 				float newTourWeight = Float.parseFloat(parts[1]);

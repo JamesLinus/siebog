@@ -81,7 +81,7 @@ public class JasonEEAgent extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage msg) {
 		if (msg instanceof ReasoningCycleMessage)
-			onSyncCycle(((ReasoningCycleMessage) msg).getCycleNum());
+			onSyncCycle(((ReasoningCycleMessage) msg).cycleNum);
 		else if (msg instanceof ActionFeedbackMessage)
 			arch.onActionFeedback((ActionFeedbackMessage) msg);
 		else

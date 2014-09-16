@@ -64,13 +64,13 @@ public class Sender extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		if (msg.getPerformative() == Performative.REQUEST) {
+		if (msg.performative == Performative.REQUEST) {
 			iterationIndex = 0;
 			totalTime = 0;
 			postMsg();
 		} else {
 			++iterationIndex;
-			totalTime += System.currentTimeMillis() - Long.parseLong(msg.getInReplyTo());
+			totalTime += System.currentTimeMillis() - Long.parseLong(msg.inReplyTo);
 			if (iterationIndex < numIterations)
 				postMsg();
 			else {
@@ -90,10 +90,10 @@ public class Sender extends XjafAgent {
 
 	private void postMsg() {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.setSender(myAid);
-		msg.addReceiver(receiver);
-		msg.setContent(content);
-		msg.setReplyWith(System.currentTimeMillis() + "");
+		msg.sender = myAid;
+		msg.receivers.add(receiver);
+		msg.content = content;
+		msg.replyWith = System.currentTimeMillis() + "";
 		msm.post(msg);
 	}
 

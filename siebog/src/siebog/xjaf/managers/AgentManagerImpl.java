@@ -72,15 +72,14 @@ public class AgentManagerImpl implements AgentManager {
 	@Override
 	public AID startAgent(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
 			@Form AgentInitArgs args) {
-		AID aid = new AID(name);
-		// is it running already?
+
+		AID aid = new AID(name); // is it running already?
 		if (cache.containsKey(aid)) {
 			logger.info("Already running: [" + aid + "]");
 			return aid;
 		}
 
-		try {
-			// build the JNDI lookup string
+		try { // build the JNDI lookup string
 			final String view = Agent.class.getName();
 			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(), view);
 			String jndiNameStateful = jndiNameStateless + "?stateful";
@@ -110,6 +109,7 @@ public class AgentManagerImpl implements AgentManager {
 			logger.log(Level.WARNING, "Unable to start an agent of class " + agClass, ex);
 			return null;
 		}
+
 	}
 
 	@DELETE
@@ -157,6 +157,7 @@ public class AgentManagerImpl implements AgentManager {
 		return new ArrayList<>(cache.values());
 	}
 
+	@Override
 	public RunningAgent getRunningAgent(AID aid) {
 		RunningAgent rec = cache.get(aid);
 		if (rec != null)

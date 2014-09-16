@@ -31,15 +31,11 @@ import siebog.xjaf.fipa.Performative;
  */
 public class ReasoningCycleMessage extends ACLMessage {
 	private static final long serialVersionUID = 1L;
-	private int cycleNum;
+	public int cycleNum;
 
 	public ReasoningCycleMessage(Collection<AID> receivers, int cycleNum) {
 		super(Performative.REQUEST);
-		setReceivers(receivers);
+		this.receivers.addAll(receivers);
 		this.cycleNum = cycleNum;
-	}
-
-	public int getCycleNum() {
-		return cycleNum;
 	}
 }

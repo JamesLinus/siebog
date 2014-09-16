@@ -23,6 +23,7 @@ package siebog.xjaf.core;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
@@ -120,14 +121,18 @@ public abstract class XjafAgent implements Agent {
 				public void run() {
 					// TODO : check if the access to onMessage is protected
 					if (msg instanceof HeartbeatMessage) {
-						boolean repeat = onHeartbeat(msg.getContentAsString());
+						boolean repeat = onHeartbeat(msg.content);
 						if (repeat)
 							executor.signalHeartbeat(hbHandle);
 						else
 							executor.cancelHeartbeat(hbHandle);
 					} else {
 						if (filter(msg))
-							onMessage(msg);
+							try {
+								onMessage(msg);
+							} catch (Exception ex) {
+								logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
+							}
 					}
 					myself.processNextMessage(); // will acquire lock
 				}
@@ -154,13 +159,12 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
-	 * for the message to become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
+	 * become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
-	 *            account and the method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
-	 *         is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
+	 *            method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
@@ -198,8 +202,7 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering
-	 * function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.
@@ -218,5 +221,9 @@ public abstract class XjafAgent implements Agent {
 
 	public AID getAid() {
 		return myAid;
+	}
+
+	protected String getNodeName() {
+		return System.getProperty("jboss.node.name");
 	}
 }

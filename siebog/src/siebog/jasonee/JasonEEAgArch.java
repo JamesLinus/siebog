@@ -124,7 +124,7 @@ public class JasonEEAgArch extends AgArch {
 	public void onActionFeedback(ActionFeedbackMessage msg) {
 		ActionExec action = scheduledActions.remove(msg.getUserData());
 		if (action != null) {
-			action.setResult(msg.getContentAsBool());
+			action.setResult(Boolean.parseBoolean(msg.content));
 			getTS().getC().addFeedbackAction(action);
 		}
 	}

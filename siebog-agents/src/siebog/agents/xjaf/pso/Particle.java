@@ -146,11 +146,11 @@ public class Particle extends XjafAgent {
 
 		// compose the message
 		ACLMessage message = new ACLMessage();
-		message.setPerformative(Performative.REQUEST);
+		message.performative = Performative.REQUEST;
 		PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, bestFitness, bestPosition);
-		message.setContent(psoMessage.toString());
-		message.setSender(myAid);
-		message.addReceiver(swarmAID);
+		message.content = psoMessage.toString();
+		message.sender = myAid;
+		message.receivers.add(swarmAID);
 
 		// post the message
 		msm.post(message);
@@ -165,9 +165,9 @@ public class Particle extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage message) {
 
-		PsoMessage psoMessage = PsoMessage.valueOf(message.getContentAsString());
+		PsoMessage psoMessage = PsoMessage.valueOf(message.content);
 
-		if (message.getPerformative() == Performative.REQUEST) {
+		if (message.performative == Performative.REQUEST) {
 			if (psoMessage.getAction().equals(PsoMessage.ITERATE_PARTICLE)) {
 
 				// logger.warning("Particle [" + myAid + "] got the iterate request" );
@@ -175,8 +175,8 @@ public class Particle extends XjafAgent {
 
 				// reply to the swarm that the iteration is finished
 				ACLMessage reply = message.makeReply(Performative.INFORM);
-				reply.setSender(myAid);
-				message.addReceiver(swarmAID);
+				reply.sender = myAid;
+				message.receivers.add(swarmAID);
 				msm.post(reply);
 			}
 		}
@@ -245,11 +245,11 @@ public class Particle extends XjafAgent {
 		// update global best fitness if necessary
 		if (newFitness < bestGlobalFitness) {
 			ACLMessage message = new ACLMessage();
-			message.setPerformative(Performative.REQUEST);
+			message.performative = Performative.REQUEST;
 			PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, newFitness, newPosition);
-			message.setContent(psoMessage.toString());
-			message.setSender(myAid);
-			message.addReceiver(swarmAID);
+			message.content = psoMessage.toString();
+			message.sender = myAid;
+			message.receivers.add(swarmAID);
 			msm.post(message);
 		}
 	}

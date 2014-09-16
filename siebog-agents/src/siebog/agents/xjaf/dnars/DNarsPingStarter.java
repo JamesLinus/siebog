@@ -49,7 +49,7 @@ public class DNarsPingStarter {
 		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.addReceiver(aid);
+		msg.receivers.add(aid);
 		ObjectFactory.getMessageManager().post(msg);
 	}
 }

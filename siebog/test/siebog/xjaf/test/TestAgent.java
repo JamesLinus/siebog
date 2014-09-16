@@ -20,8 +20,10 @@
 
 package siebog.xjaf.test;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.xjaf.core.Agent;
@@ -54,7 +56,13 @@ public class TestAgent extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage msg) {
 		if (listener != null)
-			listener.onMessage(msg);
+			try {
+				listener.onMessage(msg);
+			} catch (RemoteException ex) {
+				logger.log(Level.WARNING, "Error during RMI call.", ex);
+			}
+		else
+			logger.info("In Test agent: " + msg);
 	}
 
 }

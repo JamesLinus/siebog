@@ -51,7 +51,7 @@ public class XjafExecutorService {
 	public long registerHeartbeat(AID aid, long delayMilliseconds, String content) {
 		long handle = hbCounter.incrementAndGet();
 		HeartbeatMessage msg = new HeartbeatMessage(aid, handle);
-		msg.setContent(content);
+		msg.content = content;
 		heartbeats.put(handle, msg);
 		signalHeartbeat(handle);
 		return handle;

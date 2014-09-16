@@ -108,13 +108,13 @@ public class Swarm extends XjafAgent {
 
 				// compose message
 				ACLMessage message = new ACLMessage();
-				message.setPerformative(Performative.REQUEST);
+				message.performative = Performative.REQUEST;
 
 				PsoMessage psoMessage = new PsoMessage(PsoMessage.ITERATE_PARTICLE, bestGlobalFitness,
 						bestGlobalPosition);
-				message.setContent(psoMessage.toString());
-				message.setSender(myAid);
-				message.addReceiver(particleAID);
+				message.content = psoMessage.toString();
+				message.sender = myAid;
+				message.receivers.add(particleAID);
 				msm.post(message);
 
 			}
@@ -132,9 +132,9 @@ public class Swarm extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage message) {
 
-		PsoMessage psoMessage = PsoMessage.valueOf(message.getContentAsString());
+		PsoMessage psoMessage = PsoMessage.valueOf(message.content);
 
-		if (message.getPerformative() == Performative.REQUEST) {
+		if (message.performative == Performative.REQUEST) {
 
 			if (psoMessage.getAction().equals(PsoMessage.UPDATE_GLOBAL_SOLUTION)) {
 				if (psoMessage.getFitness() < bestGlobalFitness) {
@@ -146,7 +146,7 @@ public class Swarm extends XjafAgent {
 				}
 			}
 
-		} else if (message.getPerformative() == Performative.INFORM) {
+		} else if (message.performative == Performative.INFORM) {
 			// count responses from articles, so that we know when to proceed to next iteration
 			iteratedParticles++;
 			if (iteratedParticles == numberParticles) {

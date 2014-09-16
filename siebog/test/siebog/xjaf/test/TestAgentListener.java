@@ -21,6 +21,7 @@
 package siebog.xjaf.test;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import siebog.xjaf.fipa.ACLMessage;
 
 /**
@@ -28,5 +29,5 @@ import siebog.xjaf.fipa.ACLMessage;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface TestAgentListener extends Remote {
-	void onMessage(ACLMessage msg);
+	void onMessage(ACLMessage msg) throws RemoteException;
 }
