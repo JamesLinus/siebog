@@ -14,7 +14,7 @@ Selected Publications
  * D. Mitrovic, M. Ivanovic, M. Vidakovic, Z. Budimac. [Extensible Java EE-based Agent Framework in Clustered Environements](http://perun.pmf.uns.ac.rs/xjaf/papers/xjaf2x.pdf). In *12th German Conference on Multiagent System Technologies* (MATES 2014), in print. The final publication is available at [SpringerLink](http://www.springer.com/computer/ai/book/978-3-319-11583-2).
  * D. Mitrovic, M. Ivanovic, Z. Budimac, M. Vidakovic. [Radigost: Interoperable web-based multi-agent platform](http://www.sciencedirect.com/science/article/pii/S0164121214000028). *Journal of Systems and Software*, 90:167-178, 2014.
  * M. Vidakovic, M. Ivanovic, D. Mitrovic, Z. Budimac. [Extensible Java EE-based agent framework -- past, present, future](http://link.springer.com/chapter/10.1007%2F978-3-642-33323-1_3). In M. Ganzha and L. C. Jain, eds., *Multiagent Systems and Applications*, vol. 45 of *Intelligent Systems Reference Library*, pp. 55-88. Springer Berlin Heidelberg, 2013.
- * D. Mitrovic, M. Ivanovic, Z. Budimac, M. Vidakovic. [Supporting heterogeneous agent mobility with ALAS](www.comsis.org/pdf.php?id=020-1201). Computer Science and Information Systems, 9(3):1203-1229, 2012.
+ * D. Mitrovic, M. Ivanovic, Z. Budimac, M. Vidakovic. [Supporting heterogeneous agent mobility with ALAS](http://www.comsis.org/pdf.php?id=020-1201). Computer Science and Information Systems, 9(3):1203-1229, 2012.
 
 Details about non-axiomatic reasoning and NAL can be found [here](http://www.cis.temple.edu/~pwang/papers.html).
 
