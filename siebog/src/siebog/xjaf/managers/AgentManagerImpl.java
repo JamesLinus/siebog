@@ -97,7 +97,7 @@ public class AgentManagerImpl implements AgentManager {
 			RunningAgent rec = new RunningAgent();
 			rec.setAgClass(agClass);
 			rec.setAid(aid);
-			rec.setRef(agent);
+			rec.ref = agent;
 			// the order of the next two statements matters. if we call init first and the agent
 			// sends a message from there, it sometimes happens that the reply arrives before we
 			// register the AID. also some agents might wish to terminate themselves inside init.
@@ -172,5 +172,15 @@ public class AgentManagerImpl implements AgentManager {
 			if (rec.getAid().getName().equals(runtimeName))
 				return rec.getAid();
 		throw new IllegalArgumentException("No such agent: " + runtimeName);
+	}
+
+	@Override
+	public void pingAgent(AID aid) {
+		try {
+			RunningAgent agent = getRunningAgent(aid);
+			agent.ref.ping();
+		} catch (Exception ex) {
+			throw new IllegalStateException("Agent does not exist: " + aid, ex);
+		}
 	}
 }

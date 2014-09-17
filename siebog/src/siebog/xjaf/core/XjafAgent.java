@@ -31,6 +31,7 @@ import javax.ejb.LockType;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import siebog.utils.ObjectFactory;
+import siebog.utils.ExecutorService;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.AgentManager;
@@ -56,7 +57,7 @@ public abstract class XjafAgent implements Agent {
 	private boolean processing;
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
-	private XjafExecutorService executor;
+	private ExecutorService executor;
 	private long hbHandle;
 
 	@Override
@@ -225,5 +226,10 @@ public abstract class XjafAgent implements Agent {
 
 	protected String getNodeName() {
 		return System.getProperty("jboss.node.name");
+	}
+
+	@Override
+	public void ping() {
+		logger.info(myAid + " pinged.");
 	}
 }

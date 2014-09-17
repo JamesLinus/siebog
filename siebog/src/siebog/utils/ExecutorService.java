@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.core;
+package siebog.utils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +32,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import siebog.utils.ObjectFactory;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.core.HeartbeatMessage;
 
 /**
  * Wrapper around (managed) executor services.
@@ -41,7 +42,7 @@ import siebog.utils.ObjectFactory;
  */
 @Singleton
 @LocalBean
-public class XjafExecutorService {
+public class ExecutorService {
 	@Resource(lookup = "java:jboss/ee/concurrency/executor/default")
 	private ManagedExecutorService executor;
 	@Resource(lookup = "java:jboss/ee/concurrency/scheduler/default")
@@ -53,8 +54,26 @@ public class XjafExecutorService {
 		return executor.submit(task);
 	}
 
-	public ScheduledFuture<?> execute(Runnable task, long delayMilliseconds) {
-		return scheduler.schedule(task, delayMilliseconds, TimeUnit.MILLISECONDS);
+	public <T> Future<?> execute(final RunnableWithParam<T> task, final T param) {
+		return execute(new Runnable() {
+			@Override
+			public void run() {
+				task.run(param);
+			}
+		});
+	}
+
+	public ScheduledFuture<?> execute(Runnable task, long delayMillis) {
+		return scheduler.schedule(task, delayMillis, TimeUnit.MILLISECONDS);
+	}
+
+	public <T> ScheduledFuture<?> execute(final RunnableWithParam<T> task, long delayMillis, final T param) {
+		return execute(new Runnable() {
+			@Override
+			public void run() {
+				task.run(param);
+			}
+		}, delayMillis);
 	}
 
 	public long registerHeartbeat(AID aid, long delayMilliseconds, String content) {

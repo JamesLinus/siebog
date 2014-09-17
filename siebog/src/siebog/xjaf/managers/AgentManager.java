@@ -54,4 +54,6 @@ public interface AgentManager extends Serializable {
 	RunningAgent getRunningAgent(AID aid);
 
 	List<AgentClass> getAvailableAgentClasses();
+
+	void pingAgent(AID aid);
 }

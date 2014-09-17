@@ -18,23 +18,22 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.jasonee.control;
 
 import jason.control.ExecutionControlInfraTier;
 import java.io.Serializable;
-import siebog.jasonee.UserExecutionControl;
 import siebog.xjaf.core.AID;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEExecutionControl extends ExecutionControlInfraTier, Serializable {
+public interface ExecutionControl extends ExecutionControlInfraTier, Serializable {
 	void init(UserExecutionControl userExecCtrl);
 
 	void addAgent(AID aid);
 
-	void remAgent(AID aid);
+	void removeAgent(AID aid);
 
 	void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum);
 }

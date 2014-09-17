@@ -18,21 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
-
-import java.io.Serializable;
-import siebog.jasonee.control.ExecutionControl;
+package siebog.utils;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
-
-	String putEnv(JasonEEEnvironment env);
-
-	ExecutionControl getExecCtrl(String name);
-
-	String putExecCtrl(ExecutionControl ctrl);
+public interface RunnableWithParam<T> {
+	void run(T param);
 }

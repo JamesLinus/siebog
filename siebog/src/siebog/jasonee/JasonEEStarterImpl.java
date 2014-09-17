@@ -37,8 +37,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
+import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.intf.JasonEEEnvironment;
-import siebog.jasonee.intf.JasonEEExecutionControl;
 import siebog.jasonee.intf.JasonEEStarter;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
@@ -81,26 +82,28 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	private void createRemObjFact() {
 		final List<AgentParameters> agents = project.getAgents();
 		for (AgentParameters agp : agents)
-			if (agp.name.equals("remoteObjectFactory")) {
-				String module = agp.getOption("module");
-				String ejbName = agp.getOption("object");
-				remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejbName);
+			if (agp.name.equals(RemoteObjectFactory.NAME)) {
+				remObjFactModule = agp.getOption("module");
+				remObjFactEjb = agp.getOption("object");
+				remObjFact = ObjectFactory.getRemoteObjectFactory(remObjFactModule, remObjFactEjb);
 				return;
 			}
 		throw new IllegalArgumentException("Need to specify the RemoteObjectFactory object.");
 	}
 
 	private void createExecutionControl() {
-		JasonEEExecutionControl ctrl = ObjectFactory.getJasonEEExecutionControl();
-		final String userClassName = project.getControlClass().getClassName();
+		ExecutionControl ctrl = ObjectFactory.getExecutionControl();
 		UserExecutionControl userExecCtrl = null;
-		if (userClassName != null && userClassName.length() > 0)
+		ClassParameters userClass = project.getControlClass();
+		if (userClass != null) {
+			final String userClassName = userClass.getClassName();
 			try {
 				userExecCtrl = remObjFact.createExecutionControl(userClassName);
 				userExecCtrl.init(project.getControlClass().getParametersArray());
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, "Unable to create user execution control " + userClassName, ex);
 			}
+		}
 		ctrl.init(userExecCtrl);
 		ctrlName = ObjectFactory.getJasonEEApp().putExecCtrl(ctrl);
 	}
@@ -116,8 +119,10 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 		AgentManager agm = ObjectFactory.getAgentManager();
 		final List<AgentParameters> agents = project.getAgents();
 		for (AgentParameters agp : agents) {
+			String runtimeName = agp.name;
+			if (runtimeName.equals(RemoteObjectFactory.NAME))
+				continue;
 			for (int i = 0; i < agp.qty; i++) {
-				String runtimeName = agp.name;
 				if (agp.qty > 1)
 					runtimeName += (i + 1);
 				AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());

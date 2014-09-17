@@ -9,8 +9,11 @@ MAS jason_examples {
 				object = ExampleRemoteObjectFactory
 			];
 	
-		agent2 
-			sample_agent 
+		agent0 
+			sample_agent [ synchronised = true ]
+			agentArchClass MyAgentArch;
+		agent1
+			sample_agent [ synchronised = true ]
 			agentArchClass MyAgentArch;
 		
 	aslSourcePath:

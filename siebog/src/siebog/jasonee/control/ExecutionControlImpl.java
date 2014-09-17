@@ -18,11 +18,12 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.jasonee.control;
 
 import jason.runtime.RuntimeServicesInfraTier;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Lock;
@@ -30,29 +31,38 @@ import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
-import siebog.jasonee.intf.JasonEEExecutionControl;
+import siebog.jasonee.JasonEERuntimeServices;
+import siebog.jasonee.ReasoningCycleMessage;
 import siebog.utils.ObjectFactory;
+import siebog.utils.RunnableWithParam;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.core.XjafExecutorService;
+import siebog.xjaf.managers.AgentManager;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
-@Remote(JasonEEExecutionControl.class)
+@Remote(ExecutionControl.class)
 @Lock(LockType.WRITE)
-public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
+public class ExecutionControlImpl implements ExecutionControl {
 	private static final long serialVersionUID = 1L;
 	private int cycleNum;
 	private Set<AID> agents;
-	private int finished;
+	private Set<AID> finished;
+	// agents that have registered themselves in the middle of a reasoning cycle
+	// they will be included in the list of all agents at the beginning of the next cycle
+	private Set<AID> pendingAgents;
 	private UserExecutionControl userExecCtrl;
+	private boolean runningCycle;
 
 	@Override
 	public void init(UserExecutionControl userExecCtrl) {
 		agents = new HashSet<>();
+		finished = new HashSet<>();
+		pendingAgents = new HashSet<>();
 		this.userExecCtrl = userExecCtrl;
+		startNewCycle();
 	}
 
 	@Override
@@ -78,29 +88,37 @@ public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
 	public void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum) {
 		if (userExecCtrl != null)
 			userExecCtrl.receiveFinishedCycle(aid.toString(), isBreakpoint, cycleNum);
-		++finished;
-		if (finished >= agents.size()) {
+		finished.add(aid);
+		advanceIfDone();
+	}
+
+	private boolean advanceIfDone() {
+		if (cycleDone()) {
+			runningCycle = false;
 			if (userExecCtrl != null)
 				userExecCtrl.allAgsFinished();
 			startNewCycle();
+			return true;
 		}
+		return false;
+	}
+
+	private boolean cycleDone() {
+		return !runningCycle || (finished.size() >= agents.size() && finished.containsAll(agents));
 	}
 
 	private void startNewCycle() {
+		runningCycle = true;
 		++cycleNum;
-		finished = 0;
+		finished.clear();
+		if (pendingAgents.size() > 0) {
+			agents.addAll(pendingAgents);
+			pendingAgents.clear();
+		}
 		if (userExecCtrl != null)
 			userExecCtrl.startNewCycle(cycleNum);
-
-		long timeout = userExecCtrl != null ? userExecCtrl.getCycleTimeout() : 5000;
-		final int scheduledCycleNum = cycleNum;
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-
-			}
-		};
-		ObjectFactory.getExecutorService().execute(task, timeout);
+		informAllAgsToPerformCycle(cycleNum);
+		scheduleTimeout();
 	}
 
 	@Override
@@ -110,11 +128,47 @@ public class JasonEEExecutionControlImpl implements JasonEEExecutionControl {
 
 	@Override
 	public void addAgent(AID aid) {
-		agents.add(aid);
+		pendingAgents.add(aid);
+		advanceIfDone(); // needed sometimes, e.g. if this is the very first agent
 	}
 
 	@Override
-	public void remAgent(AID aid) {
+	public void removeAgent(AID aid) {
 		agents.remove(aid);
+		advanceIfDone();
+	}
+
+	private void scheduleTimeout() {
+		long timeout;
+		if (userExecCtrl != null)
+			timeout = userExecCtrl.getCycleTimeout();
+		else
+			timeout = UserExecutionControl.DEFAULT_TIMEOUT;
+		if (timeout > 0) {
+			RunnableWithParam<Integer> task = new RunnableWithParam<Integer>() {
+				@Override
+				public void run(Integer param) {
+					if (cycleNum == param) {
+						filterUnavailableAgents();
+						if (!advanceIfDone())
+							scheduleTimeout();
+					}
+				}
+			};
+			ObjectFactory.getExecutorService().execute(task, timeout, cycleNum);
+		}
+	}
+
+	private void filterUnavailableAgents() {
+		final AgentManager agm = ObjectFactory.getAgentManager();
+		Iterator<AID> i = agents.iterator();
+		while (i.hasNext()) {
+			AID aid = i.next();
+			try {
+				agm.pingAgent(aid);
+			} catch (IllegalStateException ex) {
+				i.remove();
+			}
+		}
 	}
 }

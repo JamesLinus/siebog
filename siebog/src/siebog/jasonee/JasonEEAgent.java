@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.jasonee.intf.JasonEEExecutionControl;
+import siebog.jasonee.control.ExecutionControl;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
@@ -42,7 +42,7 @@ import siebog.xjaf.managers.AgentInitArgs;
 public class JasonEEAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	private String execCtrlName;
-	private JasonEEExecutionControl execCtrl;
+	private transient ExecutionControl control;
 	private JasonEEAgArch arch;
 	private boolean syncMode;
 	private int asyncCycleNum;
@@ -57,7 +57,7 @@ public class JasonEEAgent extends XjafAgent {
 		AgentParameters agp = getAgentParams(agentName, new File(mas2jFileName));
 		arch = new JasonEEAgArch();
 		try {
-			arch.init(agp, this, envName);
+			arch.init(args, agp, this, envName);
 		} catch (Exception ex) {
 			final String msg = "Error while initializing agent architecture.";
 			logger.log(Level.SEVERE, msg, ex);
@@ -81,7 +81,7 @@ public class JasonEEAgent extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage msg) {
 		if (msg instanceof ReasoningCycleMessage)
-			onSyncCycle(((ReasoningCycleMessage) msg).cycleNum);
+			performCycle(((ReasoningCycleMessage) msg).cycleNum);
 		else if (msg instanceof ActionFeedbackMessage)
 			arch.onActionFeedback((ActionFeedbackMessage) msg);
 		else
@@ -92,33 +92,35 @@ public class JasonEEAgent extends XjafAgent {
 	protected boolean onHeartbeat(String content) {
 		if (!sleeping) {
 			++asyncCycleNum;
-			arch.reasoningCycle();
+			performCycle(asyncCycleNum);
 			return true;
 		}
 		return false;
 	}
 
-	private void onSyncCycle(int cycleNum) {
+	private void performCycle(int cycleNum) {
 		arch.reasoningCycle();
-		boolean isBreakpoint;
-		try {
-			isBreakpoint = arch.getTS().getC().getSelectedOption().getPlan().hasBreakpoint();
-		} catch (NullPointerException ex) {
-			isBreakpoint = false;
+		if (syncMode) {
+			boolean isBreakpoint;
+			try {
+				isBreakpoint = arch.getTS().getC().getSelectedOption().getPlan().hasBreakpoint();
+			} catch (NullPointerException ex) {
+				isBreakpoint = false;
+			}
+			executionControl().agentCycleFinished(myAid, isBreakpoint, cycleNum);
 		}
-		execCtrl().agentCycleFinished(myAid, isBreakpoint, cycleNum);
 	}
 
 	public void sleep() {
 		if (syncMode)
-			execCtrl.remAgent(myAid);
+			executionControl().removeAgent(myAid);
 		else
 			sleeping = true;
 	}
 
 	public void wakeUp() {
 		if (syncMode)
-			execCtrl.addAgent(myAid);
+			executionControl().addAgent(myAid);
 		else {
 			sleeping = false;
 			registerHeartbeat();
@@ -129,9 +131,15 @@ public class JasonEEAgent extends XjafAgent {
 		return null;
 	}
 
-	private JasonEEExecutionControl execCtrl() {
-		if (execCtrl == null)
-			execCtrl = ObjectFactory.getJasonEEApp().getExecCtrl(execCtrlName);
-		return execCtrl;
+	@Override
+	public void onTerminate() {
+		if (syncMode)
+			executionControl().removeAgent(myAid);
+	}
+
+	private ExecutionControl executionControl() {
+		if (control == null)
+			control = ObjectFactory.getJasonEEApp().getExecCtrl(execCtrlName);
+		return control;
 	}
 }

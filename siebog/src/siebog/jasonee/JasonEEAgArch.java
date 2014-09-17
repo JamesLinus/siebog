@@ -35,6 +35,7 @@ import java.util.Map;
 import siebog.jasonee.intf.JasonEEEnvironment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 
@@ -48,7 +49,7 @@ public class JasonEEAgArch extends AgArch {
 	private Map<String, ActionExec> scheduledActions;
 	private long actionId;
 
-	public void init(AgentParameters agp, JasonEEAgent agent, String envName) throws Exception {
+	public void init(AgentInitArgs args, AgentParameters agp, JasonEEAgent agent, String envName) throws Exception {
 		this.agent = agent;
 		this.envName = envName;
 		scheduledActions = new HashMap<>();
@@ -57,8 +58,8 @@ public class JasonEEAgArch extends AgArch {
 				agp.getAsSetts(false, false));
 		insertAgArch(this);
 
-		final String module = agp.getOption("remObjFactModule");
-		final String ejb = agp.getOption("remObjFactEjb");
+		final String module = args.get("remObjFactModule");
+		final String ejb = args.get("remObjFactEjb");
 		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejb);
 		createCustomArchs(remObjFact, agp.getAgArchClasses());
 

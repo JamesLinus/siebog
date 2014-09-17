@@ -31,6 +31,10 @@ public class MyAgentArch extends AgArch implements Serializable {
 		final String func = term.getFunctor();
 		if (func.equals("doPrint")) {
 			System.out.println(term.getTerm(0));
+			try {
+				Thread.sleep((int) (Math.random() * 1000) + 1000);
+			} catch (InterruptedException ex) {
+			}
 			action.setResult(true);
 		} else {
 			action.setResult(false);

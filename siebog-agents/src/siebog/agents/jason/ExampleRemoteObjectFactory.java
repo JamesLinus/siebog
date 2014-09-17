@@ -3,8 +3,8 @@ package siebog.agents.jason;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import jason.architecture.AgArch;
-import siebog.jasonee.UserExecutionControl;
 import siebog.jasonee.RemoteObjectFactory;
+import siebog.jasonee.control.UserExecutionControl;
 
 @Stateless
 @Remote(RemoteObjectFactory.class)

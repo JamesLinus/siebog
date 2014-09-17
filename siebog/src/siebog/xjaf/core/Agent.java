@@ -40,4 +40,6 @@ public interface Agent extends Serializable {
 	void stop();
 
 	void remove();
+
+	void ping();
 }

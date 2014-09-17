@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.jasonee.control;
 
 import java.io.Serializable;
 
@@ -38,6 +38,7 @@ import java.io.Serializable;
  */
 public class UserExecutionControl implements Serializable {
 	private static final long serialVersionUID = 1L;
+	public static final int DEFAULT_TIMEOUT = 5000;
 	private boolean running = true;
 
 	public void init(String[] args) {
@@ -51,7 +52,7 @@ public class UserExecutionControl implements Serializable {
 	}
 
 	public int getCycleTimeout() {
-		return 5000;
+		return DEFAULT_TIMEOUT;
 	}
 
 	public void startNewCycle(int cycleNum) {

@@ -27,14 +27,13 @@ import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
 import siebog.jasonee.JasonEEAppImpl;
 import siebog.jasonee.JasonEEEnvironmentImpl;
-import siebog.jasonee.JasonEEExecutionControlImpl;
 import siebog.jasonee.RemoteObjectFactory;
+import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.ExecutionControlImpl;
 import siebog.jasonee.intf.JasonEEApp;
 import siebog.jasonee.intf.JasonEEEnvironment;
-import siebog.jasonee.intf.JasonEEExecutionControl;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.core.XjafExecutorService;
 import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.AgentManagerImpl;
 import siebog.xjaf.managers.MessageManager;
@@ -53,13 +52,12 @@ public abstract class ObjectFactory {
 	private static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ BridgeManager.class.getSimpleName();
 	private static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
-			+ XjafExecutorService.class.getSimpleName() + "!" + XjafExecutorService.class.getName();
+			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
 	private static final String JasonEEEnvLookup = "ejb:/" + Global.SERVER + "//"
 			+ JasonEEEnvironmentImpl.class.getSimpleName() + "!" + JasonEEEnvironment.class.getName() + "?stateful";
 	public static final String JasonEEExecCtrlLookup = "ejb:/" + Global.SERVER + "//"
-			+ JasonEEExecutionControlImpl.class.getSimpleName() + "!" + JasonEEExecutionControl.class.getName()
-			+ "?stateful";
+			+ ExecutionControlImpl.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
 	private static final String JasonEEAppLookup = "ejb:/" + Global.SERVER + "//"
 			+ JasonEEAppImpl.class.getSimpleName() + "!" + JasonEEApp.class.getName();
 
@@ -75,8 +73,8 @@ public abstract class ObjectFactory {
 		return lookup(BridgeManagerLookup, BridgeManager.class);
 	}
 
-	public static XjafExecutorService getExecutorService() {
-		return lookup(ExecutorServiceLookup, XjafExecutorService.class);
+	public static ExecutorService getExecutorService() {
+		return lookup(ExecutorServiceLookup, ExecutorService.class);
 	}
 
 	public static SessionContext getSessionContext() {
@@ -99,9 +97,9 @@ public abstract class ObjectFactory {
 		return cache;
 	}
 
-	public static Cache<String, JasonEEExecutionControl> getExecutionControlCache() {
+	public static Cache<String, ExecutionControl> getExecutionControlCache() {
 		CacheContainer container = lookup(XjafCacheLookup, CacheContainer.class);
-		Cache<String, JasonEEExecutionControl> cache = container.getCache("jasonee-ctrls");
+		Cache<String, ExecutionControl> cache = container.getCache("jasonee-ctrls");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache jasonee-ctrls.");
 		return cache;
@@ -111,8 +109,8 @@ public abstract class ObjectFactory {
 		return lookup(JasonEEEnvLookup, JasonEEEnvironment.class);
 	}
 
-	public static JasonEEExecutionControl getJasonEEExecutionControl() {
-		return lookup(JasonEEExecCtrlLookup, JasonEEExecutionControl.class);
+	public static ExecutionControl getExecutionControl() {
+		return lookup(JasonEEExecCtrlLookup, ExecutionControl.class);
 	}
 
 	public static JasonEEApp getJasonEEApp() {
