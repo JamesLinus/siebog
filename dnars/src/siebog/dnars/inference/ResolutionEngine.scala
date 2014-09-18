@@ -38,22 +38,22 @@ import com.tinkerpop.blueprints.Edge
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-object Resolution {
+class ResolutionEngine(val graph: DNarsGraph) {
 	/**
 	 * Answers questions in form of "S copula ?" and "? copula P"
 	 */
-	def answer(graph: DNarsGraph, question: Statement): Option[Term] = {
+	def answer(question: Statement): Option[Term] = {
 		val copula = question.copula
 		if (question.subj == Question) { // ? -> P, ? ~ P
-			val result = answerForPredicate(graph, question.pred, copula)
+			val result = answerForPredicate(question.pred, copula)
 			if (result == None && copula == Similar) // ? ~ P, reflexive
-				answerForSubject(graph, question.pred, copula)
+				answerForSubject(question.pred, copula)
 			else
 				result
 		} else if (question.pred == Question) { // S -> ?, S ~ ?
-			val result = answerForSubject(graph, question.subj, copula)
+			val result = answerForSubject(question.subj, copula)
 			if (result == None && copula == Similar) // S ~ ?, reflexive
-				answerForPredicate(graph, question.subj, copula)
+				answerForPredicate(question.subj, copula)
 			else
 				result
 		} else
@@ -63,12 +63,12 @@ object Resolution {
 	/**
 	 * Checks if there is an answer for a question in form of "S copula P"
 	 */
-	def exists(graph: DNarsGraph, question: Statement): Boolean = {
+	def exists(question: Statement): Boolean = {
 		val st = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
-		hasAnswer(graph, Set(st))
+		hasAnswer(Set(st))
 	}
 
-	private def hasAnswer(graph: DNarsGraph, questions: Set[Statement]): Boolean = {
+	private def hasAnswer(questions: Set[Statement]): Boolean = {
 		try {
 			val q = questions.head
 			graph.getE(q) match {
@@ -76,14 +76,14 @@ object Resolution {
 					true
 				case None =>
 					val derivedQuestons = ForwardInference.conclusions(graph, List(q))
-					hasAnswer(graph, derivedQuestons.toSet ++ questions.tail)
+					hasAnswer(derivedQuestons.toSet ++ questions.tail)
 			}
 		} catch {
 			case _: NoSuchElementException => false
 		}
 	}
 
-	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String): Option[Term] =
+	private def answerForPredicate(pred: Term, copula: String): Option[Term] =
 		graph.getV(pred) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).inE(copula)
@@ -92,7 +92,7 @@ object Resolution {
 				None
 		}
 
-	private def answerForSubject(graph: DNarsGraph, subj: Term, copula: String): Option[Term] =
+	private def answerForSubject(subj: Term, copula: String): Option[Term] =
 		graph.getV(subj) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).outE(copula)

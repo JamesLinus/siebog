@@ -20,24 +20,20 @@
 
 package siebog.jasonee;
 
-import jason.infra.InfrastructureFactory;
-import jason.jeditplugin.MASLauncherInfraTier;
-import jason.runtime.RuntimeServicesInfraTier;
+import java.io.Serializable;
+import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.environment.Environment;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class JasonEEFactory implements InfrastructureFactory {
+public interface JasonEEApp extends Serializable {
+	Environment getEnv(String name);
 
-	@Override
-	public MASLauncherInfraTier createMASLauncher() {
-		// TODO Implement createMASLauncher()
-		return null;
-	}
+	String putEnv(Environment env);
 
-	@Override
-	public RuntimeServicesInfraTier createRuntimeServices() {
-		return new JasonEERuntimeServices();
-	}
+	ExecutionControl getExecCtrl(String name);
+
+	String putExecCtrl(ExecutionControl ctrl);
 }

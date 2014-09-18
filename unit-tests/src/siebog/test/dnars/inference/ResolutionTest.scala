@@ -28,7 +28,7 @@ import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Term
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraphFactory
-import siebog.dnars.inference.Resolution
+import siebog.dnars.inference.ResolutionEngine
 import siebog.test.dnars.DNarsTestUtils.TEST_KEYSPACE
 import siebog.test.dnars.DNarsTestUtils.createAndAdd
 
@@ -59,7 +59,7 @@ class ResolutionTest {
 	}
 
 	def assertAnswer(graph: DNarsGraph, question: String, answer: Term): Unit = {
-		val a = Resolution.answer(graph, StatementParser(question))
+		val a = new ResolutionEngine(graph).answer(StatementParser(question))
 		if (a == None)
 			assertEquals(answer, null)
 		else

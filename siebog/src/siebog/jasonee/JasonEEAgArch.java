@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;

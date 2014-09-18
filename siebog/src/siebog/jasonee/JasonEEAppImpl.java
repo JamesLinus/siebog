@@ -25,7 +25,6 @@ import javax.ejb.Stateless;
 import org.infinispan.Cache;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.environment.Environment;
-import siebog.jasonee.intf.JasonEEApp;
 import siebog.utils.ObjectFactory;
 
 /**

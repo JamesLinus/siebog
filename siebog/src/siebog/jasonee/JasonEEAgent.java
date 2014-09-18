@@ -28,6 +28,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ReasoningCycleMessage;
+import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
@@ -74,9 +75,6 @@ public class JasonEEAgent extends XjafAgent {
 		AgentParameters agp = project.getAg(agentName);
 		if (agp == null)
 			throw new IllegalArgumentException("Agent " + agentName + " is not defined.");
-		// TODO Use the correct urlPrefix here
-		// agp.fixSrc(project.getSourcePaths(), ???);
-		agp.asSource = new File(mas2jFile.getParent(), project.getSourcePaths().get(0) + "/" + agp.asSource.getName());
 		return agp;
 	}
 

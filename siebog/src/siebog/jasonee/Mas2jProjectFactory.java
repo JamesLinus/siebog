@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import jason.asSyntax.directives.DirectiveProcessor;
 import jason.asSyntax.directives.Include;
+import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
 import jason.mas2j.parser.ParseException;
 import jason.mas2j.parser.mas2j;
@@ -44,12 +45,24 @@ public class Mas2jProjectFactory {
 			project.registerDirectives();
 			((Include) DirectiveProcessor.getDirective("include")).setSourcePath(project.getSourcePaths());
 
-			// TODO Replace with the correct urlPrefix
-			// project.fixAgentsSrc(???);
+			fixAgentSrc(project, mas2jFile.getParent());
 
 			return project;
 		} catch (IOException | ParseException ex) {
 			throw new IllegalArgumentException("Error while loading " + mas2jFile, ex);
+		}
+	}
+
+	private static void fixAgentSrc(MAS2JProject project, String projectRoot) {
+		for (AgentParameters agp : project.getAgents()) {
+			final String fileName = agp.asSource.getName();
+			for (String path : project.getSourcePaths()) {
+				File f = new File(projectRoot, path + "/" + fileName);
+				if (f.exists()) {
+					agp.asSource = f;
+					break;
+				}
+			}
 		}
 	}
 }

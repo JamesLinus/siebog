@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.jasonee.ActionFeedbackMessage;
 import siebog.jasonee.JasonEERuntimeServices;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;

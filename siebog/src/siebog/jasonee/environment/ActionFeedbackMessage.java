@@ -18,12 +18,32 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.jasonee.environment;
+
+import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEStarter {
-	void start(String projectFileName);
+public class ActionFeedbackMessage extends ACLMessage {
+	private static final long serialVersionUID = 1L;
+	private boolean success;
+	private String userData;
+
+	public ActionFeedbackMessage(AID aid, boolean success, String userData) {
+		super(Performative.REQUEST);
+		this.success = success;
+		this.userData = userData;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public String getUserData() {
+		return userData;
+	}
 }
