@@ -39,7 +39,8 @@ import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.UserExecutionControl;
-import siebog.jasonee.intf.JasonEEEnvironment;
+import siebog.jasonee.environment.Environment;
+import siebog.jasonee.environment.UserEnvironment;
 import siebog.jasonee.intf.JasonEEStarter;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
@@ -93,26 +94,37 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 
 	private void createExecutionControl() {
 		ExecutionControl ctrl = ObjectFactory.getExecutionControl();
-		UserExecutionControl userExecCtrl = null;
+		ctrlName = ObjectFactory.getJasonEEApp().putExecCtrl(ctrl);
+		// create user's execution control
 		ClassParameters userClass = project.getControlClass();
+		UserExecutionControl userExecCtrl = null;
 		if (userClass != null) {
-			final String userClassName = userClass.getClassName();
 			try {
-				userExecCtrl = remObjFact.createExecutionControl(userClassName);
-				userExecCtrl.init(project.getControlClass().getParametersArray());
+				userExecCtrl = remObjFact.createExecutionControl(userClass.getClassName());
+				userExecCtrl.init(ctrlName, userClass.getParametersArray());
 			} catch (Exception ex) {
-				logger.log(Level.WARNING, "Unable to create user execution control " + userClassName, ex);
+				logger.log(Level.WARNING, "Unable to create user execution control " + userClass.getClassName(), ex);
 			}
 		}
 		ctrl.init(userExecCtrl);
-		ctrlName = ObjectFactory.getJasonEEApp().putExecCtrl(ctrl);
 	}
 
 	private void createEnvironment() {
-		JasonEEEnvironment env = ObjectFactory.getJasonEEEnvironment();
-		final ClassParameters userEnvClass = project.getEnvClass();
-		env.init(userEnvClass.getClassName(), userEnvClass.getParametersArray());
+		Environment env = ObjectFactory.getJasonEEEnvironment();
 		envName = ObjectFactory.getJasonEEApp().putEnv(env);
+
+		// create user's environment
+		ClassParameters userClass = project.getEnvClass();
+		UserEnvironment userEnv = null;
+		if (userClass != null) {
+			try {
+				userEnv = remObjFact.createEnvironment(userClass.getClassName());
+				userEnv.init(envName, userClass.getParametersArray());
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Unable to create user environment " + userClass.getClassName(), ex);
+			}
+		}
+		env.init(userEnv);
 	}
 
 	private void createAgents(String mas2jFileName) {

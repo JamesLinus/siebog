@@ -26,12 +26,12 @@ import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
 import siebog.jasonee.JasonEEAppImpl;
-import siebog.jasonee.JasonEEEnvironmentImpl;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ExecutionControlImpl;
+import siebog.jasonee.environment.Environment;
+import siebog.jasonee.environment.EnvironmentImpl;
 import siebog.jasonee.intf.JasonEEApp;
-import siebog.jasonee.intf.JasonEEEnvironment;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.managers.AgentManager;
@@ -55,7 +55,7 @@ public abstract class ObjectFactory {
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
 	private static final String JasonEEEnvLookup = "ejb:/" + Global.SERVER + "//"
-			+ JasonEEEnvironmentImpl.class.getSimpleName() + "!" + JasonEEEnvironment.class.getName() + "?stateful";
+			+ EnvironmentImpl.class.getSimpleName() + "!" + Environment.class.getName() + "?stateful";
 	public static final String JasonEEExecCtrlLookup = "ejb:/" + Global.SERVER + "//"
 			+ ExecutionControlImpl.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
 	private static final String JasonEEAppLookup = "ejb:/" + Global.SERVER + "//"
@@ -89,9 +89,9 @@ public abstract class ObjectFactory {
 		return cache;
 	}
 
-	public static Cache<String, JasonEEEnvironment> getEnvironmentCache() {
+	public static Cache<String, Environment> getEnvironmentCache() {
 		CacheContainer container = lookup(XjafCacheLookup, CacheContainer.class);
-		Cache<String, JasonEEEnvironment> cache = container.getCache("jasonee-envs");
+		Cache<String, Environment> cache = container.getCache("jasonee-envs");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache jasonee-envs.");
 		return cache;
@@ -105,8 +105,8 @@ public abstract class ObjectFactory {
 		return cache;
 	}
 
-	public static JasonEEEnvironment getJasonEEEnvironment() {
-		return lookup(JasonEEEnvLookup, JasonEEEnvironment.class);
+	public static Environment getJasonEEEnvironment() {
+		return lookup(JasonEEEnvLookup, Environment.class);
 	}
 
 	public static ExecutionControl getExecutionControl() {

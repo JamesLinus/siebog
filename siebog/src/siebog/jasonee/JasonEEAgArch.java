@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import siebog.jasonee.intf.JasonEEEnvironment;
+import siebog.jasonee.environment.Environment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
@@ -149,7 +149,7 @@ public class JasonEEAgArch extends AgArch {
 		return new JasonEERuntimeServices();
 	}
 
-	private JasonEEEnvironment env() {
+	private Environment env() {
 		return ObjectFactory.getJasonEEApp().getEnv(envName);
 	}
 

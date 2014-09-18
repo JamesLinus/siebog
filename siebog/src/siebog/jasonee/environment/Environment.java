@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.intf;
+package siebog.jasonee.environment;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
@@ -31,8 +31,8 @@ import siebog.xjaf.core.AID;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEEnvironment extends EnvironmentInfraTier, Serializable {
-	void init(String userEnvClass, String[] args);
+public interface Environment extends EnvironmentInfraTier, Serializable {
+	void init(UserEnvironment userEnv);
 
 	List<Literal> getPercepts(AID aid);
 

@@ -21,6 +21,7 @@
 package siebog.jasonee.control;
 
 import java.io.Serializable;
+import siebog.utils.ObjectFactory;
 
 /**
  * Base interface for user-defined execution control.
@@ -40,8 +41,10 @@ public class UserExecutionControl implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_TIMEOUT = 5000;
 	private boolean running = true;
+	private String controlName;
 
-	public void init(String[] args) {
+	public void init(String controlName, String[] args) {
+		this.controlName = controlName;
 	}
 
 	public void receiveFinishedCycle(String agName, boolean breakpoint, int cycle) {
@@ -58,7 +61,9 @@ public class UserExecutionControl implements Serializable {
 	public void startNewCycle(int cycleNum) {
 	}
 
-	public void allAgsFinished() {
+	public void allAgsFinished(int cycleNum) {
+		ExecutionControl control = ObjectFactory.getJasonEEApp().getExecCtrl(controlName);
+		control.informAllAgsToPerformCycle(cycleNum + 1);
 	}
 
 	public boolean isRunning() {

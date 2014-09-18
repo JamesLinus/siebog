@@ -23,6 +23,7 @@ package siebog.jasonee;
 import jason.architecture.AgArch;
 import java.io.Serializable;
 import siebog.jasonee.control.UserExecutionControl;
+import siebog.jasonee.environment.UserEnvironment;
 
 /**
  * Remote object factory, used to create user-defined agent architecture, execution control, and environment. User
@@ -33,7 +34,9 @@ import siebog.jasonee.control.UserExecutionControl;
 public interface RemoteObjectFactory extends Serializable {
 	public static final String NAME = "remoteObjectFactory";
 
-	AgArch createAgArch(String className) throws Exception;
+	AgArch createAgArch(String className);
 
-	UserExecutionControl createExecutionControl(String className) throws Exception;
+	UserExecutionControl createExecutionControl(String className);
+
+	UserEnvironment createEnvironment(String className);
 }

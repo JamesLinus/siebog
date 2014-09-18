@@ -32,7 +32,6 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
 import siebog.jasonee.JasonEERuntimeServices;
-import siebog.jasonee.ReasoningCycleMessage;
 import siebog.utils.ObjectFactory;
 import siebog.utils.RunnableWithParam;
 import siebog.xjaf.core.AID;
@@ -62,7 +61,7 @@ public class ExecutionControlImpl implements ExecutionControl {
 		finished = new HashSet<>();
 		pendingAgents = new HashSet<>();
 		this.userExecCtrl = userExecCtrl;
-		startNewCycle();
+		informAllAgsToPerformCycle(0);
 	}
 
 	@Override
@@ -74,8 +73,18 @@ public class ExecutionControlImpl implements ExecutionControl {
 
 	@Override
 	public void informAllAgsToPerformCycle(int cycle) {
+		runningCycle = true;
+		cycleNum = cycle;
+		finished.clear();
+		if (pendingAgents.size() > 0) {
+			agents.addAll(pendingAgents);
+			pendingAgents.clear();
+		}
+		if (userExecCtrl != null)
+			userExecCtrl.startNewCycle(cycleNum);
 		ReasoningCycleMessage msg = new ReasoningCycleMessage(agents, cycle);
 		ObjectFactory.getMessageManager().post(msg);
+		scheduleTimeout();
 	}
 
 	@Override
@@ -96,8 +105,9 @@ public class ExecutionControlImpl implements ExecutionControl {
 		if (cycleDone()) {
 			runningCycle = false;
 			if (userExecCtrl != null)
-				userExecCtrl.allAgsFinished();
-			startNewCycle();
+				userExecCtrl.allAgsFinished(cycleNum);
+			else
+				informAllAgsToPerformCycle(cycleNum + 1);
 			return true;
 		}
 		return false;
@@ -105,20 +115,6 @@ public class ExecutionControlImpl implements ExecutionControl {
 
 	private boolean cycleDone() {
 		return !runningCycle || (finished.size() >= agents.size() && finished.containsAll(agents));
-	}
-
-	private void startNewCycle() {
-		runningCycle = true;
-		++cycleNum;
-		finished.clear();
-		if (pendingAgents.size() > 0) {
-			agents.addAll(pendingAgents);
-			pendingAgents.clear();
-		}
-		if (userExecCtrl != null)
-			userExecCtrl.startNewCycle(cycleNum);
-		informAllAgsToPerformCycle(cycleNum);
-		scheduleTimeout();
 	}
 
 	@Override

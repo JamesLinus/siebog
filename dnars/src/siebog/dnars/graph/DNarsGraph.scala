@@ -183,6 +183,7 @@ object DNarsGraphFactory {
 		conf.setProperty("storage.hostname", "localhost");
 		// TODO add storage.machine-id-appendix
 		conf.setProperty("storage.keyspace", domain)
+		//conf.setProperty("storage.machine-id-appendix", "x" + (Math.random * 1000000).toInt)
 		// custom serializers
 		/*conf.setProperty("attributes.allow-all", "true")
 		conf.setProperty("attributes.attribute20",  classOf[AtomicTerm].getName)

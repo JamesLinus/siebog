@@ -49,6 +49,7 @@ object DNarsConvert {
 		val outDir = new File(args(1))
 		val linesPerFile = args(2).toInt
 
+		outDir.mkdirs
 		val n = input.getName.lastIndexOf('.')
 		val fileName = input.getName.substring(0, n)
 

@@ -22,15 +22,16 @@ package siebog.jasonee.intf;
 
 import java.io.Serializable;
 import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.environment.Environment;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface JasonEEApp extends Serializable {
-	JasonEEEnvironment getEnv(String name);
+	Environment getEnv(String name);
 
-	String putEnv(JasonEEEnvironment env);
+	String putEnv(Environment env);
 
 	ExecutionControl getExecCtrl(String name);
 

@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 import jason.architecture.AgArch;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.jasonee.control.UserExecutionControl;
+import siebog.jasonee.environment.UserEnvironment;
 
 @Stateless
 @Remote(RemoteObjectFactory.class)
@@ -17,7 +18,12 @@ public class ExampleRemoteObjectFactory implements RemoteObjectFactory {
 	}
 
 	@Override
-	public UserExecutionControl createExecutionControl(String className) throws Exception {
+	public UserExecutionControl createExecutionControl(String className) {
+		throw new IllegalArgumentException("Invalid class name: " + className);
+	}
+
+	@Override
+	public UserEnvironment createEnvironment(String className) {
 		throw new IllegalArgumentException("Invalid class name: " + className);
 	}
 }

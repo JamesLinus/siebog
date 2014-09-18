@@ -18,17 +18,24 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.resspeedtest;
+package siebog.jasonee.control;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.util.Collection;
 import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
  * 
- *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface SpeedResults extends Remote {
-	void add(AID aid, long timeMillis) throws RemoteException;
+public class ReasoningCycleMessage extends ACLMessage {
+	private static final long serialVersionUID = 1L;
+	public int cycleNum;
+
+	public ReasoningCycleMessage(Collection<AID> receivers, int cycleNum) {
+		super(Performative.REQUEST);
+		this.receivers.addAll(receivers);
+		this.cycleNum = cycleNum;
+	}
 }

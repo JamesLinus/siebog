@@ -27,6 +27,8 @@ import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.ReasoningCycleMessage;
+import siebog.jasonee.environment.EnvironmentChangedMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
@@ -84,6 +86,8 @@ public class JasonEEAgent extends XjafAgent {
 			performCycle(((ReasoningCycleMessage) msg).cycleNum);
 		else if (msg instanceof ActionFeedbackMessage)
 			arch.onActionFeedback((ActionFeedbackMessage) msg);
+		else if (msg instanceof EnvironmentChangedMessage)
+			wakeUp();
 		else
 			arch.onMessage(msg);
 	}
@@ -112,18 +116,20 @@ public class JasonEEAgent extends XjafAgent {
 	}
 
 	public void sleep() {
-		if (syncMode)
-			executionControl().removeAgent(myAid);
-		else
+		if (!sleeping) {
 			sleeping = true;
+			if (syncMode)
+				executionControl().removeAgent(myAid);
+		}
 	}
 
 	public void wakeUp() {
-		if (syncMode)
-			executionControl().addAgent(myAid);
-		else {
+		if (sleeping) {
 			sleeping = false;
-			registerHeartbeat();
+			if (syncMode)
+				executionControl().addAgent(myAid);
+			else
+				registerHeartbeat();
 		}
 	}
 
