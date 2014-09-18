@@ -18,22 +18,29 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.jasonee.environment;
 
-import java.io.Serializable;
-import siebog.jasonee.control.ExecutionControl;
-import siebog.jasonee.environment.Environment;
+import org.jboss.as.server.CurrentServiceContainer;
+import org.jboss.msc.service.ServiceController;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface JasonEEApp extends Serializable {
-	Environment getEnv(String name);
+public class EnvironmentAccessor {
+	public static Environment getEnvironment(String name) {
+		return getContainer().get(name);
+	}
 
-	String putEnv(Environment env);
+	public static String putEnvironment(Environment value) {
+		final String name = "ExecCtrl" + (int) (Math.random() * 1000000);
+		getContainer().put(name, value);
+		return name;
+	}
 
-	ExecutionControl getExecCtrl(String name);
-
-	String putExecCtrl(ExecutionControl ctrl);
+	private static EnvironmentContainer getContainer() {
+		ServiceController<?> service = CurrentServiceContainer.getServiceContainer()
+				.getService(EnvironmentService.NAME);
+		return (EnvironmentContainer) service.getValue();
+	}
 }

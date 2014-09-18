@@ -1,12 +1,12 @@
 package siebog.agents.jason;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 public class MyAgentArch extends AgArch implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -32,8 +32,8 @@ public class MyAgentArch extends AgArch implements Serializable {
 		if (func.equals("doPrint")) {
 			System.out.println(term.getTerm(0));
 			try {
-				Thread.sleep((int) (Math.random() * 1000) + 1000);
-			} catch (InterruptedException ex) {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
 			}
 			action.setResult(true);
 		} else {

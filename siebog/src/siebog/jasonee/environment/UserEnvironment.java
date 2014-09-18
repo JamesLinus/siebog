@@ -329,7 +329,7 @@ public class UserEnvironment {
 	}
 
 	private Environment getEnv() {
-		return ObjectFactory.getJasonEEApp().getEnv(envName);
+		return EnvironmentAccessor.getEnvironment(envName);
 	}
 
 }

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
+import siebog.jasonee.environment.EnvironmentAccessor;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
@@ -47,6 +48,7 @@ public class JasonEEAgArch extends AgArch {
 	private Deque<ACLMessage> mailbox = new LinkedList<>();
 	private boolean running;
 	private String envName;
+	private transient Environment env;
 	private Map<String, ActionExec> scheduledActions;
 	private long actionId;
 
@@ -151,7 +153,9 @@ public class JasonEEAgArch extends AgArch {
 	}
 
 	private Environment env() {
-		return ObjectFactory.getJasonEEApp().getEnv(envName);
+		if (env == null)
+			env = EnvironmentAccessor.getEnvironment(envName);
+		return env;
 	}
 
 	@SuppressWarnings("deprecation")

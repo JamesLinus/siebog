@@ -26,11 +26,11 @@ import java.io.File;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.jasonee.control.ExecutionControlAccessor;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ReasoningCycleMessage;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
-import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -49,7 +49,7 @@ public class JasonEEAgent extends XjafAgent {
 	private JasonEEAgArch arch;
 	private boolean syncMode;
 	private int asyncCycleNum;
-	private boolean sleeping = false;
+	private boolean sleeping = true;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -143,7 +143,7 @@ public class JasonEEAgent extends XjafAgent {
 
 	private ExecutionControl executionControl() {
 		if (control == null)
-			control = ObjectFactory.getJasonEEApp().getExecCtrl(execCtrlName);
+			control = ExecutionControlAccessor.getExecutionControl(execCtrlName);
 		return control;
 	}
 }

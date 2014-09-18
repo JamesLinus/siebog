@@ -21,51 +21,28 @@
 package siebog.jasonee.control;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Base interface for user-defined execution control.
- * <p>
- * Execution sequence:
- * <ul>
- * <li>init
- * <li>(receivedFinishedCycle)*
- * <li>stop
- * </ul>
- * </p>
- * Based on jason.control.ExecutionControl
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class UserExecutionControl implements Serializable {
+public class ExecutionControlContainer implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final int DEFAULT_TIMEOUT = 5000;
-	private boolean running = true;
-	private String controlName;
+	private Map<String, ExecutionControl> controls;
 
-	public void init(String controlName, String[] args) {
-		this.controlName = controlName;
+	public ExecutionControlContainer() {
+		controls = (Map<String, ExecutionControl>) Collections
+				.synchronizedMap(new HashMap<String, ExecutionControl>());
 	}
 
-	public void receiveFinishedCycle(String agName, boolean breakpoint, int cycle) {
+	public void put(String key, ExecutionControl value) {
+		controls.put(key, value);
 	}
 
-	public void stop() {
-		running = false;
-	}
-
-	public int getCycleTimeout() {
-		return DEFAULT_TIMEOUT;
-	}
-
-	public void startNewCycle(int cycleNum) {
-	}
-
-	public void allAgsFinished(int cycleNum) {
-		ExecutionControl control = ExecutionControlAccessor.getExecutionControl(controlName);
-		control.informAllAgsToPerformCycle(cycleNum + 1);
-	}
-
-	public boolean isRunning() {
-		return running;
+	public ExecutionControl get(String key) {
+		return controls.get(key);
 	}
 }
