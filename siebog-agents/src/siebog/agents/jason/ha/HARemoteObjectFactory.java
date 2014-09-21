@@ -18,24 +18,38 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee;
+package siebog.agents.jason.ha;
 
-import java.io.Serializable;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import siebog.jasonee.JasonEEAgArch;
+import siebog.jasonee.RemoteObjectFactory;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.UserEnvironment;
 
 /**
- * Remote object factory, used to create user-defined agent architecture, execution control, and environment. User
- * applications should realize it in form of a stateless session EJB.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface RemoteObjectFactory extends Serializable {
-	public static final String NAME = "remoteObjectFactory";
+@Stateless
+@Remote(RemoteObjectFactory.class)
+public class HARemoteObjectFactory implements RemoteObjectFactory {
+	private static final long serialVersionUID = 1L;
 
-	JasonEEAgArch createAgArch(String className);
+	@Override
+	public JasonEEAgArch createAgArch(String className) {
+		if (HAAgArch.class.getSimpleName().equals(className))
+			return new HAAgArch();
+		throw new IllegalArgumentException("Invalid class name: " + className);
+	}
 
-	UserExecutionControl createExecutionControl(String className);
+	@Override
+	public UserExecutionControl createExecutionControl(String className) {
+		throw new IllegalArgumentException("Invalid class name: " + className);
+	}
 
-	UserEnvironment createEnvironment(String className);
+	@Override
+	public UserEnvironment createEnvironment(String className) {
+		throw new IllegalArgumentException("Invalid class name: " + className);
+	}
 }

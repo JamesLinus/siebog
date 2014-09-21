@@ -2,7 +2,7 @@ package siebog.agents.jason;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import jason.architecture.AgArch;
+import siebog.jasonee.JasonEEAgArch;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.UserEnvironment;
@@ -13,8 +13,8 @@ public class ExampleRemoteObjectFactory implements RemoteObjectFactory {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public AgArch createAgArch(String className) {
-		return new MyAgentArch();
+	public JasonEEAgArch createAgArch(String className) {
+		throw new IllegalArgumentException("Invalid class name: " + className);
 	}
 
 	@Override

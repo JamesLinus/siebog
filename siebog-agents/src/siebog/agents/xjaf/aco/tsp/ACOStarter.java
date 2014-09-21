@@ -24,7 +24,7 @@ import java.io.IOException;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import siebog.SiebogCluster;
+import siebog.SiebogClient;
 import siebog.agents.xjaf.Module;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
@@ -45,7 +45,7 @@ public class ACOStarter {
 			return;
 		}
 
-		SiebogCluster.init();
+		SiebogClient.connect(null);
 
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Module.NAME, "Map");

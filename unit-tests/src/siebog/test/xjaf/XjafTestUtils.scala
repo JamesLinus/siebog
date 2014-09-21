@@ -10,7 +10,7 @@ import siebog.xjaf.managers.AgentInitArgs
 import siebog.utils.ObjectFactory
 import org.apache.commons.io.FileUtils
 import scala.collection.mutable.ListBuffer
-import siebog.SiebogCluster
+import siebog.SiebogClient
 import java.rmi.server.UnicastRemoteObject
 import siebog.xjaf.test.TestAgentListener
 import java.util.concurrent.BlockingQueue
@@ -21,32 +21,24 @@ import siebog.xjaf.core.AID
 object XjafTestUtils {
 	var testAgentAid: AID = null
 
-	/**
-	 * The function will create n sub-dirs in 'testDir' (named 'siebog0', 'siebog1', etc.),
-	 * each representing a separate server.
-	 *
-	 * If fullBuild, the fuction will first invoke the Ant build script that builds
-	 * the deployment archive.
-	 */
-	def start(nodes: Seq[TestNode], fullBuild: Boolean, msgQueue: BlockingQueue[ACLMessage]): Unit = {
-		val reg = LocateRegistry.createRegistry(1099)
-		reg.rebind("TestAgentListener", new TestAgentListenerImpl(msgQueue))
-
+	def start(nodes: Seq[SiebogNode], fullBuild: Boolean): Unit = {
 		if (fullBuild)
 			buildSiebog(nodes)
-
 		nodes.foreach { node =>
 			startNode(node)
 			Thread.sleep(1000)
 		}
+	}
 
-		SiebogCluster.init
+	def startTestAgent(msgQueue: BlockingQueue[ACLMessage]): Unit = {
+		val reg = LocateRegistry.createRegistry(1099)
+		reg.rebind("TestAgentListener", new TestAgentListenerImpl(msgQueue))
 		val agClass = new AgentClass(Global.SERVER, "TestAgent")
 		val args = new AgentInitArgs(s"remoteHost->localhost")
 		testAgentAid = ObjectFactory.getAgentManager().startAgent(agClass, "testAgent", args)
 	}
 
-	private def buildSiebog(nodes: Seq[TestNode]): Unit = {
+	private def buildSiebog(nodes: Seq[SiebogNode]): Unit = {
 		val baseDir = new File("../siebog-core")
 		val antCmd = Seq("ant", "dist")
 		val exitCode: Int = Process(antCmd, Some(baseDir)).!<
@@ -62,7 +54,7 @@ object XjafTestUtils {
 		}
 	}
 
-	private def startNode(node: TestNode): Unit = {
+	private def startNode(node: SiebogNode): Unit = {
 		val starter = new File(node.dir, "siebog-start.jar").getCanonicalPath
 		val cmd = List("java", "-jar", starter) ::: node.getArgs
 		val obj = new Object

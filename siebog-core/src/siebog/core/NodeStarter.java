@@ -58,13 +58,14 @@ public class NodeStarter {
 
 	public void start() {
 		try {
-			if (config.isMaster()) {
+			if (config.isSlave())
+				startSlave();
+			else {
 				startMaster();
 				// TODO: check if already deployed
 				deploy(config.getRootFolder(), Global.SERVER);
 				deploy(config.getRootFolder(), "siebog-agents");
-			} else
-				startSlave();
+			}
 		} catch (DeploymentExecutionException | DeploymentFailureException | IOException ex) {
 			throw new IllegalStateException("Error while starting node.", ex);
 		}
@@ -74,13 +75,13 @@ public class NodeStarter {
 		final String ADDR = config.getAddress();
 
 		logger.info("Starting master node " + Global.MASTER_NAME + "@" + ADDR);
-		String hostMaster = Global.readFile(NodeStarter.class.getResourceAsStream("host-master.txt"));
+		String hostMaster = FileUtils.read(NodeStarter.class.getResourceAsStream("host-master.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostMaster = hostMaster.replace("<!-- interface-def -->", intfDef);
 
 		File hostConfig = new File(config.getJBossHome(), "domain/configuration/host-master.xml");
-		Global.writeFile(hostConfig, hostMaster);
+		FileUtils.write(hostConfig, hostMaster);
 
 		// @formatter:off
 		String[] jbossArgs = {
@@ -104,12 +105,12 @@ public class NodeStarter {
 
 	private void startSlave() throws IOException {
 		final String ADDR = config.getAddress();
-		final String MASTER = config.getMaster();
+		final String MASTER = config.getMasterAddr();
 		final String NAME = config.getSlaveName() + "@" + ADDR;
 		final int portOffset = config.getPortOffset();
 
 		logger.info(String.format("Starting slave node %s, with %s@%s", NAME, Global.MASTER_NAME, MASTER));
-		String hostSlave = Global.readFile(NodeStarter.class.getResourceAsStream("host-slave.txt"));
+		String hostSlave = FileUtils.read(NodeStarter.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostSlave = hostSlave.replace("<!-- interface-def -->", intfDef);
@@ -125,7 +126,7 @@ public class NodeStarter {
 		hostSlave = hostSlave.replace("SL_NAME", "name=\"" + NAME + "\"");
 
 		File hostConfig = new File(config.getJBossHome(), "domain/configuration/host-slave.xml");
-		Global.writeFile(hostConfig, hostSlave);
+		FileUtils.write(hostConfig, hostSlave);
 
 		// @formatter:off
 		String[] jbossArgs = {

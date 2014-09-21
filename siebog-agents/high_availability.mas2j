@@ -1,0 +1,21 @@
+MAS high_availability {
+
+	infrastructure: Siebog
+	
+	agents:
+		remoteObjectFactory
+			[ 
+				module = "siebog-agents",
+				object = HARemoteObjectFactory
+			];
+	
+		agent0 
+			ha_agent [ synchronised = false ]
+			agentArchClass HAAgArch;
+		agent1
+			ha_agent [ synchronised = false ]
+			agentArchClass HAAgArch;
+		
+	aslSourcePath:
+		"asl";
+}

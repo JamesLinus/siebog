@@ -27,14 +27,13 @@ import jason.asSemantics.Message;
 import jason.asSyntax.Literal;
 import jason.mas2j.AgentParameters;
 import jason.runtime.RuntimeServicesInfraTier;
+import java.io.Serializable;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import siebog.jasonee.environment.ActionFeedbackMessage;
-import siebog.jasonee.environment.Environment;
-import siebog.jasonee.environment.EnvironmentAccessor;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
@@ -43,20 +42,15 @@ import siebog.xjaf.managers.AgentInitArgs;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class JasonEEAgArch extends AgArch {
+public class JasonEEAgArch extends AgArch implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private JasonEEAgent agent;
 	private Deque<ACLMessage> mailbox = new LinkedList<>();
-	private boolean running;
-	private String envName;
-	private transient Environment env;
-	private Map<String, ActionExec> scheduledActions;
+	private boolean running = true;
+	private Map<String, ActionExec> scheduledActions = new HashMap<>();
 	private long actionId;
 
-	public void init(AgentInitArgs args, AgentParameters agp, JasonEEAgent agent, String envName) throws Exception {
-		this.agent = agent;
-		this.envName = envName;
-		scheduledActions = new HashMap<>();
-
+	public void init(AgentInitArgs args, AgentParameters agp) throws Exception {
 		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
 				agp.getAsSetts(false, false));
 		insertAgArch(this);
@@ -65,8 +59,6 @@ public class JasonEEAgArch extends AgArch {
 		final String ejb = args.get("remObjFactEjb");
 		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejb);
 		createCustomArchs(remObjFact, agp.getAgArchClasses());
-
-		running = true;
 	}
 
 	public void reasoningCycle() {
@@ -110,7 +102,7 @@ public class JasonEEAgArch extends AgArch {
 	public List<Literal> perceive() {
 		if (!running)
 			return null;
-		return env().getPercepts(agent.getAid());
+		return agent.getPercepts();
 	}
 
 	@Override
@@ -119,7 +111,7 @@ public class JasonEEAgArch extends AgArch {
 			return;
 		String replyWith = "rw" + (++actionId);
 		scheduledActions.put(replyWith, action);
-		env().scheduleAction(agent.getAid(), action.getActionTerm(), replyWith);
+		agent.scheduleAction(action.getActionTerm(), replyWith);
 	}
 
 	public void onActionFeedback(ActionFeedbackMessage msg) {
@@ -152,10 +144,12 @@ public class JasonEEAgArch extends AgArch {
 		return new JasonEERuntimeServices();
 	}
 
-	private Environment env() {
-		if (env == null)
-			env = EnvironmentAccessor.getEnvironment(envName);
-		return env;
+	public JasonEEAgent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(JasonEEAgent agent) {
+		this.agent = agent;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -163,8 +157,9 @@ public class JasonEEAgArch extends AgArch {
 		if (archs == null || archs.size() == 0)
 			return;
 		for (String agArchClass : archs) {
-			AgArch a = remObjFact.createAgArch(agArchClass);
+			JasonEEAgArch a = remObjFact.createAgArch(agArchClass);
 			a.setTS(getTS()); // so a.init() can use TS
+			a.setAgent(agent);
 			a.initAg(null, null, null, null); // for compatibility reasons
 			insertAgArch(a);
 			a.init();

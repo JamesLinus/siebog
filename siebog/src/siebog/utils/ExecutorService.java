@@ -76,6 +76,20 @@ public class ExecutorService {
 		}, delayMillis);
 	}
 
+	public ScheduledFuture<?> schedule(Runnable task, long initialDelayMillis, long periodMillis) {
+		return scheduler.scheduleAtFixedRate(task, initialDelayMillis, periodMillis, TimeUnit.MILLISECONDS);
+	}
+
+	public <T> ScheduledFuture<?> schedule(final RunnableWithParam<T> task, long initialDelayMillis, long periodMillis,
+			final T param) {
+		return schedule(new Runnable() {
+			@Override
+			public void run() {
+				task.run(param);
+			}
+		}, initialDelayMillis, periodMillis);
+	}
+
 	public long registerHeartbeat(AID aid, long delayMilliseconds, String content) {
 		long handle = hbCounter.incrementAndGet();
 		HeartbeatMessage msg = new HeartbeatMessage(aid, handle);

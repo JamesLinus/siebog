@@ -25,5 +25,5 @@ package siebog.jasonee;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface JasonEEStarter {
-	void start(String projectFileName);
+	void start(JasonEEProject project);
 }

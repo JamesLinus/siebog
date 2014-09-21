@@ -25,6 +25,8 @@ import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import siebog.core.Global;
+import siebog.jasonee.JasonEEStarter;
+import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
@@ -48,6 +50,8 @@ public abstract class ObjectFactory {
 	private static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
+	private static final String JasonEEStarterLookup = "ejb:/" + Global.SERVER + "//"
+			+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
 
 	public static AgentManager getAgentManager() {
 		return lookup(AgentManagerLookup, AgentManager.class);
@@ -75,6 +79,10 @@ public abstract class ObjectFactory {
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");
 		return cache;
+	}
+
+	public static JasonEEStarter getJasonEEStarter() {
+		return lookup(JasonEEStarterLookup, JasonEEStarter.class);
 	}
 
 	public static RemoteObjectFactory getRemoteObjectFactory(String module, String ejbName) {

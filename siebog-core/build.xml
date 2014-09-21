@@ -4,6 +4,7 @@
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="dist.siebog.dir" value="${dist.dir}/siebog" />
 	<property name="bin.dir" value="bin" />
 	<property file="build.properties" />
 	
@@ -11,6 +12,7 @@
 	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
 	
 	<target name="package">
+		<delete dir="${dist.siebog.dir}" />
 		<ant dir="../dnars" />
 		<ant dir="../siebog" />
 		<ant dir="../siebog-agents" />
@@ -34,13 +36,7 @@
 	</target>
 	
 	<target name="dist" depends="package">
-		<property name="dist.file" value="${dist.dir}/siebog.zip" />
-		<property name="dist.siebog.dir" value="${dist.dir}/siebog" />
 		<property name="siebog.module.dir" value="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
-		
-		<delete file="${dist.file}" />
-		<delete dir="${dist.siebog.dir}" />
-		
 		<mkdir dir="${dist.siebog.dir}"/>
 		<copy todir="${dist.siebog.dir}/${server.name}">
 			<fileset dir="wildfly-base" includes="**" />

@@ -8,15 +8,14 @@ public class Siebog {
 	private static final Logger logger = Logger.getLogger(Siebog.class.getName());
 
 	private static void printUsage() {
-		System.out.println("USAGE: " + NodeStarter.class.getSimpleName() + " args");
-		System.out.println("args:");
-		System.out.println("\t--mode:\t\tMASTER or SLAVE");
-		System.out.println("\t--address:\t\tNetwork address of this computer.");
-		System.out.println("\t--master:\t\tIf SLAVE, the master node's network address.");
-		System.out.println("\t--name:\t\tIf SLAVE, the name of this slave node.");
-		System.out.println("\t--port-offset:\t\tIf SLAVE, optional, socket port offset.");
-		// TODO check if the list of slaves is really needed
-		System.out.println("\t--slaves:\t\tIf MASTER, a comma-separated " + "list of all or at least one slave node.");
+		System.out.println("USAGE: java -jar siebog-start.jar NodeDescription");
+		System.out.println("NodeDescription");
+		System.out.println("\tDescribes this Siebog node.");
+		System.out.println("\tIf the node is master, use --node=address.");
+		System.out.println("\tOtherwise, use --node=name@address,master@master_address where");
+		System.out.println("\t\tname: cluster-wide unique name of the slave node");
+		System.out.println("\t\taddress: nodes network address");
+		System.out.println("\t\tmaster_address: network address of a running master node.");
 	}
 
 	public static void main(String[] args) {
@@ -25,10 +24,8 @@ public class Siebog {
 			NodeConfig config;
 			if (args.length == 0)
 				config = NodeConfig.get();
-			else {
-				logger.info("Building configuration from command-line arguments.");
+			else
 				config = NodeConfig.get(args);
-			}
 
 			NodeStarter starter = new NodeStarter(config);
 			starter.start();

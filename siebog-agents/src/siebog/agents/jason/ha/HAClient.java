@@ -18,38 +18,24 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.ping;
+package siebog.agents.jason.ha;
 
+import jason.mas2j.parser.ParseException;
+import java.io.File;
 import java.io.IOException;
-import javax.naming.NamingException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 import siebog.SiebogClient;
-import siebog.agents.xjaf.Module;
+import siebog.jasonee.JasonEEProject;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class DNarsPingStarter {
-	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException,
-			NamingException {
-		SiebogClient.connect(null);
-
-		AgentInitArgs agArgs = new AgentInitArgs("domain->dnars");
-
-		AgentClass agClass = new AgentClass(Module.NAME, "DNarsPing");
-
-		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
-
-		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.receivers.add(aid);
-		ObjectFactory.getMessageManager().post(msg);
+public class HAClient {
+	public static void main(String[] args) throws IOException, ParseException {
+		JasonEEProject p = JasonEEProject.loadFromFile(new File(
+				"/home/dejan/dev/siebog/siebog-agents/high_availability.mas2j"));
+		SiebogClient.connect("192.168.213.1");
+		ObjectFactory.getJasonEEStarter().start(p);
 	}
 }

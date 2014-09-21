@@ -40,29 +40,29 @@ import siebog.xjaf.managers.AgentInitArgs;
 @Remote(Agent.class)
 public class TestAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private TestAgentListener listener;
+	private static String remoteHost;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		try {
-			String remoteHost = args.get("remoteHost");
-			Registry reg = LocateRegistry.getRegistry(remoteHost);
-			listener = (TestAgentListener) reg.lookup("TestAgentListener");
-		} catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot connect to the remote RMI service.", ex);
-		}
+		remoteHost = args.get("remoteHost");
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		if (listener != null)
-			try {
-				listener.onMessage(msg);
-			} catch (RemoteException ex) {
-				logger.log(Level.WARNING, "Error during RMI call.", ex);
-			}
-		else
-			logger.info("In Test agent: " + msg);
+		try {
+			getListener().onMessage(msg);
+		} catch (RemoteException ex) {
+			logger.log(Level.WARNING, "Message forwarding failed.", ex);
+		}
+	}
+
+	private TestAgentListener getListener() {
+		try {
+			Registry reg = LocateRegistry.getRegistry(remoteHost);
+			return (TestAgentListener) reg.lookup("TestAgentListener");
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Cannot connect to the remote RMI service.", ex);
+		}
 	}
 
 }

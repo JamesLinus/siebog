@@ -20,70 +20,24 @@
 
 package siebog.core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-
 /**
  * Global constants and utility functions.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class Global
-{
+public abstract class Global {
 	public static final String VERSION = "1.0.1";
-	
-	public static final String 
-		GROUP = "xjaf2x-group", 
-		USERNAME = "xjaf2xadmin",
-		PASSWORD = "xjaf2xpass~", 
-		SERVER = "siebog", 
-		MASTER_NAME = "xjaf-master";
 
-	public static String readFile(String fileName) throws IOException
-	{
-		return readFile(new FileInputStream(fileName));
-	}
-	
-	public static String readFile(InputStream in) throws IOException
-	{
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(in)))
-		{
-			StringBuilder str = new StringBuilder(in.available());
-			String line;
-			String nl = "";
-			while ((line = reader.readLine()) != null)
-			{
-				str.append(nl);
-				if (nl.length() == 0)
-					nl = "\n";
-				str.append(line);
-			}
-			return str.toString();
-		} 
-	}
-	
-	public static void writeFile(File file, String data) throws IOException
-	{
-		try (PrintWriter out = new PrintWriter(file))
-		{
-			out.print(data);
-		}
-	}
-	
-	public static void printVersion()
-	{
+	public static final String GROUP = "xjaf2x-group", USERNAME = "xjaf2xadmin", PASSWORD = "xjaf2xpass~",
+			SERVER = "siebog", MASTER_NAME = "xjaf-master";
+
+	public static void printVersion() {
 		System.out.println("-------------------------------------------------------------");
 		System.out.println("Siebog Multiagent Framework v" + VERSION);
 		System.out.println("-------------------------------------------------------------");
 	}
-	
-	public static String getNodeName()
-	{
+
+	public static String getNodeName() {
 		return System.getProperty("jboss.node.name");
 	}
 }

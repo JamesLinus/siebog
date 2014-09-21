@@ -28,7 +28,7 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import siebog.SiebogCluster;
+import siebog.SiebogClient;
 import siebog.agents.xjaf.Module;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
@@ -61,7 +61,7 @@ public class PairsStarter {
 		int primeLimit = Integer.parseInt(args[2]);
 		int contentLength = Integer.parseInt(args[3]);
 
-		SiebogCluster.init();
+		SiebogClient.connect(null);
 
 		List<AID> senders = new ArrayList<>();
 		AgentManager agm = ObjectFactory.getAgentManager();
