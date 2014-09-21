@@ -23,7 +23,7 @@ package siebog.agents.xjaf.pso;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.agents.xjaf.Module;
+import siebog.core.Global;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -84,7 +84,7 @@ public class Swarm extends XjafAgent {
 		logger.fine("Initializing swarm with random positions/solutions.");
 		for (int i = 0; i < numberParticles; ++i) {
 			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX, "maxx->" + maxX);
-			agm.startAgent(new AgentClass(Module.NAME, "Particle"), "Particle" + i, mapArgs);
+			agm.startAgent(new AgentClass(Global.SERVER, "Particle"), "Particle" + i, mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");

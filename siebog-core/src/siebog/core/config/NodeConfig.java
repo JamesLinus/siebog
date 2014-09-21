@@ -91,7 +91,7 @@ public class NodeConfig {
 	}
 
 	public int getPortOffset() {
-		return -1;
+		return 0;
 	}
 
 	public RelayInfo getRelay() {

@@ -15,7 +15,6 @@
 		<delete dir="${dist.siebog.dir}" />
 		<ant dir="../dnars" />
 		<ant dir="../siebog" />
-		<ant dir="../siebog-agents" />
 		
 		<delete file="${starter.path}" />
         <jar destfile="${starter.path}">
@@ -35,6 +34,10 @@
 		<sonar:sonar />
 	</target>
 	
+	<target name="deploy" depends="package">
+		<ant target="deploy" dir="../siebog" />
+	</target>
+	
 	<target name="dist" depends="package">
 		<property name="siebog.module.dir" value="${dist.siebog.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
 		<mkdir dir="${dist.siebog.dir}"/>
@@ -48,7 +51,6 @@
 		<copy todir="${siebog.module.dir}" file="${starter.path}" />
 		<copy todir="${siebog.module.dir}" file="${dnars.path}" />
 		<move todir="${dist.siebog.dir}" file="${siebog.path}" />
-		<move todir="${dist.siebog.dir}" file="${agents.path}" />
 		<move todir="${dist.siebog.dir}" file="${starter.path}" />
 		<copy todir="${dist.siebog.dir}" file="../LICENSE" />
 		<copy todir="${dist.siebog.dir}" file="../NOTICE" />

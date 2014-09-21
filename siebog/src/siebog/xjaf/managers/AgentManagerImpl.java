@@ -21,7 +21,9 @@
 package siebog.xjaf.managers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
@@ -41,12 +43,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
-import siebog.core.Global;
+import siebog.agents.xjaf.GUIAgent;
+import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.test.TestAgent;
 
 /**
  * Default agent manager implementation.
@@ -123,6 +127,11 @@ public class AgentManagerImpl implements AgentManager {
 	@Path("/classes")
 	@Override
 	public List<AgentClass> getAvailableAgentClasses() {
+		Set<String> ignored = new HashSet<>();
+		ignored.add(JasonEEAgent.class.getSimpleName());
+		ignored.add(TestAgent.class.getSimpleName());
+		ignored.add(GUIAgent.class.getSimpleName());
+
 		final Context ctx = ContextFactory.get();
 		List<AgentClass> result = new ArrayList<>();
 		final String intf = "!" + Agent.class.getName();
@@ -131,16 +140,16 @@ public class AgentManagerImpl implements AgentManager {
 			NamingEnumeration<NameClassPair> moduleList = ctx.list(exp);
 			while (moduleList.hasMore()) {
 				String module = moduleList.next().getName();
-				if (module.equals(Global.SERVER))
-					continue;
 				NamingEnumeration<NameClassPair> agentList = ctx.list(exp + "/" + module);
 				while (agentList.hasMore()) {
 					String ejbName = agentList.next().getName();
 					if (ejbName != null && ejbName.endsWith(intf)) {
 						int n = ejbName.lastIndexOf(intf);
 						ejbName = ejbName.substring(0, n);
-						AgentClass agClass = new AgentClass(module, ejbName);
-						result.add(agClass);
+						if (!ignored.contains(ejbName)) {
+							AgentClass agClass = new AgentClass(module, ejbName);
+							result.add(agClass);
+						}
 					}
 				}
 			}

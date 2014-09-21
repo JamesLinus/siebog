@@ -18,12 +18,24 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf;
+package siebog.agents.jason.ha;
+
+import jason.mas2j.parser.ParseException;
+import java.io.File;
+import java.io.IOException;
+import siebog.SiebogClient;
+import siebog.jasonee.JasonEEProject;
+import siebog.utils.ObjectFactory;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class Module {
-	public static final String NAME = "siebog-agents";
+public class HAClient {
+	public static void main(String[] args) throws IOException, ParseException {
+		JasonEEProject p = JasonEEProject
+				.loadFromFile(new File("/home/dejan/dev/siebog/siebog/high_availability.mas2j"));
+		SiebogClient.connect("localhost");
+		ObjectFactory.getJasonEEStarter().start(p);
+	}
 }

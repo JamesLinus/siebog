@@ -14,7 +14,7 @@ public class Siebog {
 		System.out.println("\tIf the node is master, use --node=address.");
 		System.out.println("\tOtherwise, use --node=name@address,master@master_address where");
 		System.out.println("\t\tname: cluster-wide unique name of the slave node");
-		System.out.println("\t\taddress: nodes network address");
+		System.out.println("\t\taddress: node's network address");
 		System.out.println("\t\tmaster_address: network address of a running master node.");
 	}
 

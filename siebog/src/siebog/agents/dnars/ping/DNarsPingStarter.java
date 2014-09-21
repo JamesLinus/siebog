@@ -25,7 +25,7 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogClient;
-import siebog.agents.xjaf.Module;
+import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
@@ -44,7 +44,7 @@ public class DNarsPingStarter {
 
 		AgentInitArgs agArgs = new AgentInitArgs("domain->dnars");
 
-		AgentClass agClass = new AgentClass(Module.NAME, "DNarsPing");
+		AgentClass agClass = new AgentClass(Global.SERVER, "DNarsPing");
 
 		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "dnars", agArgs);
 

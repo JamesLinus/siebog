@@ -5,7 +5,7 @@ MAS high_availability {
 	agents:
 		remoteObjectFactory
 			[ 
-				module = "siebog-agents",
+				module = "siebog",
 				object = HARemoteObjectFactory
 			];
 	

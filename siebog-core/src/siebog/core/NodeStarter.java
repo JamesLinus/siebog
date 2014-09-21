@@ -64,7 +64,6 @@ public class NodeStarter {
 				startMaster();
 				// TODO: check if already deployed
 				deploy(config.getRootFolder(), Global.SERVER);
-				deploy(config.getRootFolder(), "siebog-agents");
 			}
 		} catch (DeploymentExecutionException | DeploymentFailureException | IOException ex) {
 			throw new IllegalStateException("Error while starting node.", ex);

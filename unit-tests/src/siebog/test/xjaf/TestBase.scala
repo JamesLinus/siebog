@@ -7,10 +7,11 @@ import java.io.File
 import siebog.xjaf.fipa.ACLMessage
 import org.junit.After
 import siebog.SiebogClient
+import siebog.core.Global
 
 class TestBase(val numNodes: Int, val address: String = "localhost", val testDir: String = "/home/dejan/tmp") {
 	val msgQueue = new LinkedBlockingQueue[ACLMessage]
-	val agentsModule = "siebog-agents"
+	val agentsModule = Global.SERVER
 
 	@Before
 	def before(): Unit = {

@@ -12,11 +12,19 @@ import siebog.xjaf.core.AgentClass
 import siebog.xjaf.fipa.ACLMessage
 import siebog.xjaf.fipa.Performative
 import org.junit.After
+import siebog.SiebogClient
 
-class XjafTest extends TestBase(0, "192.168.213.1") {
+class XjafTest extends TestBase(0, "localhost") {
 
 	@Test
 	def testPingPong(): Unit = {
+		runPingPong
+		val reply = msgQueue.poll(10, TimeUnit.SECONDS)
+		assertNotNull(reply)
+		assertEquals(Performative.INFORM, reply.performative)
+	}
+
+	def runPingPong(): Unit = {
 		val agm = ObjectFactory.getAgentManager
 
 		val pingAid = agm.startAgent(new AgentClass(agentsModule, "Ping"), "Ping", null)
@@ -30,10 +38,13 @@ class XjafTest extends TestBase(0, "192.168.213.1") {
 		message.content = pongName
 		message.replyTo = XjafTestUtils.testAgentAid
 		msm.post(message)
+	}
+}
 
-		val reply = msgQueue.poll(10, TimeUnit.SECONDS)
-
-		assertNotNull(reply)
-		assertEquals(Performative.INFORM, reply.performative)
+object XjafTest {
+	def main(args: Array[String]) {
+		val test = new XjafTest
+		SiebogClient.connect(test.address)
+		new XjafTest().runPingPong
 	}
 }

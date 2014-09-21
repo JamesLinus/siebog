@@ -25,7 +25,7 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogClient;
-import siebog.agents.xjaf.Module;
+import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
@@ -48,13 +48,13 @@ public class ACOStarter {
 		SiebogClient.connect(null);
 
 		final AgentManager agm = ObjectFactory.getAgentManager();
-		AgentClass mapClass = new AgentClass(Module.NAME, "Map");
+		AgentClass mapClass = new AgentClass(Global.SERVER, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
 		agm.startAgent(mapClass, "Map", mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i) {
-			AgentClass agClass = new AgentClass(Module.NAME, "Ant");
+			AgentClass agClass = new AgentClass(Global.SERVER, "Ant");
 			agm.startAgent(agClass, "Ant" + i, null);
 		}
 	}

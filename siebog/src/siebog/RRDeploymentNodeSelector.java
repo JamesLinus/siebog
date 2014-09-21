@@ -20,6 +20,7 @@
 
 package siebog;
 
+import java.util.Arrays;
 import org.jboss.ejb.client.DeploymentNodeSelector;
 
 /**
@@ -27,15 +28,13 @@ import org.jboss.ejb.client.DeploymentNodeSelector;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RRDeploymentNodeSelector implements DeploymentNodeSelector
-{
+public class RRDeploymentNodeSelector implements DeploymentNodeSelector {
 	private int index;
 
 	@Override
-	public String selectNode(String[] eligibleNodes, String appName, String moduleName,
-			String distinctName)
-	{
-		return eligibleNodes[index++ % eligibleNodes.length]; 
+	public String selectNode(String[] eligibleNodes, String appName, String moduleName, String distinctName) {
+		System.out.println("--------[" + Arrays.toString(eligibleNodes) + "]");
+		return eligibleNodes[index++ % eligibleNodes.length];
 	}
 
 }

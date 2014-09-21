@@ -27,7 +27,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.agents.xjaf.Module;
+import siebog.core.Global;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -242,7 +242,7 @@ public class Ant extends XjafAgent {
 				phase = 6;
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
-				AgentClass agClass = new AgentClass(Module.NAME, "Ant");
+				AgentClass agClass = new AgentClass(Global.SERVER, "Ant");
 				agm.startAgent(agClass, name, null);
 				agm.stopAgent(myAid);
 				return;
