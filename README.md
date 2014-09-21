@@ -37,8 +37,8 @@ Siebog operates in a symmetric cluster: each node is connected to every other no
 
 By default, the `start-siebog` utility runs a single master node on localhost. This behavior can be changed using the program argument "--node":
 
- * If the node is master, use --node=address, where *address* is the network address of this node.
- * Otherwise, use --node=name@address,master@master\_address, where *name* is the cluster-wide unique name of this slave node, *address* is the node's network address, and *master\_address* is the network address of a running master node
+ * If the node is master, use *--node=address*, where *address* is the node's network address.
+ * Otherwise, use *--node=name@address,master@master\_address*, where *name* is the cluster-wide unique name of the slave node, *address* is its network address, and *master\_address* is the network address of a running master node.
 
 Contact
 -------
