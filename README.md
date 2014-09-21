@@ -35,16 +35,10 @@ Running Siebog in a cluster
 
 Siebog operates in a symmetric cluster: each node is connected to every other node. A single node is recognized as the *master* and can be used to remotely control the cluster. Other nodes are called *slaves*.
 
-By default, the `start-siebog` utility runs a single master node on localhost. This behavior can be changed through program arguments:
+By default, the `start-siebog` utility runs a single master node on localhost. This behavior can be changed using the program argument "--node":
 
- * --mode: *master* or *slave* (default: master)
- * --address: Network address of this computer (default: localhost)
- * --master: If mode=slave, the master's network address (required)
- * --name: If mode=slave, the unique name of this slave node (required)
- * --port-offset: If mode=slave, socket port offset (optional)
- * --slaves: If mode=master, a comma-separated list of at least one slave address (required if there are slaves)
- 
-The port offset allows you to run multiple nodes on a single machine. Simply specify a high-enough value for each slave node (e.g. 100, 200, etc.). And make sure you have enough RAM :)
+ * If the node is master, use --node=address, where *address* is the network address of this node.
+ * Otherwise, use --node=name@address,master@master\_address, where *name* is the cluster-wide unique name of this slave node, *address* is the node's network address, and *master\_address* is the network address of a running master node
 
 Contact
 -------
