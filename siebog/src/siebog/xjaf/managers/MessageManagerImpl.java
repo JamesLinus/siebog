@@ -75,7 +75,7 @@ public class MessageManagerImpl implements MessageManager {
 				throw new IllegalArgumentException("Receiver AID cannot be null.");
 			try {
 				RunningAgent rec = agm.getRunningAgent(aid);
-				rec.ref.handleMessage(msg);
+				rec.handleMessage(msg);
 			} catch (IllegalArgumentException ex) {
 				logger.info(ex.getMessage());
 			}

@@ -33,7 +33,7 @@ public class NodeConfig {
 			// make sure it is set correctly
 			File modules = new File(jbossHome, "jboss-modules.jar");
 			if (!modules.exists())
-				throw new IOException("Environment variable JBOSS_HOME not set.");
+				throw new IllegalArgumentException("Environment variable JBOSS_HOME not (properly) set.");
 			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
 			// configuration file
 			configFile = new File(getRootFolder(), "siebog.properties");
@@ -49,7 +49,7 @@ public class NodeConfig {
 			}
 			loadConfig();
 		} catch (IOException ex) {
-			throw new IllegalArgumentException("Error while initializing node configuration.", ex);
+			throw new IllegalArgumentException("Input/output error: " + ex.getMessage(), ex);
 		}
 	}
 

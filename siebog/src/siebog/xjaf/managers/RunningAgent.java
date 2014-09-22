@@ -24,6 +24,7 @@ import java.io.Serializable;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 
@@ -34,7 +35,7 @@ public class RunningAgent implements Serializable {
 	private AgentClass agClass;
 	private AID aid;
 	// no getter for this one, since we don't want it serialized into JSON
-	public Agent ref;
+	private Agent ref;
 
 	public AgentClass getAgClass() {
 		return agClass;
@@ -50,5 +51,17 @@ public class RunningAgent implements Serializable {
 
 	public void setAid(AID aid) {
 		this.aid = aid;
+	}
+
+	public void setRef(Agent ref) {
+		this.ref = ref;
+	}
+
+	public void handleMessage(ACLMessage msg) {
+		ref.handleMessage(msg);
+	}
+
+	public void ping() {
+		ref.ping();
 	}
 }
