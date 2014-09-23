@@ -30,14 +30,21 @@ import siebog.core.Global;
 import siebog.core.config.NodeConfig;
 
 /**
- * Helper class for global cluster initialization.
+ * Helper class for client initialization.
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogClient {
 	private static boolean connected;
 
-	public static void connect(String masterAddress) {
+	/**
+	 * Connect to a running Siebog cluster. This method should be called before any other
+	 * interaction with the server.
+	 * 
+	 * @param masterAddress Address of the master node.
+	 * @param slaves Address of at least one slave node (if any).
+	 */
+	public static void connect(String masterAddress, String... slaves) {
 		if (connected)
 			return;
 		if (masterAddress == null)
@@ -45,7 +52,7 @@ public class SiebogClient {
 
 		Properties p = new Properties();
 		p.put("endpoint.name", "client-endpoint");
-		// p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
+		p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
 
 		p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 		p.put("remote.clusters", "ejb");
@@ -53,18 +60,27 @@ public class SiebogClient {
 		p.put("remote.cluster.ejb.password", Global.PASSWORD);
 		// p.put("remote.cluster.ejb.clusternode.selector", RRClusterNodeSelector.class.getName());
 
-		final String conn = "master";
-		p.put("remote.connections", conn);
-		final String prefix = "remote.connection." + conn;
-		p.put(prefix + ".host", masterAddress);
-		p.put(prefix + ".port", "8080");
-		p.put(prefix + ".connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
-		p.put(prefix + ".username", Global.USERNAME);
-		p.put(prefix + ".password", Global.PASSWORD);
+		addConnection(p, "master", masterAddress, 8080);
+		String connections = "";
+		for (String addr : slaves) {
+			String name = "s" + addr.replace('.', '_');
+			addConnection(p, name, addr, 8080);
+			connections += "," + name;
+		}
+		p.put("remote.connections", "master" + connections);
 
 		EJBClientConfiguration cc = new PropertiesBasedEJBClientConfiguration(p);
 		ContextSelector<EJBClientContext> selector = new ConfigBasedEJBClientContextSelector(cc);
 		EJBClientContext.setSelector(selector);
 		connected = true;
+	}
+
+	private static void addConnection(Properties p, String name, String address, int port) {
+		final String prefix = "remote.connection." + name;
+		p.put(prefix + ".host", address);
+		p.put(prefix + ".port", port + "");
+		p.put(prefix + ".connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
+		p.put(prefix + ".username", Global.USERNAME);
+		p.put(prefix + ".password", Global.PASSWORD);
 	}
 }
