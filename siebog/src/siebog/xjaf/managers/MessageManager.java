@@ -29,11 +29,13 @@ import siebog.xjaf.fipa.ACLMessage;
  */
 public interface MessageManager {
 	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to process the message.
+	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to
+	 * process the message.
 	 * 
 	 * @param message ACLMessage instance.
+	 * @return The number of agents which have successfully received the message.
 	 */
-	void post(ACLMessage message);
+	int post(ACLMessage message);
 
 	String ping();
 }

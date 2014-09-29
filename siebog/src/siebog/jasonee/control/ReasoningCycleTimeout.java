@@ -20,52 +20,21 @@
 
 package siebog.jasonee.control;
 
-import java.io.Serializable;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
- * Base interface for user-defined execution control.
- * <p>
- * Execution sequence:
- * <ul>
- * <li>init
- * <li>(receivedFinishedCycle)*
- * <li>stop
- * </ul>
- * </p>
- * Based on jason.control.ExecutionControl
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class UserExecutionControl implements Serializable {
+public class ReasoningCycleTimeout extends ACLMessage {
 	private static final long serialVersionUID = 1L;
-	public static final int DEFAULT_TIMEOUT = 10000;
-	private boolean running = true;
-	private String controlName;
+	public int cycleNum;
 
-	public void init(String controlName, String[] args) {
-		this.controlName = controlName;
-	}
-
-	public void receiveFinishedCycle(String agName, boolean breakpoint, int cycle) {
-	}
-
-	public void stop() {
-		running = false;
-	}
-
-	public int getCycleTimeout() {
-		return DEFAULT_TIMEOUT;
-	}
-
-	public void startNewCycle(int cycleNum) {
-	}
-
-	public void allAgsFinished(int cycleNum) {
-		ExecutionControl control = ExecutionControlAccessor.getExecutionControl(controlName);
-		control.informAllAgsToPerformCycle(cycleNum + 1);
-	}
-
-	public boolean isRunning() {
-		return running;
+	public ReasoningCycleTimeout(AID aid, int cycleNum) {
+		super(Performative.INFORM);
+		receivers.add(aid);
+		this.cycleNum = cycleNum;
 	}
 }

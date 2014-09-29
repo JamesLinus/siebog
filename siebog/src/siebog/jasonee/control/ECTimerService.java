@@ -20,22 +20,16 @@
 
 package siebog.jasonee.control;
 
-import jason.control.ExecutionControlInfraTier;
-import java.io.Serializable;
-import siebog.xjaf.core.AID;
+import java.util.Collection;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface ExecutionControl extends ExecutionControlInfraTier, Serializable {
-	void init(String name, UserExecutionControl userExecCtrl);
+public interface ECTimerService {
+	void start(Collection<ExecutionControlBean> execCtrls);
 
-	void onTimeout(int cycleNum);
+	void schedule(int delayMillis, String execCtrlName, int cycleNum);
 
-	void agentCycleFinished(AID aid, boolean breakpoint, int cycleNum);
-
-	void addAgent(AID aid);
-
-	void removeAgent(AID aid);
+	void stop();
 }

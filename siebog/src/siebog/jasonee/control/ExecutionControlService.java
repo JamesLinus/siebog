@@ -26,6 +26,8 @@ import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import siebog.core.Global;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
@@ -34,10 +36,10 @@ import org.jboss.msc.service.StopContext;
 public class ExecutionControlService implements Service<ExecutionControlContainer> {
 	public static final ServiceName NAME = ServiceName.JBOSS.append("jasonee", "ExecutionControlService");
 	private AtomicBoolean started = new AtomicBoolean(false);
-	private ExecutionControlContainer container;
+	private final ExecutionControlContainer container;
 
-	public ExecutionControlService() {
-		container = new ExecutionControlContainer();
+	public ExecutionControlService(ExecutionControlContainer container) {
+		this.container = container;
 	}
 
 	@Override
@@ -51,10 +53,31 @@ public class ExecutionControlService implements Service<ExecutionControlContaine
 	public void start(StartContext ctx) throws StartException {
 		if (!started.compareAndSet(false, true))
 			throw new StartException("Already started.");
+		new Thread() {
+			@Override
+			public void run() {
+				while (started.get()) {
+					System.out.println("------------------HERE! " + container.getAll().size());
+					try {
+						Thread.sleep(4000);
+					} catch (Exception ex) {
+						break;
+					}
+				}
+			}
+		}.start();
+		getTimer().start(container.getAll());
 	}
 
 	@Override
 	public void stop(StopContext ctx) {
-		started.compareAndSet(true, false);
+		if (started.compareAndSet(true, false))
+			getTimer().stop();
+	}
+
+	public static ECTimerService getTimer() {
+		final String name = "ejb:/" + Global.SERVER + "//" + ECTimerServiceImpl.class.getSimpleName() + "!"
+				+ ECTimerService.class.getName();
+		return ObjectFactory.lookup(name, ECTimerService.class);
 	}
 }

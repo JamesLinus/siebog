@@ -27,28 +27,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import siebog.jasonee.JasonEEAgArch;
-import siebog.utils.ObjectFactory;
 
 /**
- * Architecture of an agent which believes it should print out the host node's name at regular time intervals.
+ * Architecture of an agent which believes it should print out the host node's name at regular time
+ * intervals.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class HAAgArch extends JasonEEAgArch {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(HAAgArch.class.getName());
-	private static final long INTERVAL = 2000;
 	private static final Literal THE_BELIEF = Literal.parseLiteral("shouldPrintNodeName");
 	private static final String DO_PRINT = "printNodeName";
-	private static final String DO_REMINDME = "remindMeLater";
-	private boolean includeBelief = true;
+	private boolean includeBelief = false;
 
 	@Override
 	public List<Literal> perceive() {
-		if (includeBelief) {
-			includeBelief = false;
+		includeBelief = !includeBelief;
+		if (includeBelief)
 			return Collections.singletonList(THE_BELIEF);
-		}
 		return Collections.emptyList();
 	}
 
@@ -57,21 +54,17 @@ public class HAAgArch extends JasonEEAgArch {
 		final Structure term = action.getActionTerm();
 		switch (term.getFunctor()) {
 		case DO_PRINT:
-			logger.info(getAgent().getAid() + "@" + System.getProperty("jboss.node.name"));
+			logger.info(getAgent().getAid().getName() + " hosted by " + System.getProperty("jboss.node.name"));
+			try {
+				Thread.sleep((int) (Math.random() * 1000) + 500);
+			} catch (InterruptedException ex) {
+			}
 			action.setResult(true);
-			break;
-		case DO_REMINDME:
-			ObjectFactory.getExecutorService().execute(new Runnable() {
-				@Override
-				public void run() {
-					includeBelief = true;
-					wake();
-				}
-			}, INTERVAL);
 			break;
 		default:
 			action.setResult(false);
 			action.setFailureReason(Literal.parseLiteral("unknownAction"), "Unknown action.");
+			break;
 		}
 	}
 }

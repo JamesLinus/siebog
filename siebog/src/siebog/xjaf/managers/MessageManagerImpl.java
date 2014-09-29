@@ -68,7 +68,8 @@ public class MessageManagerImpl implements MessageManager {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public void post(@Form ACLMessage msg) {
+	public int post(@Form ACLMessage msg) {
+		int success = 0;
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		for (AID aid : msg.receivers) {
 			if (aid == null)
@@ -76,10 +77,12 @@ public class MessageManagerImpl implements MessageManager {
 			try {
 				RunningAgent rec = agm.getRunningAgent(aid);
 				rec.handleMessage(msg);
-			} catch (IllegalArgumentException ex) {
+				++success;
+			} catch (Exception ex) {
 				logger.info(ex.getMessage());
 			}
 		}
+		return success;
 	}
 
 	@Override

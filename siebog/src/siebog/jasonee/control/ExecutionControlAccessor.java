@@ -20,8 +20,11 @@
 
 package siebog.jasonee.control;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.msc.service.ServiceController;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
@@ -29,18 +32,28 @@ import org.jboss.msc.service.ServiceController;
  */
 public class ExecutionControlAccessor {
 	public static ExecutionControl getExecutionControl(String name) {
-		return getContainer().get(name);
+		return ObjectFactory.getExecutionControlCache().get(name);
 	}
 
 	public static String putExecutionControl(ExecutionControl value) {
 		final String name = "ExecCtrl" + (int) (Math.random() * 1000000);
-		getContainer().put(name, value);
+		ObjectFactory.getExecutionControlCache().put(name, value);
 		return name;
 	}
 
-	private static ExecutionControlContainer getContainer() {
+	public static Collection<String> getAll() {
+		return ObjectFactory.getExecutionControlCache().keySet();
+	}
+
+	public static boolean serviceActive() {
 		ServiceController<?> service = CurrentServiceContainer.getServiceContainer().getService(
 				ExecutionControlService.NAME);
-		return (ExecutionControlContainer) service.getValue();
+		return service != null;
 	}
+
+	/*
+	 * public static ExecutionControlContainer getContainer() { ServiceController<?> service =
+	 * CurrentServiceContainer.getServiceContainer().getService( ExecutionControlService.NAME);
+	 * return (ExecutionControlContainer) service.getValue(); }
+	 */
 }

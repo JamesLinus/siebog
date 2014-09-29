@@ -10,10 +10,10 @@ MAS high_availability {
 			];
 	
 		agent0 
-			ha_agent [ synchronised = false ]
+			ha_agent [ synchronised = true ]
 			agentArchClass HAAgArch;
 		agent1
-			ha_agent [ synchronised = false ]
+			ha_agent [ synchronised = true ]
 			agentArchClass HAAgArch;
 		
 	aslSourcePath:

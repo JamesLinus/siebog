@@ -34,7 +34,10 @@ public class RRDeploymentNodeSelector implements DeploymentNodeSelector {
 	@Override
 	public String selectNode(String[] eligibleNodes, String appName, String moduleName, String distinctName) {
 		System.out.println("--------[" + Arrays.toString(eligibleNodes) + "]");
-		return eligibleNodes[index++ % eligibleNodes.length];
+		for (String str : eligibleNodes)
+			if (str.contains("slave"))
+				return str;
+		return eligibleNodes[0];
 	}
 
 }

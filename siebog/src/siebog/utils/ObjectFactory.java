@@ -28,6 +28,7 @@ import siebog.core.Global;
 import siebog.jasonee.JasonEEStarter;
 import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
+import siebog.jasonee.control.ExecutionControl;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.managers.AgentManager;
@@ -78,6 +79,14 @@ public abstract class ObjectFactory {
 		Cache<AID, RunningAgent> cache = container.getCache("running-agents");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");
+		return cache;
+	}
+
+	public static Cache<String, ExecutionControl> getExecutionControlCache() {
+		CacheContainer container = lookup(XjafCacheLookup, CacheContainer.class);
+		Cache<String, ExecutionControl> cache = container.getCache("execution-controls");
+		if (cache == null)
+			throw new IllegalStateException("Cannot load cache execution-controls.");
 		return cache;
 	}
 

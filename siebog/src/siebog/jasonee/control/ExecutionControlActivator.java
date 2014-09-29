@@ -20,13 +20,10 @@
 
 package siebog.jasonee.control;
 
-import org.jboss.as.server.ServerEnvironment;
-import org.jboss.as.server.ServerEnvironmentService;
 import org.jboss.msc.service.ServiceActivator;
 import org.jboss.msc.service.ServiceActivatorContext;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistryException;
-import org.jboss.msc.value.InjectedValue;
 import org.wildfly.clustering.singleton.SingletonServiceBuilderFactory;
 
 /**
@@ -36,13 +33,15 @@ import org.wildfly.clustering.singleton.SingletonServiceBuilderFactory;
 public class ExecutionControlActivator implements ServiceActivator {
 	@Override
 	public void activate(ServiceActivatorContext ctx) throws ServiceRegistryException {
-		ExecutionControlService service = new ExecutionControlService();
-		InjectedValue<ServerEnvironment> env = new InjectedValue<>();
+		if (ExecutionControlAccessor.serviceActive())
+			return; // happens on re-deployment
+		ExecutionControlContainer container = new ExecutionControlContainer();
+		ExecutionControlService service = new ExecutionControlService(container);
+
 		ServiceController<?> factoryService = ctx.getServiceRegistry().getRequiredService(
 				SingletonServiceBuilderFactory.SERVICE_NAME.append("server", "default"));
 		SingletonServiceBuilderFactory factory = (SingletonServiceBuilderFactory) factoryService.getValue();
 		factory.createSingletonServiceBuilder(ExecutionControlService.NAME, service).build(ctx.getServiceTarget())
-				.addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, env)
 				.setInitialMode(ServiceController.Mode.ACTIVE).install();
 	}
 

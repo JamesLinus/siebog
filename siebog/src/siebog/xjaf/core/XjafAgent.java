@@ -54,11 +54,11 @@ public abstract class XjafAgent implements Agent {
 	protected AID myAid;
 	protected AgentManager agm;
 	protected MessageManager msm;
-	private boolean processing;
+	private transient boolean processing;
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
-	private ExecutorService executor;
-	private long hbHandle;
+	private transient ExecutorService exec;
+	private transient long hbHandle;
 
 	@Override
 	@Lock(LockType.WRITE)
@@ -70,7 +70,6 @@ public abstract class XjafAgent implements Agent {
 		queue = new LinkedBlockingQueue<>();
 		// a reference to myself
 		myself = ObjectFactory.getSessionContext().getBusinessObject(Agent.class);
-		executor = ObjectFactory.getExecutorService();
 		onInit(args);
 	}
 
@@ -95,6 +94,7 @@ public abstract class XjafAgent implements Agent {
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void handleMessage(ACLMessage msg) {
+		logger.warning("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ADDING " + msg.getClass().getSimpleName() + "?" + processing);
 		queue.add(msg);
 		if (!processing)
 			processNextMessage();
@@ -106,7 +106,7 @@ public abstract class XjafAgent implements Agent {
 	public void processNextMessage() {
 		if (terminated) {
 			onTerminate();
-			// remove statful beans
+			// remove stateful beans
 			if (getClass().getAnnotation(Stateful.class) != null)
 				myself.remove();
 			return;
@@ -117,16 +117,16 @@ public abstract class XjafAgent implements Agent {
 			processing = false;
 		else {
 			processing = true;
-			executor.execute(new Runnable() {
+			executor().execute(new Runnable() {
 				@Override
 				public void run() {
 					// TODO : check if the access to onMessage is protected
 					if (msg instanceof HeartbeatMessage) {
 						boolean repeat = onHeartbeat(msg.content);
 						if (repeat)
-							executor.signalHeartbeat(hbHandle);
+							executor().signalHeartbeat(hbHandle);
 						else
-							executor.cancelHeartbeat(hbHandle);
+							executor().cancelHeartbeat(hbHandle);
 					} else {
 						if (filter(msg))
 							try {
@@ -160,12 +160,13 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
-	 * become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
+	 * for the message to become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
-	 *            method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
+	 *            account and the method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
+	 *         is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
@@ -203,7 +204,8 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering
+	 * function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.
@@ -213,7 +215,7 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	protected void registerHeartbeat(String content) {
-		hbHandle = executor.registerHeartbeat(myAid, 500, content);
+		hbHandle = executor().registerHeartbeat(myAid, 500, content);
 	}
 
 	protected void registerHeartbeat() {
@@ -231,5 +233,11 @@ public abstract class XjafAgent implements Agent {
 	@Override
 	public void ping() {
 		logger.info(myAid + " pinged.");
+	}
+
+	private ExecutorService executor() {
+		if (exec == null)
+			exec = ObjectFactory.getExecutorService();
+		return exec;
 	}
 }

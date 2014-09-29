@@ -35,7 +35,9 @@ public class HAClient {
 	public static void main(String[] args) throws IOException, ParseException {
 		JasonEEProject p = JasonEEProject
 				.loadFromFile(new File("/home/dejan/dev/siebog/siebog/high_availability.mas2j"));
-		SiebogClient.connect("localhost");
+		SiebogClient.connect("172.16.249.1", "172.16.249.129");
+		// "192.168.124.1", "192.168.124.129");
+		// "192.168.124.130");
 		ObjectFactory.getJasonEEStarter().start(p);
 	}
 }

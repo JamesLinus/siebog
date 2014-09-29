@@ -34,6 +34,7 @@ import siebog.core.FileUtils;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ExecutionControlAccessor;
 import siebog.jasonee.control.ReasoningCycleMessage;
+import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentAccessor;
@@ -59,6 +60,7 @@ public class JasonEEAgent extends XjafAgent {
 	private boolean syncMode;
 	private int asyncCycleNum;
 	private boolean sleeping = true;
+	private int cycleNum;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -97,9 +99,15 @@ public class JasonEEAgent extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
+		logger.warning("//////////////////// RECEIVED: " + msg.getClass().getSimpleName());
 		if (msg instanceof ReasoningCycleMessage)
 			performCycle(((ReasoningCycleMessage) msg).cycleNum);
-		else if (msg instanceof ActionFeedbackMessage)
+		else if (msg instanceof ReasoningCycleTimeout) {
+			logger.warning("///////////////////////////////////" + syncMode + ":" + cycleNum + ":"
+					+ ((ReasoningCycleTimeout) msg).cycleNum);
+			if (syncMode && cycleNum <= ((ReasoningCycleTimeout) msg).cycleNum)
+				executionControl().agentCycleFinished(myAid, isBreakpoint(), cycleNum);
+		} else if (msg instanceof ActionFeedbackMessage)
 			arch.onActionFeedback((ActionFeedbackMessage) msg);
 		else if (msg instanceof EnvironmentChangedMessage)
 			wakeUp();
@@ -118,15 +126,22 @@ public class JasonEEAgent extends XjafAgent {
 	}
 
 	private void performCycle(int cycleNum) {
-		arch.reasoningCycle();
-		if (syncMode) {
-			boolean isBreakpoint;
-			try {
-				isBreakpoint = arch.getTS().getC().getSelectedOption().getPlan().hasBreakpoint();
-			} catch (NullPointerException ex) {
-				isBreakpoint = false;
-			}
-			executionControl().agentCycleFinished(myAid, isBreakpoint, cycleNum);
+		this.cycleNum = cycleNum;
+		try {
+			arch.reasoningCycle();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error in reasoning cycle.", ex);
+		} finally {
+			if (syncMode)
+				executionControl().agentCycleFinished(myAid, isBreakpoint(), cycleNum);
+		}
+	}
+
+	private boolean isBreakpoint() {
+		try {
+			return arch.getTS().getC().getSelectedOption().getPlan().hasBreakpoint();
+		} catch (NullPointerException ex) {
+			return false;
 		}
 	}
 

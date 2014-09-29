@@ -29,12 +29,12 @@ import org.jboss.msc.service.ServiceController;
  */
 public class EnvironmentAccessor {
 	public static Environment getEnvironment(String name) {
-		return getContainer().get(name);
+		return new Environment(); // getContainer().get(name);
 	}
 
 	public static String putEnvironment(Environment value) {
 		final String name = "ExecCtrl" + (int) (Math.random() * 1000000);
-		getContainer().put(name, value);
+		// getContainer().put(name, value);
 		return name;
 	}
 

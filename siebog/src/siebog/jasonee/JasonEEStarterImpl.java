@@ -28,6 +28,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import siebog.core.Global;
 import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.control.ExecutionControlAccessor;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
@@ -78,7 +79,10 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createExecutionControl() {
-		ExecutionControl ctrl = new ExecutionControl();
+		// ExecutionControlBean ctrl = new ExecutionControlBean();
+		final String lookup = "ejb:/" + Global.SERVER + "//" + ExecutionControlBean.class.getSimpleName() + "!"
+				+ ExecutionControl.class.getName() + "?stateful";
+		ExecutionControl ctrl = ObjectFactory.lookup(lookup, ExecutionControl.class);
 		ctrlName = ExecutionControlAccessor.putExecutionControl(ctrl);
 		// create user's execution control
 		ClassParameters userClass = mas2j.getControlClass();
@@ -92,7 +96,7 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 				throw new IllegalStateException(msg, ex);
 			}
 		}
-		ctrl.init(userExecCtrl);
+		ctrl.init(ctrlName, userExecCtrl);
 	}
 
 	private void createEnvironment() {

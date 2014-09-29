@@ -21,7 +21,8 @@
 package siebog.jasonee.control;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,18 +32,39 @@ import java.util.Map;
  */
 public class ExecutionControlContainer implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String, ExecutionControl> controls;
+	private static final Map<String, ExecutionControlBean> controls = new HashMap<>();
 
-	public ExecutionControlContainer() {
-		controls = (Map<String, ExecutionControl>) Collections
-				.synchronizedMap(new HashMap<String, ExecutionControl>());
-	}
-
-	public void put(String key, ExecutionControl value) {
+	public synchronized void put(String key, ExecutionControlBean value) {
 		controls.put(key, value);
+		new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					System.out.println("Added, now: " + controls.keySet());
+					try {
+						Thread.sleep(1500);
+					} catch (Exception ex) {
+						break;
+					}
+				}
+			}
+		}.start();
 	}
 
-	public ExecutionControl get(String key) {
+	public synchronized ExecutionControlBean get(String key) {
 		return controls.get(key);
+	}
+
+	public synchronized Collection<ExecutionControlBean> getAll() {
+		return new ArrayList<ExecutionControlBean>(controls.values());
+	}
+
+	public synchronized void stop() {
+		controls.clear();
+	}
+
+	@Override
+	public String toString() {
+		return "" + controls.keySet();
 	}
 }
