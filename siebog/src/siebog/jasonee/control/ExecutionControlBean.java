@@ -26,10 +26,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import javax.ejb.AccessTimeout;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
+import siebog.core.Global;
 import siebog.jasonee.JasonEERuntimeServices;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
@@ -41,6 +46,8 @@ import siebog.xjaf.managers.MessageManager;
  */
 @Stateful
 @Remote(ExecutionControl.class)
+@Lock(LockType.WRITE)
+@AccessTimeout(value = 60000, unit = TimeUnit.MILLISECONDS)
 public class ExecutionControlBean implements ExecutionControl {
 	private static final Logger logger = Logger.getLogger(ExecutionControlBean.class.getName());
 	private static final long serialVersionUID = 1L;
@@ -51,7 +58,6 @@ public class ExecutionControlBean implements ExecutionControl {
 	// they will be included in the list of all agents at the beginning of the next cycle
 	private Set<AID> pending;
 	private UserExecutionControl userExecCtrl;
-	private String lock = "ec"; // needs to be a serializable object
 	private String myName;
 
 	@Override
@@ -61,29 +67,25 @@ public class ExecutionControlBean implements ExecutionControl {
 		running = new HashSet<>();
 		pending = new HashSet<>();
 		this.userExecCtrl = userExecCtrl;
-		registerTimer();
+		registerTimeout();
 	}
 
-	public void registerTimer() {
-		ECTimerService timer = ExecutionControlService.getTimer();
+	private void registerTimeout() {
+		final String name = "ejb:/" + Global.SERVER + "//" + ECTimerServiceImpl.class.getSimpleName() + "!"
+				+ ECTimerService.class.getName();
+		ECTimerService timer = ObjectFactory.lookup(name, ECTimerService.class);
 		int time = userExecCtrl != null ? userExecCtrl.getCycleTimeout() : UserExecutionControl.DEFAULT_TIMEOUT;
-		synchronized (lock) {
-			timer.schedule(time, myName, cycleNum);
-		}
+		timer.schedule(time, myName, cycleNum);
 	}
 
+	@Override
 	public void onTimeout(int cycleNum) {
-		if (cycleNum == -1)
-			logger.warning("---------------------------------YES");
-		boolean reRegister = false;
-		synchronized (lock) {
-			if (this.cycleNum == cycleNum || cycleNum == -1) {
-				filterUnavailableAgents();
-				reRegister = !nextCycleIfPossible();
-			}
+		if (this.cycleNum == cycleNum || cycleNum == -1) {
+			filterUnavailableAgents();
+			boolean reRegister = !nextCycleIfPossible();
+			if (reRegister)
+				registerTimeout();
 		}
-		if (reRegister)
-			registerTimer();
 	}
 
 	@Override
@@ -95,37 +97,32 @@ public class ExecutionControlBean implements ExecutionControl {
 
 	@Override
 	public void informAllAgsToPerformCycle(final int cycle) {
-		ReasoningCycleMessage msg;
-		synchronized (lock) {
-			cycleNum = cycle;
-			if (pending.size() > 0) {
-				registered.addAll(pending);
-				pending.clear();
-			}
-			running.clear();
-			running.addAll(registered);
-			msg = new ReasoningCycleMessage(registered, cycle);
-			if (userExecCtrl != null)
-				userExecCtrl.startNewCycle(cycleNum);
+		cycleNum = cycle;
+		if (pending.size() > 0) {
+			registered.addAll(pending);
+			pending.clear();
 		}
+		running.clear();
+		running.addAll(registered);
+		final ReasoningCycleMessage msg = new ReasoningCycleMessage(registered, cycle);
+		if (userExecCtrl != null)
+			userExecCtrl.startNewCycle(cycleNum);
 
-		final ReasoningCycleMessage msgToSend = msg;
 		ObjectFactory.getExecutorService().execute(new Runnable() {
 			@Override
 			public void run() {
-				ObjectFactory.getMessageManager().post(msgToSend);
-				registerTimer();
+				ObjectFactory.getMessageManager().post(msg);
+				registerTimeout();
 			}
 		});
 	}
 
+	@Override
 	public void agentCycleFinished(AID aid, boolean isBreakpoint, int cycleNum) {
-		synchronized (lock) {
-			if (userExecCtrl != null)
-				userExecCtrl.receiveFinishedCycle(aid.toString(), isBreakpoint, cycleNum);
-			running.remove(aid);
-			nextCycleIfPossible();
-		}
+		if (userExecCtrl != null)
+			userExecCtrl.receiveFinishedCycle(aid.toString(), isBreakpoint, cycleNum);
+		running.remove(aid);
+		nextCycleIfPossible();
 	}
 
 	private boolean nextCycleIfPossible() {
@@ -140,20 +137,18 @@ public class ExecutionControlBean implements ExecutionControl {
 		return false;
 	}
 
+	@Override
 	public void addAgent(AID aid) {
-		synchronized (lock) {
-			pending.add(aid);
-			nextCycleIfPossible();
-		}
+		pending.add(aid);
+		nextCycleIfPossible();
 	}
 
+	@Override
 	public void removeAgent(AID aid) {
-		synchronized (lock) {
-			registered.remove(aid);
-			pending.remove(aid);
-			if (running.remove(aid))
-				nextCycleIfPossible();
-		}
+		registered.remove(aid);
+		pending.remove(aid);
+		if (running.remove(aid))
+			nextCycleIfPossible();
 	}
 
 	@Override
@@ -173,13 +168,11 @@ public class ExecutionControlBean implements ExecutionControl {
 		while (i.hasNext()) {
 			AID aid = i.next();
 			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
-			logger.warning("---------------------- sending to " + aid);
 			if (msm.post(tm) != 1) {
 				logger.info("Agent " + aid + " no longer available.");
 				i.remove();
 				running.remove(aid);
 			}
-			logger.warning("--------------------------sent");
 		}
 	}
 }

@@ -19,56 +19,61 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/astyanax-cassandra-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/astyanax-core-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/astyanax-thrift-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/blueprints-core-2.4.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/cassandra-all-1.2.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/cassandra-thrift-1.2.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/colt-1.2.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/commons-codec-1.7.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/commons-configuration-1.6.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/commons-lang-2.5.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/gremlin-java-2.4.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/gremlin-scala-2.4.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/guava-14.0.1.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/high-scale-lib-1.1.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/hppc-0.4.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/jackson-core-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/jackson-mapper-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/jade.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/jena-core-2.11.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/joda-time-1.6.2.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/kryo-2.21-shaded.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/libthrift-0.7.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/metrics-core-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/pipes-2.4.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/slf4j-api-1.7.6.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/slf4j-log4j12-1.7.6.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/spatial4j-0.3.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/titan-cassandra-0.4.4.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/titan-core-0.4.4.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/xercesImpl-2.11.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/xml-apis-1.4.01.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/infinispan-core-6.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jaxrs-api-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-cli-client.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-client.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-ejb3-ext-api-2.1.0.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-msc-1.2.2.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-cli-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/siebog-core"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-cassandra-1.56.37.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-core-1.56.37.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-thrift-1.56.37.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/blueprints-core-2.4.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/cassandra-all-1.2.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/cassandra-thrift-1.2.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/commons-codec-1.7.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/gremlin-java-2.4.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/gremlin-scala-2.4.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/high-scale-lib-1.1.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/hppc-0.4.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jackson-core-asl-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jackson-mapper-asl-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jade.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jena-core-2.11.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/joda-time-1.6.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/kryo-2.21-shaded.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/libthrift-0.7.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/metrics-core-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/pipes-2.4.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/slf4j-log4j12-1.7.6.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/spatial4j-0.3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/titan-cassandra-0.4.4.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/titan-core-0.4.4.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/xercesImpl-2.11.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-core-6.0.2.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jaxrs-api-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-cli-client.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-client.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-ejb3-ext-api-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-msc-1.2.2.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-cli-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jason.jar" sourcepath="/Jason/src"/>
+	<classpathentry kind="lib" path="/starter/lib/module/scala-library.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/starter"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 9.x Siebog">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
@@ -79,10 +84,5 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/jason.jar" sourcepath="/Jason/src"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/module/scala-library.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/siebog-core/lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

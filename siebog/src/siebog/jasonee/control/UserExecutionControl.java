@@ -21,6 +21,7 @@
 package siebog.jasonee.control;
 
 import java.io.Serializable;
+import siebog.utils.ObjectFactory;
 
 /**
  * Base interface for user-defined execution control.
@@ -61,7 +62,7 @@ public class UserExecutionControl implements Serializable {
 	}
 
 	public void allAgsFinished(int cycleNum) {
-		ExecutionControl control = ExecutionControlAccessor.getExecutionControl(controlName);
+		ExecutionControl control = ObjectFactory.getExecutionControlCache().get(controlName);
 		control.informAllAgsToPerformCycle(cycleNum + 1);
 	}
 

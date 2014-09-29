@@ -74,17 +74,19 @@ public abstract class ObjectFactory {
 		return lookup("java:comp/EJBContext", SessionContext.class);
 	}
 
+	private static CacheContainer getCacheContainer() {
+		return lookup(XjafCacheLookup, CacheContainer.class);
+	}
+
 	public static Cache<AID, RunningAgent> getRunningAgentsCache() {
-		CacheContainer container = lookup(XjafCacheLookup, CacheContainer.class);
-		Cache<AID, RunningAgent> cache = container.getCache("running-agents");
+		Cache<AID, RunningAgent> cache = getCacheContainer().getCache("running-agents");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");
 		return cache;
 	}
 
 	public static Cache<String, ExecutionControl> getExecutionControlCache() {
-		CacheContainer container = lookup(XjafCacheLookup, CacheContainer.class);
-		Cache<String, ExecutionControl> cache = container.getCache("execution-controls");
+		Cache<String, ExecutionControl> cache = getCacheContainer().getCache("execution-controls");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache execution-controls.");
 		return cache;

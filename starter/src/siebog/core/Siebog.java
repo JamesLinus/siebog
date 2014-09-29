@@ -29,7 +29,8 @@ public class Siebog {
 
 			NodeStarter starter = new NodeStarter(config);
 			starter.start();
-			logger.info("Siebog node ready.");
+			if (!config.isSlave())
+				logger.info("Siebog node ready.");
 
 		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());

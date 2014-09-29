@@ -29,23 +29,16 @@ import java.util.logging.Logger;
 import siebog.jasonee.JasonEEAgArch;
 
 /**
- * Architecture of an agent which believes it should print out the host node's name at regular time
- * intervals.
+ * Architecture of an agent which believes it should print out the host node's name at regular time intervals.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class HAAgArch extends JasonEEAgArch {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(HAAgArch.class.getName());
-	private static final Literal THE_BELIEF = Literal.parseLiteral("shouldPrintNodeName");
-	private static final String DO_PRINT = "printNodeName";
-	private boolean includeBelief = false;
 
 	@Override
 	public List<Literal> perceive() {
-		includeBelief = !includeBelief;
-		if (includeBelief)
-			return Collections.singletonList(THE_BELIEF);
 		return Collections.emptyList();
 	}
 
@@ -53,8 +46,9 @@ public class HAAgArch extends JasonEEAgArch {
 	public void act(ActionExec action, List<ActionExec> feedback) {
 		final Structure term = action.getActionTerm();
 		switch (term.getFunctor()) {
-		case DO_PRINT:
-			logger.info(getAgent().getAid().getName() + " hosted by " + System.getProperty("jboss.node.name"));
+		case "printList":
+			final String nodeName = System.getProperty("jboss.node.name");
+			logger.info(getAgent().getAid().getName() + " hosted by " + nodeName + " says: " + term.getTerm(0));
 			try {
 				Thread.sleep((int) (Math.random() * 1000) + 500);
 			} catch (InterruptedException ex) {
@@ -66,5 +60,6 @@ public class HAAgArch extends JasonEEAgArch {
 			action.setFailureReason(Literal.parseLiteral("unknownAction"), "Unknown action.");
 			break;
 		}
+		feedback.add(action);
 	}
 }

@@ -32,13 +32,13 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.core.FileUtils;
 import siebog.jasonee.control.ExecutionControl;
-import siebog.jasonee.control.ExecutionControlAccessor;
 import siebog.jasonee.control.ReasoningCycleMessage;
 import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentAccessor;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -61,12 +61,20 @@ public class JasonEEAgent extends XjafAgent {
 	private int asyncCycleNum;
 	private boolean sleeping = true;
 	private int cycleNum;
+	private AgentInitArgs args;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
+		this.args = args;
 		execCtrlName = args.get("execCtrlName");
 		envName = args.get("envName");
+		arch = new JasonEEAgArch();
+		initArch();
+		syncMode = arch.getTS().getSettings().isSync();
+		wakeUp();
+	}
 
+	private void initArch() {
 		AgentParameters agp = null;
 		try {
 			File mas2jFile = FileUtils.createTempFile(args.get("mas2jSource"));
@@ -76,7 +84,6 @@ public class JasonEEAgent extends XjafAgent {
 			throw new IllegalStateException("Cannot store agent source in a temporary file.", ex);
 		}
 
-		arch = new JasonEEAgArch();
 		try {
 			arch.setAgent(this);
 			arch.init(args, agp);
@@ -85,8 +92,6 @@ public class JasonEEAgent extends XjafAgent {
 			logger.log(Level.SEVERE, msg, ex);
 			throw new IllegalStateException(msg, ex);
 		}
-		syncMode = arch.getTS().getSettings().isSync();
-		wakeUp();
 	}
 
 	private AgentParameters getAgentParams(String agentName, File mas2jFile) {
@@ -99,12 +104,9 @@ public class JasonEEAgent extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		logger.warning("//////////////////// RECEIVED: " + msg.getClass().getSimpleName());
 		if (msg instanceof ReasoningCycleMessage)
 			performCycle(((ReasoningCycleMessage) msg).cycleNum);
 		else if (msg instanceof ReasoningCycleTimeout) {
-			logger.warning("///////////////////////////////////" + syncMode + ":" + cycleNum + ":"
-					+ ((ReasoningCycleTimeout) msg).cycleNum);
 			if (syncMode && cycleNum <= ((ReasoningCycleTimeout) msg).cycleNum)
 				executionControl().agentCycleFinished(myAid, isBreakpoint(), cycleNum);
 		} else if (msg instanceof ActionFeedbackMessage)
@@ -128,6 +130,10 @@ public class JasonEEAgent extends XjafAgent {
 	private void performCycle(int cycleNum) {
 		this.cycleNum = cycleNum;
 		try {
+			if (arch.getTS() == null) {
+				logger.warning("Re-initializing the agent architecture.");
+				initArch();
+			}
 			arch.reasoningCycle();
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "Error in reasoning cycle.", ex);
@@ -183,7 +189,7 @@ public class JasonEEAgent extends XjafAgent {
 
 	private ExecutionControl executionControl() {
 		if (control == null)
-			control = ExecutionControlAccessor.getExecutionControl(execCtrlName);
+			control = ObjectFactory.getExecutionControlCache().get(execCtrlName);
 		return control;
 	}
 

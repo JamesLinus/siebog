@@ -1,5 +1,6 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one 
+ * Licensed to t
+he Apache Software Foundation (ASF) under one 
  * or more contributor license agreements. See the NOTICE file 
  * distributed with this work for additional information regarding 
  * copyright ownership. The ASF licenses this file to you under 
@@ -20,10 +21,28 @@
 
 package siebog.jasonee.control;
 
+import java.util.HashSet;
+import java.util.Set;
+import org.infinispan.Cache;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachemanagerlistener.annotation.ViewChanged;
+import org.infinispan.notifications.cachemanagerlistener.event.ViewChangedEvent;
+import siebog.utils.ObjectFactory;
+
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface ECTimerService {
-	void schedule(int delayMillis, String execCtrlName, int cycleNum);
+@Listener
+public class ECViewListener {
+	@ViewChanged
+	public void viewChanged(ViewChangedEvent event) {
+		final Cache<String, ExecutionControl> cache = ObjectFactory.getExecutionControlCache();
+		Set<String> allExecCtrls = new HashSet<>(cache.keySet());
+		for (String name : allExecCtrls) {
+			ExecutionControl ctrl = cache.get(name);
+			if (ctrl != null)
+				ctrl.onTimeout(-1);
+		}
+	}
 }

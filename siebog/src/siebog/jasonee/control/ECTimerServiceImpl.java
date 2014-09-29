@@ -20,20 +20,25 @@
 
 package siebog.jasonee.control;
 
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.ejb.ConcurrentAccessTimeoutException;
 import javax.ejb.LocalBean;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Remote;
-import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import org.infinispan.Cache;
+import org.infinispan.manager.EmbeddedCacheManager;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
@@ -43,16 +48,26 @@ import javax.ejb.TimerService;
 @Remote(ECTimerService.class)
 @LocalBean
 @Startup
+@Lock(LockType.READ)
 public class ECTimerServiceImpl implements ECTimerService {
 	private static final Logger logger = Logger.getLogger(ECTimerServiceImpl.class.getName());
 	@Resource
 	private TimerService timerService;
+	private ECViewListener viewListener;
 
 	@PostConstruct
 	public void postConstruct() {
-		ScheduleExpression exp = new ScheduleExpression();
-		exp.hour("*").minute("*").second("0/30");
-		timerService.createCalendarTimer(exp, new TimerConfig("", false));
+		viewListener = new ECViewListener();
+		EmbeddedCacheManager manager = ObjectFactory.getExecutionControlCache().getCacheManager();
+		manager.addListener(viewListener);
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		EmbeddedCacheManager manager = ObjectFactory.getExecutionControlCache().getCacheManager();
+		manager.removeListener(viewListener);
+		for (Timer t : timerService.getAllTimers())
+			t.cancel();
 	}
 
 	@Override
@@ -60,42 +75,32 @@ public class ECTimerServiceImpl implements ECTimerService {
 		final String info = execCtrlName + " " + cycleNum;
 		TimerConfig cfg = new TimerConfig(info, false);
 		timerService.createSingleActionTimer(delayMillis, cfg);
-		// ScheduleExpression exp = new ScheduleExpression();
-		// exp.hour("*").minute("*").second("0/" + timeoutSeconds);
-		// timer.createCalendarTimer(exp, new TimerConfig(info, false));
 	}
 
 	@Timeout
 	public void timeout(Timer timer) {
+		final Cache<String, ExecutionControl> cache = ObjectFactory.getExecutionControlCache();
 		String info = (String) timer.getInfo();
-		if (info.length() == 0) {
-			final Collection<String> all = ExecutionControlAccessor.getAll();
-			logger.warning("+++++++++++++++++++++++++++++++" + all);
-			for (String name : all)
-				ExecutionControlAccessor.getExecutionControl(name).onTimeout(-1);
-		} else {
+		try {
+			// if (info.length() == 0) {
+			// Set<String> allExecCtrls = new HashSet<>(cache.keySet());
+			// for (String name : allExecCtrls) {
+			// ExecutionControl ctrl = cache.get(name);
+			// if (ctrl != null)
+			// ctrl.onTimeout(-1);
+			// }
+			// } else {
 			int n = info.indexOf(' ');
 			String execCtrlName = info.substring(0, n);
 			int cycleNum = Integer.parseInt(info.substring(n + 1));
-			ExecutionControl execCtrl = ExecutionControlAccessor.getExecutionControl(execCtrlName);
+			ExecutionControl execCtrl = cache.get(execCtrlName);
 			if (execCtrl != null)
 				execCtrl.onTimeout(cycleNum);
 			else
 				logger.log(Level.WARNING, "ExecutionControl " + execCtrlName + " not found.");
+			// }
+		} catch (ConcurrentAccessTimeoutException ex) {
+			logger.warning(ex.getMessage());
 		}
-	}
-
-	@Override
-	public void start(Collection<ExecutionControlBean> execCtrls) {
-		// this call is needed when the HA service is restored on another node
-		// it will kick-start all execution controls
-		for (ExecutionControlBean ec : execCtrls)
-			ec.registerTimer();
-	}
-
-	@Override
-	public void stop() {
-		for (Timer t : timerService.getAllTimers())
-			t.cancel();
 	}
 }

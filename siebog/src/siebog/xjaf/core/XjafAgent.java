@@ -94,7 +94,6 @@ public abstract class XjafAgent implements Agent {
 	@Lock(LockType.WRITE)
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void handleMessage(ACLMessage msg) {
-		logger.warning("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ADDING " + msg.getClass().getSimpleName() + "?" + processing);
 		queue.add(msg);
 		if (!processing)
 			processNextMessage();
@@ -160,13 +159,12 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
-	 * for the message to become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
+	 * become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
-	 *            account and the method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
-	 *         is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
+	 *            method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
@@ -204,8 +202,7 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering
-	 * function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.
