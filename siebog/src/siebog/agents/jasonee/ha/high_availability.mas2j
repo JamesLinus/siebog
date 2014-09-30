@@ -2,6 +2,8 @@ MAS high_availability {
 
 	infrastructure: Siebog
 	
+	executionControl: HAExecutionControl 
+	
 	agents:
 		remoteObjectFactory
 			[ 

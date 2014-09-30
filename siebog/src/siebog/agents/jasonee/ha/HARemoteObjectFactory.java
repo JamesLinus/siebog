@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jason.ha;
+package siebog.agents.jasonee.ha;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -45,6 +45,8 @@ public class HARemoteObjectFactory implements RemoteObjectFactory {
 
 	@Override
 	public UserExecutionControl createExecutionControl(String className) {
+		if (HAExecutionControl.class.getSimpleName().equals(className))
+			return new HAExecutionControl();
 		throw new IllegalArgumentException("Invalid class name: " + className);
 	}
 

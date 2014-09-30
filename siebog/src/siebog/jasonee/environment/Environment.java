@@ -23,60 +23,18 @@ package siebog.jasonee.environment;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.environment.EnvironmentInfraTier;
-import jason.runtime.RuntimeServicesInfraTier;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
-import siebog.jasonee.JasonEERuntimeServices;
-import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class Environment implements EnvironmentInfraTier, Serializable {
-	private static final long serialVersionUID = 1L;
-	private UserEnvironment userEnv;
+public interface Environment extends EnvironmentInfraTier, Serializable {
+	void init(UserEnvironment userEnv);
 
-	public void init(UserEnvironment userEnv) {
-		this.userEnv = userEnv;
-	}
+	List<Literal> getPercepts(AID aid);
 
-	public List<Literal> getPercepts(AID aid) {
-		return userEnv.getPercepts(aid.toString());
-	}
-
-	public void scheduleAction(AID aid, Structure action, String replyWith) {
-		userEnv.scheduleAction(aid.toString(), action, replyWith);
-	}
-
-	@Override
-	public void actionExecuted(String agName, Structure actTerm, boolean success, Object infraData) {
-		ACLMessage msg = new ActionFeedbackMessage(new AID(agName), success, (String) infraData);
-		ObjectFactory.getMessageManager().post(msg);
-	}
-
-	@Override
-	public void informAgsEnvironmentChanged(String... agents) {
-		ACLMessage msg = new EnvironmentChangedMessage(agents);
-		ObjectFactory.getMessageManager().post(msg);
-	}
-
-	@Override
-	public void informAgsEnvironmentChanged(Collection<String> agents) {
-		informAgsEnvironmentChanged(agents.toArray(new String[0]));
-	}
-
-	@Override
-	public RuntimeServicesInfraTier getRuntimeServices() {
-		return new JasonEERuntimeServices();
-	}
-
-	@Override
-	public boolean isRunning() {
-		return false;
-	}
-
+	void scheduleAction(AID aid, Structure action, String replyWith);
 }

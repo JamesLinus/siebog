@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jason.ha;
+package siebog.agents.jasonee.ha;
 
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;

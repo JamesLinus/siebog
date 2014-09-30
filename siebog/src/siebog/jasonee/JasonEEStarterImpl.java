@@ -31,7 +31,7 @@ import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
-import siebog.jasonee.environment.EnvironmentAccessor;
+import siebog.jasonee.environment.EnvironmentBean;
 import siebog.jasonee.environment.UserEnvironment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
@@ -99,8 +99,11 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createEnvironment() {
-		Environment env = new Environment();
-		envName = EnvironmentAccessor.putEnvironment(env);
+		final String lookup = "ejb:/" + Global.SERVER + "//" + EnvironmentBean.class.getSimpleName() + "!"
+				+ Environment.class.getName();
+		Environment env = ObjectFactory.lookup(lookup, Environment.class);
+		envName = "Env" + System.currentTimeMillis();
+		ObjectFactory.getEnvironmentCache().put(envName, env);
 
 		// create user's environment
 		UserEnvironment userEnv = null;

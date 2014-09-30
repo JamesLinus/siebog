@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jason.ha;
+package siebog.agents.jasonee.ha;
 
 import jason.mas2j.parser.ParseException;
 import java.io.File;
@@ -37,9 +37,9 @@ public class HAClient {
 		File f = new File(HAClient.class.getResource("high_availability.mas2j").toURI());
 		JasonEEProject p = JasonEEProject.loadFromFile(f);
 		SiebogClient.connect("192.168.213.1", "192.168.213.129");
+		// "192.168.213.1", "192.168.213.129");
 		// "172.16.249.1", "172.16.249.129");
-		// "192.168.124.1", "192.168.124.129");
-		// "192.168.124.130");
+		// "192.168.124.1", "192.168.124.129", "192.168.124.130");
 		ObjectFactory.getJasonEEStarter().start(p);
 	}
 }

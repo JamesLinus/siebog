@@ -18,29 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.jasonee.environment;
+package siebog.agents.jasonee.ha;
 
-import org.jboss.as.server.CurrentServiceContainer;
-import org.jboss.msc.service.ServiceController;
+import java.util.logging.Logger;
+import siebog.core.Global;
+import siebog.jasonee.control.UserExecutionControl;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class EnvironmentAccessor {
-	public static Environment getEnvironment(String name) {
-		return new Environment(); // getContainer().get(name);
-	}
+public class HAExecutionControl extends UserExecutionControl {
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(HAExecutionControl.class.getName());
 
-	public static String putEnvironment(Environment value) {
-		final String name = "ExecCtrl" + (int) (Math.random() * 1000000);
-		// getContainer().put(name, value);
-		return name;
-	}
-
-	private static EnvironmentContainer getContainer() {
-		ServiceController<?> service = CurrentServiceContainer.getServiceContainer()
-				.getService(EnvironmentService.NAME);
-		return (EnvironmentContainer) service.getValue();
+	@Override
+	public void allAgsFinished(int cycleNum) {
+		logger.info("Cycle " + cycleNum + " finished on node " + Global.getNodeName());
+		super.allAgsFinished(cycleNum);
 	}
 }

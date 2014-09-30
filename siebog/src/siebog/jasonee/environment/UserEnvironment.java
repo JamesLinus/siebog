@@ -48,7 +48,7 @@ import siebog.utils.ObjectFactory;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class UserEnvironment {
-	private static Logger logger = Logger.getLogger(Environment.class.getName());
+	private static Logger logger = Logger.getLogger(UserEnvironment.class.getName());
 	private List<Literal> percepts = Collections.synchronizedList(new ArrayList<Literal>());
 	private Map<String, List<Literal>> agPercepts = new ConcurrentHashMap<String, List<Literal>>();
 	private boolean isRunning = true;
@@ -329,7 +329,7 @@ public class UserEnvironment {
 	}
 
 	private Environment getEnv() {
-		return EnvironmentAccessor.getEnvironment(envName);
+		return ObjectFactory.getEnvironmentCache().get(envName);
 	}
 
 }

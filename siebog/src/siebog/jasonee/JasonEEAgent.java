@@ -36,7 +36,6 @@ import siebog.jasonee.control.ReasoningCycleMessage;
 import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
-import siebog.jasonee.environment.EnvironmentAccessor;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
@@ -195,7 +194,7 @@ public class JasonEEAgent extends XjafAgent {
 
 	private Environment env() {
 		if (env == null)
-			env = EnvironmentAccessor.getEnvironment(envName);
+			env = ObjectFactory.getEnvironmentCache().get(envName);
 		return env;
 	}
 }
