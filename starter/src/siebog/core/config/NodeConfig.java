@@ -33,18 +33,23 @@ public class NodeConfig {
 			// make sure it is set correctly
 			File modules = new File(jbossHome, "jboss-modules.jar");
 			if (!modules.exists())
-				throw new IllegalArgumentException("Environment variable JBOSS_HOME not (properly) set.");
+				throw new IllegalStateException("Environment variable JBOSS_HOME not (properly) set.");
 			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
 			// configuration file
 			configFile = new File(getRootFolder(), "siebog.properties");
 
-			if (args != null && args.length > 0)
+			boolean hasArgs = args != null && args.length > 0;
+			if (hasArgs)
 				createConfigFromArgs(args);
 
-			if (configFile.exists())
-				logger.info("Loading configuration from " + configFile);
-			else {
-				logger.info("Creating default configuration file " + configFile.toString());
+			if (configFile.exists()) {
+				if (hasArgs)
+					logger.info("Loaded configuration from program arguments. Configuration has been stored in "
+							+ configFile + " for future use.");
+				else
+					logger.info("Loading configuration from " + configFile);
+			} else {
+				logger.info("Creating default configuration file " + configFile);
 				makeConfigFile(new NodeInfo("localhost"));
 			}
 			loadConfig();

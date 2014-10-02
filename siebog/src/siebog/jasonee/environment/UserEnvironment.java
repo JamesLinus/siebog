@@ -17,7 +17,8 @@
  * See the License for the specific language governing permissions 
  * and limitations under the License.
  * 
- * Based on the implementation of jason.environment.Environment.
+ * Based on the implementation of jason.environment.Environment in
+ * Jason 1.4.1.
  * Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al.
  * 
  * To contact the original authors:

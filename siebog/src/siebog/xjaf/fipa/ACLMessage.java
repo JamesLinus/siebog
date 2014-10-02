@@ -67,6 +67,7 @@ public class ACLMessage implements Serializable {
 	// object of the action.
 	@FormParam("content")
 	public String content;
+	public Serializable contentObj;
 	public Map<String, Serializable> userArgs;
 	// Denotes the language in which the content parameter is expressed.
 	@FormParam("language")

@@ -112,8 +112,10 @@ public class JasonEEAgent extends XjafAgent {
 			arch.onActionFeedback((ActionFeedbackMessage) msg);
 		else if (msg instanceof EnvironmentChangedMessage)
 			wakeUp();
-		else
+		else {
+			wakeUp();
 			arch.onMessage(msg);
+		}
 	}
 
 	@Override
@@ -166,10 +168,6 @@ public class JasonEEAgent extends XjafAgent {
 			else
 				registerHeartbeat();
 		}
-	}
-
-	public ACLMessage ask(ACLMessage msg) {
-		return null;
 	}
 
 	@Override

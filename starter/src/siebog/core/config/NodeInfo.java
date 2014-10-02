@@ -15,21 +15,18 @@ public class NodeInfo {
 		config = config.trim();
 		if (config.isEmpty())
 			throw new IllegalArgumentException();
-		int at = config.indexOf('@');
-		if (at == -1) {
+		int to = config.indexOf("->");
+		if (to == -1) {
 			slave = false;
 			address = config;
-		} else {
-			slave = true;
-			int comma = config.indexOf(',');
-			int mat = config.lastIndexOf('@');
-			if (comma < at || mat < comma)
-				throw new IllegalArgumentException();
+		} else { // slave@address->master
+			int at = config.indexOf('@');
 			name = config.substring(0, at).trim();
-			address = config.substring(at + 1, comma).trim();
-			masterAddr = config.substring(mat + 1).trim();
+			address = config.substring(at + 1, to).trim();
+			masterAddr = config.substring(to + 2).trim();
 			if (name.isEmpty() || address.isEmpty() || masterAddr.isEmpty())
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(
+						"A slave node needs a name, its own address, and the master's address.");
 		}
 	}
 

@@ -37,6 +37,7 @@ import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
+import siebog.xjaf.managers.RunningAgent;
 
 /**
  * 
@@ -67,7 +68,6 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 	public void onMessage(ACLMessage msg) {
 		mailbox.add(msg);
-		wake();
 	}
 
 	@Override
@@ -124,14 +124,34 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 	@Override
 	public void checkMail() {
+		for (ACLMessage acl : mailbox) {
+			String ilForce = JasonMessage.getIlForce(acl);
+			String sender = acl.sender.toString();
+			String replyWith = acl.replyWith;
+			String inReplyTo = acl.inReplyTo;
+			Serializable content = JasonMessage.getJasonContent(acl);
+			if (content != null) {
+				Message jmsg = new Message(ilForce, sender, agent.getAid().toString(), content, replyWith);
+				if (inReplyTo != null)
+					jmsg.setInReplyTo(inReplyTo);
+				getTS().getC().getMailBox().add(jmsg);
+			}
+		}
 	}
 
 	@Override
 	public void sendMsg(Message m) throws Exception {
+		ACLMessage acl = JasonMessage.toAclMessage(m);
+		ObjectFactory.getMessageManager().post(acl);
 	}
 
 	@Override
 	public void broadcast(Message m) throws Exception {
+		ACLMessage acl = JasonMessage.toAclMessage(m);
+		List<RunningAgent> list = ObjectFactory.getAgentManager().getRunningAgents();
+		for (RunningAgent ra : list)
+			acl.receivers.add(ra.getAid());
+		ObjectFactory.getMessageManager().post(acl);
 	}
 
 	@Override
