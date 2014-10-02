@@ -18,40 +18,49 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.agents.jasonee.cnet;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
+import jason.NoValueException;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Structure;
+import siebog.jasonee.environment.UserEnvironment;
 
 /**
- * Example of a pong agent.
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class Pong extends XjafAgent {
+public class CNetEnvironment extends UserEnvironment {
 	private static final long serialVersionUID = 1L;
-	private String nodeName;
-	private int counter;
 
 	@Override
-	protected void onInit(AgentInitArgs args) {
-		nodeName = getNodeName();
-		logger.info("Pong created on " + nodeName);
+	public boolean executeAction(String agName, Structure act) {
+		switch (act.getFunctor()) {
+		case "analyzeCfp":
+		case "processTask":
+			try {
+				final int limit = (int) ((NumberTerm) act.getTerm(0)).solve();
+				countPrimes(limit);
+				return true;
+			} catch (NoValueException ex) {
+				return false;
+			}
+		default:
+			return false;
+		}
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.userArgs.put("pongCreatedOn", nodeName);
-		reply.userArgs.put("pongWorkingOn", getNodeName());
-		reply.userArgs.put("pongCounter", ++counter);
-		msm().post(reply);
+	private int countPrimes(int limit) {
+		int primes = 0;
+		for (int i = 1; i <= limit; i++) {
+			int j = 2;
+			while (j <= i) {
+				if (i % j == 0)
+					break;
+				++j;
+			}
+			if (j == i)
+				++primes;
+		}
+		return primes;
 	}
 }

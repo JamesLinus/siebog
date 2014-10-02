@@ -58,7 +58,7 @@ public class Ping extends XjafAgent {
 			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
 			msgToPong.sender = myAid;
 			msgToPong.receivers.add(pongAid);
-			msm.post(msgToPong);
+			msm().post(msgToPong);
 
 			// wait for the message
 			ACLMessage msgFromPong = receiveWait(0);
@@ -76,7 +76,7 @@ public class Ping extends XjafAgent {
 			if (msg.canReplyTo()) {
 				ACLMessage reply = msg.makeReply(Performative.INFORM);
 				reply.userArgs = args;
-				msm.post(reply);
+				msm().post(reply);
 			}
 		}
 	}

@@ -28,15 +28,14 @@ import jason.asSyntax.Literal;
 import jason.mas2j.AgentParameters;
 import jason.runtime.RuntimeServicesInfraTier;
 import java.io.Serializable;
-import java.util.Deque;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.RunningAgent;
 
 /**
@@ -45,29 +44,28 @@ import siebog.xjaf.managers.RunningAgent;
  */
 public class JasonEEAgArch extends AgArch implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private JasonEEAgent agent;
-	private Deque<ACLMessage> mailbox = new LinkedList<>();
+	private transient JasonEEAgent agent;
 	private boolean running = true;
-	private Map<String, ActionExec> scheduledActions = new HashMap<>();
+	// TODO ActionExec -> intention -> intendedMeans -> unif is not serializable
+	private transient Map<String, ActionExec> scheduledActions = new HashMap<>();
 	private long actionId;
+	private Map<String, String> options;
 
-	public void init(AgentInitArgs args, AgentParameters agp) throws Exception {
+	public final void init(String remObjFactModule, String remObjFactEjb, AgentParameters agp) throws Exception {
+		options = Collections.synchronizedMap(new HashMap<String, String>());
+		if (agp.getOptions() != null)
+			options.putAll(agp.getOptions());
+
 		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
 				agp.getAsSetts(false, false));
 		insertAgArch(this);
 
-		final String module = args.get("remObjFactModule");
-		final String ejb = args.get("remObjFactEjb");
-		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(module, ejb);
+		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(remObjFactModule, remObjFactEjb);
 		createCustomArchs(remObjFact, agp.getAgArchClasses());
 	}
 
 	public void reasoningCycle() {
 		getTS().reasoningCycle();
-	}
-
-	public void onMessage(ACLMessage msg) {
-		mailbox.add(msg);
 	}
 
 	@Override
@@ -77,7 +75,7 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 	@Override
 	public boolean canSleep() {
-		return isRunning() && mailbox.isEmpty();
+		return isRunning() && !agent.hasMessages();
 	}
 
 	@Override
@@ -100,31 +98,32 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 	@Override
 	public List<Literal> perceive() {
-		if (!running)
-			return null;
-		return agent.getPercepts();
+		if (running)
+			return agent.getPercepts();
+		return null;
 	}
 
 	@Override
 	public void act(ActionExec action, List<ActionExec> feedback) {
-		if (!running)
-			return;
-		String replyWith = "rw" + (++actionId);
-		scheduledActions.put(replyWith, action);
-		agent.scheduleAction(action.getActionTerm(), replyWith);
+		if (running) {
+			String replyWith = "rw" + (++actionId);
+			scheduledActions.put(replyWith, action);
+			agent.scheduleAction(action.getActionTerm(), replyWith);
+		}
 	}
 
 	public void onActionFeedback(ActionFeedbackMessage msg) {
 		ActionExec action = scheduledActions.remove(msg.getUserData());
 		if (action != null) {
-			action.setResult(Boolean.parseBoolean(msg.content));
+			action.setResult(msg.isSuccess());
 			getTS().getC().addFeedbackAction(action);
 		}
 	}
 
 	@Override
 	public void checkMail() {
-		for (ACLMessage acl : mailbox) {
+		ACLMessage acl;
+		while ((acl = agent.getNextMessage()) != null) {
 			String ilForce = JasonMessage.getIlForce(acl);
 			String sender = acl.sender.toString();
 			String replyWith = acl.replyWith;
@@ -149,8 +148,10 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 	public void broadcast(Message m) throws Exception {
 		ACLMessage acl = JasonMessage.toAclMessage(m);
 		List<RunningAgent> list = ObjectFactory.getAgentManager().getRunningAgents();
+		final AID myAid = agent.getAid();
 		for (RunningAgent ra : list)
-			acl.receivers.add(ra.getAid());
+			if (!myAid.equals(ra.getAid()))
+				acl.receivers.add(ra.getAid());
 		ObjectFactory.getMessageManager().post(acl);
 	}
 
@@ -161,7 +162,7 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 	@Override
 	public RuntimeServicesInfraTier getRuntimeServices() {
-		return new JasonEERuntimeServices();
+		return null;
 	}
 
 	public JasonEEAgent getAgent() {
@@ -180,9 +181,18 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 			JasonEEAgArch a = remObjFact.createAgArch(agArchClass);
 			a.setTS(getTS()); // so a.init() can use TS
 			a.setAgent(agent);
+			a.setOptions(options);
 			a.initAg(null, null, null, null); // for compatibility reasons
 			insertAgArch(a);
 			a.init();
 		}
+	}
+
+	public Map<String, String> getOptions() {
+		return options;
+	}
+
+	public void setOptions(Map<String, String> options) {
+		this.options = options;
 	}
 }

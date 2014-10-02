@@ -64,7 +64,7 @@ public class Swarm extends XjafAgent {
 
 	/**
 	 * 
-	 * @see xjaf2x.server.agm.XjafAgent#onInit(java.io.Serializable[])
+	 * @see xjaf2x.server.agm().XjafAgent#onInit(java.io.Serializable[])
 	 */
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -84,7 +84,7 @@ public class Swarm extends XjafAgent {
 		logger.fine("Initializing swarm with random positions/solutions.");
 		for (int i = 0; i < numberParticles; ++i) {
 			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX, "maxx->" + maxX);
-			agm.startAgent(new AgentClass(Global.SERVER, "Particle"), "Particle" + i, mapArgs);
+			agm().startAgent(new AgentClass(Global.SERVER, "Particle"), "Particle" + i, mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");
@@ -104,7 +104,7 @@ public class Swarm extends XjafAgent {
 			for (int i = 0; i < numberParticles; ++i) {
 
 				// find particle
-				AID particleAID = agm.getAIDByRuntimeName("Particle" + i);
+				AID particleAID = agm().getAIDByRuntimeName("Particle" + i);
 
 				// compose message
 				ACLMessage message = new ACLMessage();
@@ -115,7 +115,7 @@ public class Swarm extends XjafAgent {
 				message.content = psoMessage.toString();
 				message.sender = myAid;
 				message.receivers.add(particleAID);
-				msm.post(message);
+				msm().post(message);
 
 			}
 		} else {
@@ -127,7 +127,7 @@ public class Swarm extends XjafAgent {
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see xjaf2x.server.agm.XjafAgent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see xjaf2x.server.agm().XjafAgent#onMessage(xjaf2x.server.msm().fipa.acl.ACLMessage)
 	 */
 	@Override
 	protected void onMessage(ACLMessage message) {
@@ -172,15 +172,15 @@ public class Swarm extends XjafAgent {
 		for (int i = 0; i < numberParticles; ++i) {
 
 			// find particle
-			AID particleAID = agm.getAIDByRuntimeName("Particle" + i);
+			AID particleAID = agm().getAIDByRuntimeName("Particle" + i);
 
 			// Looks like 'stop' is not yet implemented, so it is not working yet
 			// All particles should be stopped/terminated at this point
-			agm.stopAgent(particleAID);
+			agm().stopAgent(particleAID);
 		}
 
 		// do we need to terminate swarm?
-		agm.stopAgent(myAid);
+		agm().stopAgent(myAid);
 	}
 
 }

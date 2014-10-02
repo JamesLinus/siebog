@@ -90,7 +90,7 @@ public class Ant extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		mapAID = agm.getAIDByRuntimeName("Map");
+		mapAID = agm().getAIDByRuntimeName("Map");
 
 		ACLMessage message = new ACLMessage();
 		message.performative = Performative.REQUEST;
@@ -98,7 +98,7 @@ public class Ant extends XjafAgent {
 		message.sender = myAid;
 		message.receivers.add(mapAID);
 		message.replyWith = "MapSize";
-		msm.post(message);
+		msm().post(message);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class Ant extends XjafAgent {
 			phase = 1;
 			ACLMessage start = new ACLMessage(Performative.REQUEST);
 			start.receivers.add(myAid);
-			msm.post(start);
+			msm().post(start);
 			return;
 		}
 
@@ -130,7 +130,7 @@ public class Ant extends XjafAgent {
 			request.content = "PheromoneLevels? " + currentMapPosIndex + " " + potentialNodeIndices;
 			request.receivers.add(mapAID);
 			request.sender = myAid;
-			msm.post(request);
+			msm().post(request);
 
 			phase = 2;
 			break;
@@ -198,21 +198,21 @@ public class Ant extends XjafAgent {
 				edgeWeightReq.receivers.add(mapAID);
 				edgeWeightReq.content = "EdgeWeight? " + currentMapPosIndex + " " + firstMapPosIndex;
 				edgeWeightReq.sender = myAid;
-				msm.post(edgeWeightReq);
+				msm().post(edgeWeightReq);
 
 				currentMapPosIndex = firstMapPosIndex;
 
 				phase = 3;
 			} else {
 				phase = 1;
-				msm.post(message);
+				msm().post(message);
 			}
 			break;
 		}
 		case 3: {
 			addWeightToTour(Float.parseFloat(message.content));
 			phase = 4;
-			msm.post(message);
+			msm().post(message);
 			break;
 		}
 		case 4: {
@@ -224,7 +224,7 @@ public class Ant extends XjafAgent {
 			float tourWeight = getTotalWeightSoFar();
 			updateBest.content = "UpdateBestTour " + tourWeight + tourSoFar.toString();
 			updateBest.sender = myAid;
-			msm.post(updateBest);
+			msm().post(updateBest);
 
 			delta = 1 / tourWeight;
 
@@ -232,7 +232,7 @@ public class Ant extends XjafAgent {
 
 			phase = 5;
 
-			msm.post(message);
+			msm().post(message);
 			break;
 		}
 		default: // phase == 5
@@ -243,8 +243,8 @@ public class Ant extends XjafAgent {
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
 				AgentClass agClass = new AgentClass(Global.SERVER, "Ant");
-				agm.startAgent(agClass, name, null);
-				agm.stopAgent(myAid);
+				agm().startAgent(agClass, name, null);
+				agm().stopAgent(myAid);
 				return;
 			}
 
@@ -257,11 +257,11 @@ public class Ant extends XjafAgent {
 			updatePheromone.content = "UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex + " " + (1 - ro)
 					+ " " + ro * delta;
 			updatePheromone.sender = myAid;
-			msm.post(updatePheromone);
+			msm().post(updatePheromone);
 
 			setCurrentMapPosIndex(nextNodeIndex);
 
-			msm.post(message);
+			msm().post(message);
 		}
 		}
 	}

@@ -35,6 +35,7 @@ public class ActionFeedbackMessage extends ACLMessage {
 
 	public ActionFeedbackMessage(AID aid, boolean success, String userData) {
 		super(Performative.REQUEST);
+		receivers.add(aid);
 		this.success = success;
 		this.userData = userData;
 	}

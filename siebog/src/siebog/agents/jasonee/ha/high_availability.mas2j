@@ -5,11 +5,10 @@ MAS high_availability {
 	executionControl: HAExecutionControl 
 	
 	agents:
-		remoteObjectFactory
-			[ 
-				module = "siebog",
-				object = HARemoteObjectFactory
-			];
+		remoteObjectFactory [ 
+			module = "siebog",
+			object = JasonEEObjectFactory
+		];
 	
 		agent0 
 			ha_agent [ synchronised = true ]
@@ -17,5 +16,4 @@ MAS high_availability {
 		agent1
 			ha_agent [ synchronised = true ]
 			agentArchClass HAAgArch;
-	
 }

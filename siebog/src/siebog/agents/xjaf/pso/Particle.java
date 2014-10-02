@@ -97,7 +97,7 @@ public class Particle extends XjafAgent {
 	private double r1, r2;
 
 	/**
-	 * @see XjafAgent.server.agm.Agent#onInit(java.io.Serializable[])
+	 * @see XjafAgent.server.agm().Agent#onInit(java.io.Serializable[])
 	 */
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -142,7 +142,7 @@ public class Particle extends XjafAgent {
 		bestFitness = fitness;
 
 		// get the reference to the Starter (main) PSO agent
-		AID swarmAID = agm.getAIDByRuntimeName("Swarm");
+		AID swarmAID = agm().getAIDByRuntimeName("Swarm");
 
 		// compose the message
 		ACLMessage message = new ACLMessage();
@@ -153,14 +153,14 @@ public class Particle extends XjafAgent {
 		message.receivers.add(swarmAID);
 
 		// post the message
-		msm.post(message);
+		msm().post(message);
 
 	}
 
 	/**
 	 * Handles incoming messages.
 	 * 
-	 * @see XjafAgent.server.agm.Agent#onMessage(xjaf2x.server.msm.fipa.acl.ACLMessage)
+	 * @see XjafAgent.server.agm().Agent#onMessage(xjaf2x.server.msm().fipa.acl.ACLMessage)
 	 */
 	@Override
 	protected void onMessage(ACLMessage message) {
@@ -177,7 +177,7 @@ public class Particle extends XjafAgent {
 				ACLMessage reply = message.makeReply(Performative.INFORM);
 				reply.sender = myAid;
 				message.receivers.add(swarmAID);
-				msm.post(reply);
+				msm().post(reply);
 			}
 		}
 	}
@@ -250,7 +250,7 @@ public class Particle extends XjafAgent {
 			message.content = psoMessage.toString();
 			message.sender = myAid;
 			message.receivers.add(swarmAID);
-			msm.post(message);
+			msm().post(message);
 		}
 	}
 

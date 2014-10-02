@@ -46,7 +46,9 @@ public class JasonMessage {
 	public static ACLMessage toAclMessage(Message jmsg) {
 		ACLMessage acl = createForIlForce(jmsg.getIlForce());
 		acl.sender = new AID(jmsg.getSender());
-		acl.receivers.add(new AID(jmsg.getReceiver()));
+		final String jmsgReceiver = jmsg.getReceiver();
+		if (jmsgReceiver != null)
+			acl.receivers.add(new AID(jmsgReceiver));
 		if (jmsg.getPropCont() instanceof Term || jmsg.getPropCont() instanceof String) {
 			acl.content = jmsg.getPropCont().toString();
 		} else {

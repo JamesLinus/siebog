@@ -50,10 +50,10 @@ public abstract class XjafAgent implements Agent {
 	// under normal circumstances, all methods should return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 60000;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
-	protected Agent myself;
+	private transient Agent myself;
 	protected AID myAid;
-	protected AgentManager agm;
-	protected MessageManager msm;
+	private transient AgentManager agm;
+	private transient MessageManager msm;
 	private transient boolean processing;
 	private BlockingQueue<ACLMessage> queue;
 	private boolean terminated;
@@ -65,11 +65,9 @@ public abstract class XjafAgent implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
-		agm = ObjectFactory.getAgentManager();
-		msm = ObjectFactory.getMessageManager();
 		queue = new LinkedBlockingQueue<>();
-		// a reference to myself
-		myself = ObjectFactory.getSessionContext().getBusinessObject(Agent.class);
+		// TODO If the 'myself' reference is not initialized here, it does not work in processNextMessage
+		myself();
 		onInit(args);
 	}
 
@@ -107,7 +105,7 @@ public abstract class XjafAgent implements Agent {
 			onTerminate();
 			// remove stateful beans
 			if (getClass().getAnnotation(Stateful.class) != null)
-				myself.remove();
+				myself().remove();
 			return;
 		}
 
@@ -134,7 +132,7 @@ public abstract class XjafAgent implements Agent {
 								logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
 							}
 					}
-					myself.processNextMessage(); // will acquire lock
+					myself().processNextMessage(); // will acquire lock
 				}
 			});
 		}
@@ -236,5 +234,23 @@ public abstract class XjafAgent implements Agent {
 		if (exec == null)
 			exec = ObjectFactory.getExecutorService();
 		return exec;
+	}
+
+	protected AgentManager agm() {
+		if (agm == null)
+			agm = ObjectFactory.getAgentManager();
+		return agm;
+	}
+
+	protected MessageManager msm() {
+		if (msm == null)
+			msm = ObjectFactory.getMessageManager();
+		return msm;
+	}
+
+	private Agent myself() {
+		if (myself == null)
+			myself = ObjectFactory.getSessionContext().getBusinessObject(Agent.class);
+		return myself;
 	}
 }

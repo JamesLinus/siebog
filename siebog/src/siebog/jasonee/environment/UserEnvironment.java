@@ -31,6 +31,7 @@ package siebog.jasonee.environment;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +49,8 @@ import siebog.utils.ObjectFactory;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class UserEnvironment {
+public class UserEnvironment implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(UserEnvironment.class.getName());
 	private List<Literal> percepts = Collections.synchronizedList(new ArrayList<Literal>());
 	private Map<String, List<Literal>> agPercepts = new ConcurrentHashMap<String, List<Literal>>();
@@ -56,6 +58,7 @@ public class UserEnvironment {
 	// set of agents that already received the last version of perception
 	private Set<String> uptodateAgs = Collections.synchronizedSet(new HashSet<String>());
 	private String envName;
+	private transient Environment env;
 
 	/**
 	 * Called before the MAS execution with the args informed in .mas2j project, the user environment could override it.
@@ -330,7 +333,9 @@ public class UserEnvironment {
 	}
 
 	private Environment getEnv() {
-		return ObjectFactory.getEnvironmentCache().get(envName);
+		if (env == null)
+			env = ObjectFactory.getEnvironmentCache().get(envName);
+		return env;
 	}
 
 }

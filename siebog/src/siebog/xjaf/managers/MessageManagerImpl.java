@@ -79,7 +79,7 @@ public class MessageManagerImpl implements MessageManager {
 				rec.handleMessage(msg);
 				++success;
 			} catch (Exception ex) {
-				logger.info(ex.getMessage());
+				logger.warning(ex.getMessage());
 			}
 		}
 		return success;

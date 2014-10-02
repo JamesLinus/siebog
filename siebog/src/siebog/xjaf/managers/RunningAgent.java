@@ -58,7 +58,11 @@ public class RunningAgent implements Serializable {
 	}
 
 	public void handleMessage(ACLMessage msg) {
-		ref.handleMessage(msg);
+		try {
+			ref.handleMessage(msg);
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
 	}
 
 	public void ping() {

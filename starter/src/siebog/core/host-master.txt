@@ -70,15 +70,14 @@
         <!-- interface-def -->
     </interfaces>
 
-   <!--jvms>
+   <jvms>
 		<jvm name="default">
-			<heap size="64m" max-size="256m" />
-			<permgen size="256m" max-size="256m" />
+			<heap size="64m" max-size="1536m" />
 			<jvm-options>
 				<option value="-server" />
 			</jvm-options>
 		</jvm>
-	</jvms-->
+	</jvms>
 
 	<servers>
 		<server name="xjaf-master" group="xjaf2x-group" auto-start="true" />

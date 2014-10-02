@@ -28,15 +28,12 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import siebog.core.Global;
 import siebog.jasonee.control.ExecutionControl;
-import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
-import siebog.jasonee.environment.EnvironmentBean;
 import siebog.jasonee.environment.UserEnvironment;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.managers.AgentInitArgs;
-import siebog.xjaf.managers.AgentManager;
 
 /**
  * 
@@ -78,15 +75,14 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createExecutionControl() {
-		final String lookup = "ejb:/" + Global.SERVER + "//" + ExecutionControlBean.class.getSimpleName() + "!"
-				+ ExecutionControl.class.getName() + "?stateful";
-		ExecutionControl ctrl = ObjectFactory.lookup(lookup, ExecutionControl.class);
+		ExecutionControl ctrl = ObjectFactory.lookup(ObjectFactory.JasonEEExecutionControlLookup,
+				ExecutionControl.class);
 		ctrlName = "ExecCtrl" + System.currentTimeMillis();
 		ObjectFactory.getExecutionControlCache().put(ctrlName, ctrl);
 		// create user's execution control
 		ClassParameters userClass = mas2j.getControlClass();
 		UserExecutionControl userExecCtrl = null;
-		if (userClass != null) {
+		if (userClass != null)
 			try {
 				userExecCtrl = remObjFact.createExecutionControl(userClass.getClassName());
 				userExecCtrl.init(ctrlName, userClass.getParametersArray());
@@ -94,14 +90,11 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 				final String msg = "Unable to create user execution control " + userClass.getClassName();
 				throw new IllegalStateException(msg, ex);
 			}
-		}
 		ctrl.init(ctrlName, userExecCtrl);
 	}
 
 	private void createEnvironment() {
-		final String lookup = "ejb:/" + Global.SERVER + "//" + EnvironmentBean.class.getSimpleName() + "!"
-				+ Environment.class.getName();
-		Environment env = ObjectFactory.lookup(lookup, Environment.class);
+		Environment env = ObjectFactory.lookup(ObjectFactory.JasonEEEnvironmentLookup, Environment.class);
 		envName = "Env" + System.currentTimeMillis();
 		ObjectFactory.getEnvironmentCache().put(envName, env);
 
@@ -111,14 +104,13 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 		if (userClass != null) {
 			if (userClass.getClassName().equals("jason.environment.Environment"))
 				userEnv = new UserEnvironment();
-			else {
+			else
 				try {
 					userEnv = remObjFact.createEnvironment(userClass.getClassName());
 				} catch (Exception ex) {
 					final String msg = "Unable to create user environment " + userClass.getClassName();
 					throw new IllegalStateException(msg, ex);
 				}
-			}
 			userEnv.init(envName, userClass.getParametersArray());
 		}
 
@@ -126,26 +118,28 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createAgents() {
-		AgentManager agm = ObjectFactory.getAgentManager();
 		final List<AgentParameters> agents = mas2j.getAgents();
 		for (AgentParameters agp : agents) {
-			String runtimeName = agp.name;
-			if (runtimeName.equals(RemoteObjectFactory.NAME))
-				continue;
-			for (int i = 0; i < agp.qty; i++) {
-				if (agp.qty > 1)
-					runtimeName += (i + 1);
-				AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
-				AgentInitArgs args = new AgentInitArgs();
-				args.put("mas2jSource", project.getMas2jSource());
-				args.put("agentName", agp.name);
-				args.put("agentSource", project.getAgentSource(agp.name));
-				args.put("remObjFactModule", remObjFactModule);
-				args.put("remObjFactEjb", remObjFactEjb);
-				args.put("envName", envName);
-				args.put("execCtrlName", ctrlName);
-				agm.startAgent(agClass, runtimeName, args);
+			if (!agp.name.equals(RemoteObjectFactory.NAME)) {
+				if (agp.qty <= 1)
+					createAgent(agp.name, agp.name);
+				else
+					for (int i = 1; i <= agp.qty; i++)
+						createAgent(agp.name, agp.name + i);
 			}
 		}
+	}
+
+	private void createAgent(String agentName, String runtimeName) {
+		AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
+		AgentInitArgs args = new AgentInitArgs();
+		args.put("mas2jSource", project.getMas2jSource());
+		args.put("agentName", agentName);
+		args.put("agentSource", project.getAgentSource(agentName));
+		args.put("remObjFactModule", remObjFactModule);
+		args.put("remObjFactEjb", remObjFactEjb);
+		args.put("envName", envName);
+		args.put("execCtrlName", ctrlName);
+		ObjectFactory.getAgentManager().startAgent(agClass, runtimeName, args);
 	}
 }

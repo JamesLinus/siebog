@@ -29,7 +29,9 @@ import siebog.jasonee.JasonEEStarter;
 import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.environment.Environment;
+import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.managers.AgentManager;
@@ -43,17 +45,21 @@ import siebog.xjaf.managers.RunningAgent;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public abstract class ObjectFactory {
-	private static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ AgentManagerImpl.class.getSimpleName() + "!" + AgentManager.class.getName();
-	private static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ MessageManagerImpl.class.getSimpleName() + "!" + MessageManager.class.getName();
-	private static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ BridgeManager.class.getSimpleName();
-	private static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
+	public static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
 	private static final String JasonEEStarterLookup = "ejb:/" + Global.SERVER + "//"
 			+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
+	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SERVER + "//"
+			+ ExecutionControlBean.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
+	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SERVER + "//"
+			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName() + "?stateful";
 
 	public static AgentManager getAgentManager() {
 		return lookup(AgentManagerLookup, AgentManager.class);

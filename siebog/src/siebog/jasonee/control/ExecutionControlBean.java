@@ -35,7 +35,6 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
 import siebog.core.Global;
-import siebog.jasonee.JasonEERuntimeServices;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.managers.MessageManager;
@@ -153,7 +152,7 @@ public class ExecutionControlBean implements ExecutionControl {
 
 	@Override
 	public RuntimeServicesInfraTier getRuntimeServices() {
-		return new JasonEERuntimeServices();
+		return null;
 	}
 
 	@Override

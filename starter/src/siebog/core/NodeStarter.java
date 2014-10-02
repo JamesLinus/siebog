@@ -105,16 +105,16 @@ public class NodeStarter {
 	private void startSlave() throws IOException {
 		final String ADDR = config.getAddress();
 		final String MASTER = config.getMasterAddr();
-		final String NAME = config.getSlaveName() + "@" + ADDR;
+		final String NAME = config.getSlaveName(); // + "@" + ADDR;
 		final int portOffset = config.getPortOffset();
 
-		logger.info(String.format("Starting slave node %s, with %s@%s", NAME, Global.MASTER_NAME, MASTER));
+		logger.info(String.format("Starting slave node %s@%s, with %s@%s", NAME, ADDR, Global.MASTER_NAME, MASTER));
 		String hostSlave = FileUtils.read(NodeStarter.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostSlave = hostSlave.replace("<!-- interface-def -->", intfDef);
 
-		String serverDef = SLAVE_SERVER_DEF.replace("NAME", NAME).replace("POFFSET", portOffset + "");
+		String serverDef = SLAVE_SERVER_DEF.replace("NAME", ADDR).replace("POFFSET", portOffset + "");
 		hostSlave = hostSlave.replace("<!-- server-def -->", serverDef);
 
 		int nativePort = 9999;

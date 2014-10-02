@@ -60,7 +60,7 @@
         <resource-root path="xercesImpl-2.11.0.jar" />
         <resource-root path="xml-apis-1.4.01.jar" />
         <resource-root path="jason.jar" />
-        <resource-root path="siebog-start.jar" />
+        <resource-root path="start.jar" />
         <resource-root path="dnars.jar" />
     </resources>
     <dependencies>

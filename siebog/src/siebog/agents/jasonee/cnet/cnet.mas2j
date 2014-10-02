@@ -1,0 +1,14 @@
+MAS cnet {
+	infrastructure: Siebog
+	
+	environment: CNetEnvironment
+	
+	agents:
+		remoteObjectFactory [
+			module = "siebog",
+			object = JasonEEObjectFactory
+		];
+		
+		c participant #1024;
+		i initiator [ numPart = 1024, primeLimit = 100 ] agentArchClass InitiatorAgArch;
+}

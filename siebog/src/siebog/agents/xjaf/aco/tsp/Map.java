@@ -91,7 +91,7 @@ public class Map extends XjafAgent {
 				String[] parts = content.split(" ");
 				reply.content = String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
 			}
-			msm.post(reply);
+			msm().post(reply);
 		} else if (message.performative == Performative.INFORM) {
 			if (content.startsWith("UpdateBestTour")) {
 				String[] parts = content.split(" ");

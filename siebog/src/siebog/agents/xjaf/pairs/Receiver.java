@@ -53,9 +53,9 @@ public class Receiver extends XjafAgent {
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.sender = myAid;
 		reply.content = msg.content + "" + process();
-		msm.post(reply);
+		msm().post(reply);
 		if (numIterations <= 0)
-			agm.stopAgent(myAid);
+			agm().stopAgent(myAid);
 	}
 
 	private int process() {

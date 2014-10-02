@@ -18,40 +18,28 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.agents.jasonee.cnet;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
+import java.io.File;
+import java.net.URISyntaxException;
+import siebog.SiebogClient;
+import siebog.jasonee.JasonEEProject;
+import siebog.utils.ObjectFactory;
 
 /**
- * Example of a pong agent.
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class Pong extends XjafAgent {
-	private static final long serialVersionUID = 1L;
-	private String nodeName;
-	private int counter;
+public class CNetClient {
 
-	@Override
-	protected void onInit(AgentInitArgs args) {
-		nodeName = getNodeName();
-		logger.info("Pong created on " + nodeName);
+	public static void main(String[] args) throws URISyntaxException {
+		File f = new File(CNetClient.class.getResource("cnet.mas2j").toURI());
+		JasonEEProject p = JasonEEProject.loadFromFile(f);
+		SiebogClient.connect("192.168.213.1", "192.168.213.129");
+		// "192.168.213.1", "192.168.213.129"
+		// "172.16.249.1", "172.16.249.129"
+		// "192.168.124.1", "192.168.124.129", "192.168.124.130"
+		ObjectFactory.getJasonEEStarter().start(p);
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.userArgs.put("pongCreatedOn", nodeName);
-		reply.userArgs.put("pongWorkingOn", getNodeName());
-		reply.userArgs.put("pongCounter", ++counter);
-		msm().post(reply);
-	}
 }

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.jasonee.JasonEERuntimeServices;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
@@ -76,7 +75,7 @@ public class EnvironmentBean implements Environment {
 
 	@Override
 	public RuntimeServicesInfraTier getRuntimeServices() {
-		return new JasonEERuntimeServices();
+		return null;
 	}
 
 	@Override
