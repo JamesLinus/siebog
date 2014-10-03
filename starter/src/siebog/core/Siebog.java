@@ -33,7 +33,7 @@ public class Siebog {
 			logger.severe(ex.getMessage());
 			printUsage();
 		} catch (IllegalStateException ex) {
-			logger.severe(ex.getMessage());
+			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Failed to start the node.", ex);
 		}

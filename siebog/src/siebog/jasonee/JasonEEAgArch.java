@@ -47,7 +47,7 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 	private transient JasonEEAgent agent;
 	private boolean running = true;
 	// TODO ActionExec -> intention -> intendedMeans -> unif is not serializable
-	private transient Map<String, ActionExec> scheduledActions = new HashMap<>();
+	private transient Map<String, ActionExec> scheduledActions;
 	private long actionId;
 	private Map<String, String> options;
 
@@ -55,6 +55,7 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 		options = Collections.synchronizedMap(new HashMap<String, String>());
 		if (agp.getOptions() != null)
 			options.putAll(agp.getOptions());
+		scheduledActions = new HashMap<>();
 
 		Agent.create(this, agp.agClass.getClassName(), agp.getBBClass(), agp.asSource.getAbsolutePath(),
 				agp.getAsSetts(false, false));
@@ -62,6 +63,7 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(remObjFactModule, remObjFactEjb);
 		createCustomArchs(remObjFact, agp.getAgArchClasses());
+
 	}
 
 	public void reasoningCycle() {

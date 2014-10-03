@@ -44,13 +44,13 @@ import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.agents.xjaf.GUIAgent;
+import siebog.agents.xjaf.RemoteAgent;
 import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.test.TestAgent;
 
 /**
  * Default agent manager implementation.
@@ -113,7 +113,6 @@ public class AgentManagerImpl implements AgentManager {
 			logger.log(Level.WARNING, "Unable to start an agent of class " + agClass, ex);
 			throw ex;
 		}
-
 	}
 
 	@DELETE
@@ -129,7 +128,7 @@ public class AgentManagerImpl implements AgentManager {
 	public List<AgentClass> getAvailableAgentClasses() {
 		Set<String> ignored = new HashSet<>();
 		ignored.add(JasonEEAgent.class.getSimpleName());
-		ignored.add(TestAgent.class.getSimpleName());
+		ignored.add(RemoteAgent.class.getSimpleName());
 		ignored.add(GUIAgent.class.getSimpleName());
 
 		final Context ctx = ContextFactory.get();

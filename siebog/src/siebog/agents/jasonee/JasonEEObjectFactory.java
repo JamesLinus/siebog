@@ -23,7 +23,6 @@ package siebog.agents.jasonee;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import siebog.agents.jasonee.cnet.CNetEnvironment;
-import siebog.agents.jasonee.cnet.InitiatorAgArch;
 import siebog.agents.jasonee.ha.HAAgArch;
 import siebog.agents.jasonee.ha.HAExecutionControl;
 import siebog.jasonee.JasonEEAgArch;
@@ -44,8 +43,6 @@ public class JasonEEObjectFactory implements RemoteObjectFactory {
 	public JasonEEAgArch createAgArch(String className) {
 		if (HAAgArch.class.getSimpleName().equals(className))
 			return new HAAgArch();
-		if (InitiatorAgArch.class.getSimpleName().equals(className))
-			return new InitiatorAgArch();
 		throw new IllegalArgumentException("Invalid class name: " + className);
 	}
 

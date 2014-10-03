@@ -10,5 +10,4 @@ MAS cnet {
 		];
 		
 		c participant #1024;
-		i initiator [ numPart = 1024, primeLimit = 100 ] agentArchClass InitiatorAgArch;
 }

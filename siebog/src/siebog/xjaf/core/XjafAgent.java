@@ -55,7 +55,7 @@ public abstract class XjafAgent implements Agent {
 	private transient AgentManager agm;
 	private transient MessageManager msm;
 	private transient boolean processing;
-	private BlockingQueue<ACLMessage> queue;
+	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
 	private boolean terminated;
 	private transient ExecutorService exec;
 	private transient long hbHandle;
@@ -65,7 +65,6 @@ public abstract class XjafAgent implements Agent {
 	@AccessTimeout(value = ACCESS_TIMEOUT)
 	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
-		queue = new LinkedBlockingQueue<>();
 		// TODO If the 'myself' reference is not initialized here, it does not work in processNextMessage
 		myself();
 		onInit(args);

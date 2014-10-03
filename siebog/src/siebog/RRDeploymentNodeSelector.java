@@ -20,6 +20,7 @@
 
 package siebog;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.jboss.ejb.client.DeploymentNodeSelector;
 
 /**
@@ -28,11 +29,11 @@ import org.jboss.ejb.client.DeploymentNodeSelector;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class RRDeploymentNodeSelector implements DeploymentNodeSelector {
-	private int index = -1;
+	private AtomicInteger index = new AtomicInteger(0);
 
 	@Override
 	public String selectNode(String[] eligibleNodes, String appName, String moduleName, String distinctName) {
-		return eligibleNodes[++index % eligibleNodes.length];
+		return eligibleNodes[index.getAndIncrement() % eligibleNodes.length];
 	}
 
 }

@@ -18,28 +18,16 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jasonee.cnet;
+package siebog.agents.xjaf;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import siebog.SiebogClient;
-import siebog.jasonee.JasonEEProject;
-import siebog.utils.ObjectFactory;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class CNetClient {
-
-	public static void main(String[] args) throws URISyntaxException {
-		File f = new File(CNetClient.class.getResource("cnet.mas2j").toURI());
-		JasonEEProject p = JasonEEProject.loadFromFile(f);
-		SiebogClient.connect("192.168.213.1", "192.168.213.129");
-		// "192.168.213.1", "192.168.213.129"
-		// "172.16.249.1", "172.16.249.129"
-		// "192.168.124.1", "192.168.124.129", "192.168.124.130"
-		ObjectFactory.getJasonEEStarter().start(p);
-	}
-
+public interface RemoteAgentListener extends Remote {
+	void onMessage(ACLMessage msg) throws RemoteException;
 }

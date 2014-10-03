@@ -38,8 +38,7 @@ public class SiebogClient {
 	private static boolean connected;
 
 	/**
-	 * Connect to a running Siebog cluster. This method should be called before any other
-	 * interaction with the server.
+	 * Connect to a running Siebog cluster. This method should be called before any other interaction with the server.
 	 * 
 	 * @param masterAddress Address of the master node.
 	 * @param slaves Address of at least one slave node (if any).
