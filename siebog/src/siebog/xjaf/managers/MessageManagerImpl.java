@@ -68,12 +68,32 @@ public class MessageManagerImpl implements MessageManager {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public int post(@Form ACLMessage msg) {
+	public void post(@Form final ACLMessage msg) {
+		final AgentManager agm = ObjectFactory.getAgentManager();
+		ObjectFactory.getExecutorService().execute(new Runnable() {
+			@Override
+			public void run() {
+				for (AID aid : msg.receivers) {
+					if (aid == null)
+						continue;
+					try {
+						RunningAgent rec = agm.getRunningAgent(aid);
+						rec.handleMessage(msg);
+					} catch (Exception ex) {
+						logger.warning(ex.getMessage());
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public int send(@Form final ACLMessage msg) {
 		int success = 0;
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		for (AID aid : msg.receivers) {
 			if (aid == null)
-				throw new IllegalArgumentException("Receiver AID cannot be null.");
+				continue;
 			try {
 				RunningAgent rec = agm.getRunningAgent(aid);
 				rec.handleMessage(msg);

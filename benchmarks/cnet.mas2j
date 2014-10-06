@@ -1,0 +1,12 @@
+MAS cnet {
+	infrastructure: Centralised
+	
+	environment: siebog.ags.jasonee.cnet.jade.CNetEnvironment
+	
+	agents:		
+		i initiator [ numParticipants = 10000, primeLimit = 5000 ] agentArchClass siebog.ags.jasonee.cnet.jade.InitiatorAgArch;
+		c participant #10000;
+		
+	aslSourcePath:
+		"../siebog/src/siebog/agents/jasonee/cnet";
+}

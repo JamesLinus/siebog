@@ -9,5 +9,6 @@ MAS cnet {
 			object = JasonEEObjectFactory
 		];
 		
-		c participant #1024;
+		i initiator [ numParticipants = 16384, primeLimit = 100 ] agentArchClass InitiatorAgArch;
+		c participant #16384;
 }

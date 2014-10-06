@@ -20,47 +20,21 @@
 
 package siebog.agents.jasonee.cnet;
 
-import jason.NoValueException;
-import jason.asSyntax.NumberTerm;
-import jason.asSyntax.Structure;
-import siebog.jasonee.environment.UserEnvironment;
+import java.io.File;
+import java.net.URISyntaxException;
+import siebog.SiebogClient;
+import siebog.jasonee.JasonEEProject;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class CNetEnvironment extends UserEnvironment {
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public boolean executeAction(String agName, Structure act) {
-		switch (act.getFunctor()) {
-		case "analyzeCfp":
-		case "processTask":
-			try {
-				final int limit = (int) ((NumberTerm) act.getTerm(0)).solve();
-				int numPrimes = countPrimes(limit);
-				return numPrimes > 0; // just so that we use the return value somewhere
-			} catch (NoValueException ex) {
-				return false;
-			}
-		default:
-			return false;
-		}
-	}
-
-	private int countPrimes(int limit) {
-		int primes = 0;
-		for (int i = 1; i <= limit; i++) {
-			int j = 2;
-			while (j <= i) {
-				if (i % j == 0)
-					break;
-				++j;
-			}
-			if (j == i)
-				++primes;
-		}
-		return primes;
+public class CNetClient {
+	public static void main(String[] args) throws URISyntaxException {
+		SiebogClient.connect("localhost");
+		File f = new File(CNetClient.class.getResource("cnet.mas2j").toURI());
+		JasonEEProject proj = JasonEEProject.loadFromFile(f);
+		ObjectFactory.getJasonEEStarter().start(proj);
 	}
 }

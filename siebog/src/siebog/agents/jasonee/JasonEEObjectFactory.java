@@ -23,6 +23,7 @@ package siebog.agents.jasonee;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import siebog.agents.jasonee.cnet.CNetEnvironment;
+import siebog.agents.jasonee.cnet.InitiatorAgArch;
 import siebog.agents.jasonee.ha.HAAgArch;
 import siebog.agents.jasonee.ha.HAExecutionControl;
 import siebog.jasonee.JasonEEAgArch;
@@ -43,20 +44,22 @@ public class JasonEEObjectFactory implements RemoteObjectFactory {
 	public JasonEEAgArch createAgArch(String className) {
 		if (HAAgArch.class.getSimpleName().equals(className))
 			return new HAAgArch();
-		throw new IllegalArgumentException("Invalid class name: " + className);
+		if (InitiatorAgArch.class.getSimpleName().equals(className))
+			return new InitiatorAgArch();
+		throw new IllegalArgumentException("Invalid agent architecture class name: " + className);
 	}
 
 	@Override
 	public UserExecutionControl createExecutionControl(String className) {
 		if (HAExecutionControl.class.getSimpleName().equals(className))
 			return new HAExecutionControl();
-		throw new IllegalArgumentException("Invalid class name: " + className);
+		throw new IllegalArgumentException("Invalid execution control class name: " + className);
 	}
 
 	@Override
 	public UserEnvironment createEnvironment(String className) {
 		if (CNetEnvironment.class.getSimpleName().equals(className))
 			return new CNetEnvironment();
-		throw new IllegalArgumentException("Invalid class name: " + className);
+		throw new IllegalArgumentException("Invalid environment class name: " + className);
 	}
 }

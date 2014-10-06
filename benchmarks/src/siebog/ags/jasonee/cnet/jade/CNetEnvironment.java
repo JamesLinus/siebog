@@ -18,20 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jasonee.cnet;
+package siebog.ags.jasonee.cnet.jade;
 
 import jason.NoValueException;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
-import siebog.jasonee.environment.UserEnvironment;
+import jason.environment.Environment;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class CNetEnvironment extends UserEnvironment {
-	private static final long serialVersionUID = 1L;
-
+public class CNetEnvironment extends Environment {
 	@Override
 	public boolean executeAction(String agName, Structure act) {
 		switch (act.getFunctor()) {

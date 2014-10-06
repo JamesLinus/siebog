@@ -41,6 +41,7 @@ import siebog.xjaf.managers.AgentInitArgs;
 import siebog.xjaf.managers.MessageManager;
 
 /**
+ * Alternative implementation of the Initiator agent, i.e. in form of a plain Java client application.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

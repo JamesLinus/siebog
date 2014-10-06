@@ -14,3 +14,5 @@ jason_examples/bin
 unit-tests/.cache
 siebog/jason.ucls
 dnars/.cache
+benchmarks/APDescription.txt
+benchmarks/MTPs-Main-Container.txt

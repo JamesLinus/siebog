@@ -167,7 +167,7 @@ public class ExecutionControlBean implements ExecutionControl {
 		while (i.hasNext()) {
 			AID aid = i.next();
 			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
-			if (msm.post(tm) != 1) {
+			if (msm.send(tm) != 1) {
 				logger.info("Agent " + aid + " no longer available.");
 				i.remove();
 				running.remove(aid);

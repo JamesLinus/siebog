@@ -1,0 +1,12 @@
+<project name ="mybuild" default="Main-Container" basedir="..">
+    <import file="build.xml"/>
+	
+	<target name="Main-Container" depends="compile" >
+        <echo message="Starting JADE Container Main-Container" />
+        <java classname="jade.Boot" failonerror="true" fork="yes" dir="${basedir}" >
+            <classpath refid="project.classpath"/>
+            <arg line="-local-host 127.0.0.1 -agents j_environment:jason.infra.jade.JadeEnvironment(j-project,cnet.mas2j);c:jason.infra.jade.JadeAgArch(j-project,cnet.mas2j,c);i:jason.infra.jade.JadeAgArch(j-project,cnet.mas2j,i)"/>
+            <jvmarg line="-Xmx500M -Xss8M"/>
+        </java>
+    </target>
+</project>

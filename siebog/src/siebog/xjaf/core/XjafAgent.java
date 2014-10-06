@@ -48,7 +48,7 @@ public abstract class XjafAgent implements Agent {
 	private static final long serialVersionUID = 1L;
 	// the access timeout is needed only when the system is under a heavy load.
 	// under normal circumstances, all methods should return as quickly as possible
-	public static final long ACCESS_TIMEOUT = 60000;
+	public static final long ACCESS_TIMEOUT = 5;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
 	private transient Agent myself;
 	protected AID myAid;
@@ -62,7 +62,7 @@ public abstract class XjafAgent implements Agent {
 
 	@Override
 	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT)
+	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
 	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
 		// TODO If the 'myself' reference is not initialized here, it does not work in processNextMessage
@@ -89,7 +89,7 @@ public abstract class XjafAgent implements Agent {
 
 	@Override
 	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT)
+	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
 	public void handleMessage(ACLMessage msg) {
 		queue.add(msg);
 		if (!processing)
@@ -98,7 +98,7 @@ public abstract class XjafAgent implements Agent {
 
 	@Override
 	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT)
+	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
 	public void processNextMessage() {
 		if (terminated) {
 			onTerminate();
@@ -139,7 +139,7 @@ public abstract class XjafAgent implements Agent {
 
 	@Override
 	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT)
+	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
 	public void stop() {
 		terminated = true;
 		if (!processing)
