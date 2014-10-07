@@ -25,8 +25,16 @@ import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.UserEnvironment;
 
 /**
- * Remote object factory, used to create user-defined agent architecture, execution control, and environment. User
- * applications should realize it in form of a stateless session EJB.
+ * Remote interface of the factory object used to create user-defined agent architecture, execution control, and
+ * environment. User applications should realize this interface in form of a stateless session EJB. The EJB should be
+ * described in the mas2j file as an agent. For example:
+ * 
+ * <pre>
+ * remoteObjectFactory [
+ *   module = "siebog", // name of the module/project
+ *   object = JasonEEObjectFactory // name of the implementing class 
+ * ];
+ * </pre>
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

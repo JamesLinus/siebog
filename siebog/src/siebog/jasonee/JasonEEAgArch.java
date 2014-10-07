@@ -16,6 +16,14 @@
  * 
  * See the License for the specific language governing permissions 
  * and limitations under the License.
+ * 
+ * Based on implementations of Centralised and JADE infrastructures 
+ * in Jason 1.4.1. 
+ * Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al. 
+ * 
+ * To contact the original authors:
+ * http://www.inf.ufrgs.br/~bordini 
+ * http://www.das.ufsc.br/~jomi
  */
 
 package siebog.jasonee;
@@ -63,7 +71,6 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 
 		RemoteObjectFactory remObjFact = ObjectFactory.getRemoteObjectFactory(remObjFactModule, remObjFactEjb);
 		createCustomArchs(remObjFact, agp.getAgArchClasses());
-
 	}
 
 	public void reasoningCycle() {

@@ -41,6 +41,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 import siebog.utils.ObjectFactory;
 
 /**
+ * A helper timer service for the Execution control component.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -82,14 +83,6 @@ public class ECTimerServiceImpl implements ECTimerService {
 		final Cache<String, ExecutionControl> cache = ObjectFactory.getExecutionControlCache();
 		String info = (String) timer.getInfo();
 		try {
-			// if (info.length() == 0) {
-			// Set<String> allExecCtrls = new HashSet<>(cache.keySet());
-			// for (String name : allExecCtrls) {
-			// ExecutionControl ctrl = cache.get(name);
-			// if (ctrl != null)
-			// ctrl.onTimeout(-1);
-			// }
-			// } else {
 			int n = info.indexOf(' ');
 			String execCtrlName = info.substring(0, n);
 			int cycleNum = Integer.parseInt(info.substring(n + 1));
@@ -98,7 +91,6 @@ public class ECTimerServiceImpl implements ECTimerService {
 				execCtrl.onTimeout(cycleNum);
 			else
 				logger.log(Level.WARNING, "ExecutionControl " + execCtrlName + " not found.");
-			// }
 		} catch (ConcurrentAccessTimeoutException ex) {
 			logger.warning(ex.getMessage());
 		}

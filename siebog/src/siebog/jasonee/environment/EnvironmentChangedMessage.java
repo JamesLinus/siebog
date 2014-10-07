@@ -25,6 +25,7 @@ import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
 /**
+ * An ACL message informing the agents that their environment has changed.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

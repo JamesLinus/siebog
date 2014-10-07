@@ -34,6 +34,8 @@ import java.util.Map;
 import siebog.core.FileUtils;
 
 /**
+ * Description of a Jason EE project that can be sent to remote nodes. Includes the full source of mas2j and of all the
+ * referenced agents.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

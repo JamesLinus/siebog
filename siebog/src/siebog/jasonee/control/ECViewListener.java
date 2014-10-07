@@ -30,6 +30,7 @@ import org.infinispan.notifications.cachemanagerlistener.event.ViewChangedEvent;
 import siebog.utils.ObjectFactory;
 
 /**
+ * Listens for changes in the cluster and kick-starts Execution control components in case of node failures.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

@@ -25,6 +25,7 @@ import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
 /**
+ * Outcome of a scheduled action.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

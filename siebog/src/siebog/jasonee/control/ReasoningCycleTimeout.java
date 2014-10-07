@@ -25,6 +25,7 @@ import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
 /**
+ * An ACL message informing synchronized agents that they should complete the current reasoning cycle.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */

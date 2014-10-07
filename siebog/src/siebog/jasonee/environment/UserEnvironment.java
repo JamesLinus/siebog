@@ -17,12 +17,12 @@
  * See the License for the specific language governing permissions 
  * and limitations under the License.
  * 
- * Based on the implementation of jason.environment.Environment in
- * Jason 1.4.1.
- * Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al.
+ * Based on implementations of Centralised and JADE infrastructures 
+ * in Jason 1.4.1. 
+ * Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al. 
  * 
  * To contact the original authors:
- * http://www.inf.ufrgs.br/~bordini
+ * http://www.inf.ufrgs.br/~bordini 
  * http://www.das.ufsc.br/~jomi
  */
 

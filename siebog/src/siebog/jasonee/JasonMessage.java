@@ -24,6 +24,14 @@
  * To contact the original authors:
  * http://www.inf.ufrgs.br/~bordini
  * http://www.das.ufsc.br/~jomi
+ * 
+ * Based on the implementation of the JADE infrastructure in 
+ * Jason 1.4.1. 
+ * Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al. 
+ * 
+ * To contact the original authors:
+ * http://www.inf.ufrgs.br/~bordini 
+ * http://www.das.ufsc.br/~jomi
  */
 
 package siebog.jasonee;
