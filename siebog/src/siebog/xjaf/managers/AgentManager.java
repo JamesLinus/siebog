@@ -35,7 +35,7 @@ public interface AgentManager extends Serializable {
 
 	void stopAgent(AID aid);
 
-	List<RunningAgent> getRunningAgents();
+	List<AID> getRunningAgents();
 
 	/**
 	 * 
@@ -44,14 +44,6 @@ public interface AgentManager extends Serializable {
 	 * @throws IllegalArgumentException if no such running agent.
 	 */
 	AID getAIDByRuntimeName(String runtimeName);
-
-	/**
-	 * 
-	 * @param aid
-	 * @return
-	 * @throws IllegalArgumentException if no such AID.
-	 */
-	RunningAgent getRunningAgent(AID aid);
 
 	List<AgentClass> getAvailableAgentClasses();
 

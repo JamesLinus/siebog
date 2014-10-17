@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javax.ejb.AccessTimeout;
@@ -175,7 +176,11 @@ public class ExecutionControlBean implements ExecutionControl {
 		while (i.hasNext()) {
 			AID aid = i.next();
 			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
-			if (msm.send(tm) != 1) {
+			try {
+				Future<Integer> f = msm.post(tm);
+				if (f.get() != 1)
+					throw new Exception(); // get() can also throw an exception
+			} catch (Exception ex) {
 				logger.info("Agent " + aid + " no longer available.");
 				i.remove();
 				running.remove(aid);

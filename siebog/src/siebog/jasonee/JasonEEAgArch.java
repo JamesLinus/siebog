@@ -44,7 +44,6 @@ import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.managers.RunningAgent;
 
 /**
  * 
@@ -156,11 +155,11 @@ public class JasonEEAgArch extends AgArch implements Serializable {
 	@Override
 	public void broadcast(Message m) throws Exception {
 		ACLMessage acl = JasonMessage.toAclMessage(m);
-		List<RunningAgent> list = ObjectFactory.getAgentManager().getRunningAgents();
+		List<AID> list = ObjectFactory.getAgentManager().getRunningAgents();
 		final AID myAid = agent.getAid();
-		for (RunningAgent ra : list)
-			if (!myAid.equals(ra.getAid()))
-				acl.receivers.add(ra.getAid());
+		for (AID aid : list)
+			if (!myAid.equals(aid))
+				acl.receivers.add(aid);
 		ObjectFactory.getMessageManager().post(acl);
 	}
 

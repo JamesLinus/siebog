@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import siebog.SiebogClient;
 import siebog.agents.xjaf.RemoteAgentListener;
 import siebog.core.Global;
+import siebog.jasonee.JasonEEAgent;
 import siebog.jasonee.JasonEEProject;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
@@ -82,8 +83,9 @@ public class Initiator extends UnicastRemoteObject implements RemoteAgentListene
 	public void start() {
 		startTime = System.currentTimeMillis();
 		final int n = numPart.get();
+		AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
 		for (int i = 1; i <= n; i++) {
-			AID aid = new AID("c" + i);
+			AID aid = new AID("c" + i, agClass);
 			ACLMessage cfp = new ACLMessage(Performative.INFORM);
 			cfp.sender = remoteAgentId;
 			cfp.receivers.add(aid);

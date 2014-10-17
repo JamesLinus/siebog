@@ -26,8 +26,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.core.Global;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
@@ -54,7 +56,8 @@ public class Ping extends XjafAgent {
 	protected void onMessage(ACLMessage msg) {
 		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
-			AID pongAid = new AID(msg.content);
+			AgentClass agClass = new AgentClass(Global.SERVER, Pong.class.getSimpleName());
+			AID pongAid = new AID(msg.content, agClass);
 			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
 			msgToPong.sender = myAid;
 			msgToPong.receivers.add(pongAid);

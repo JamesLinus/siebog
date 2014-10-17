@@ -12,11 +12,12 @@ import org.apache.commons.io.FileUtils
 import scala.collection.mutable.ListBuffer
 import siebog.SiebogClient
 import java.rmi.server.UnicastRemoteObject
-import siebog.xjaf.test.TestAgentListener
 import java.util.concurrent.BlockingQueue
 import siebog.xjaf.fipa.ACLMessage
 import java.rmi.registry.LocateRegistry
 import siebog.xjaf.core.AID
+import siebog.agents.xjaf.RemoteAgentListener
+import siebog.agents.xjaf.RemoteAgent
 
 object XjafTestUtils {
 	var testAgentAid: AID = null
@@ -30,11 +31,11 @@ object XjafTestUtils {
 		}
 	}
 
-	def startTestAgent(msgQueue: BlockingQueue[ACLMessage]): Unit = {
+	def startTestAgent(msgQueue: BlockingQueue[ACLMessage], address: String): Unit = {
 		val reg = LocateRegistry.createRegistry(1099)
-		reg.rebind("TestAgentListener", new TestAgentListenerImpl(msgQueue))
-		val agClass = new AgentClass(Global.SERVER, "TestAgent")
-		val args = new AgentInitArgs(s"remoteHost->localhost")
+		reg.rebind(classOf[RemoteAgentListener].getSimpleName, new TestAgentListenerImpl(msgQueue))
+		val agClass = new AgentClass(Global.SERVER, classOf[RemoteAgent].getSimpleName)
+		val args = new AgentInitArgs(s"remoteHost->$address")
 		testAgentAid = ObjectFactory.getAgentManager().startAgent(agClass, "testAgent", args)
 	}
 
@@ -84,7 +85,7 @@ object XjafTestUtils {
 	}
 }
 
-class TestAgentListenerImpl(val queue: BlockingQueue[ACLMessage]) extends UnicastRemoteObject with TestAgentListener {
+class TestAgentListenerImpl(val queue: BlockingQueue[ACLMessage]) extends UnicastRemoteObject with RemoteAgentListener {
 	override def onMessage(msg: ACLMessage): Unit =
 		queue.add(msg)
 }

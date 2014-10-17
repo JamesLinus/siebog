@@ -21,10 +21,12 @@
 package siebog.xjaf.core;
 
 import java.io.Serializable;
+import org.hornetq.utils.json.JSONException;
+import org.hornetq.utils.json.JSONObject;
+import siebog.PlatformId;
 
 /**
- * Agent identifier, consists of the runtime name and the platform identifier, in the form of
- * "name@hap".
+ * Agent identifier, consists of the runtime name and the platform identifier, in the form of "name@hap".
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -32,30 +34,57 @@ import java.io.Serializable;
 public final class AID implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
-	private final String hap;
-	private final String id; // string representation
+	private final String host;
+	private final PlatformId pid;
+	private final String str; // string representation
+	private final AgentClass agClass;
+	private static final String HOST_NAME = "xjaf"; // TODO Get cluster/host name.
 
-	/**
-	 * Accepts a string in the form of "name@hap", or just "name", in which case the current host's
-	 * name will be used as hap.
-	 */
-	public AID(String nameHap) {
-		int n = nameHap.lastIndexOf('@');
-		if (n == -1) {
-			name = nameHap;
-			hap = "cluster"; // Global.getNodeName();
-			id = name + '@' + hap;
-		} else if (n > 0 && n < nameHap.length() - 1) {
-			name = nameHap.substring(0, n);
-			hap = nameHap.substring(n + 1);
-			id = nameHap;
-		} else
-			throw new IllegalArgumentException("Name and HAP cannot be empty.");
+	public AID(String name, AgentClass agClass) {
+		this(name, HOST_NAME, PlatformId.XJAF, agClass);
+	}
+
+	public AID(String name, String host, PlatformId pid, AgentClass agClass) {
+		this.name = name;
+		this.host = host;
+		this.pid = pid;
+		this.agClass = agClass;
+		// build the string representation
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("name", name);
+			obj.put("host", host);
+			obj.put("pid", pid.toString());
+			obj.put("agClass", agClass);
+		} catch (JSONException ex) {
+		}
+		str = obj.toString();
+	}
+
+	public AID(String jsonStr) {
+		str = jsonStr;
+		try {
+			JSONObject json = new JSONObject(jsonStr);
+			name = json.getString("name");
+			host = json.has("host") ? json.getString("host") : HOST_NAME;
+			// platform id
+			PlatformId pid;
+			try {
+				pid = PlatformId.valueOf(json.getString("pid").toUpperCase());
+			} catch (Exception ex) {
+				pid = PlatformId.XJAF;
+			}
+			this.pid = pid;
+			agClass = (AgentClass) json.get("agClass");
+		} catch (JSONException ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		// TODO hashCode and equals should only consider a subset of fields, not all.
+		return str.hashCode();
 	}
 
 	@Override
@@ -67,23 +96,27 @@ public final class AID implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		AID other = (AID) obj;
-		return id.equals(other.id);
+		return str.equals(other.str);
 	}
 
 	@Override
 	public String toString() {
-		return id;
+		return str;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String getHap() {
-		return hap;
+	public String getHost() {
+		return host;
 	}
 
-	public String getId() {
-		return id;
+	public PlatformId getPid() {
+		return pid;
+	}
+
+	public AgentClass getAgClass() {
+		return agClass;
 	}
 }

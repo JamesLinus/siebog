@@ -22,7 +22,10 @@ package siebog.xjaf.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -32,10 +35,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
+import siebog.xjaf.core.Agent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -51,8 +56,8 @@ import siebog.xjaf.fipa.Performative;
 @Path("/messages")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class MessageManagerImpl implements MessageManager {
-	private static final Logger logger = Logger.getLogger(MessageManagerImpl.class.getName());
+public class MessageManagerBean implements MessageManager {
+	private static final Logger logger = Logger.getLogger(MessageManagerBean.class.getName());
 
 	@GET
 	@Path("/")
@@ -67,42 +72,27 @@ public class MessageManagerImpl implements MessageManager {
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Asynchronous
 	@Override
-	public void post(@Form final ACLMessage msg) {
-		final AgentManager agm = ObjectFactory.getAgentManager();
-		ObjectFactory.getExecutorService().execute(new Runnable() {
-			@Override
-			public void run() {
-				for (AID aid : msg.receivers) {
-					if (aid == null)
-						continue;
-					try {
-						RunningAgent rec = agm.getRunningAgent(aid);
-						rec.handleMessage(msg);
-					} catch (Exception ex) {
-						logger.warning(ex.getMessage());
-					}
-				}
-			}
-		});
-	}
-
-	@Override
-	public int send(@Form final ACLMessage msg) {
-		int success = 0;
-		final AgentManager agm = ObjectFactory.getAgentManager();
+	public Future<Integer> post(@Form final ACLMessage msg) {
+		Cache<AID, Agent> running = ObjectFactory.getRunningAgentsCache();
+		int successful = 0;
 		for (AID aid : msg.receivers) {
 			if (aid == null)
 				continue;
 			try {
-				RunningAgent rec = agm.getRunningAgent(aid);
-				rec.handleMessage(msg);
-				++success;
+				Agent agent = running.get(aid);
+				if (agent == null)
+					logger.info("No such AID: " + aid);
+				else {
+					agent.handleMessage(msg);
+					++successful;
+				}
 			} catch (Exception ex) {
 				logger.warning(ex.getMessage());
 			}
 		}
-		return success;
+		return new AsyncResult<>(successful);
 	}
 
 	@Override

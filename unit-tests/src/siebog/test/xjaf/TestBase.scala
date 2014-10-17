@@ -27,7 +27,7 @@ class TestBase(val numNodes: Int, val address: String = "localhost", val testDir
 		}
 
 		SiebogClient.connect(address)
-		XjafTestUtils.startTestAgent(msgQueue)
+		XjafTestUtils.startTestAgent(msgQueue, address)
 	}
 
 	@After

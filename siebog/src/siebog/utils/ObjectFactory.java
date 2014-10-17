@@ -34,11 +34,11 @@ import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.websocket.bridges.BridgeManager;
 import siebog.xjaf.core.AID;
+import siebog.xjaf.core.Agent;
 import siebog.xjaf.managers.AgentManager;
-import siebog.xjaf.managers.AgentManagerImpl;
+import siebog.xjaf.managers.AgentManagerBean;
 import siebog.xjaf.managers.MessageManager;
-import siebog.xjaf.managers.MessageManagerImpl;
-import siebog.xjaf.managers.RunningAgent;
+import siebog.xjaf.managers.MessageManagerBean;
 
 /**
  * 
@@ -46,9 +46,9 @@ import siebog.xjaf.managers.RunningAgent;
  */
 public abstract class ObjectFactory {
 	public static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
-			+ AgentManagerImpl.class.getSimpleName() + "!" + AgentManager.class.getName();
+			+ AgentManagerBean.class.getSimpleName() + "!" + AgentManager.class.getName();
 	public static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
-			+ MessageManagerImpl.class.getSimpleName() + "!" + MessageManager.class.getName();
+			+ MessageManagerBean.class.getSimpleName() + "!" + MessageManager.class.getName();
 	public static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
 			+ BridgeManager.class.getSimpleName();
 	public static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
@@ -85,8 +85,8 @@ public abstract class ObjectFactory {
 		return lookup(XjafCacheLookup, CacheContainer.class);
 	}
 
-	public static Cache<AID, RunningAgent> getRunningAgentsCache() {
-		Cache<AID, RunningAgent> cache = getCacheContainer().getCache("running-agents");
+	public static Cache<AID, Agent> getRunningAgentsCache() {
+		Cache<AID, Agent> cache = getCacheContainer().getCache("running-agents");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache running-agents.");
 		return cache;

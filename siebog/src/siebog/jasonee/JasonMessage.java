@@ -36,11 +36,11 @@
 
 package siebog.jasonee;
 
-import java.io.Serializable;
 import jason.asSemantics.Message;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
+import java.io.Serializable;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;

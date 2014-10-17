@@ -18,28 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.agents.jasonee.ha;
-
-import jason.mas2j.parser.ParseException;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import siebog.SiebogClient;
-import siebog.jasonee.JasonEEProject;
-import siebog.utils.ObjectFactory;
+package siebog;
 
 /**
+ * Multiagent platforms of Siebog.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class HAClient {
-	public static void main(String[] args) throws IOException, ParseException, URISyntaxException {
-		File f = new File(HAClient.class.getResource("high_availability.mas2j").toURI());
-		JasonEEProject p = JasonEEProject.loadFromFile(f);
-		SiebogClient.connect("localhost");
-		// "192.168.213.1", "192.168.213.129");
-		// "172.16.249.1", "172.16.249.129");
-		// "192.168.124.1", "192.168.124.129", "192.168.124.130");
-		ObjectFactory.getJasonEEStarter().start(p);
+public enum PlatformId {
+	XJAF, RADIGOST;
+
+	@Override
+	public String toString() {
+		return super.toString().toLowerCase();
 	}
 }

@@ -31,7 +31,7 @@ import javax.ejb.Stateless;
  */
 @Stateless
 @Remote(ConnectionManager.class)
-public class ConnectionManagerImpl implements ConnectionManager {
+public class ConnectionManagerBean implements ConnectionManager {
 	// private static final Logger logger = Logger.getLogger(ConnectionManagerImpl.class.getName());
 	// private JChannel channel;
 

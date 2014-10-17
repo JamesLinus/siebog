@@ -20,6 +20,7 @@
 
 package siebog.xjaf.managers;
 
+import java.util.concurrent.Future;
 import siebog.xjaf.fipa.ACLMessage;
 
 /**
@@ -34,9 +35,7 @@ public interface MessageManager {
 	 * @param message ACLMessage instance.
 	 * @return The number of agents which have successfully received the message.
 	 */
-	void post(ACLMessage message);
-
-	int send(ACLMessage message);
+	Future<Integer> post(ACLMessage message);
 
 	String ping();
 }

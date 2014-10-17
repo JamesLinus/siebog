@@ -1,13 +1,11 @@
 
 numbers([0]).
-addNextNum.
+!addNextNum.
 
-+addNextNum : true <- 
-	?numbers([OldHead | OldTail]); 
++!addNextNum : true <- 
+	?numbers([OldHead | Tail]); 
 	NewHead = OldHead + 1; 
-	NewList = [NewHead, OldHead | OldTail]; 
-	-numbers([OldHead | OldTail]);
-	+numbers(NewList);
+	NewList = [NewHead, OldHead | Tail]; 
+	-+numbers(NewList);
 	printList(NewList);
-	-addNextNum;
-	+addNextNum. 
+	!!addNextNum.

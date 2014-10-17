@@ -27,8 +27,10 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.core.Global;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
@@ -54,7 +56,8 @@ public class Sender extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		receiver = new AID(args.get("rcvrAid"));
+		AgentClass agClass = new AgentClass(Global.SERVER, Receiver.class.getSimpleName());
+		receiver = new AID(args.get("rcvrAid"), agClass);
 		numIterations = Integer.parseInt(args.get("numIterations"));
 		// create message content
 		int contentLength = Integer.parseInt(args.get("contentLength"));
@@ -78,7 +81,7 @@ public class Sender extends XjafAgent {
 				try {
 					Registry reg = LocateRegistry.getRegistry(resultsServiceAddr);
 					ResultsService results = (ResultsService) reg.lookup("ResultsService");
-					results.add(avg, myAid.getHap());
+					results.add(avg, myAid.getHost());
 				} catch (RemoteException | NotBoundException ex) {
 					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);
 				} finally {
