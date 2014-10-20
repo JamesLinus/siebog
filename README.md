@@ -1,7 +1,7 @@
 Siebog: An Enterprise-Scale Multiagent Middleware
 ======
 
-Siebog is an enterprise-scale multiagent framework consisting of the following main modules:
+Siebog is an enterprise-scale multiagent middleware consisting of the following main modules:
 
  1. **Extensible Java EE-based Agent Framework (XJAF)**: Built using Java EE technologies, XJAF operates on top of computer clusters, offering automatic agent load-balancing, state-replication, and fault-tolerance.
  2. **Radigost**: Purely web-based multiagent platform, built using JavaScript and HTML5-related standards. Radigost agents are executed inside web browsers and can be used in a wide variety of hardware and software platforms, including personal computers, smartphones and tablets, Smart TVs, etc.
