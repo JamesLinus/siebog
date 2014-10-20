@@ -1,4 +1,4 @@
-The Siebog Multiagent Framework
+Siebog: An Enterprise-Scale Multiagent Middleware
 ======
 
 Siebog is an enterprise-scale multiagent framework consisting of the following main modules:
