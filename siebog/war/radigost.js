@@ -49,8 +49,9 @@ XJAF.post = function(msg, onSuccess, onError) {
 };
 
 XJAF.accept = function(url, aid, state, onSuccess, onError) {
+	console.log(typeof state);
 	$.ajax({
-		url : "/siebog/rest/radigost",
+		url : "/siebog/rest/webclient",
 		type : "PUT",
 		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
 		data : {
@@ -86,10 +87,39 @@ OpCode.INIT = 1;
 OpCode.STEP = 2;
 OpCode.MOVE_TO_SERVER = 3;
 
+function WebClientOpCode() {
+}
+WebClientOpCode.REGISTER 	= 'r';
+WebClientOpCode.DEREGISTER 	= 'd';
+WebClientOpCode.NEW_AGENT	= 'a';
+
+function WebClientSocket(radigost) {
+	this.radigost = radigost;
+	
+	var url = "ws://" + window.location.host + "/siebog/webclient";
+	console.log(url);
+	this.socket = new WebSocket(url);
+	var self = this;
+	this.socket.onmessage = function(e) {
+		self.radigost.post(JSON.parse(e.data));
+	};
+	this.socket.onopen = function(e) {
+		self.socket.send(WebClientOpCode.REGISTER + self.radigost.hap);
+	};
+	this.socket.onclose = function(e) {
+		//self.socket = null;
+		console.log("WebSocket connection closed.");
+	};
+	this.socket.onerror = function(e) {
+		console.log("WebSocket connection error: " + e.data);
+	};
+};
+
 function Radigost(hap) {
 	this.hap = hap;
 	this.running = {};
-
+	this.socket = new WebClientSocket(this);
+	
 	this.start = function(url, name, agentObserver, agentInitArgs) {
 		var newAid = new AID(name, this.hap);
 		if (this.getAgent(newAid) == null) {
@@ -205,6 +235,15 @@ ACLMessage.makeReply = function(msg, performative, sender) {
 
 function Agent() {
 	this.aid = null;
+	this.radigostHelper = null;
+	
+	this.getRadigostHelper = function() {
+		if (this.radigostHelper == null) {
+			importClass(Packages.siebog.xjaf.radigostlayer.RadigostHelper);
+			this.radigostHelper = Packages.siebog.xjaf.radigostlayer.RadigostHelper;
+		}
+		return this.radigostHelper;	
+	}
 }
 
 Agent.prototype.post = function(msg) {
@@ -217,6 +256,9 @@ Agent.prototype.onInit = function(args) {
 Agent.prototype.onMessage = function(msg) {
 };
 
+Agent.prototype.onArrived = function(host, isServer) {
+};
+
 Agent.prototype.onStep = function(step) {
 	var msg = {
 		opcode : OpCode.STEP,
@@ -227,6 +269,17 @@ Agent.prototype.onStep = function(step) {
 };
 
 Agent.prototype.getState = function() {
+	var state = { };
+	for (var prop in this)
+		if (typeof this[prop] !== "function")
+			state[prop] = this[prop];
+	return state;
+};
+
+Agent.prototype.setState = function(state) {
+	var st = typeof state === "string" ? JSON.parse(state) : state;
+	for (var prop in st)
+		this[prop] = st[prop];
 };
 
 Agent.prototype.moveToServer = function() {
@@ -234,10 +287,13 @@ Agent.prototype.moveToServer = function() {
 	var msg = {
 		opcode : OpCode.MOVE_TO_SERVER,
 		aid : this.aid,
-		state : agState
+		state : JSON.stringify(agState)
 	};
 	this.post(msg);
 };
+
+if (typeof self === "undefined")
+	self = new Object(); // needed for the JS scripting engine on the server 
 
 self.agentInstance = null;
 
@@ -252,5 +308,13 @@ self.onmessage = function(ev) {
 		};
 		postMessage(initMsg);
 	} else
-		return self.agentInstance.onMessage(msg);
+		self.agentInstance.onMessage(msg);
 };
+
+function getAgentInstance() {
+	return self.agentInstance;
+}
+
+function setAgentInstance(agent) {
+	self.agentInstance = agent;
+}

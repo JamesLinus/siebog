@@ -48,20 +48,11 @@ import siebog.utils.ObjectFactory;
  */
 @Stateless
 @LocalBean
-@Path("/radigost")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Deprecated
 public class RadigostManager {
 	private static final Logger logger = Logger.getLogger(RadigostManager.class.getName());
 	@PersistenceContext(name = "Radigost")
 	private EntityManager em;
-
-	@PUT
-	@Path("/")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void acceptRadigostAgent(@FormParam("url") String url, @FormParam("aid") String aid) {
-		System.out.println(url + ":" + aid);
-	}
 
 	@PUT
 	@Path("/bridge")

@@ -39,6 +39,8 @@ import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.AgentManagerBean;
 import siebog.xjaf.managers.MessageManager;
 import siebog.xjaf.managers.MessageManagerBean;
+import siebog.xjaf.managers.WebClientManager;
+import siebog.xjaf.managers.WebClientManagerBean;
 
 /**
  * 
@@ -60,6 +62,8 @@ public abstract class ObjectFactory {
 			+ ExecutionControlBean.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
 	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SERVER + "//"
 			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName() + "?stateful";
+	public static final String WebClientManagerLookup = "ejb:/" + Global.SERVER + "//"
+			+ WebClientManagerBean.class.getSimpleName() + "!" + WebClientManager.class.getName() + "?stateful";
 
 	public static AgentManager getAgentManager() {
 		return lookup(AgentManagerLookup, AgentManager.class);
@@ -71,6 +75,10 @@ public abstract class ObjectFactory {
 
 	public static BridgeManager getBridgeManager() {
 		return lookup(BridgeManagerLookup, BridgeManager.class);
+	}
+
+	public static WebClientManager getWebClientManager() {
+		return lookup(WebClientManagerLookup, WebClientManager.class);
 	}
 
 	public static ExecutorService getExecutorService() {
