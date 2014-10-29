@@ -20,10 +20,13 @@
 
 package siebog.agents.xjaf.clientserver;
 
+import static org.junit.Assert.*;
 import java.rmi.RemoteException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import siebog.PlatformId;
 import siebog.agents.xjaf.ClientBase;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
@@ -32,19 +35,27 @@ import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 import siebog.xjaf.managers.AgentManager;
+import siebog.xjaf.radigostlayer.RadigostAgent;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class ClientServerTest extends ClientBase {
+	private AID clientAid;
+
 	public ClientServerTest() throws RemoteException {
 	}
 
-	@Test
-	public void testClientServer() throws InterruptedException {
-		logger.info("For this test to succeed, the ClientServer Radigost example should be running.");
+	@Before
+	public void before() {
+		logger.info("For these tests to succeed, the ClientServer Radigost example should be running.");
+		clientAid = new AID("CSClient", "ClientServer", PlatformId.RADIGOST, RadigostAgent.AGENT_CLASS);
+	}
 
+	@Test
+	public void testClientServerMessaging() throws InterruptedException {
+		// server-side agent
 		AgentClass agClass = new AgentClass(Global.SERVER, ClientServerAgent.class.getSimpleName());
 		AgentManager agm = ObjectFactory.getAgentManager();
 		AID csAgent = agm.startAgent(agClass, "CSAgentServer" + System.currentTimeMillis(), null);
@@ -52,17 +63,34 @@ public class ClientServerTest extends ClientBase {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = testAgentAid;
 		msg.receivers.add(csAgent);
+		msg.contentObj = clientAid;
 		ObjectFactory.getMessageManager().post(msg);
 
-		ACLMessage reply = msgQueue.poll(2, TimeUnit.SECONDS);
+		ACLMessage reply = pollMessage();
 
-		Assert.assertNotNull(reply);
-		Assert.assertEquals(Performative.INFORM, reply.performative);
+		assertNotNull(reply);
+		assertEquals(Performative.INFORM, reply.performative);
+	}
+
+	@Test
+	public void testStubs() {
+		ACLMessage msg = new ACLMessage(Performative.REQUEST);
+		msg.sender = testAgentAid;
+		msg.receivers.add(clientAid);
+		msg.replyWith = "42";
+		ObjectFactory.getMessageManager().post(msg);
+
+		ACLMessage reply = pollMessage();
+
+		assertNotNull(reply);
+		assertEquals(msg.replyWith, reply.inReplyTo);
 	}
 
 	public static void main(String[] args) {
 		try {
-			new ClientServerTest().testClientServer();
+			ClientServerTest test = new ClientServerTest();
+			test.testClientServerMessaging();
+			test.testStubs();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {

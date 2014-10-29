@@ -69,4 +69,25 @@ public class AgentClass implements Serializable {
 		int n = str.lastIndexOf(SEPARATOR);
 		return new AgentClass(str.substring(0, n), str.substring(n + 1));
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ejbName.hashCode();
+		result = prime * result + module.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AgentClass other = (AgentClass) obj;
+		return module.equals(other.module) && ejbName.equals(other.ejbName);
+	}
 }

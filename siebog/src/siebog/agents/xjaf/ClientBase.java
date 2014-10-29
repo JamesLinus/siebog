@@ -25,6 +25,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import siebog.SiebogClient;
 import siebog.core.Global;
@@ -53,6 +54,14 @@ public abstract class ClientBase {
 		logger = Logger.getLogger(getClass().getName());
 		msgQueue = new LinkedBlockingQueue<>();
 		startTestAgent(masterAddr);
+	}
+
+	protected ACLMessage pollMessage() {
+		try {
+			return msgQueue.poll(5, TimeUnit.SECONDS);
+		} catch (InterruptedException ex) {
+			return null;
+		}
 	}
 
 	private void startTestAgent(String masterAddr) throws RemoteException {

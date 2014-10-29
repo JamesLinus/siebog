@@ -14,26 +14,15 @@ import org.jboss.resteasy.annotations.Form;
  */
 public class AgentInitArgs implements Serializable {
 	// cannot use String directly, see https://issues.jboss.org/browse/RESTEASY-821
-	public static class Arg implements Serializable {
+	public static class StringWrapper implements Serializable {
 		private static final long serialVersionUID = 1L;
 		@FormParam("value")
-		private String value;
-
-		public Arg() {
-		}
-
-		public Arg(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
+		public String value;
 	}
 
 	private static final long serialVersionUID = 1L;
 	@Form(prefix = "arg")
-	private Map<String, Arg> args;
+	private Map<String, StringWrapper> args;
 
 	public AgentInitArgs() {
 		args = new HashMap<>();
@@ -48,23 +37,27 @@ public class AgentInitArgs implements Serializable {
 		args = new HashMap<>(keyValues.length);
 		for (String str : keyValues) {
 			String[] kv = str.split("->");
-			args.put(kv[0], new Arg(kv[1]));
+			StringWrapper arg = new StringWrapper();
+			arg.value = kv[1];
+			args.put(kv[0], arg);
 		}
 	}
 
 	public void put(String key, String value) {
-		args.put(key, new Arg(value));
+		StringWrapper arg = new StringWrapper();
+		arg.value = value;
+		args.put(key, arg);
 	}
 
 	public String get(String key) {
-		Arg arg = args.get(key);
+		StringWrapper arg = args.get(key);
 		return arg != null ? arg.value : null;
 	}
 
 	public Map<String, String> toStringMap() {
 		Map<String, String> map = new HashMap<>(args.size());
-		for (Entry<String, Arg> e : args.entrySet())
-			map.put(e.getKey(), e.getValue().getValue());
+		for (Entry<String, StringWrapper> e : args.entrySet())
+			map.put(e.getKey(), e.getValue().value);
 		return map;
 	}
 }

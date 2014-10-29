@@ -18,47 +18,33 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.clientserver;
+package siebog.xjaf.radigostlayer;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.PlatformId;
-import siebog.xjaf.core.AID;
+import siebog.core.Global;
 import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.radigostlayer.RadigostAgent;
+import siebog.xjaf.managers.AgentInitArgs;
 
 /**
- * An agent that tests the communication between the server and Radigost clients.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
 @Remote(Agent.class)
-public class ClientServerAgent extends XjafAgent {
+public class RadigostStub extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SERVER, RadigostStub.class.getSimpleName());
+
+	@Override
+	protected void onInit(AgentInitArgs args) {
+		logger.info("RadistStub created: " + myAid);
+	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		if (msg.performative == Performative.REQUEST)
-			sendMessageToClient((AID) msg.contentObj, msg.sender.toString());
-		else
-			replyToOriginalSender(msg);
-	}
-
-	private void sendMessageToClient(AID clientAid, String replyWith) {
-		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.sender = myAid;
-		msg.receivers.add(clientAid);
-		msg.replyWith = replyWith;
-		msm().post(msg);
-	}
-
-	private void replyToOriginalSender(ACLMessage msg) {
-		ACLMessage reply = new ACLMessage(Performative.INFORM);
-		reply.receivers.add(new AID(msg.inReplyTo));
-		msm().post(reply);
 	}
 }

@@ -43,6 +43,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
+import siebog.PlatformId;
 import siebog.agents.xjaf.GUIAgent;
 import siebog.agents.xjaf.RemoteAgent;
 import siebog.jasonee.JasonEEAgent;
@@ -51,6 +52,7 @@ import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.radigostlayer.RadigostStub;
 
 /**
  * Default agent manager implementation.
@@ -77,9 +79,14 @@ public class AgentManagerBean implements AgentManager {
 	public AID startAgent(@PathParam("agClass") AgentClass agClass, @PathParam("name") String name,
 			@Form AgentInitArgs args) {
 
-		AID aid = new AID(name, agClass); // is it running already?
+		AID aid;
+		if (RadigostStub.AGENT_CLASS.equals(agClass))
+			aid = new AID(name, args.get("host"), PlatformId.RADIGOST, agClass);
+		else
+			aid = new AID(name, agClass);
+
 		if (cache.containsKey(aid)) {
-			logger.info("Already running: [" + aid + "]");
+			logger.info("Already running: " + aid);
 			return aid;
 		}
 

@@ -21,13 +21,14 @@ XJAF.getRunning = function(onSuccess, onError) {
 	});
 };
 
-XJAF.start = function(agClass, name, onSuccess, onError) {
-	$.ajax((this.agm + "/running/" + agClass + "/" + name)({
+XJAF.start = function(agClass, name, args, onSuccess, onError) {
+	$.ajax(XJAF.agm + "/running/" + agClass + "/" + name, {
 		type : "PUT",
 		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+		data : args,
 		success : onSuccess,
 		error : onError
-	}));
+	});
 };
 
 XJAF.getPerformatives = function(onSuccess, onError) {
@@ -131,6 +132,34 @@ function Radigost(hap) {
 	this.running = {};
 	this.socket = new WebClientSocket(this);
 	
+	var self = this;
+	var onWorkerMessage = function(ev) {
+		var msg = ev.data;
+		if (typeof msg.opcode === "undefined") // a regular message
+			self.post(msg);
+		else {
+			switch (msg.opcode) {
+			case OpCode.INIT:
+				var ag = self.getAgent(msg.aid);
+				if (ag !== null && ag.observer !== null)
+					ag.observer.onStart(msg.aid);
+				break;
+			case OpCode.STEP:
+				var ag = self.getAgent(msg.aid);
+				if (ag !== null && ag.observer !== null)
+					ag.observer.onStep(msg.aid, msg.info);
+				break;
+			case OpCode.MOVE_TO_SERVER:
+				var ag = self.getAgent(msg.aid);
+				if (ag !== null && ag.url !== null)
+					XJAF.accept(ag.url, msg.aid.str, msg.state);
+				break;
+			default:
+				console.log("Unrecognized OpCode: " + JSON.stringify(msg));
+			}
+		}
+	};
+	
 	this.start = function(url, name, agentObserver, agentInitArgs) {
 		var newAid = new AID(name, this.hap);
 		if (this.getAgent(newAid) == null) {
@@ -138,33 +167,7 @@ function Radigost(hap) {
 			agent.url = url;
 			agent.observer = agentObserver ? agentObserver : null;
 			agent.worker = new Worker(url);
-			var self = this;
-			agent.worker.onmessage = function(ev) {
-				var msg = ev.data;
-				if (typeof msg.opcode === "undefined") // a regular message
-					self.post(msg);
-				else {
-					switch (msg.opcode) {
-					case OpCode.INIT:
-						var ag = self.getAgent(msg.aid);
-						if (ag !== null && ag.observer !== null)
-							ag.observer.onStart(msg.aid);
-						break;
-					case OpCode.STEP:
-						var ag = self.getAgent(msg.aid);
-						if (ag !== null && ag.observer !== null)
-							ag.observer.onStep(msg.aid, msg.info);
-						break;
-					case OpCode.MOVE_TO_SERVER:
-						var ag = self.getAgent(msg.aid);
-						if (ag !== null && ag.url !== null)
-							XJAF.accept(ag.url, msg.aid.str, msg.state);
-						break;
-					default:
-						console.log("Unrecognized OpCode: " + JSON.stringify(msg));
-					}
-				}
-			};
+			agent.worker.onmessage = onWorkerMessage;
 			agent.worker.onerror = function(ev) {
 			};
 			this.putAgent(newAid, agent);
@@ -175,6 +178,9 @@ function Radigost(hap) {
 				args : agentInitArgs
 			};
 			agent.worker.postMessage(msg);
+			// create the server-side stub
+			var agClass = "siebog$RadigostStub";
+			XJAF.start(agClass, name, "arg[host].value=" + this.hap);
 		}
 		return newAid;
 	};
