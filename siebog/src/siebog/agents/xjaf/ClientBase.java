@@ -56,7 +56,12 @@ public abstract class ClientBase {
 	}
 
 	private void startTestAgent(String masterAddr) throws RemoteException {
-		Registry reg = LocateRegistry.createRegistry(1099);
+		Registry reg;
+		try {
+			reg = LocateRegistry.createRegistry(1099);
+		} catch (Exception ex) {
+			reg = LocateRegistry.getRegistry(1099);
+		}
 		reg.rebind(RemoteAgentListener.class.getSimpleName(), new RemoteAgentListenerImpl(msgQueue));
 		AgentClass agClass = new AgentClass(Global.SERVER, RemoteAgent.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs("remoteHost->" + masterAddr);

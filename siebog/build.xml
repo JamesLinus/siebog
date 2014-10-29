@@ -10,11 +10,11 @@
 	<target name="package">
 		<delete file="${siebog.path}" />
 		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
-			<fileset dir="war" includes="WEB-INF/classes/**" />
+			<fileset dir="war" includes="WEB-INF/classes/**,WEB-INF/*.xml,WEB-INF/lib/**" />
 			<fileset dir="war" includes="WEB-INF/*.xml" />
 			<fileset dir="war" includes="*.html,*.js" />
 			<fileset dir="war" includes="META-INF/**" />
-			<fileset dir="war" includes="admin/**,img/**" />
+			<fileset dir="war" includes="admin/**,img/**,radigost-agents/**" />
 		</war>
 	</target>
 

@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.test.dnars
+package siebog.dnars
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.ListBuffer

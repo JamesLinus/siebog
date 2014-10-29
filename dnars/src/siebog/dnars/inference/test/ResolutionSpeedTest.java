@@ -1,4 +1,4 @@
-package siebog.test.dnars.inference;
+package siebog.dnars.inference.test;
 
 import java.util.ArrayList;
 import java.util.List;
