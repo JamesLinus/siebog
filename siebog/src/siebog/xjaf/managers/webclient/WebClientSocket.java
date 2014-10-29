@@ -14,7 +14,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import siebog.PlatformId;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.fipa.ACLMessage;
 
@@ -58,12 +57,10 @@ public class WebClientSocket {
 
 	public void sendMessageToClient(@Observes @Default ACLMessage msg) {
 		Set<String> processed = new HashSet<>();
-		for (AID aid : msg.receivers)
-			if (aid.getPid() == PlatformId.RADIGOST) {
-				String host = aid.getHost();
-				Session session = sessions.get(host);
-				if (session != null && processed.add(host))
-					session.getAsyncRemote().sendText(msg.toString());
-			}
+		for (AID aid : msg.receivers) {
+			Session session = sessions.get(aid.getHost());
+			if (session != null && processed.add(aid.getHost()))
+				session.getAsyncRemote().sendText(msg.toString());
+		}
 	}
 }

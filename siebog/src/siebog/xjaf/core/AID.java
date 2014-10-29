@@ -23,8 +23,7 @@ package siebog.xjaf.core;
 import java.io.Serializable;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
-import siebog.PlatformId;
-import siebog.xjaf.radigostlayer.RadigostAgent;
+import siebog.xjaf.radigostlayer.RadigostStub;
 
 /**
  * Agent identifier, consists of the runtime name and the platform identifier, in the form of
@@ -37,19 +36,17 @@ public final class AID implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final String host;
-	private final PlatformId pid;
 	private final String str; // string representation
 	private final AgentClass agClass;
 	private static final String HOST_NAME = "xjaf"; // TODO Get cluster/host name.
 
 	public AID(String name, AgentClass agClass) {
-		this(name, HOST_NAME, PlatformId.XJAF, agClass);
+		this(name, HOST_NAME, agClass);
 	}
 
-	public AID(String name, String host, PlatformId pid, AgentClass agClass) {
+	public AID(String name, String host, AgentClass agClass) {
 		this.name = name;
 		this.host = host;
-		this.pid = pid;
 		this.agClass = agClass;
 		str = name + "@" + host;
 	}
@@ -60,25 +57,10 @@ public final class AID implements Serializable {
 			name = json.getString("name");
 			host = json.has("host") ? json.getString("host") : HOST_NAME;
 			str = name + "@" + host;
-			// platform id
-			PlatformId pid;
-			try {
-				pid = PlatformId.valueOf(json.getString("pid").toUpperCase());
-			} catch (Exception ex) {
-				pid = PlatformId.XJAF;
-			}
-			this.pid = pid;
-			// agent class
-			if (pid == PlatformId.XJAF)
+			if (json.optBoolean("radigost"))
+				agClass = RadigostStub.AGENT_CLASS;
+			else
 				agClass = new AgentClass(json.getString("agClass"));
-			else {
-				String agClassStr = json.optString("agClass");
-				if (agClassStr != null && !agClassStr.isEmpty())
-					agClass = new AgentClass(agClassStr);
-				else
-					agClass = RadigostAgent.AGENT_CLASS;
-			}
-
 		} catch (JSONException ex) {
 			throw new IllegalArgumentException(ex);
 		}
@@ -107,8 +89,9 @@ public final class AID implements Serializable {
 		try {
 			obj.put("name", name);
 			obj.put("host", host);
-			obj.put("pid", pid.toString());
 			obj.put("agClass", agClass);
+			if (agClass.equals(RadigostStub.AGENT_CLASS))
+				obj.put("radigost", true); // required by Radigost
 			obj.put("str", str);
 		} catch (JSONException ex) {
 		}
@@ -121,10 +104,6 @@ public final class AID implements Serializable {
 
 	public String getHost() {
 		return host;
-	}
-
-	public PlatformId getPid() {
-		return pid;
 	}
 
 	public AgentClass getAgClass() {

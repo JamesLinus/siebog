@@ -58,7 +58,7 @@ public abstract class ClientBase {
 
 	protected ACLMessage pollMessage() {
 		try {
-			return msgQueue.poll(5, TimeUnit.SECONDS);
+			return msgQueue.poll(2, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
 			return null;
 		}

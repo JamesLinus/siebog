@@ -20,13 +20,11 @@
 
 package siebog.agents.xjaf.clientserver;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.rmi.RemoteException;
-import java.util.concurrent.TimeUnit;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import siebog.PlatformId;
 import siebog.agents.xjaf.ClientBase;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
@@ -35,7 +33,7 @@ import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 import siebog.xjaf.managers.AgentManager;
-import siebog.xjaf.radigostlayer.RadigostAgent;
+import siebog.xjaf.radigostlayer.RadigostStub;
 
 /**
  * 
@@ -50,7 +48,7 @@ public class ClientServerTest extends ClientBase {
 	@Before
 	public void before() {
 		logger.info("For these tests to succeed, the ClientServer Radigost example should be running.");
-		clientAid = new AID("CSClient", "ClientServer", PlatformId.RADIGOST, RadigostAgent.AGENT_CLASS);
+		clientAid = new AID("CSClient", "ClientServer", RadigostStub.AGENT_CLASS);
 	}
 
 	@Test
@@ -58,7 +56,7 @@ public class ClientServerTest extends ClientBase {
 		// server-side agent
 		AgentClass agClass = new AgentClass(Global.SERVER, ClientServerAgent.class.getSimpleName());
 		AgentManager agm = ObjectFactory.getAgentManager();
-		AID csAgent = agm.startAgent(agClass, "CSAgentServer" + System.currentTimeMillis(), null);
+		AID csAgent = agm.startAgent(agClass, "CSServer" + System.currentTimeMillis(), null);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = testAgentAid;
@@ -84,17 +82,5 @@ public class ClientServerTest extends ClientBase {
 
 		assertNotNull(reply);
 		assertEquals(msg.replyWith, reply.inReplyTo);
-	}
-
-	public static void main(String[] args) {
-		try {
-			ClientServerTest test = new ClientServerTest();
-			test.testClientServerMessaging();
-			test.testStubs();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			System.exit(0);
-		}
 	}
 }

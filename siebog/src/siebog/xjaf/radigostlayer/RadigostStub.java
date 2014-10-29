@@ -22,6 +22,9 @@ package siebog.xjaf.radigostlayer;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import siebog.core.Global;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -30,6 +33,8 @@ import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
 
 /**
+ * Stub representation of a Radigost agent. Any messages sent to this instance will be forwarded to
+ * the client agent.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -38,13 +43,16 @@ import siebog.xjaf.managers.AgentInitArgs;
 public class RadigostStub extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SERVER, RadigostStub.class.getSimpleName());
+	@Inject
+	@Default
+	private Event<ACLMessage> webSocketEvent;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		logger.info("RadistStub created: " + myAid);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
+		webSocketEvent.fire(msg);
 	}
 }

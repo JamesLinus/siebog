@@ -65,15 +65,10 @@ XJAF.accept = function(url, aid, state, onSuccess, onError) {
 	});
 };
 
-function PlatformId() {
-};
-PlatformId.RADIGOST = "RADIGOST";
-PlatformId.XJAF = "XJAF";
-
-function AID(name, hap, pid) {
+function AID(name, hap) {
 	this.name = name;
 	this.hap = hap;
-	this.pid = pid ? pid : PlatformId.RADIGOST;
+	this.radigost = true;
 	this.str = "" + this.name + "@" + this.hap;
 }
 
@@ -189,13 +184,12 @@ function Radigost(hap) {
 		var server = [];
 		for (var i = 0, j = 0, len = msg.receivers.length; i < len; i++) {
 			var aid = msg.receivers[i];
-			if (aid.pid === PlatformId.XJAF)
-				server[j++] = aid;
-			else {
+			if (aid.radigost) {
 				var ag = this.getAgent(aid);
 				if (ag !== null && ag.worker !== null)
 					ag.worker.postMessage(msg);
-			} 
+			} else
+				server[j++] = aid;
 		}
 		// send to server?
 		if (server.length > 0) {

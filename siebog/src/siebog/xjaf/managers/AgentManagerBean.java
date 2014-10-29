@@ -43,7 +43,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
-import siebog.PlatformId;
 import siebog.agents.xjaf.GUIAgent;
 import siebog.agents.xjaf.RemoteAgent;
 import siebog.jasonee.JasonEEAgent;
@@ -80,9 +79,9 @@ public class AgentManagerBean implements AgentManager {
 			@Form AgentInitArgs args) {
 
 		AID aid;
-		if (RadigostStub.AGENT_CLASS.equals(agClass))
-			aid = new AID(name, args.get("host"), PlatformId.RADIGOST, agClass);
-		else
+		if (RadigostStub.AGENT_CLASS.equals(agClass)) {
+			aid = new AID(name, args.get("host"), agClass);
+		} else
 			aid = new AID(name, agClass);
 
 		if (cache.containsKey(aid)) {
