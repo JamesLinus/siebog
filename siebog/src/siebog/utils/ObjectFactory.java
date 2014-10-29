@@ -39,8 +39,8 @@ import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.managers.AgentManagerBean;
 import siebog.xjaf.managers.MessageManager;
 import siebog.xjaf.managers.MessageManagerBean;
-import siebog.xjaf.managers.WebClientManager;
-import siebog.xjaf.managers.WebClientManagerBean;
+import siebog.xjaf.managers.webclient.WebClientManager;
+import siebog.xjaf.managers.webclient.WebClientManagerBean;
 
 /**
  * 

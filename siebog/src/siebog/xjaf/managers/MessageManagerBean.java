@@ -29,14 +29,17 @@ import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
-import org.jboss.resteasy.annotations.Form;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
@@ -58,6 +61,9 @@ import siebog.xjaf.fipa.Performative;
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageManagerBean implements MessageManager {
 	private static final Logger logger = Logger.getLogger(MessageManagerBean.class.getName());
+	@Inject
+	@Default
+	private Event<ACLMessage> webSocketEvent;
 
 	@GET
 	@Path("/")
@@ -74,23 +80,37 @@ public class MessageManagerBean implements MessageManager {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Asynchronous
 	@Override
-	public Future<Integer> post(@Form final ACLMessage msg) {
+	public Future<Integer> post(@FormParam("acl") ACLMessage msg) {
 		Cache<AID, Agent> running = ObjectFactory.getRunningAgentsCache();
 		int successful = 0;
+		List<AID> client = new ArrayList<>();
 		for (AID aid : msg.receivers) {
 			if (aid == null)
 				continue;
-			try {
-				Agent agent = running.get(aid);
-				if (agent == null)
-					logger.info("No such AID: " + aid);
-				else {
-					agent.handleMessage(msg);
-					++successful;
+			switch (aid.getPid()) {
+			case RADIGOST:
+				client.add(aid);
+				break;
+			case XJAF:
+				try {
+					Agent agent = running.get(aid);
+					if (agent == null)
+						logger.info("No such AID: " + aid);
+					else {
+						agent.handleMessage(msg);
+						++successful;
+					}
+				} catch (Exception ex) {
+					logger.warning(ex.getMessage());
 				}
-			} catch (Exception ex) {
-				logger.warning(ex.getMessage());
+				break;
 			}
+		}
+		// any client-side agents?
+		if (client.size() > 0) {
+			msg.receivers = client;
+			webSocketEvent.fire(msg);
+			successful += client.size();
 		}
 		return new AsyncResult<>(successful);
 	}

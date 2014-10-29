@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ClientServer Example</title>
+<script type="text/javascript" src="/siebog/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/siebog/radigost.js"></script>
+</head>
+<body>
+	<div id="messages"></div>
+	<script type="text/javascript">
+		var host = "ClientServer";
+		var radigost = new Radigost(host);
+		var aid = radigost.start("ClientServerAgent.js", "CSClient");
+		$("#messages").append("Running host " + host + " with agent " + aid.str);
+	</script>
+</body>
+</html>

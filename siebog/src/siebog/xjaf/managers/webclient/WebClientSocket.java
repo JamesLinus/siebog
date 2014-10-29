@@ -1,13 +1,22 @@
-package siebog.xjaf.managers;
+package siebog.xjaf.managers.webclient;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import siebog.utils.ObjectFactory;
+import siebog.PlatformId;
+import siebog.xjaf.core.AID;
+import siebog.xjaf.fipa.ACLMessage;
 
 @ServerEndpoint("/webclient")
 public class WebClientSocket {
@@ -17,11 +26,7 @@ public class WebClientSocket {
 								MSG_DEREGISTER 	= 'd', 
 								MSG_NEW_AGENT 	= 'a';
 	//@formatter:on
-	private WebClientManager webClientManager;
-
-	public WebClientSocket() {
-		webClientManager = ObjectFactory.getWebClientManager();
-	}
+	private static final Map<String, Session> sessions = Collections.synchronizedMap(new HashMap<String, Session>());
 
 	@OnOpen
 	public void onOpen(Session session) {
@@ -35,25 +40,30 @@ public class WebClientSocket {
 
 	@OnMessage
 	public void onMessage(String message, Session session) {
-		logger.warning("Message: [" + message + "]");
 		if (message == null || message.isEmpty())
 			throw new IllegalArgumentException("Messages cannot be empty.");
 
 		char cmd = message.charAt(0);
 		switch (cmd) {
 		case MSG_REGISTER:
-			try {
-				String id = message.substring(1);
-				// TODO WebSocket Session cannot be serialized.
-				// webClientManager.onWebClientRegistered(id, session);
-				logger.info("New web client: " + id);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			String regId = message.substring(1);
+			sessions.put(regId, session);
 			break;
 		case MSG_DEREGISTER:
-			webClientManager.onWebClientDeregistered(message.substring(1));
+			String unregId = message.substring(1);
+			sessions.remove(unregId);
 			break;
 		}
+	}
+
+	public void sendMessageToClient(@Observes @Default ACLMessage msg) {
+		Set<String> processed = new HashSet<>();
+		for (AID aid : msg.receivers)
+			if (aid.getPid() == PlatformId.RADIGOST) {
+				String host = aid.getHost();
+				Session session = sessions.get(host);
+				if (session != null && processed.add(host))
+					session.getAsyncRemote().sendText(msg.toString());
+			}
 	}
 }

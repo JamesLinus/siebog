@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers;
+package siebog.xjaf.managers.webclient;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +36,8 @@ import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AgentClass;
+import siebog.xjaf.managers.AgentInitArgs;
+import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.radigostlayer.RadigostAgent;
 
 /**

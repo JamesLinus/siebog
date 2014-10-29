@@ -27,9 +27,4 @@ package siebog;
  */
 public enum PlatformId {
 	XJAF, RADIGOST;
-
-	@Override
-	public String toString() {
-		return super.toString().toLowerCase();
-	}
 }

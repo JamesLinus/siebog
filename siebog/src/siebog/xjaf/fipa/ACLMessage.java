@@ -27,18 +27,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.enterprise.inject.Default;
 import javax.ws.rs.FormParam;
+import org.hornetq.utils.json.JSONArray;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
 import siebog.xjaf.core.AID;
 
 /**
- * Represents a FIPA ACL message. Refer to <a href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message
- * Structure Specification</a> for more details.
+ * Represents a FIPA ACL message. Refer to <a
+ * href="http://www.fipa.org/specs/fipa00061/SC00061G.pdf">FIPA ACL Message Structure
+ * Specification</a> for more details.
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
+@Default
 public class ACLMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String USERARG_PREFIX = "X-";
@@ -117,19 +121,30 @@ public class ACLMessage implements Serializable {
 	@SuppressWarnings("unchecked")
 	public ACLMessage(String jsonString) throws JSONException {
 		JSONObject obj = new JSONObject(jsonString);
-		performative = (Performative) obj.get("performative");
-		sender = (AID) obj.get("sender");
-		receivers = (List<AID>) obj.get("receivers");
-		replyTo = (AID) obj.get("replyTo");
-		content = obj.getString("content");
-		language = obj.getString("language");
-		encoding = obj.getString("encoding");
-		ontology = obj.getString("ontology");
-		protocol = obj.getString("protocol");
-		conversationId = obj.getString("conversationId");
-		replyWith = obj.getString("replyWith");
-		inReplyTo = obj.getString("inReplyTo");
-		replyBy = obj.getLong("replyBy");
+		performative = Performative.valueOf(obj.getString("performative").toUpperCase());
+
+		String str = obj.optString("sender");
+		if (str != null && !str.isEmpty())
+			sender = new AID(str);
+
+		receivers = new ArrayList<>();
+		JSONArray arr = obj.optJSONArray("receivers");
+		if (arr != null && arr.length() > 0)
+			for (int i = 0; i < arr.length(); i++)
+				receivers.add(new AID(arr.getString(i)));
+
+		str = obj.optString("replyTo");
+		if (str != null && !str.isEmpty())
+			replyTo = new AID(str);
+		content = obj.optString("content");
+		language = obj.optString("language");
+		encoding = obj.optString("encoding");
+		ontology = obj.optString("ontology");
+		protocol = obj.optString("protocol");
+		conversationId = obj.optString("conversationId");
+		replyWith = obj.optString("replyWith");
+		inReplyTo = obj.optString("inReplyTo");
+		replyBy = obj.optLong("replyBy");
 		// user args
 		userArgs = new HashMap<>();
 		Iterator<String> i = obj.keys();
@@ -168,9 +183,12 @@ public class ACLMessage implements Serializable {
 	public String toString() {
 		JSONObject obj = new JSONObject();
 		try {
+			// TODO Right now, JSONObject will contain only strings, which will need to be parse
+			// manually later on. Implement a better JSON builder.
 			obj.put("performative", performative);
 			obj.put("sender", sender);
-			obj.put("receivers", receivers);
+			JSONArray arr = new JSONArray(receivers);
+			obj.put("receivers", arr);
 			obj.put("replyTo", replyTo);
 			obj.put("content", content);
 			obj.put("language", language);

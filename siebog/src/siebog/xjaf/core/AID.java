@@ -24,9 +24,11 @@ import java.io.Serializable;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
 import siebog.PlatformId;
+import siebog.xjaf.radigostlayer.RadigostAgent;
 
 /**
- * Agent identifier, consists of the runtime name and the platform identifier, in the form of "name@hap".
+ * Agent identifier, consists of the runtime name and the platform identifier, in the form of
+ * "name@hap".
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -49,24 +51,15 @@ public final class AID implements Serializable {
 		this.host = host;
 		this.pid = pid;
 		this.agClass = agClass;
-		// build the string representation
-		JSONObject obj = new JSONObject();
-		try {
-			obj.put("name", name);
-			obj.put("host", host);
-			obj.put("pid", pid.toString());
-			obj.put("agClass", agClass);
-		} catch (JSONException ex) {
-		}
-		str = obj.toString();
+		str = name + "@" + host;
 	}
 
 	public AID(String jsonStr) {
-		str = jsonStr;
 		try {
 			JSONObject json = new JSONObject(jsonStr);
 			name = json.getString("name");
 			host = json.has("host") ? json.getString("host") : HOST_NAME;
+			str = name + "@" + host;
 			// platform id
 			PlatformId pid;
 			try {
@@ -75,7 +68,17 @@ public final class AID implements Serializable {
 				pid = PlatformId.XJAF;
 			}
 			this.pid = pid;
-			agClass = (AgentClass) json.get("agClass");
+			// agent class
+			if (pid == PlatformId.XJAF)
+				agClass = new AgentClass(json.getString("agClass"));
+			else {
+				String agClassStr = json.optString("agClass");
+				if (agClassStr != null && !agClassStr.isEmpty())
+					agClass = new AgentClass(agClassStr);
+				else
+					agClass = RadigostAgent.AGENT_CLASS;
+			}
+
 		} catch (JSONException ex) {
 			throw new IllegalArgumentException(ex);
 		}
@@ -83,7 +86,6 @@ public final class AID implements Serializable {
 
 	@Override
 	public int hashCode() {
-		// TODO hashCode and equals should only consider a subset of fields, not all.
 		return str.hashCode();
 	}
 
@@ -101,7 +103,16 @@ public final class AID implements Serializable {
 
 	@Override
 	public String toString() {
-		return str;
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("name", name);
+			obj.put("host", host);
+			obj.put("pid", pid.toString());
+			obj.put("agClass", agClass);
+			obj.put("str", str);
+		} catch (JSONException ex) {
+		}
+		return obj.toString();
 	}
 
 	public String getName() {

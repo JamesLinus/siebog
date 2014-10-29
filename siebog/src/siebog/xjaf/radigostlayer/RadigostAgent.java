@@ -26,19 +26,19 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import siebog.core.Global;
 import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.managers.AgentInitArgs;
 
 /**
+ * A placeholder for Radigost agents running on the server.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -46,13 +46,13 @@ import siebog.xjaf.managers.AgentInitArgs;
 @Remote(Agent.class)
 public class RadigostAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SERVER, RadigostAgent.class.getSimpleName());
 	private String radigostSource;
-	@Inject
-	private Event<WSMessage> wsMessage;
 
 	@PostConstruct
 	public void postConstruct() {
 		try {
+			// TODO Replace absolute paths in JS loading.
 			radigostSource = getJSSource("/home/dejan/dev/siebog/siebog/war/radigost.js");
 		} catch (IOException ex) {
 			ex.printStackTrace();

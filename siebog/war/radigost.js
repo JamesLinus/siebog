@@ -1,7 +1,7 @@
 function XJAF() {
-	this.agm = "/siebog/rest/agents"; // agent manager
-	this.msm = "/siebog/rest/messages"; // message manager
 };
+XJAF.agm = "/siebog/rest/agents"; // agent manager
+XJAF.msm = "/siebog/rest/messages"; // message manager
 
 XJAF.getAgClasses = function(onSuccess, onError) {
 	$.ajax(this.agm + "/classes", {
@@ -31,7 +31,7 @@ XJAF.start = function(agClass, name, onSuccess, onError) {
 };
 
 XJAF.getPerformatives = function(onSuccess, onError) {
-	$.ajax(this.msm + "/messages", {
+	$.ajax(XJAF.msm, {
 		type : "GET",
 		dataType : "json",
 		success : onSuccess,
@@ -40,16 +40,16 @@ XJAF.getPerformatives = function(onSuccess, onError) {
 };
 
 XJAF.post = function(msg, onSuccess, onError) {
-	$.ajax(this.msm + "/messages", {
+	$.ajax(XJAF.msm, {
 		type : "POST",
 		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+		data : "acl=" + JSON.stringify(msg),
 		success : onSuccess,
 		error : onError
 	});
 };
 
 XJAF.accept = function(url, aid, state, onSuccess, onError) {
-	console.log(typeof state);
 	$.ajax({
 		url : "/siebog/rest/webclient",
 		type : "PUT",
@@ -64,12 +64,16 @@ XJAF.accept = function(url, aid, state, onSuccess, onError) {
 	});
 };
 
-function AID(name, hap, remote) {
+function PlatformId() {
+};
+PlatformId.RADIGOST = "RADIGOST";
+PlatformId.XJAF = "XJAF";
+
+function AID(name, hap, pid) {
 	this.name = name;
 	this.hap = hap;
+	this.pid = pid ? pid : PlatformId.RADIGOST;
 	this.str = "" + this.name + "@" + this.hap;
-	// is this agent located on the server (or in my web page)?
-	this.remote = typeof remote !== "undefined" && remote !== null ? true : false;
 }
 
 function AgentObserver() {
@@ -97,11 +101,18 @@ function WebClientSocket(radigost) {
 	this.radigost = radigost;
 	
 	var url = "ws://" + window.location.host + "/siebog/webclient";
-	console.log(url);
 	this.socket = new WebSocket(url);
 	var self = this;
 	this.socket.onmessage = function(e) {
-		self.radigost.post(JSON.parse(e.data));
+		var msg = JSON.parse(e.data);
+		if (typeof msg.sender === "string")
+			msg.sender = JSON.parse(msg.sender);
+		if (typeof msg.replyTo === "string")
+			msg.replyTo = JSON.parse(msg.replyTo);
+		for (var i = 0, len = msg.receivers.length; i < len; i++)
+			if (typeof msg.receivers[i] === "string")
+				msg.receivers[i] = JSON.parse(msg.receivers[i]);
+		self.radigost.post(msg);
 	};
 	this.socket.onopen = function(e) {
 		self.socket.send(WebClientOpCode.REGISTER + self.radigost.hap);
@@ -125,29 +136,33 @@ function Radigost(hap) {
 		if (this.getAgent(newAid) == null) {
 			var agent = {};
 			agent.url = url;
-			agent.observer = agentObserver;
+			agent.observer = agentObserver ? agentObserver : null;
 			agent.worker = new Worker(url);
 			var self = this;
 			agent.worker.onmessage = function(ev) {
 				var msg = ev.data;
-				switch (msg.opcode) {
-				case OpCode.INIT:
-					var ag = self.getAgent(msg.aid);
-					if (ag !== null && ag.observer !== null)
-						ag.observer.onStart(msg.aid);
-					break;
-				case OpCode.STEP:
-					var ag = self.getAgent(msg.aid);
-					if (ag !== null && ag.observer !== null)
-						ag.observer.onStep(msg.aid, msg.info);
-					break;
-				case OpCode.MOVE_TO_SERVER:
-					var ag = self.getAgent(msg.aid);
-					if (ag !== null && ag.url !== null)
-						XJAF.accept(ag.url, msg.aid.str, msg.state);
-					break;
-				default:
-					alert("Unrecognized OpCode: " + JSON.stringify(msg));
+				if (typeof msg.opcode === "undefined") // a regular message
+					self.post(msg);
+				else {
+					switch (msg.opcode) {
+					case OpCode.INIT:
+						var ag = self.getAgent(msg.aid);
+						if (ag !== null && ag.observer !== null)
+							ag.observer.onStart(msg.aid);
+						break;
+					case OpCode.STEP:
+						var ag = self.getAgent(msg.aid);
+						if (ag !== null && ag.observer !== null)
+							ag.observer.onStep(msg.aid, msg.info);
+						break;
+					case OpCode.MOVE_TO_SERVER:
+						var ag = self.getAgent(msg.aid);
+						if (ag !== null && ag.url !== null)
+							XJAF.accept(ag.url, msg.aid.str, msg.state);
+						break;
+					default:
+						console.log("Unrecognized OpCode: " + JSON.stringify(msg));
+					}
 				}
 			};
 			agent.worker.onerror = function(ev) {
@@ -165,11 +180,21 @@ function Radigost(hap) {
 	};
 
 	this.post = function(msg) {
-		for (i = 0, len = msg.receivers.length; i < len; i++) {
+		var server = [];
+		for (var i = 0, j = 0, len = msg.receivers.length; i < len; i++) {
 			var aid = msg.receivers[i];
-			var ag = this.getAgent(aid);
-			if (ag !== null && ag.worker !== null) 
-				ag.worker.postMessage(msg);
+			if (aid.pid === PlatformId.XJAF)
+				server[j++] = aid;
+			else {
+				var ag = this.getAgent(aid);
+				if (ag !== null && ag.worker !== null)
+					ag.worker.postMessage(msg);
+			} 
+		}
+		// send to server?
+		if (server.length > 0) {
+			msg.receivers = server;
+			XJAF.post(msg);
 		}
 	};
 
@@ -186,29 +211,29 @@ function Radigost(hap) {
 
 function ACLPerformative() {
 }
-ACLPerformative.ACCEPT_PROPOSAL = 0;
-ACLPerformative.AGREE = 1;
-ACLPerformative.CANCEL = 2;
-ACLPerformative.CFP = 3;
-ACLPerformative.CONFIRM = 4;
-ACLPerformative.DISCONFIRM = 5;
-ACLPerformative.FAILURE = 6;
-ACLPerformative.INFORM = 7;
-ACLPerformative.INFORM_IF = 8;
-ACLPerformative.INFORM_REF = 9;
-ACLPerformative.NOT_UNDERSTOOD = 10;
-ACLPerformative.PROPOSE = 11;
-ACLPerformative.QUERY_IF = 12;
-ACLPerformative.QUERY_REF = 13;
-ACLPerformative.REFUSE = 14;
-ACLPerformative.REJECT_PROPOSAL = 15;
-ACLPerformative.REQUEST = 16;
-ACLPerformative.REQUEST_WHEN = 17;
-ACLPerformative.REQUEST_WHENEVER = 18;
-ACLPerformative.SUBSCRIBE = 19;
-ACLPerformative.PROXY = 20;
-ACLPerformative.PROPAGATE = 21;
-ACLPerformative.UNKNOWN = -1;
+ACLPerformative.ACCEPT_PROPOSAL = "ACCEPT_PROPOSAL";
+ACLPerformative.AGREE = "AGREE";
+ACLPerformative.CANCEL = "CANCEL";
+ACLPerformative.CFP = "CFP";
+ACLPerformative.CONFIRM = "CONFIRM";
+ACLPerformative.DISCONFIRM = "DISCONFIRM";
+ACLPerformative.FAILURE = "FAILURE";
+ACLPerformative.INFORM = "INFORM";
+ACLPerformative.INFORM_IF = "INFORM_IF";
+ACLPerformative.INFORM_REF = "INFORM_REF";
+ACLPerformative.NOT_UNDERSTOOD = "NOT_UNDERSTOOD";
+ACLPerformative.PROPOSE = "PROPOSE";
+ACLPerformative.QUERY_IF = "QUERY_IF";
+ACLPerformative.QUERY_REF = "QUERY_REF";
+ACLPerformative.REFUSE = "REFUSE";
+ACLPerformative.REJECT_PROPOSAL = "REJECT_PROPOSAL";
+ACLPerformative.REQUEST = "REQUEST";
+ACLPerformative.REQUEST_WHEN = "REQUEST_WHEN";
+ACLPerformative.REQUEST_WHENEVER = "REQUEST_WHENEVER";
+ACLPerformative.SUBSCRIBE = "SUBSCRIBE";
+ACLPerformative.PROXY = "PROXY";
+ACLPerformative.PROPAGATE = "PROPAGATE";
+ACLPerformative.UNKNOWN = "UNKNOWN";
 
 function ACLMessage(performative) {
 	this.performative = performative;
@@ -243,7 +268,7 @@ function Agent() {
 			this.radigostHelper = Packages.siebog.xjaf.radigostlayer.RadigostHelper;
 		}
 		return this.radigostHelper;	
-	}
+	};
 }
 
 Agent.prototype.post = function(msg) {

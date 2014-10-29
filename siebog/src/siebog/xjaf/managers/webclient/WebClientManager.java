@@ -18,15 +18,17 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.radigostlayer;
+package siebog.xjaf.managers.webclient;
 
 import java.io.Serializable;
+import javax.websocket.Session;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class WSMessage implements Serializable {
-	private static final long serialVersionUID = 1L;
+public interface WebClientManager extends Serializable {
+	void onWebClientRegistered(String id, Session session);
 
+	void onWebClientDeregistered(String id);
 }

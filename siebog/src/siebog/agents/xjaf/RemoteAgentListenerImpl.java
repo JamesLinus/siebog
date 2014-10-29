@@ -18,34 +18,27 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.agents.xjaf;
 
-import siebog.SiebogClient;
-import siebog.core.Global;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Queue;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class PingPongClient {
-	public static void main(String[] args) {
-		SiebogClient.connect("192.168.213.1");
+public class RemoteAgentListenerImpl extends UnicastRemoteObject implements RemoteAgentListener {
+	private static final long serialVersionUID = 1L;
+	private Queue<ACLMessage> queue;
 
-		AgentClass pingClass = new AgentClass(Global.SERVER, "Ping");
-		AID pingAid = ObjectFactory.getAgentManager().startAgent(pingClass, "Ping" + System.currentTimeMillis(), null);
-
-		AgentClass pongClass = new AgentClass(Global.SERVER, "Pong");
-		AID pongAid = ObjectFactory.getAgentManager().startAgent(pongClass, "Pong" + System.currentTimeMillis(), null);
-
-		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.receivers.add(pingAid);
-		msg.content = pongAid.toString();
-		ObjectFactory.getMessageManager().post(msg);
+	public RemoteAgentListenerImpl(Queue<ACLMessage> queue) throws RemoteException {
+		this.queue = queue;
 	}
 
+	@Override
+	public void onMessage(ACLMessage msg) throws RemoteException {
+		queue.add(msg);
+	}
 }
