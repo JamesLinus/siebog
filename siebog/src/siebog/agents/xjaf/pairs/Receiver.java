@@ -22,11 +22,11 @@ package siebog.agents.xjaf.pairs;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers in the

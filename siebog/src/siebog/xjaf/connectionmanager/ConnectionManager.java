@@ -18,24 +18,13 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers;
-
-import java.util.concurrent.Future;
-import siebog.xjaf.fipa.ACLMessage;
+package siebog.xjaf.connectionmanager;
 
 /**
- * Remote interface of the message manager.
+ * Remote interface for the connection manager.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface MessageManager {
-	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to process the message.
-	 * 
-	 * @param message ACLMessage instance.
-	 * @return The number of agents which have successfully received the message.
-	 */
-	Future<Integer> post(ACLMessage message);
+public interface ConnectionManager {
 
-	String ping();
 }

@@ -20,13 +20,15 @@
 
 package siebog.xjaf.dnarslayer;
 
-import siebog.dnars.events.Event;
+import java.lang.reflect.Method;
+import javax.annotation.PostConstruct;
+import siebog.dnars.events.EventPayload;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  *
@@ -35,6 +37,16 @@ import siebog.xjaf.managers.AgentInitArgs;
 public abstract class DNarsAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	protected DNarsGraph graph;
+
+	@PostConstruct
+	public void postConstruct() {
+		for (Method m : getClass().getMethods()) {
+			Event e = m.getAnnotation(Event.class);
+			if (e != null) {
+
+			}
+		}
+	}
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
@@ -60,6 +72,6 @@ public abstract class DNarsAgent extends XjafAgent {
 		return true;
 	}
 
-	protected void onEvents(Event[] events) {
+	protected void onEvents(EventPayload[] events) {
 	}
 }

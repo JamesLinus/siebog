@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantLock
 import scala.collection.mutable.ListBuffer
 
 class EventManager {
-	private val list = new ListBuffer[Event]
+	private val list = new ListBuffer[EventPayload]
 	private val observers = new ListBuffer[String]()
 	private var _paused: Boolean = false
 
@@ -13,7 +13,7 @@ class EventManager {
 	for (i <- 0 until NUM_DISPATCHERS)
 		new EDT(list, observers).start
 
-	def addEvent(event: Event): Unit =
+	def addEvent(event: EventPayload): Unit =
 		list synchronized {
 			list += event
 			if (!paused)

@@ -21,8 +21,8 @@
 package siebog.xjaf.core;
 
 import java.io.Serializable;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Remote interface for agents. All of its methods are for internal purposes only, and should not be called or

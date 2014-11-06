@@ -18,40 +18,22 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.xjaf.dnarslayer;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import siebog.dnars.events.EventKind;
 
 /**
- * Example of a pong agent.
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class Pong extends XjafAgent {
-	private static final long serialVersionUID = 1L;
-	private String nodeName;
-	private int counter;
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Event {
+	EventKind kind();
 
-	@Override
-	protected void onInit(AgentInitArgs args) {
-		nodeName = getNodeName();
-		logger.info("Pong created on " + nodeName);
-	}
-
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.userArgs.put("pongCreatedOn", nodeName);
-		reply.userArgs.put("pongWorkingOn", getNodeName());
-		reply.userArgs.put("pongCounter", ++counter);
-		msm().post(reply);
-	}
+	String statement();
 }

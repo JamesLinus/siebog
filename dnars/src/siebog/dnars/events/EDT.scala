@@ -30,13 +30,13 @@ import scala.collection.mutable.ListBuffer
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class EDT(val list: ListBuffer[Event], val observers: ListBuffer[String]) extends Thread {
+class EDT(val list: ListBuffer[EventPayload], val observers: ListBuffer[String]) extends Thread {
 	val logger = Logger.getLogger(classOf[EDT].getName)
 
 	override def run: Unit = {
 		while (!Thread.interrupted()) {
 			try {
-				var events: Array[Event] = null
+				var events: Array[EventPayload] = null
 				list synchronized {
 					while (list.length == 0)
 						list.wait
@@ -53,7 +53,7 @@ class EDT(val list: ListBuffer[Event], val observers: ListBuffer[String]) extend
 		}
 	}
 
-	private def dispatch(events: Array[Event]): Unit = {
+	private def dispatch(events: Array[EventPayload]): Unit = {
 		// TODO Implement event dispatching
 	}
 }

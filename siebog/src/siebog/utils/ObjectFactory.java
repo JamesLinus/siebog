@@ -33,14 +33,14 @@ import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.websocket.bridges.BridgeManager;
+import siebog.xjaf.agentmanager.AgentManager;
+import siebog.xjaf.agentmanager.AgentManagerBean;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
-import siebog.xjaf.managers.AgentManager;
-import siebog.xjaf.managers.AgentManagerBean;
-import siebog.xjaf.managers.MessageManager;
-import siebog.xjaf.managers.MessageManagerBean;
-import siebog.xjaf.managers.webclient.WebClientManager;
-import siebog.xjaf.managers.webclient.WebClientManagerBean;
+import siebog.xjaf.messagemanager.MessageManager;
+import siebog.xjaf.messagemanager.MessageManagerBean;
+import siebog.xjaf.webclientmanager.WebClientManager;
+import siebog.xjaf.webclientmanager.WebClientManagerBean;
 
 /**
  * 
@@ -89,7 +89,7 @@ public abstract class ObjectFactory {
 		return lookup("java:comp/EJBContext", SessionContext.class);
 	}
 
-	private static CacheContainer getCacheContainer() {
+	public static CacheContainer getCacheContainer() {
 		return lookup(XjafCacheLookup, CacheContainer.class);
 	}
 

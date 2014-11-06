@@ -23,7 +23,7 @@ package siebog.agents.dnars.ping;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.dnars.events.Event;
+import siebog.dnars.events.EventPayload;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.dnarslayer.DNarsAgent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -38,7 +38,7 @@ public class DNarsPing extends DNarsAgent {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void onEvents(Event[] event) {
+	public void onEvents(EventPayload[] event) {
 		System.out.println(Arrays.toString(event));
 	}
 

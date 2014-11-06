@@ -28,11 +28,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * Implementation of a map, in form of an agent.

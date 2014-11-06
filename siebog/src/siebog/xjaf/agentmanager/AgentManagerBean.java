@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers;
+package siebog.xjaf.agentmanager;
 
 import java.util.ArrayList;
 import java.util.HashSet;

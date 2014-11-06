@@ -18,15 +18,11 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers.webclient;
+package siebog.xjaf.webclientmanager;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import javax.websocket.Session;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.PUT;
@@ -35,12 +31,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
+import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.managers.AgentInitArgs;
-import siebog.xjaf.managers.AgentManager;
 import siebog.xjaf.radigostlayer.RadigostAgent;
 
 /**
+ * Default implementation of the WebClient Manager.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -52,23 +49,6 @@ import siebog.xjaf.radigostlayer.RadigostAgent;
 @Produces(MediaType.APPLICATION_JSON)
 public class WebClientManagerBean implements WebClientManager {
 	private static final long serialVersionUID = 1L;
-	private transient Map<String, Session> webClients;
-
-	public WebClientManagerBean() {
-		webClients = Collections.synchronizedMap(new HashMap<String, Session>());
-	}
-
-	@Override
-	public void onWebClientRegistered(String id, Session session) {
-		if (webClients.containsKey(id))
-			throw new IllegalArgumentException("WebClient ID " + id + " already registered.");
-		webClients.put(id, session);
-	}
-
-	@Override
-	public void onWebClientDeregistered(String id) {
-		webClients.remove(id);
-	}
 
 	@PUT
 	@Path("/")

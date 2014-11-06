@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers;
+package siebog.xjaf.connectionmanager;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;

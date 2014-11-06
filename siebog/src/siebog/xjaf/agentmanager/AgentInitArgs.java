@@ -1,4 +1,4 @@
-package siebog.xjaf.managers;
+package siebog.xjaf.agentmanager;
 
 import java.io.Serializable;
 import java.util.HashMap;

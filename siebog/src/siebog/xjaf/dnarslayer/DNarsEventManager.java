@@ -18,40 +18,37 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.xjaf.dnarslayer;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.xjaf.agentmanager.AgentInitArgs;
+import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+import org.infinispan.Cache;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
- * Example of a pong agent.
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class Pong extends XjafAgent {
-	private static final long serialVersionUID = 1L;
-	private String nodeName;
-	private int counter;
+@Singleton
+@LocalBean
+public class DNarsEventManager {
 
-	@Override
-	protected void onInit(AgentInitArgs args) {
-		nodeName = getNodeName();
-		logger.info("Pong created on " + nodeName);
+	private Cache<Event, Agent> cache;
+
+	@PostConstruct
+	public void postConstruct() {
+		cache = ObjectFactory.getCacheContainer().getCache("dnars-events");
+		if (cache == null)
+			throw new IllegalStateException("Cannot load cache dnars-events.");
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.userArgs.put("pongCreatedOn", nodeName);
-		reply.userArgs.put("pongWorkingOn", getNodeName());
-		reply.userArgs.put("pongCounter", ++counter);
-		msm().post(reply);
+	public void register(Event event, Agent agent) {
+		cache.put(event, agent);
+	}
+
+	public void deregister(Event event, Agent agent) {
+
 	}
 }

@@ -46,7 +46,7 @@ import org.w3c.dom.Document;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.managers.MessageManager;
+import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * 

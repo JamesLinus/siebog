@@ -48,10 +48,10 @@ import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 

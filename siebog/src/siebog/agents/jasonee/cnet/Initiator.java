@@ -34,12 +34,12 @@ import siebog.core.Global;
 import siebog.jasonee.JasonEEAgent;
 import siebog.jasonee.JasonEEProject;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
-import siebog.xjaf.managers.MessageManager;
+import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * Alternative implementation of the Initiator agent, i.e. in form of a plain Java client application.

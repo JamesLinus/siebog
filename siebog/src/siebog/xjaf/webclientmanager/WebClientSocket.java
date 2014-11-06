@@ -1,4 +1,4 @@
-package siebog.xjaf.managers.webclient;
+package siebog.xjaf.webclientmanager;
 
 import java.util.Collections;
 import java.util.HashMap;

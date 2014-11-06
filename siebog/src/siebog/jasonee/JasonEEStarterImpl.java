@@ -32,8 +32,8 @@ import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.UserEnvironment;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  * 

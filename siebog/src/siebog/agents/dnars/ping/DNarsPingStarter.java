@@ -27,11 +27,11 @@ import org.xml.sax.SAXException;
 import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
-import siebog.xjaf.managers.AgentInitArgs;
 
 /**
  *

@@ -18,17 +18,14 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.managers.webclient;
+package siebog.xjaf.webclientmanager;
 
 import java.io.Serializable;
-import javax.websocket.Session;
 
 /**
+ * Remote interface of the WebClient Manager, in charge of handling remote Radigost clients.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface WebClientManager extends Serializable {
-	void onWebClientRegistered(String id, Session session);
-
-	void onWebClientDeregistered(String id);
 }

@@ -27,9 +27,9 @@ import org.xml.sax.SAXException;
 import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
+import siebog.xjaf.agentmanager.AgentInitArgs;
+import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.managers.AgentInitArgs;
-import siebog.xjaf.managers.AgentManager;
 
 /**
  * Entry point for ACO example.

@@ -32,10 +32,10 @@ import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import siebog.utils.ObjectFactory;
 import siebog.utils.ExecutorService;
+import siebog.xjaf.agentmanager.AgentInitArgs;
+import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.managers.AgentInitArgs;
-import siebog.xjaf.managers.AgentManager;
-import siebog.xjaf.managers.MessageManager;
+import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * Base class for all agents.
