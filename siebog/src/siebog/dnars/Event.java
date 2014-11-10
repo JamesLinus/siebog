@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.dnarslayer;
+package siebog.dnars;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

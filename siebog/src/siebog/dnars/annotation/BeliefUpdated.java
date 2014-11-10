@@ -18,32 +18,19 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.ping;
+package siebog.dnars.annotation;
 
-import java.util.Arrays;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.dnars.DNarsAgent;
-import siebog.dnars.events.EventPayload;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.fipa.ACLMessage;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class DNarsPing extends DNarsAgent {
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void onEvents(EventPayload[] event) {
-		System.out.println(Arrays.toString(event));
-	}
-
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		graph.addStatement("cat -> animal (1.0, 0.9)");
-	}
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BeliefUpdated {
+	String pattern() default ".";
 }

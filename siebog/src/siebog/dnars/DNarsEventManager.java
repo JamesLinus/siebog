@@ -18,32 +18,37 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.ping;
+package siebog.dnars;
 
-import java.util.Arrays;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.dnars.DNarsAgent;
-import siebog.dnars.events.EventPayload;
+import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+import org.infinispan.Cache;
+import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.Agent;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class DNarsPing extends DNarsAgent {
-	private static final long serialVersionUID = 1L;
+@Singleton
+@LocalBean
+public class DNarsEventManager {
 
-	@Override
-	public void onEvents(EventPayload[] event) {
-		System.out.println(Arrays.toString(event));
+	private Cache<Event, Agent> cache;
+
+	@PostConstruct
+	public void postConstruct() {
+		cache = ObjectFactory.getCacheContainer().getCache("dnars-events");
+		if (cache == null)
+			throw new IllegalStateException("Cannot load cache dnars-events.");
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		graph.addStatement("cat -> animal (1.0, 0.9)");
+	public void register(Event event, Agent agent) {
+		cache.put(event, agent);
+	}
+
+	public void deregister(Event event, Agent agent) {
+
 	}
 }

@@ -18,10 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.dnarslayer;
+package siebog.dnars;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.annotation.PostConstruct;
+import siebog.dnars.annotation.BeliefParser;
+import siebog.dnars.annotation.Beliefs;
+import siebog.dnars.base.Statement;
+import siebog.dnars.base.StatementParser;
 import siebog.dnars.events.EventPayload;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
@@ -40,12 +48,7 @@ public abstract class DNarsAgent extends XjafAgent {
 
 	@PostConstruct
 	public void postConstruct() {
-		for (Method m : getClass().getMethods()) {
-			Event e = m.getAnnotation(Event.class);
-			if (e != null) {
-
-			}
-		}
+		BeliefParser.getInitialBeliefs(this);
 	}
 
 	@Override

@@ -18,32 +18,35 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.ping;
+package siebog.dnars.annotation;
 
-import java.util.Arrays;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.dnars.DNarsAgent;
-import siebog.dnars.events.EventPayload;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.fipa.ACLMessage;
+import java.util.logging.Logger;
+import siebog.dnars.base.Statement;
+import siebog.dnars.base.Truth;
 
 /**
- *
+ * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class DNarsPing extends DNarsAgent {
-	private static final long serialVersionUID = 1L;
+public class DNarsAnnotationTest {
+	private static final Logger logger = Logger.getLogger(DNarsAnnotationTest.class.getName());
 
-	@Override
-	public void onEvents(EventPayload[] event) {
-		System.out.println(Arrays.toString(event));
+	@Beliefs
+	public String[] initBeliefs() {
+		return new String[] {// @formatter:off
+			"cat -> animal (1.0, 0.9)", 
+			"tiger -> cat (1.0, 0.9)"
+		}; // @formatter:on
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		graph.addStatement("cat -> animal (1.0, 0.9)");
+	@BeliefAdded(subj = "tiger", copula = "->", pred = "animal", truth = ".")
+	public void tigerIsAnimal(Statement added) {
+		logger.info("Tiger is an animal.");
 	}
+
+	@BeliefUpdated(pattern = ".")
+	public void beliefUpdated(Statement st, Truth oldTruth) {
+		logger.info("Belief updated: " + st + ", old truth-value: " + oldTruth);
+	}
+
 }

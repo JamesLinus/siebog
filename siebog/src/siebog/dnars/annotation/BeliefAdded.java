@@ -18,37 +18,25 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.dnarslayer;
+package siebog.dnars.annotation;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
-import org.infinispan.Cache;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.Agent;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Singleton
-@LocalBean
-public class DNarsEventManager {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BeliefAdded {
+	String subj() default ".";
 
-	private Cache<Event, Agent> cache;
+	String copula() default ".";
 
-	@PostConstruct
-	public void postConstruct() {
-		cache = ObjectFactory.getCacheContainer().getCache("dnars-events");
-		if (cache == null)
-			throw new IllegalStateException("Cannot load cache dnars-events.");
-	}
+	String pred() default ".";
 
-	public void register(Event event, Agent agent) {
-		cache.put(event, agent);
-	}
-
-	public void deregister(Event event, Agent agent) {
-
-	}
+	String truth() default ".";
 }
