@@ -22,14 +22,13 @@ package siebog.dnars
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.ListBuffer
-
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-
 import siebog.dnars.base.Copula
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsGraph
+import scala.collection.mutable.ListBuffer
 
 /**
  *
@@ -55,25 +54,14 @@ object DNarsTestUtils {
 		res.toList
 	}
 
-	def assertGraph(graph: DNarsGraph, kb: Seq[Statement], res: Seq[Statement]): Unit = {
-		val expectedStatements = new ListBuffer[Statement]()
-		expectedStatements ++= kb
-		expectedStatements ++= res
-
-		val graphStatements = graph.statements.getAll
-		try {
-			assertEquals(expectedStatements.size, graphStatements.length)
-			for (st <- expectedStatements) {
-				var found = false
-				for (grStat <- graphStatements if !found)
-					if (st.equivalent(grStat))
-						found = true
-				assertTrue("Statement " + st + " not found.", found)
-			}
-		} catch {
-			case e: AssertionError =>
-				graph.printEdges
-				throw e
+	def assertSeq(expected: Seq[Statement], actual: Seq[Statement]): Unit = {
+		assertEquals(expected.size, actual.size)
+		for (ste <- expected) {
+			var found = true
+			for (sta <- actual if !found)
+				if (ste.equivalent(sta))
+					found = true
+			assertTrue("Statement " + ste + " not found.", found)
 		}
 	}
 

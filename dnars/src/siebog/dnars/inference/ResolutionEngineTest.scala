@@ -21,23 +21,27 @@
 package siebog.dnars.inference
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
 import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.base.AtomicTerm
+import siebog.dnars.base.AtomicTerm.Question
 import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Term
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.graph.StructuralTransform
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class ResolutionTest {
+class ResolutionEngineTest {
+
 	@Test
-	def testAnswer: Unit = {
+	def testAnswer(): Unit = {
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
 			createAndAdd(graph, // @formatter:off 
@@ -57,11 +61,57 @@ class ResolutionTest {
 		}
 	}
 
-	def assertAnswer(graph: DNarsGraph, question: String, answer: Term): Unit = {
-		val a = new ResolutionEngine(graph).answer(StatementParser(question))
+	@Test
+	def testBackwardDeductionAnalogy(): Unit =
+		testInferenceSet(InferenceSets.getDeductionAnalogy)
+
+	@Test
+	def testBackwardAbductionComparisonAnalogy(): Unit =
+		testInferenceSet(InferenceSets.getAbductionComparisonAnalogy)
+
+	@Test
+	def testBackwardAnalogyResemblance(): Unit =
+		testInferenceSet(InferenceSets.getAnalogyResemblance)
+
+	@Test
+	def testBackwardCompoundExtentionalDeduction(): Unit =
+		testInferenceSet(InferenceSets.getCompoundExtentionalDeduction)
+
+	private def assertAnswer(graph: DNarsGraph, question: String, answer: Term): Unit = {
+		val st = StatementParser(question)
+		val a = ResolutionEngine.answer(graph, st)
 		if (a == None)
 			assertEquals(answer, null)
+		else if (st.subj == Question)
+			assertEquals(answer, a.get.subj)
 		else
-			assertEquals(answer, a.get)
+			assertEquals(answer, a.get.pred)
+	}
+
+	private def testInferenceSet(stset: InferenceSet): Unit = {
+		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
+		try {
+			graph.statements.addAll(stset.kb)
+
+			for (st <- stset.derived) {
+				// expect the packed version, if available
+				val expected = StructuralTransform.pack(st) match {
+					case List(s1, _) => s1
+					case _ => st
+				}
+
+				val answerOpt = ResolutionEngine.answer(graph, st)
+				assertNotEquals("No answer for " + st, None, answerOpt)
+				val answer = StructuralTransform.pack(answerOpt.get) match {
+					case List(s1, _) => s1
+					case _ => answerOpt.get
+				}
+
+				assertTrue("Expected " + expected + ", got " + answer, expected.subj == answer.subj && expected.pred == answer.pred)
+			}
+		} finally {
+			graph.shutdown
+			graph.clear
+		}
 	}
 }

@@ -100,17 +100,15 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	 */
 	def printEdges(): Unit = {
 		val list = E.map { e =>
-			{
-				val s: DNarsVertex = e.getVertex(Direction.OUT)
-				val p: DNarsVertex = e.getVertex(Direction.IN)
-				val c = e.getLabel
-				val t = DNarsEdge(e).truth
-				val st = Statement(s.term, c, p.term, t)
-				// print only the packed version
-				statements.pack(st) match {
-					case List() => st
-					case List(h, _) => h
-				}
+			val s: DNarsVertex = e.getVertex(Direction.OUT)
+			val p: DNarsVertex = e.getVertex(Direction.IN)
+			val c = e.getLabel
+			val t = DNarsEdge(e).truth
+			val st = Statement(s.term, c, p.term, t)
+			// print only the packed version
+			StructuralTransform.pack(st) match {
+				case List() => st
+				case List(h, _) => h
 			}
 		}.toSet
 		println(s"---------------- Graph dump [domain=$domain] ----------------")

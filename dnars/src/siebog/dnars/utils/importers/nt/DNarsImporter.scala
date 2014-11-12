@@ -20,6 +20,7 @@ import siebog.dnars.base.Connector._
 import siebog.dnars.base.Copula._
 import siebog.dnars.base.Truth
 import java.io.PrintWriter
+import siebog.dnars.graph.StructuralTransform
 
 object DNarsImporter {
 	def main(args: Array[String]): Unit = {
@@ -41,7 +42,7 @@ object DNarsImporter {
 				.foreach { line =>
 					val statement = StatementParser(line)
 					add(graph, statement)
-					graph.statements.unpack(statement) match {
+					StructuralTransform.unpack(statement) match {
 						case List(st1, st2) =>
 							add(graph, st1)
 							add(graph, st2)

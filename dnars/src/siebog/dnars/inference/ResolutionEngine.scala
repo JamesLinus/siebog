@@ -32,58 +32,59 @@ import siebog.dnars.base.Term
 import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.blueprints.Edge
+import siebog.dnars.graph.StructuralTransform
 
 /**
  * Resolution engine for answering questions.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class ResolutionEngine(val graph: DNarsGraph) {
-	/**
-	 * Answers questions in form of "S copula ?" and "? copula P"
-	 */
-	def answer(question: Statement): Option[Term] = {
+object ResolutionEngine {
+
+	def answer(graph: DNarsGraph, question: Statement): Option[Statement] = {
 		val copula = question.copula
-		if (question.subj == Question) { // ? -> P, ? ~ P
-			val result = answerForPredicate(question.pred, copula)
-			if (result == None && copula == Similar) // ? ~ P, reflexive
-				answerForSubject(question.pred, copula)
-			else
-				result
-		} else if (question.pred == Question) { // S -> ?, S ~ ?
-			val result = answerForSubject(question.subj, copula)
-			if (result == None && copula == Similar) // S ~ ?, reflexive
-				answerForPredicate(question.subj, copula)
-			else
-				result
-		} else
-			throw new IllegalArgumentException("Bad question format, should be 'S copula ?' or '? copula P'")
-	}
+		var answer: Option[Statement] = None
+		(question.subj, question.pred) match {
 
-	/**
-	 * Checks if there is an answer for a question in form of "S copula P"
-	 */
-	def exists(question: Statement): Boolean = {
-		val st = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
-		hasAnswer(Set(st))
-	}
+			case (Question, p) => // ? copula P
+				var sub = answerForPredicate(graph, p, copula)
+				if (sub == None && copula == Similar) // ~ is reflexive
+					sub = answerForSubject(graph, question.pred, copula)
+				if (sub != None)
+					answer = Some(Statement(sub.get.term, copula, p, sub.get.truth))
 
-	private def hasAnswer(questions: Set[Statement]): Boolean = {
-		try {
-			val q = questions.head
-			graph.getE(q) match {
-				case Some(_) =>
-					true
-				case None =>
-					val derivedQuestons = ForwardInference.conclusions(graph, List(q))
-					hasAnswer(derivedQuestons.toSet ++ questions.tail)
-			}
-		} catch {
-			case _: NoSuchElementException => false
+			case (s, Question) => // S copula ?
+				var sub = answerForSubject(graph, question.subj, copula)
+				if (sub == None && copula == Similar) //  ~ is reflexive
+					sub = answerForPredicate(graph, question.subj, copula)
+				if (sub != None)
+					answer = Some(Statement(s, copula, sub.get.term, sub.get.truth))
+
+			case (s, p) => // backward inference
+				answer = inferBackwards(graph, question)
+				// try with structural transformations (packing)
+				if (answer == None)
+					StructuralTransform.pack(question) match {
+						case List(q1, q2) =>
+							answer = inferBackwards(graph, q1)
+							if (answer == None)
+								answer = inferBackwards(graph, q2)
+						case _ =>
+					}
+				// try with structural transformations (unpacking)
+				if (answer == None)
+					StructuralTransform.unpack(question) match {
+						case List(q1, q2) =>
+							answer = inferBackwards(graph, q1)
+							if (answer == None)
+								answer = inferBackwards(graph, q2)
+						case _ =>
+					}
 		}
+		answer
 	}
 
-	private def answerForPredicate(pred: Term, copula: String): Option[Term] =
+	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String): Option[Answer] =
 		graph.getV(pred) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).inE(copula)
@@ -92,7 +93,7 @@ class ResolutionEngine(val graph: DNarsGraph) {
 				None
 		}
 
-	private def answerForSubject(subj: Term, copula: String): Option[Term] =
+	private def answerForSubject(graph: DNarsGraph, subj: Term, copula: String): Option[Answer] =
 		graph.getV(subj) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).outE(copula)
@@ -101,22 +102,45 @@ class ResolutionEngine(val graph: DNarsGraph) {
 				None
 		}
 
-	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction): Option[Term] = {
+	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction): Option[Answer] = {
 		val candidates = pipe.map { e =>
 			val term = DNarsVertex.wrap(e.getVertex(dir)).term
-			val expectation = DNarsEdge.wrap(e).truth.expectation
+			val truth = DNarsEdge.wrap(e).truth
+			val expectation = truth.expectation
 			val simplicity = 1.0 / term.complexity
-			new Answer(term, expectation, simplicity)
+			new Answer(term, truth, expectation, simplicity)
 		}.toList
 
 		candidates.sorted match {
-			case head :: _ => Some(head.term)
+			case head :: _ => Some(head)
 			case _ => None
+		}
+	}
+
+	private def inferBackwards(graph: DNarsGraph, question: Statement): Option[Statement] = {
+		graph.getE(question) match {
+			case Some(edge) => // answer is directly present in the graph 
+				val e = DNarsEdge.wrap(edge)
+				Some(Statement(question.subj, question.copula, question.pred, e.truth))
+			case None =>
+				// make sure both terms exist in the graph
+				if (graph.getV(question.subj) == None || graph.getV(question.pred) == None)
+					None
+				else {
+					// construct derived questions such that { P, Q } |- DerivedQ
+					val q = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
+					val derivedQuestions = ForwardInference.conclusions(graph, Seq(q))
+					// check if the starting question can be derived from { P, DerivedQ }
+					val candidates = ForwardInference.conclusions(graph, derivedQuestions)
+					candidates
+						.filter(c => c.subj == question.subj && c.pred == question.pred)
+						.reduceOption((a, b) => if (a.truth.expectation > b.truth.expectation) a else b)
+				}
 		}
 	}
 }
 
-class Answer(val term: Term, val expectation: Double, val simplicity: Double) extends Comparable[Answer] {
+class Answer(val term: Term, val truth: Truth, val expectation: Double, val simplicity: Double) extends Comparable[Answer] {
 	override def compareTo(other: Answer): Int = {
 		val EPSILON = 0.001
 		val absDiff = math.abs(expectation - other.expectation)

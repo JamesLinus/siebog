@@ -21,11 +21,9 @@
 package siebog.dnars.inference
 
 import scala.collection.mutable.ListBuffer
-
 import org.junit.Test
-
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
-import siebog.dnars.DNarsTestUtils.assertGraph
+import siebog.dnars.DNarsTestUtils.assertSeq
 import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
@@ -44,22 +42,15 @@ class ForwardInferenceTest {
 		//		S ~ M	=> S -> P ana
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
-			val kb = createAndAdd(graph,
-				"cat -> animal (0.82, 0.91)",
-				"water -> liquid (1.0, 0.9)",
-				"tiger -> cat (0.5, 0.7)",
-				"developer ~ job (1.0, 0.9)",
-				"feline ~ cat (0.76, 0.83)")
+			val stset = InferenceSets.getDeductionAnalogy
+			graph.statements.addAll(stset.kb)
+
 			val derived = new ListBuffer[Statement]()
-			for (st <- kb)
+			for (st <- stset.kb)
 				derived ++= ForwardInference.deduction_analogy(graph, st)
 			graph.statements.addAll(derived)
-			val res = List(
-				invert(kb(3)),
-				invert(kb(4)),
-				StatementParser("tiger -> animal " + kb(0).truth.deduction(kb(2).truth)),
-				StatementParser("feline -> animal " + kb(0).truth.analogy(kb(4).truth, false)))
-			assertGraph(graph, kb.toList, res)
+
+			stset.assertGraph(graph)
 		} finally {
 			graph.shutdown
 			graph.clear
@@ -73,25 +64,15 @@ class ForwardInferenceTest {
 		//		S ~ M	=> S ~ P res
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
-			val kb = createAndAdd(graph,
-				"developer -> job (0.6, 0.77)",
-				"cat ~ feline (0.33, 0.51)",
-				"tiger -> cat (0.95, 0.83)",
-				"water -> liquid (0.63, 0.72)",
-				"lion ~ cat (0.85, 0.48)")
+			val stset = InferenceSets.getAnalogyResemblance
+			graph.statements.addAll(stset.kb)
+
 			val derived = new ListBuffer[Statement]()
-			for (st <- kb)
+			for (st <- stset.kb)
 				derived ++= ForwardInference.analogy_resemblance(graph, st)
 			graph.statements.addAll(derived)
-			val st = StatementParser("lion ~ feline " + kb(1).truth.resemblance(kb(4).truth))
-			val res = List(
-				invert(kb(1)),
-				invert(kb(4)),
-				StatementParser("tiger -> feline " + kb(1).truth.analogy(kb(2).truth, true)),
-				StatementParser("tiger -> lion " + kb(4).truth.analogy(kb(2).truth, true)),
-				st,
-				invert(st))
-			assertGraph(graph, kb, res)
+
+			stset.assertGraph(graph)
 		} finally {
 			graph.shutdown
 			graph.clear
@@ -105,28 +86,15 @@ class ForwardInferenceTest {
 		//		S ~ M 	=> P -> S ana
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
-			val kb = createAndAdd(graph,
-				"tiger -> cat (1.0, 0.9)",
-				"water -> liquid (0.68, 0.39)",
-				"developer -> job (0.93, 0.46)",
-				"lion -> cat (0.43, 0.75)",
-				"feline ~ cat (0.49, 0.52)")
+			val stset = InferenceSets.getAbductionComparisonAnalogy
+			graph.statements.addAll(stset.kb)
+
 			val derived = new ListBuffer[Statement]()
-			for (st <- kb)
+			for (st <- stset.kb)
 				derived ++= ForwardInference.abduction_comparison_analogy(graph, st)
 			graph.statements.addAll(derived)
-			val con1 = StatementParser("lion ~ tiger " + kb(0).truth.comparison(kb(3).truth))
-			val con2 = StatementParser("tiger ~ lion " + kb(3).truth.comparison(kb(0).truth))
-			val revised = StatementParser("lion ~ tiger " + con1.truth.revision(con2.truth))
-			val res = List(
-				invert(kb(4)),
-				StatementParser("lion -> tiger " + kb(0).truth.abduction(kb(3).truth)),
-				revised,
-				StatementParser("tiger -> feline " + kb(0).truth.analogy(kb(4).truth, false)),
-				StatementParser("tiger -> lion " + kb(3).truth.abduction(kb(0).truth)),
-				invert(revised),
-				StatementParser("lion -> feline " + kb(3).truth.analogy(kb(4).truth, false)))
-			assertGraph(graph, kb, res)
+
+			stset.assertGraph(graph)
 		} finally {
 			graph.shutdown
 			graph.clear
@@ -137,22 +105,15 @@ class ForwardInferenceTest {
 	def compoundExtentional: Unit = {
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
-			val kb = createAndAdd(graph,
-				"(cat x bird) -> eat (1.0, 0.9)",
-				"tiger -> cat (1.0, 0.9)")
+			val stset = InferenceSets.getCompoundExtentionalDeduction
+			graph.statements.addAll(stset.kb)
+
 			val derived = new ListBuffer[Statement]()
-			for (st <- kb)
+			for (st <- stset.kb)
 				derived ++= ForwardInference.deduction_analogy(graph, st)
 			graph.statements.addAll(derived)
 
-			val ded = kb(0).truth.deduction(kb(1).truth)
-			val res = List(
-				StatementParser("cat -> (/ eat * bird) (1.0, 0.9)"),
-				StatementParser("bird -> (/ eat cat *) (1.0, 0.9)"),
-				StatementParser("(tiger x bird) -> eat " + ded),
-				StatementParser("tiger -> (/ eat * bird) " + ded),
-				StatementParser("bird -> (/ eat tiger *) " + ded))
-			assertGraph(graph, kb, res)
+			stset.assertGraph(graph)
 		} finally {
 			graph.shutdown
 			graph.clear
