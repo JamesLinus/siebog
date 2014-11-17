@@ -105,14 +105,14 @@ class StatementManager(val graph: DNarsGraph) {
 	 * Checks if the given statement is valid. For now, it only checks compound terms with product connectors.
 	 */
 	def validStatement(st: Statement): Boolean = (st.subj, st.copula, st.pred) match {
-		case (CompoundTerm(Product, _), _, CompoundTerm(_, _)) =>
+		case (CompoundTerm(Product, _), Inherit, CompoundTerm(_, _)) =>
 			false // predicate should be an atomic term
-		case (CompoundTerm(_, _), _, CompoundTerm(Inherit, _)) =>
+		case (CompoundTerm(_, _), Inherit, CompoundTerm(Product, _)) =>
 			false // subject should be an atomic term
-		case (CompoundTerm(Product, _), Similar, AtomicTerm(_)) =>
-			false // copula should be inheritance
-		case (AtomicTerm(_), Similar, CompoundTerm(Product, _)) =>
-			false // copula should be inheritance
+		//case (CompoundTerm(Product, _), Similar, AtomicTerm(_)) =>
+		//	false // copula should be inheritance
+		//case (AtomicTerm(_), Similar, CompoundTerm(Product, _)) =>
+		//	false // copula should be inheritance
 		case _ =>
 			true
 	}

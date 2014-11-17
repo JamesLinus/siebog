@@ -21,11 +21,9 @@
 package siebog.dnars.inference
 
 import scala.collection.mutable.ListBuffer
-
 import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.gremlin.scala.ScalaVertex
 import com.tinkerpop.gremlin.scala.wrapScalaVertex.apply
-
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -34,6 +32,7 @@ import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsVertex
 import siebog.dnars.graph.DNarsVertex.wrap
+import com.tinkerpop.blueprints.Vertex
 
 /**
  * Syllogistic forward inference rules. The following table represents the summary
@@ -56,13 +55,11 @@ object ForwardInference {
 	def conclusions(graph: DNarsGraph, input: Seq[Statement]): List[Statement] = {
 		var res = ListBuffer[Statement]()
 		for (st <- input) {
-			if (graph.getV(st.subj) != None && graph.getV(st.pred) != None) {
-				res ++= deduction_analogy(graph, st)
-				res ++= analogy_resemblance(graph, st)
-				res ++= abduction_comparison_analogy(graph, st)
-				res ++= induction_comparison(graph, st)
-				res ++= analogy_inv(graph, st)
-			}
+			res ++= deduction_analogy(graph, st)
+			res ++= analogy_resemblance(graph, st)
+			res ++= abduction_comparison_analogy(graph, st)
+			res ++= induction_comparison(graph, st)
+			res ++= analogy_inv(graph, st)
 		}
 		res.toList
 	}
@@ -83,20 +80,22 @@ object ForwardInference {
 	//		S ~ M	=> S -> P ana
 	def deduction_analogy(graph: DNarsGraph, st: Statement): List[Statement] = {
 		var res = ListBuffer[Statement]()
-		val m: ScalaVertex = graph.getV(st.pred).get
-		val edges = m.outE(Inherit).toList
-		for (e <- edges) {
-			val vertex: DNarsVertex = e.getVertex(Direction.IN)
-			val p = vertex.term
-			if (st.subj != p) {
-				val edge: DNarsEdge = e
-				val derivedTruth =
-					if (st.copula == Inherit)
-						edge.truth.deduction(st.truth)
-					else
-						edge.truth.analogy(st.truth, false)
-				val derived = Statement(st.subj, Inherit, p, derivedTruth)
-				append(graph, res, derived)
+		val m = graph.getV(st.pred)
+		if (m != None) {
+			val edges = m.outE(Inherit).toList
+			for (e <- edges) {
+				val vertex: DNarsVertex = e.getVertex(Direction.IN)
+				val p = vertex.term
+				if (st.subj != p) {
+					val edge: DNarsEdge = e
+					val derivedTruth =
+						if (st.copula == Inherit)
+							edge.truth.deduction(st.truth)
+						else
+							edge.truth.analogy(st.truth, false)
+					val derived = Statement(st.subj, Inherit, p, derivedTruth)
+					append(graph, res, derived)
+				}
 			}
 		}
 		res.toList
@@ -107,19 +106,21 @@ object ForwardInference {
 	//		S ~ M	=> S ~ P res
 	def analogy_resemblance(graph: DNarsGraph, st: Statement): List[Statement] = {
 		var res = ListBuffer[Statement]()
-		val m: ScalaVertex = graph.getV(st.pred).get
-		val edges = m.outE(Similar).toList
-		for (e <- edges) {
-			val vertex: DNarsVertex = e.getVertex(Direction.IN)
-			val p = vertex.term
-			if (st.subj != p) {
-				val edge: DNarsEdge = e
-				val derived =
-					if (st.copula == Inherit)
-						Statement(st.subj, Inherit, p, edge.truth.analogy(st.truth, true))
-					else
-						Statement(st.subj, Similar, p, edge.truth.resemblance(st.truth))
-				append(graph, res, derived)
+		val m = graph.getV(st.pred)
+		if (m != None) {
+			val edges = m.outE(Similar).toList
+			for (e <- edges) {
+				val vertex: DNarsVertex = e.getVertex(Direction.IN)
+				val p = vertex.term
+				if (st.subj != p) {
+					val edge: DNarsEdge = e
+					val derived =
+						if (st.copula == Inherit)
+							Statement(st.subj, Inherit, p, edge.truth.analogy(st.truth, true))
+						else
+							Statement(st.subj, Similar, p, edge.truth.resemblance(st.truth))
+					append(graph, res, derived)
+				}
 			}
 		}
 		res.toList
@@ -130,21 +131,23 @@ object ForwardInference {
 	//		S ~ M 	=> P -> S ana
 	def abduction_comparison_analogy(graph: DNarsGraph, st: Statement): List[Statement] = {
 		var res = ListBuffer[Statement]()
-		val m: ScalaVertex = graph.getV(st.pred).get
-		val edges = m.inE(Inherit).toList
-		for (e <- edges) {
-			val vertex: DNarsVertex = e.getVertex(Direction.OUT)
-			val p = vertex.term
-			if (st.subj != p) {
-				val edge: DNarsEdge = e
-				if (st.copula == Inherit) {
-					val abd = edge.truth.abduction(st.truth)
-					append(graph, res, Statement(st.subj, Inherit, p, abd))
-					val cmp = edge.truth.comparison(st.truth)
-					append(graph, res, Statement(st.subj, Similar, p, cmp))
-				} else {
-					val ana = edge.truth.analogy(st.truth, false)
-					append(graph, res, Statement(p, Inherit, st.subj, ana))
+		val m = graph.getV(st.pred)
+		if (m != None) {
+			val edges = m.inE(Inherit).toList
+			for (e <- edges) {
+				val vertex: DNarsVertex = e.getVertex(Direction.OUT)
+				val p = vertex.term
+				if (st.subj != p) {
+					val edge: DNarsEdge = e
+					if (st.copula == Inherit) {
+						val abd = edge.truth.abduction(st.truth)
+						append(graph, res, Statement(st.subj, Inherit, p, abd))
+						val cmp = edge.truth.comparison(st.truth)
+						append(graph, res, Statement(st.subj, Similar, p, cmp))
+					} else {
+						val ana = edge.truth.analogy(st.truth, false)
+						append(graph, res, Statement(p, Inherit, st.subj, ana))
+					}
 				}
 			}
 		}
@@ -155,17 +158,19 @@ object ForwardInference {
 	def induction_comparison(graph: DNarsGraph, st: Statement): List[Statement] = {
 		var res = ListBuffer[Statement]()
 		if (st.copula == Inherit) {
-			val m: ScalaVertex = graph.getV(st.subj).get
-			val edges = m.outE(Inherit).toList
-			for (e <- edges) {
-				val vertex: DNarsVertex = e.getVertex(Direction.IN)
-				val p = vertex.term
-				if (st.pred != p) {
-					val edge: DNarsEdge = e
-					val ind = edge.truth.induction(st.truth)
-					append(graph, res, Statement(st.pred, Inherit, p, ind))
-					val cmp = edge.truth.comparison(st.truth)
-					append(graph, res, Statement(st.pred, Similar, p, cmp))
+			val m = graph.getV(st.subj)
+			if (m != None) {
+				val edges = m.outE(Inherit).toList
+				for (e <- edges) {
+					val vertex: DNarsVertex = e.getVertex(Direction.IN)
+					val p = vertex.term
+					if (st.pred != p) {
+						val edge: DNarsEdge = e
+						val ind = edge.truth.induction(st.truth)
+						append(graph, res, Statement(st.pred, Inherit, p, ind))
+						val cmp = edge.truth.comparison(st.truth)
+						append(graph, res, Statement(st.pred, Similar, p, cmp))
+					}
 				}
 			}
 		}
@@ -176,22 +181,28 @@ object ForwardInference {
 	def analogy_inv(graph: DNarsGraph, st: Statement): List[Statement] = {
 		var res = ListBuffer[Statement]()
 		if (st.copula == Inherit) {
-			val m: ScalaVertex = graph.getV(st.subj).get
-			val edges = m.outE(Similar).toList
-			for (e <- edges) {
-				val vertex: DNarsVertex = e.getVertex(Direction.IN)
-				val p = vertex.term
-				if (st.pred != p) {
-					val edge: DNarsEdge = e
-					val ana = edge.truth.analogy(st.truth, true)
-					append(graph, res, Statement(p, Inherit, st.pred, ana))
+			val m = graph.getV(st.subj)
+			if (m != None) {
+				val edges = m.outE(Similar).toList
+				for (e <- edges) {
+					val vertex: DNarsVertex = e.getVertex(Direction.IN)
+					val p = vertex.term
+					if (st.pred != p) {
+						val edge: DNarsEdge = e
+						val ana = edge.truth.analogy(st.truth, true)
+						append(graph, res, Statement(p, Inherit, st.pred, ana))
+					}
 				}
 			}
 		}
 		res.toList
 	}
 
-	private def append(graph: DNarsGraph, res: ListBuffer[Statement], st: Statement): Unit =
+	private implicit def opt2sv(v: Option[Vertex]): ScalaVertex =
+		ScalaVertex.wrap(v.get)
+
+	private def append(graph: DNarsGraph, res: ListBuffer[Statement], st: Statement): Unit = {
 		if (graph.statements.validStatement(st))
 			res += st
+	}
 }

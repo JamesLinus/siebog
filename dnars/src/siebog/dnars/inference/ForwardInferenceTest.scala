@@ -119,4 +119,20 @@ class ForwardInferenceTest {
 			graph.clear
 		}
 	}
+
+	@Test
+	def compoundTest: Unit = {
+		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
+		try {
+			val kb = createAndAdd(graph, "(x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.00,0.90)")
+			val st = StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.0, 0.9)")
+			val derived = ForwardInference.abduction_comparison_analogy(graph, st)
+			val res = List(StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"),
+				StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) ~ (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"))
+			assertSeq(res, derived)
+		} finally {
+			graph.shutdown
+			graph.clear
+		}
+	}
 }

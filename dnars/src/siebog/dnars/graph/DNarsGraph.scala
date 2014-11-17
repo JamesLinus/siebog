@@ -113,7 +113,8 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		}.toSet
 		println(s"---------------- Graph dump [domain=$domain] ----------------")
 		for (st <- list)
-			println(st)
+			if (st.truth.conf > 0.89)
+				println(st)
 		println("------------------- Done -------------------")
 	}
 
