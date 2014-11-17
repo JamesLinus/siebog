@@ -20,16 +20,11 @@
 
 package siebog.dnars;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import siebog.dnars.annotation.BeliefParser;
-import siebog.dnars.annotation.Beliefs;
-import siebog.dnars.base.Statement;
-import siebog.dnars.base.StatementParser;
 import siebog.dnars.events.EventPayload;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
@@ -44,7 +39,11 @@ import siebog.xjaf.fipa.Performative;
  */
 public abstract class DNarsAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	protected DNarsGraph graph;
+	private Map<String, DNarsGraph> domains;
+
+	public DNarsAgent() {
+		domains = new HashMap<>();
+	}
 
 	@PostConstruct
 	public void postConstruct() {
@@ -54,15 +53,29 @@ public abstract class DNarsAgent extends XjafAgent {
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		super.onInit(args);
-		String domain = args.get("domain");
-		if (domain == null)
-			domain = myAid.toString();
-		try {
-			graph = DNarsGraphFactory.create(domain, null);
-			graph.addObserver(myAid.toString());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		String domainsStr = args.get("domains");
+		if (domainsStr == null)
+			domainsStr = myAid.getStr().replaceAll("[^a-zA-Z0-9_]", "_");
+		final String[] domainsArray = domainsStr.split(",");
+		for (String domainName : domainsArray)
+			try {
+				DNarsGraph graph = DNarsGraphFactory.create(domainName, null);
+				graph.addObserver(myAid.toString());
+				domains.put(domainName, graph);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+	}
+
+	protected DNarsGraph domain(String domainName) {
+		DNarsGraph graph = domains.get(domainName);
+		if (graph == null)
+			throw new IllegalArgumentException("No such domain: " + domainName);
+		return graph;
+	}
+
+	protected Collection<DNarsGraph> domains() {
+		return domains.values();
 	}
 
 	protected boolean filter(ACLMessage msg) {

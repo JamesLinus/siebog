@@ -18,10 +18,7 @@ object NTReader {
 			.takeWhile { _ => ok }
 			.foreach { line =>
 				try {
-					val model = ModelFactory.createDefaultModel();
-					val reader = model.getReader("N-Triples")
-					reader.read(model, new StringReader(line), "")
-					val ntStat = model.listStatements.nextStatement
+					val ntStat = str2nt(line)
 					counter += 1
 					ok = progress(line, ntStat, counter)
 				} catch {
@@ -31,5 +28,12 @@ object NTReader {
 				}
 			}
 		counter
+	}
+
+	def str2nt(str: String): com.hp.hpl.jena.rdf.model.Statement = {
+		val model = ModelFactory.createDefaultModel();
+		val reader = model.getReader("N-Triples")
+		reader.read(model, new StringReader(str), "")
+		model.listStatements.nextStatement
 	}
 }

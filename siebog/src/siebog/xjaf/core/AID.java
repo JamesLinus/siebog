@@ -109,4 +109,8 @@ public final class AID implements Serializable {
 	public AgentClass getAgClass() {
 		return agClass;
 	}
+
+	public String getStr() {
+		return str;
+	}
 }

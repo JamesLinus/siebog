@@ -77,7 +77,7 @@ object DNarsConvert {
 		new PrintWriter(f)
 	}
 
-	private def toDNarsStatement(ntStat: com.hp.hpl.jena.rdf.model.Statement): Statement = {
+	def toDNarsStatement(ntStat: com.hp.hpl.jena.rdf.model.Statement): Statement = {
 		// subject-predicate-object becomes
 		// (x subject object) -> predicate
 		val termSubj = getAtomicTerm(ntStat.getSubject)

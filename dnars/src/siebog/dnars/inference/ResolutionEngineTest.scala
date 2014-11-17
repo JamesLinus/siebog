@@ -26,6 +26,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
 import siebog.dnars.DNarsTestUtils.createAndAdd
+import siebog.dnars.DNarsTestUtils.assertSeq
 import siebog.dnars.base.AtomicTerm
 import siebog.dnars.base.AtomicTerm.Question
 import siebog.dnars.base.StatementParser
@@ -44,17 +45,17 @@ class ResolutionEngineTest {
 	def testAnswer(): Unit = {
 		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
 		try {
-			createAndAdd(graph, // @formatter:off 
+			createAndAdd(graph,
 				"cat -> animal (1.0, 0.9)",
-				"developer ~ job (1.0, 0.9)") // @formatter:on
+				"developer ~ job (0.87, 0.91)")
 
 			assertAnswer(graph, "? -> cat", null)
-			assertAnswer(graph, "? -> animal", AtomicTerm("cat"))
-			assertAnswer(graph, "cat -> ?", AtomicTerm("animal"))
+			assertAnswer(graph, "? -> animal", "cat -> animal (1.0, 0.9)")
+			assertAnswer(graph, "cat -> ?", "cat -> animal (1.0, 0.9)")
 			assertAnswer(graph, "animal -> ?", null)
 			assertAnswer(graph, "water -> ?", null)
-			assertAnswer(graph, "developer ~ ?", AtomicTerm("job"))
-			assertAnswer(graph, "? ~ developer", AtomicTerm("job"))
+			assertAnswer(graph, "developer ~ ?", "developer ~ job (0.87, 0.91)")
+			assertAnswer(graph, "? ~ developer", "job ~ developer (0.87, 0.91)")
 		} finally {
 			graph.shutdown
 			graph.clear
@@ -77,15 +78,13 @@ class ResolutionEngineTest {
 	def testBackwardCompoundExtentionalDeduction(): Unit =
 		testInferenceSet(InferenceSets.getCompoundExtentionalDeduction)
 
-	private def assertAnswer(graph: DNarsGraph, question: String, answer: Term): Unit = {
+	private def assertAnswer(graph: DNarsGraph, question: String, answer: String): Unit = {
 		val st = StatementParser(question)
 		val a = ResolutionEngine.answer(graph, st)
-		if (a == None)
+		if (a.toList == List())
 			assertEquals(answer, null)
-		else if (st.subj == Question)
-			assertEquals(answer, a.get.subj)
 		else
-			assertEquals(answer, a.get.pred)
+			assertSeq(List(StatementParser(answer)), a)
 	}
 
 	private def testInferenceSet(stset: InferenceSet): Unit = {
@@ -100,14 +99,14 @@ class ResolutionEngineTest {
 					case _ => st
 				}
 
-				val answerOpt = ResolutionEngine.answer(graph, st)
-				assertNotEquals("No answer for " + st, None, answerOpt)
-				val answer = StructuralTransform.pack(answerOpt.get) match {
+				val answers = ResolutionEngine.answer(graph, st)
+				assertNotEquals("No answer for " + st, List(), answers)
+				val packed = answers.map(a => StructuralTransform.pack(a) match {
 					case List(s1, _) => s1
-					case _ => answerOpt.get
-				}
+					case _ => a
+				})
 
-				assertTrue("Expected " + expected + ", got " + answer, expected.subj == answer.subj && expected.pred == answer.pred)
+				assertSeq(List(expected), packed)
 			}
 		} finally {
 			graph.shutdown

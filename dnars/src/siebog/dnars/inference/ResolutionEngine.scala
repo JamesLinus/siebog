@@ -33,6 +33,7 @@ import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.blueprints.Edge
 import siebog.dnars.graph.StructuralTransform
+import scala.collection.mutable.ListBuffer
 
 /**
  * Resolution engine for answering questions.
@@ -41,91 +42,97 @@ import siebog.dnars.graph.StructuralTransform
  */
 object ResolutionEngine {
 
-	def answer(graph: DNarsGraph, question: Statement): Option[Statement] = {
+	def answer(graph: DNarsGraph, question: Statement, limit: Int = 1): Array[Statement] = {
 		val copula = question.copula
-		var answer: Option[Statement] = None
 		(question.subj, question.pred) match {
 
 			case (Question, p) => // ? copula P
-				var sub = answerForPredicate(graph, p, copula)
-				if (sub == None && copula == Similar) // ~ is reflexive
-					sub = answerForSubject(graph, question.pred, copula)
-				if (sub != None)
-					answer = Some(Statement(sub.get.term, copula, p, sub.get.truth))
+				val answ1 = answerForPredicate(graph, p, copula, limit)
+				val answ2 = if (copula == Similar) // ~ is reflexive
+					answerForSubject(graph, question.pred, copula, limit)
+				else
+					Nil
+				(answ1 ::: answ2)
+					.take(limit)
+					.map(a => Statement(a.term, copula, p, a.truth))
+					.toArray
 
 			case (s, Question) => // S copula ?
-				var sub = answerForSubject(graph, question.subj, copula)
-				if (sub == None && copula == Similar) //  ~ is reflexive
-					sub = answerForPredicate(graph, question.subj, copula)
-				if (sub != None)
-					answer = Some(Statement(s, copula, sub.get.term, sub.get.truth))
+				val answ1 = answerForSubject(graph, question.subj, copula, limit)
+				val answ2 = if (copula == Similar) //  ~ is reflexive
+					answerForPredicate(graph, question.subj, copula, limit)
+				else
+					Nil
+				(answ1 ::: answ2)
+					.take(limit)
+					.map(a => Statement(s, copula, a.term, a.truth))
+					.toArray
 
 			case (s, p) => // backward inference
-				answer = inferBackwards(graph, question)
+				val answ1 = inferBackwards(graph, question, limit)
 				// try with structural transformations (packing)
-				if (answer == None)
-					StructuralTransform.pack(question) match {
-						case List(q1, q2) =>
-							answer = inferBackwards(graph, q1)
-							if (answer == None)
-								answer = inferBackwards(graph, q2)
-						case _ =>
-					}
+				val answ2 = StructuralTransform.pack(question) match {
+					case List(q1, q2) =>
+						inferBackwards(graph, q1, limit) ::: inferBackwards(graph, q2, limit)
+					case _ =>
+						List()
+				}
 				// try with structural transformations (unpacking)
-				if (answer == None)
-					StructuralTransform.unpack(question) match {
-						case List(q1, q2) =>
-							answer = inferBackwards(graph, q1)
-							if (answer == None)
-								answer = inferBackwards(graph, q2)
-						case _ =>
-					}
+				val answ3 = StructuralTransform.unpack(question) match {
+					case List(q1, q2) =>
+						inferBackwards(graph, q1, limit) ::: inferBackwards(graph, q2, limit)
+					case _ =>
+						List()
+				}
+				(answ1 ::: answ2 ::: answ3)
+					.take(limit)
+					.toArray
 		}
-		answer
 	}
 
-	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String): Option[Answer] =
+	def hasAnswer(graph: DNarsGraph, question: Statement): Boolean =
+		graph.getE(question) != None
+
+	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String, limit: Int): List[Answer] =
 		graph.getV(pred) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).inE(copula)
-				bestAnswer(pipe, Direction.OUT)
+				bestAnswer(pipe, Direction.OUT, limit)
 			case None => // does not exist
-				None
+				List()
 		}
 
-	private def answerForSubject(graph: DNarsGraph, subj: Term, copula: String): Option[Answer] =
+	private def answerForSubject(graph: DNarsGraph, subj: Term, copula: String, limit: Int): List[Answer] =
 		graph.getV(subj) match {
 			case Some(vert) =>
 				val pipe = DNarsVertex.wrap(vert).outE(copula)
-				bestAnswer(pipe, Direction.IN)
+				bestAnswer(pipe, Direction.IN, limit)
 			case None => // does not exist
-				None
+				List()
 		}
 
-	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction): Option[Answer] = {
-		val candidates = pipe.map { e =>
+	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction, limit: Int): List[Answer] = {
+		pipe.map { e =>
 			val term = DNarsVertex.wrap(e.getVertex(dir)).term
 			val truth = DNarsEdge.wrap(e).truth
 			val expectation = truth.expectation
 			val simplicity = 1.0 / term.complexity
 			new Answer(term, truth, expectation, simplicity)
-		}.toList
-
-		candidates.sorted match {
-			case head :: _ => Some(head)
-			case _ => None
 		}
+			.toList
+			.sorted
+			.take(limit)
 	}
 
-	private def inferBackwards(graph: DNarsGraph, question: Statement): Option[Statement] = {
+	private def inferBackwards(graph: DNarsGraph, question: Statement, limit: Int): List[Statement] = {
 		graph.getE(question) match {
 			case Some(edge) => // answer is directly present in the graph 
 				val e = DNarsEdge.wrap(edge)
-				Some(Statement(question.subj, question.copula, question.pred, e.truth))
+				List(Statement(question.subj, question.copula, question.pred, e.truth))
 			case None =>
 				// make sure both terms exist in the graph
 				if (graph.getV(question.subj) == None || graph.getV(question.pred) == None)
-					None
+					List()
 				else {
 					// construct derived questions such that { P, Q } |- DerivedQ
 					val q = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
@@ -134,7 +141,8 @@ object ResolutionEngine {
 					val candidates = ForwardInference.conclusions(graph, derivedQuestions)
 					candidates
 						.filter(c => c.subj == question.subj && c.pred == question.pred)
-						.reduceOption((a, b) => if (a.truth.expectation > b.truth.expectation) a else b)
+						.sortWith((a, b) => a.truth.expectation > b.truth.expectation)
+						.take(limit)
 				}
 		}
 	}

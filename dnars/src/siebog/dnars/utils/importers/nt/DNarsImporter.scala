@@ -42,12 +42,6 @@ object DNarsImporter {
 				.foreach { line =>
 					val statement = StatementParser(line)
 					add(graph, statement)
-					StructuralTransform.unpack(statement) match {
-						case List(st1, st2) =>
-							add(graph, st1)
-							add(graph, st2)
-						case _ =>
-					}
 
 					counter += 1
 					if (counter % 16384 == 0) {
@@ -65,7 +59,17 @@ object DNarsImporter {
 		}
 	}
 
-	private def add(graph: DNarsGraph, st: Statement): Unit = {
+	def add(graph: DNarsGraph, st: Statement): Unit = {
+		addSt(graph, st)
+		StructuralTransform.unpack(st) match {
+			case List(st1, st2) =>
+				addSt(graph, st1)
+				addSt(graph, st2)
+			case _ =>
+		}
+	}
+
+	private def addSt(graph: DNarsGraph, st: Statement): Unit = {
 		val s = graph.getOrAddV(st.subj)
 		val p = graph.getOrAddV(st.pred)
 		val e = graph.addEdge(null, s, p, st.copula)

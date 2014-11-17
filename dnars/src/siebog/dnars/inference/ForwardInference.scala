@@ -20,9 +20,12 @@
 
 package siebog.dnars.inference
 
+import scala.collection.mutable.ListBuffer
+
 import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.gremlin.scala.ScalaVertex
 import com.tinkerpop.gremlin.scala.wrapScalaVertex.apply
+
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -31,8 +34,6 @@ import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsVertex
 import siebog.dnars.graph.DNarsVertex.wrap
-import scala.collection.mutable.ListBuffer
-import java.util.concurrent.LinkedBlockingQueue
 
 /**
  * Syllogistic forward inference rules. The following table represents the summary
@@ -55,11 +56,13 @@ object ForwardInference {
 	def conclusions(graph: DNarsGraph, input: Seq[Statement]): List[Statement] = {
 		var res = ListBuffer[Statement]()
 		for (st <- input) {
-			res ++= deduction_analogy(graph, st)
-			res ++= analogy_resemblance(graph, st)
-			res ++= abduction_comparison_analogy(graph, st)
-			res ++= induction_comparison(graph, st)
-			res ++= analogy_inv(graph, st)
+			if (graph.getV(st.subj) != None && graph.getV(st.pred) != None) {
+				res ++= deduction_analogy(graph, st)
+				res ++= analogy_resemblance(graph, st)
+				res ++= abduction_comparison_analogy(graph, st)
+				res ++= induction_comparison(graph, st)
+				res ++= analogy_inv(graph, st)
+			}
 		}
 		res.toList
 	}
