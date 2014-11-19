@@ -136,10 +136,10 @@ object ResolutionEngine {
 				else {
 					// construct derived questions such that { P, Q } |- DerivedQ
 					val q = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
-					val derivedQuestions = ForwardInference.conclusions(graph, Seq(q))
+					val derivedQuestions = ForwardInference.conclusions(graph, Array(q))
 					// check if the starting question can be derived from { P, DerivedQ }
 					val candidates = ForwardInference.conclusions(graph, derivedQuestions)
-					candidates
+					candidates.toList
 						.filter(c => c.subj == question.subj && c.pred == question.pred)
 						.sortWith((a, b) => a.truth.expectation > b.truth.expectation)
 						.take(limit)

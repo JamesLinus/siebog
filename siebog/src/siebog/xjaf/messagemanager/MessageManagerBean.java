@@ -22,10 +22,7 @@ package siebog.xjaf.messagemanager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.logging.Logger;
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -72,9 +69,10 @@ public class MessageManagerBean implements MessageManager {
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Asynchronous
 	@Override
-	public Future<Integer> post(@FormParam("acl") ACLMessage msg) {
+	// NOTE: Using @Asynchronous causes an exception
+	// https://issues.jboss.org/browse/WFLY-2515
+	public int post(@FormParam("acl") ACLMessage msg) {
 		Cache<AID, Agent> running = ObjectFactory.getRunningAgentsCache();
 		int successful = 0;
 		for (AID aid : msg.receivers) {
@@ -92,7 +90,7 @@ public class MessageManagerBean implements MessageManager {
 				logger.warning(ex.getMessage());
 			}
 		}
-		return new AsyncResult<>(successful);
+		return successful;
 	}
 
 	@Override

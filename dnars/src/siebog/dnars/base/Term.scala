@@ -98,7 +98,7 @@ object Connector {
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-case class CompoundTerm(val con: String, val comps: Seq[AtomicTerm]) extends Term {
+case class CompoundTerm(val con: String, val comps: List[AtomicTerm]) extends Term {
 	override val id = comps.mkString(s"($con ", " ", ")")
 
 	override def complexity = 1 + comps.foldLeft(0)(_ + _.complexity)
@@ -132,6 +132,6 @@ class CompoundTermSerializer extends AttributeSerializer[CompoundTerm] {
 		val elems = str.split(" ")
 		val compsStr = elems(1).split("\t")
 		val comps = for (c <- compsStr) yield AtomicTerm(c)
-		CompoundTerm(elems(0), comps)
+		CompoundTerm(elems(0), comps.toList)
 	}
 }

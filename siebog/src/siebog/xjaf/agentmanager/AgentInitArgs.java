@@ -36,7 +36,7 @@ public class AgentInitArgs implements Serializable {
 	public AgentInitArgs(String... keyValues) {
 		args = new HashMap<>(keyValues.length);
 		for (String str : keyValues) {
-			String[] kv = str.split("->");
+			String[] kv = str.split("=");
 			StringWrapper arg = new StringWrapper();
 			arg.value = kv[1];
 			args.put(kv[0], arg);

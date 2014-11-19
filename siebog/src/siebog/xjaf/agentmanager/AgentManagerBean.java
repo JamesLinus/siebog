@@ -98,8 +98,9 @@ public class AgentManagerBean implements AgentManager {
 			try {
 				agent = ObjectFactory.lookup(jndiNameStateful, Agent.class);
 			} catch (IllegalStateException ex) {
+				// try the stateless version
 				final Throwable cause = ex.getCause();
-				if (cause == null || !(cause instanceof IllegalStateException))
+				if (cause == null || !(cause instanceof NamingException))
 					throw ex;
 				agent = ObjectFactory.lookup(jndiNameStateless, Agent.class);
 			}

@@ -34,32 +34,53 @@ import siebog.dnars.base.Term
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraphFactory
 import siebog.dnars.graph.StructuralTransform
+import org.junit.Before
+import org.junit.After
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class ResolutionEngineTest {
+	var graph: DNarsGraph = null
+
+	@Before
+	def setUp(): Unit =
+		graph = DNarsGraphFactory.create(TEST_KEYSPACE)
+
+	@After
+	def tearDown: Unit = {
+		graph.shutdown
+		graph.clear
+		graph = null
+	}
 
 	@Test
 	def testAnswer(): Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			createAndAdd(graph,
-				"cat -> animal (1.0, 0.9)",
-				"developer ~ job (0.87, 0.91)")
+		createAndAdd(graph,
+			"cat -> animal (1.0, 0.9)",
+			"developer ~ job (0.87, 0.91)")
 
-			assertAnswer(graph, "? -> cat", null)
-			assertAnswer(graph, "? -> animal", "cat -> animal (1.0, 0.9)")
-			assertAnswer(graph, "cat -> ?", "cat -> animal (1.0, 0.9)")
-			assertAnswer(graph, "animal -> ?", null)
-			assertAnswer(graph, "water -> ?", null)
-			assertAnswer(graph, "developer ~ ?", "developer ~ job (0.87, 0.91)")
-			assertAnswer(graph, "? ~ developer", "job ~ developer (0.87, 0.91)")
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		assertAnswer(graph, "? -> cat", null)
+		assertAnswer(graph, "? -> animal", "cat -> animal (1.0, 0.9)")
+		assertAnswer(graph, "cat -> ?", "cat -> animal (1.0, 0.9)")
+		assertAnswer(graph, "animal -> ?", null)
+		assertAnswer(graph, "water -> ?", null)
+		assertAnswer(graph, "developer ~ ?", "developer ~ job (0.87, 0.91)")
+		assertAnswer(graph, "? ~ developer", "job ~ developer (0.87, 0.91)")
+	}
+
+	@Test
+	def testMultipleAnswers(): Unit = {
+		val kb = createAndAdd(graph,
+			"cat -> animal (0.6, 0.3)",
+			"bird -> animal (1.0, 0.9)",
+			"developer ~ job (0.87, 0.91)",
+			"tiger -> animal (0.6, 0.4)")
+
+		val q = StatementParser("? -> animal (1.0, 0.9)")
+		val answers = ResolutionEngine.answer(graph, q, 2)
+		assertSeq(List(kb(1), kb(3)), answers)
 	}
 
 	@Test
@@ -80,7 +101,7 @@ class ResolutionEngineTest {
 
 	private def assertAnswer(graph: DNarsGraph, question: String, answer: String): Unit = {
 		val st = StatementParser(question)
-		val a = ResolutionEngine.answer(graph, st)
+		val a = ResolutionEngine.answer(graph, st, 1)
 		if (a.toList == List())
 			assertEquals(answer, null)
 		else
@@ -88,29 +109,23 @@ class ResolutionEngineTest {
 	}
 
 	private def testInferenceSet(stset: InferenceSet): Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			graph.statements.addAll(stset.kb)
+		graph.statements.addAll(stset.kb)
 
-			for (st <- stset.derived) {
-				// expect the packed version, if available
-				val expected = StructuralTransform.pack(st) match {
-					case List(s1, _) => s1
-					case _ => st
-				}
-
-				val answers = ResolutionEngine.answer(graph, st)
-				assertNotEquals("No answer for " + st, List(), answers)
-				val packed = answers.map(a => StructuralTransform.pack(a) match {
-					case List(s1, _) => s1
-					case _ => a
-				})
-
-				assertSeq(List(expected), packed)
+		for (st <- stset.derived) {
+			// expect the packed version, if available
+			val expected = StructuralTransform.pack(st) match {
+				case List(s1, _) => s1
+				case _ => st
 			}
-		} finally {
-			graph.shutdown
-			graph.clear
+
+			val answers = ResolutionEngine.answer(graph, st)
+			assertNotEquals("No answer for " + st, List(), answers)
+			val packed = answers.map(a => StructuralTransform.pack(a) match {
+				case List(s1, _) => s1
+				case _ => a
+			})
+
+			assertSeq(List(expected), packed)
 		}
 	}
 }

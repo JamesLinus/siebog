@@ -60,7 +60,7 @@ object DBTest {
 					val nt = NTReader.str2nt(line)
 					val st = DNarsConvert.toDNarsStatement(nt)
 
-					val derived = ForwardInference.conclusions(properties, Seq(st))
+					val derived = ForwardInference.conclusions(properties, st)
 					for (st <- derived) st match {
 						case Statement(CompoundTerm(Product, Seq(a, b)), Similar, CompoundTerm(Product, Seq(c, d)), truth) =>
 							if (a != c)
@@ -81,7 +81,7 @@ object DBTest {
 			val out = new PrintWriter("/home/dejan/tmp/final.nt")
 			try {
 				val derived =
-					ForwardInference.conclusions(properties, conclusions)
+					ForwardInference.conclusions(properties, conclusions.toArray)
 						.filter(st => st.subj.toString.contains("Albert_Einstein") || st.pred.toString.contains("Albert_Einstein"))
 						.sortWith((a, b) => a.truth.conf > b.truth.conf)
 				val size = derived.size

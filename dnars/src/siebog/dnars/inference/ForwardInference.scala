@@ -52,7 +52,7 @@ object ForwardInference {
 	/**
 	 * Returns a list of conclusions for the given set of input statements.
 	 */
-	def conclusions(graph: DNarsGraph, input: Seq[Statement]): List[Statement] = {
+	def conclusions(graph: DNarsGraph, input: Array[Statement]): Array[Statement] = {
 		var res = ListBuffer[Statement]()
 		for (st <- input) {
 			res ++= deduction_analogy(graph, st)
@@ -61,15 +61,18 @@ object ForwardInference {
 			res ++= induction_comparison(graph, st)
 			res ++= analogy_inv(graph, st)
 		}
-		res.toList
+		res.toArray
 	}
+
+	def conclusions(graph: DNarsGraph, input: Statement): Array[Statement] =
+		conclusions(graph, Array(input))
 
 	/**
 	 * Includes the given set of statements in the graph, applying forward inference rules along the way.
 	 */
-	def include(graph: DNarsGraph, input: List[Statement]): Unit = {
+	def include(graph: DNarsGraph, input: Array[Statement]): Unit = {
 		val c = conclusions(graph, input)
-		graph.statements.addAll(input ::: c)
+		graph.statements.addAll(input.toList ::: c.toList)
 	}
 
 	// in the following functions, the first premise is taken from the graph,
