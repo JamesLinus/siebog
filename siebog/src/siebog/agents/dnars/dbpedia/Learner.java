@@ -20,21 +20,24 @@
 
 package siebog.agents.dnars.dbpedia;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import siebog.dnars.DNarsAgent;
+import scala.collection.Iterator;
 import siebog.dnars.base.AtomicTerm;
+import siebog.dnars.base.CompoundTerm;
 import siebog.dnars.base.Copula;
 import siebog.dnars.base.Statement;
 import siebog.dnars.base.Truth;
 import siebog.dnars.graph.DNarsGraph;
+import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.dnars.graph.StructuralTransform;
 import siebog.dnars.inference.ForwardInference;
 import siebog.dnars.inference.ResolutionEngine;
-import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
+import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -44,50 +47,53 @@ import siebog.xjaf.fipa.Performative;
  */
 @Stateful
 @Remote(Agent.class)
-public class Learner extends DNarsAgent {
+public class Learner extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private DNarsGraph globalDomain;
-	private DNarsGraph tempDomain;
-
-	@Override
-	protected void onInit(AgentInitArgs args) {
-		super.onInit(args);
-		globalDomain = domain(args.get("globalDomain"));
-		tempDomain = domain(args.get("tempDomain"));
-	}
+	private QueryDesc query;
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
 		if (msg.performative == Performative.REQUEST) {
-			String uri = msg.content;
-			Set<Statement> relevant = getRelevantStatements(uri);
-			logger.info("Retrieved " + relevant.size() + " relevant statements for " + uri);
-			for (Statement st : relevant) {
-				Statement[] derived = ForwardInference.conclusions(tempDomain, st);
-				for (Statement d : derived)
-					System.out.println(d);
-			}
+			query = (QueryDesc) msg.contentObj;
+
+			Set<Statement> relevant = getRelevantStatements(query.getQuestion());
+			logger.info("Retrieved " + relevant.size() + " relevant statements for " + query.getQuestion());
+			ArrayList<Statement> conclusions;
+			if (relevant.size() > 0)
+				conclusions = deriveNewConclusions(relevant);
+			else
+				conclusions = new ArrayList<>();
+
+			ACLMessage reply = msg.makeReply(Performative.CONFIRM);
+			reply.contentObj = conclusions;
+			msm().post(reply);
 		}
 	}
 
 	private Set<Statement> getRelevantStatements(String uri) {
-		AtomicTerm uriTerm = new AtomicTerm(uri);
-		Truth truth = new Truth(1.0, 0.9);
-		// uri -> ?
-		Statement st = new Statement(uriTerm, Copula.Inherit(), AtomicTerm.Question(), truth);
-		Statement[] relevant1 = ResolutionEngine.answer(globalDomain, st, Integer.MAX_VALUE);
-		// ? -> uri
-		st = new Statement(AtomicTerm.Question(), Copula.Inherit(), uriTerm, truth);
-		Statement[] relevant2 = ResolutionEngine.answer(globalDomain, st, Integer.MAX_VALUE);
 		Set<Statement> set = new HashSet<>();
-		addStatementsToSet(relevant1, set);
-		addStatementsToSet(relevant2, set);
+		DNarsGraph graph = DNarsGraphFactory.create(query.getAllProperties(), null);
+		try {
+			AtomicTerm uriTerm = new AtomicTerm(uri);
+			Truth truth = new Truth(1.0, 0.9);
+			// uri -> ?
+			Statement st = new Statement(uriTerm, Copula.Inherit(), AtomicTerm.Question(), truth);
+			Statement[] relevant1 = ResolutionEngine.answer(graph, st, Integer.MAX_VALUE);
+			// ? -> uri
+			st = new Statement(AtomicTerm.Question(), Copula.Inherit(), uriTerm, truth);
+			Statement[] relevant2 = ResolutionEngine.answer(graph, st, Integer.MAX_VALUE);
+			addStatementsToSet(relevant1, set);
+			addStatementsToSet(relevant2, set);
+		} finally {
+			graph.shutdown();
+		}
 		return set;
 	}
 
 	private void addStatementsToSet(Statement[] statements, Set<Statement> set) {
 		for (Statement st : statements) {
 			set.add(st);
+			// TODO add this as a feature of ForwardInference
 			// add the other two versions (if any)
 			scala.collection.immutable.List<Statement> packed = StructuralTransform.pack(st);
 			if (packed.size() == 2) {
@@ -103,4 +109,32 @@ public class Learner extends DNarsAgent {
 		}
 	}
 
+	private ArrayList<Statement> deriveNewConclusions(Set<Statement> relevant) {
+		ArrayList<Statement> conclusions = new ArrayList<>();
+		DNarsGraph graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
+		try {
+			for (Statement st : relevant) {
+				Statement[] derived = ForwardInference.conclusions(graph, st);
+				for (Statement d : derived) {
+					if (d.subj() instanceof CompoundTerm && d.pred() instanceof CompoundTerm) {
+						CompoundTerm subj = (CompoundTerm) d.subj();
+						CompoundTerm pred = (CompoundTerm) d.pred();
+
+						Iterator<AtomicTerm> si = subj.comps().iterator();
+						Iterator<AtomicTerm> pi = pred.comps().iterator();
+						while (si.hasNext() && pi.hasNext()) {
+							AtomicTerm sterm = si.next();
+							AtomicTerm pterm = pi.next();
+							if (!sterm.equals(pterm))
+								conclusions.add(new Statement(sterm, d.copula(), pterm, d.truth()));
+						}
+					} else
+						conclusions.add(d);
+				}
+			}
+		} finally {
+			graph.shutdown();
+		}
+		return conclusions;
+	}
 }

@@ -22,7 +22,6 @@ package siebog.dnars.graph
 
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.commons.configuration.Configuration
-
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
 import com.thinkaurelius.titan.core.util.TitanCleanup
@@ -32,13 +31,13 @@ import com.tinkerpop.blueprints.Graph
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaGraph
 import com.tinkerpop.gremlin.scala.ScalaVertex
-
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Term
 import siebog.dnars.base.Truth
 import siebog.dnars.events.EventManager
 import siebog.dnars.graph.DNarsVertex.wrap
+import java.io.OutputStream
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
