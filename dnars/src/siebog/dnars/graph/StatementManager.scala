@@ -20,22 +20,19 @@
 
 package siebog.dnars.graph
 
+import scala.collection.mutable.ListBuffer
+
 import com.tinkerpop.blueprints.Direction
-import siebog.dnars.base.AtomicTerm
-import siebog.dnars.base.AtomicTerm.Placeholder
+
 import siebog.dnars.base.CompoundTerm
-import siebog.dnars.base.Connector.ExtImage
-import siebog.dnars.base.Connector.IntImage
 import siebog.dnars.base.Connector.Product
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
+import siebog.dnars.events.EventKind
+import siebog.dnars.events.EventPayload
 import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsVertex.wrap
-import scala.collection.mutable.ListBuffer
-import siebog.dnars.base.CompoundTerm
-import siebog.dnars.events.EventPayload
-import siebog.dnars.events.EventKind
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -58,13 +55,13 @@ class StatementManager(val graph: DNarsGraph) {
 					invEdge.truth = truth
 				} else {
 					// are there any structural transformations?
-					StructuralTransform.unpack(st) match {
+					st.pack match {
 						case List(su1, su2) =>
 							val e1: DNarsEdge = graph.getE(su1).get
 							val e2: DNarsEdge = graph.getE(su2).get
 							e1.truth = truth
 							e2.truth = truth
-						case _ => StructuralTransform.pack(st) match {
+						case _ => st.unpack match {
 							case List(sp1, sp2) =>
 								val e1: DNarsEdge = graph.getE(sp1).get
 								val e2: DNarsEdge = graph.getE(sp2).get
@@ -154,7 +151,7 @@ class StatementManager(val graph: DNarsGraph) {
 	 *
 	 * @return true if the statement could be transformed, false otherwise.
 	 */
-	def unpackAndAdd(graph: DNarsGraph, st: Statement): Boolean = StructuralTransform.unpack(st) match {
+	def unpackAndAdd(graph: DNarsGraph, st: Statement): Boolean = st.unpack match {
 		case List(st1, st2) =>
 			addE(st1)
 			addE(st2)
@@ -163,7 +160,7 @@ class StatementManager(val graph: DNarsGraph) {
 			false
 	}
 
-	def packAndAdd(graph: DNarsGraph, st: Statement): Boolean = StructuralTransform.pack(st) match {
+	def packAndAdd(graph: DNarsGraph, st: Statement): Boolean = st.pack match {
 		case List(st1, st2) =>
 			addE(st1)
 			addE(st2)

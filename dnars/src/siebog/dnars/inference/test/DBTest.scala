@@ -21,21 +21,20 @@
 package siebog.dnars.inference.test
 
 import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.FileReader
-import siebog.dnars.utils.importers.nt.NTReader
-import siebog.dnars.utils.importers.nt.DNarsConvert
-import siebog.dnars.inference.ForwardInference
 import java.io.PrintWriter
-import siebog.dnars.base.StatementParser
-import siebog.dnars.base.Connector._
-import siebog.dnars.base.Copula._
-import siebog.dnars.base.CompoundTerm
-import siebog.dnars.base.Statement
-import siebog.dnars.inference.ResolutionEngine
-import siebog.dnars.graph.DNarsGraphFactory
+
 import scala.collection.mutable.ListBuffer
-import siebog.dnars.graph.StructuralTransform
+
+import siebog.dnars.base.CompoundTerm
+import siebog.dnars.base.Connector.Product
+import siebog.dnars.base.Copula.Similar
+import siebog.dnars.base.Statement
+import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.inference.ForwardInference
+import siebog.dnars.inference.ResolutionEngine
+import siebog.dnars.utils.importers.nt.DNarsConvert
+import siebog.dnars.utils.importers.nt.NTReader
 
 /**
  *
@@ -87,7 +86,7 @@ object DBTest {
 				val size = derived.size
 				var i = 0
 				for (st <- derived) {
-					StructuralTransform.pack(st) match {
+					st.pack match {
 						case List(packed, _) =>
 							if (!ResolutionEngine.hasAnswer(properties, packed))
 								out.println(packed)

@@ -21,9 +21,11 @@
 package siebog.dnars.inference
 
 import scala.collection.mutable.ListBuffer
+
 import com.tinkerpop.blueprints.Direction
+import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaVertex
-import com.tinkerpop.gremlin.scala.wrapScalaVertex.apply
+
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -32,7 +34,6 @@ import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsVertex
 import siebog.dnars.graph.DNarsVertex.wrap
-import com.tinkerpop.blueprints.Vertex
 
 /**
  * Syllogistic forward inference rules. The following table represents the summary

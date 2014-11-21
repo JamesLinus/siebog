@@ -1,26 +1,13 @@
 package siebog.dnars.utils.importers.nt
 
-import siebog.dnars.graph.DNarsGraphFactory
 import scala.io.Source
-import siebog.dnars.base.StatementParser
+
 import siebog.dnars.base.Statement
-import siebog.dnars.base.Term
-import siebog.dnars.graph.DNarsVertex
-import java.util.HashMap
-import scala.collection.mutable.Map
-import com.tinkerpop.blueprints.Vertex
-import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsEdge
-import com.hp.hpl.jena.rdf.model.ModelFactory
-import java.io.StringReader
-import com.hp.hpl.jena.rdf.model.RDFNode
-import siebog.dnars.base.AtomicTerm
-import siebog.dnars.base.CompoundTerm
-import siebog.dnars.base.Connector._
-import siebog.dnars.base.Copula._
-import siebog.dnars.base.Truth
-import java.io.PrintWriter
-import siebog.dnars.graph.StructuralTransform
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.graph.DNarsGraph.unwrap
+import siebog.dnars.graph.DNarsGraphFactory
 
 object DNarsImporter {
 	def main(args: Array[String]): Unit = {
@@ -61,7 +48,7 @@ object DNarsImporter {
 
 	def add(graph: DNarsGraph, st: Statement): Unit = {
 		addSt(graph, st)
-		StructuralTransform.unpack(st) match {
+		st.unpack match {
 			case List(st1, st2) =>
 				addSt(graph, st1)
 				addSt(graph, st2)

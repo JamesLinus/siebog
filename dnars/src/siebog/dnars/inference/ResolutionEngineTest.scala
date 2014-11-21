@@ -20,22 +20,18 @@
 
 package siebog.dnars.inference
 
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
-import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.DNarsTestUtils.assertSeq
-import siebog.dnars.base.AtomicTerm
-import siebog.dnars.base.AtomicTerm.Question
+import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.base.StatementParser
-import siebog.dnars.base.Term
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraphFactory
-import siebog.dnars.graph.StructuralTransform
-import org.junit.Before
-import org.junit.After
 
 /**
  *
@@ -113,14 +109,14 @@ class ResolutionEngineTest {
 
 		for (st <- stset.derived) {
 			// expect the packed version, if available
-			val expected = StructuralTransform.pack(st) match {
+			val expected = st.pack match {
 				case List(s1, _) => s1
 				case _ => st
 			}
 
 			val answers = ResolutionEngine.answer(graph, st)
 			assertNotEquals("No answer for " + st, List(), answers)
-			val packed = answers.map(a => StructuralTransform.pack(a) match {
+			val packed = answers.map(a => a.pack match {
 				case List(s1, _) => s1
 				case _ => a
 			})

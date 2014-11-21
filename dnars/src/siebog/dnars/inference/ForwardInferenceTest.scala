@@ -29,32 +29,43 @@ import siebog.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsGraphFactory
+import org.junit.Before
+import org.junit.After
+import siebog.dnars.graph.DNarsGraph
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class ForwardInferenceTest {
+	var graph: DNarsGraph = null
+
+	@Before
+	def setUp(): Unit = {
+		graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
+	}
+
+	@After
+	def tearDown(): Unit = {
+		graph.shutdown
+		graph.clear
+		graph = null
+	}
+
 	@Test
 	def deduction_analogy: Unit = {
 		// M -> P  
 		//		S -> M	=> S -> P ded 
 		//		S ~ M	=> S -> P ana
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val stset = InferenceSets.getDeductionAnalogy
-			graph.statements.addAll(stset.kb)
+		val stset = InferenceSets.getDeductionAnalogy
+		graph.statements.addAll(stset.kb)
 
-			val derived = new ListBuffer[Statement]()
-			for (st <- stset.kb)
-				derived ++= ForwardInference.deduction_analogy(graph, st)
-			graph.statements.addAll(derived)
+		val derived = new ListBuffer[Statement]()
+		for (st <- stset.kb)
+			derived ++= ForwardInference.deduction_analogy(graph, st)
+		graph.statements.addAll(derived)
 
-			stset.assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		stset.assertGraph(graph)
 	}
 
 	@Test
@@ -62,21 +73,15 @@ class ForwardInferenceTest {
 		// M ~ P ::
 		//		S -> M	=> S -> P ana'
 		//		S ~ M	=> S ~ P res
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val stset = InferenceSets.getAnalogyResemblance
-			graph.statements.addAll(stset.kb)
+		val stset = InferenceSets.getAnalogyResemblance
+		graph.statements.addAll(stset.kb)
 
-			val derived = new ListBuffer[Statement]()
-			for (st <- stset.kb)
-				derived ++= ForwardInference.analogy_resemblance(graph, st)
-			graph.statements.addAll(derived)
+		val derived = new ListBuffer[Statement]()
+		for (st <- stset.kb)
+			derived ++= ForwardInference.analogy_resemblance(graph, st)
+		graph.statements.addAll(derived)
 
-			stset.assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		stset.assertGraph(graph)
 	}
 
 	@Test
@@ -84,55 +89,45 @@ class ForwardInferenceTest {
 		// P -> M 
 		//		S -> M	=> S -> P abd, S ~ P cmp
 		//		S ~ M 	=> P -> S ana
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val stset = InferenceSets.getAbductionComparisonAnalogy
-			graph.statements.addAll(stset.kb)
+		val stset = InferenceSets.getAbductionComparisonAnalogy
+		graph.statements.addAll(stset.kb)
 
-			val derived = new ListBuffer[Statement]()
-			for (st <- stset.kb)
-				derived ++= ForwardInference.abduction_comparison_analogy(graph, st)
-			graph.statements.addAll(derived)
+		val derived = new ListBuffer[Statement]()
+		for (st <- stset.kb)
+			derived ++= ForwardInference.abduction_comparison_analogy(graph, st)
+		graph.statements.addAll(derived)
 
-			stset.assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		stset.assertGraph(graph)
 	}
 
 	@Test
 	def compoundExtentional: Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val stset = InferenceSets.getCompoundExtentionalDeduction
-			graph.statements.addAll(stset.kb)
+		val stset = InferenceSets.getCompoundExtentionalDeduction
+		graph.statements.addAll(stset.kb)
 
-			val derived = new ListBuffer[Statement]()
-			for (st <- stset.kb)
-				derived ++= ForwardInference.deduction_analogy(graph, st)
-			graph.statements.addAll(derived)
+		val derived = new ListBuffer[Statement]()
+		for (st <- stset.kb)
+			derived ++= ForwardInference.deduction_analogy(graph, st)
+		graph.statements.addAll(derived)
 
-			stset.assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		stset.assertGraph(graph)
 	}
 
 	@Test
 	def compoundTest: Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val kb = createAndAdd(graph, "(x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.00,0.90)")
-			val st = StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.0, 0.9)")
-			val derived = ForwardInference.abduction_comparison_analogy(graph, st)
-			val res = List(StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"),
-				StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) ~ (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"))
-			assertSeq(res, derived)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		val kb = createAndAdd(graph, "(x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.00,0.90)")
+		val st = StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.0, 0.9)")
+		val derived = ForwardInference.abduction_comparison_analogy(graph, st)
+		val res = List(StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) ~ (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"))
+		assertSeq(res, derived)
+	}
+
+	@Test
+	def imageTest: Unit = {
+		val kb = createAndAdd(graph, "tiger -> cat (1.0, 0.9)")
+		val st = StatementParser("(x cat bird) -> eats (1.0, 0.9)")
+		val derived = ForwardInference.deduction_analogy(graph, st)
+		val res = List(StatementParser("(x tiger bird) -> eats (1.0, 0.9)"))
+		assertSeq(res, derived)
 	}
 }

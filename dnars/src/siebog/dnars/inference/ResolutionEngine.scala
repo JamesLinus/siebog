@@ -20,20 +20,19 @@
 
 package siebog.dnars.inference
 
-import siebog.dnars.graph.DNarsGraph
-import siebog.dnars.base.Statement
-import siebog.dnars.base.AtomicTerm._
-import siebog.dnars.base.Copula._
-import siebog.dnars.base.Truth
-import siebog.dnars.graph.DNarsVertex
 import com.tinkerpop.blueprints.Direction
-import siebog.dnars.graph.DNarsEdge
-import siebog.dnars.base.Term
-import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
-import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.blueprints.Edge
-import siebog.dnars.graph.StructuralTransform
-import scala.collection.mutable.ListBuffer
+import com.tinkerpop.blueprints.Vertex
+import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
+
+import siebog.dnars.base.AtomicTerm.Question
+import siebog.dnars.base.Copula.Similar
+import siebog.dnars.base.Statement
+import siebog.dnars.base.Term
+import siebog.dnars.base.Truth
+import siebog.dnars.graph.DNarsEdge
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.graph.DNarsVertex
 
 /**
  * Resolution engine for answering questions.
@@ -69,16 +68,17 @@ object ResolutionEngine {
 					.toArray
 
 			case (s, p) => // backward inference
+				// TODO : improve this now that there is Statement.allForms
 				val answ1 = inferBackwards(graph, question, limit)
 				// try with structural transformations (packing)
-				val answ2 = StructuralTransform.pack(question) match {
+				val answ2 = question.pack match {
 					case List(q1, q2) =>
 						inferBackwards(graph, q1, limit) ::: inferBackwards(graph, q2, limit)
 					case _ =>
 						List()
 				}
 				// try with structural transformations (unpacking)
-				val answ3 = StructuralTransform.unpack(question) match {
+				val answ3 = question.unpack match {
 					case List(q1, q2) =>
 						inferBackwards(graph, q1, limit) ::: inferBackwards(graph, q2, limit)
 					case _ =>

@@ -33,7 +33,6 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.base.Truth;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
-import siebog.dnars.graph.StructuralTransform;
 import siebog.dnars.inference.ForwardInference;
 import siebog.dnars.inference.ResolutionEngine;
 import siebog.xjaf.core.Agent;
@@ -95,12 +94,12 @@ public class Learner extends XjafAgent {
 			set.add(st);
 			// TODO add this as a feature of ForwardInference
 			// add the other two versions (if any)
-			scala.collection.immutable.List<Statement> packed = StructuralTransform.pack(st);
+			scala.collection.immutable.List<Statement> packed = st.pack();
 			if (packed.size() == 2) {
 				set.add(packed.head());
 				set.add(packed.last());
 			} else {
-				scala.collection.immutable.List<Statement> unpacked = StructuralTransform.unpack(st);
+				scala.collection.immutable.List<Statement> unpacked = st.unpack();
 				if (unpacked.size() == 2) {
 					set.add(unpacked.head());
 					set.add(unpacked.last());
