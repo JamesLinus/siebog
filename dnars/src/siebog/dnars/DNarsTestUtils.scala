@@ -57,10 +57,12 @@ object DNarsTestUtils {
 	def assertSeq(expected: Seq[Statement], actual: Seq[Statement]): Unit = {
 		assertEquals(expected.size, actual.size)
 		for (ste <- expected) {
-			var found = true
-			for (sta <- actual if !found)
-				if (ste.equivalent(sta))
-					found = true
+			var found = false
+			for (form <- ste.allForms)
+				// cannot use "contains" because of Truth
+				for (sta <- actual)
+					if (form.equivalent(sta))
+						found = true
 			assertTrue("Statement " + ste + " not found.", found)
 		}
 	}

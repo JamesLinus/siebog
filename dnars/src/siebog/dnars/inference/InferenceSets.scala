@@ -29,9 +29,15 @@ import siebog.dnars.graph.DNarsGraph
 
 class InferenceSet(val kb: List[Statement], val derived: List[Statement]) {
 	def assertGraph(graph: DNarsGraph): Unit = {
-		val expected = kb ::: derived
-		val actual = graph.statements.getAll
-		assertSeq(expected, actual)
+		try {
+			val expected = kb ::: derived
+			val actual = graph.statements.getAll
+			assertSeq(expected, actual)
+		} catch {
+			case ex: AssertionError =>
+				graph.printEdges
+				throw ex
+		}
 	}
 }
 

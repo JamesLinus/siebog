@@ -125,9 +125,9 @@ class ForwardInferenceTest {
 	@Test
 	def imageTest: Unit = {
 		val kb = createAndAdd(graph, "tiger -> cat (1.0, 0.9)")
-		val st = StatementParser("(x cat bird) -> eats (1.0, 0.9)")
+		val st = StatementParser("eat -> (x tiger bird) (1.0, 0.9)")
 		val derived = ForwardInference.deduction_analogy(graph, st)
-		val res = List(StatementParser("(x tiger bird) -> eats (1.0, 0.9)"))
+		val res = List(StatementParser("eat -> (x cat bird) (1.0, 0.81)"))
 		assertSeq(res, derived)
 	}
 }
