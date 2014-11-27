@@ -20,7 +20,6 @@
 
 package siebog.agents.dnars.dbpedia;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import javax.ejb.Remote;
@@ -29,11 +28,12 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 import siebog.core.Global;
 import siebog.dnars.base.Statement;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
-import siebog.dnars.inference.ForwardInference;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
@@ -71,21 +71,20 @@ public class Annotator extends XjafAgent {
 			for (String u : uris)
 				createNewLearner(u);
 		} else if (msg.performative == Performative.CONFIRM) {
-			@SuppressWarnings("unchecked")
-			ArrayList<Statement> conclusions = (ArrayList<Statement>) msg.contentObj;
-			DNarsGraph graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
-			try {
-				ForwardInference.include(graph, conclusions.toArray(new Statement[0]));
-			} finally {
-				graph.shutdown();
-			}
-
 			--pendingLearners;
 			logger.info("Pending learners: " + pendingLearners);
 			if (pendingLearners == 0) {
-				graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
+				DNarsGraph graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
 				try {
-					graph.printEdges();
+					graph.forEachStatement(new AbstractFunction1<Statement, BoxedUnit>() {
+						@Override
+						public BoxedUnit apply(Statement st) {
+							if (st.toString().contains(query.getQuestion()))
+								if (st.truth().conf() > 0.7)
+									System.out.println(st);
+							return null;
+						}
+					});
 				} finally {
 					graph.shutdown();
 				}

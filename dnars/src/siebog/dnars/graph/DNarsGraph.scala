@@ -99,7 +99,13 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	 * Debugging purposes only.
 	 */
 	def printEdges(): Unit = {
-		val list = E.map { e =>
+		println(s"---------------- Graph dump [domain=$domain] ----------------")
+		forEachStatement(println(_))
+		println("------------------- Done -------------------")
+	}
+
+	def forEachStatement(f: (Statement) => Unit): Unit = {
+		val allSt = E.map { e =>
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
 			val c = e.getLabel
@@ -111,10 +117,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 				case List(h, _) => h
 			}
 		}.toSet
-		println(s"---------------- Graph dump [domain=$domain] ----------------")
-		for (st <- list)
-			println(st)
-		println("------------------- Done -------------------")
+		allSt.foreach(f)
 	}
 
 	/**

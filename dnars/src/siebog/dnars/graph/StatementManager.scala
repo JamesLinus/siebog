@@ -21,11 +21,11 @@
 package siebog.dnars.graph
 
 import scala.collection.mutable.ListBuffer
-
 import com.tinkerpop.blueprints.Direction
-
 import siebog.dnars.base.CompoundTerm
 import siebog.dnars.base.Connector.Product
+import siebog.dnars.base.Connector.ExtImage
+import siebog.dnars.base.Connector.IntImage
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -33,6 +33,9 @@ import siebog.dnars.events.EventKind
 import siebog.dnars.events.EventPayload
 import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsVertex.wrap
+import siebog.dnars.base.Term
+import siebog.dnars.base.Copula
+import siebog.dnars.base.AtomicTerm
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -106,10 +109,14 @@ class StatementManager(val graph: DNarsGraph) {
 			false // predicate should be an atomic term
 		case (CompoundTerm(_, _), Inherit, CompoundTerm(Product, _)) =>
 			false // subject should be an atomic term
-		//case (CompoundTerm(Product, _), Similar, AtomicTerm(_)) =>
-		//	false // copula should be inheritance
-		//case (AtomicTerm(_), Similar, CompoundTerm(Product, _)) =>
-		//	false // copula should be inheritance
+		case (CompoundTerm(ExtImage, _), _, _) =>
+			false // extensional image on the intensional side
+		case (_, _, CompoundTerm(IntImage, _)) =>
+			false // intensional image on the extensional side
+		//case (s, c, CompoundTerm(ExtImage, _)) =>
+		//	s.isInstanceOf[AtomicTerm] && c == Inherit
+		//case (CompoundTerm(IntImage, _), c, p) =>
+		//	p.isInstanceOf[AtomicTerm] && c == Inherit
 		case _ =>
 			true
 	}
@@ -136,14 +143,16 @@ class StatementManager(val graph: DNarsGraph) {
 	def getAll: List[Statement] = {
 		val edges = graph.E.toList
 		val n = edges.size
-		val st = new ListBuffer[Statement]()
+		val res = new ListBuffer[Statement]()
 		for (e <- edges) {
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
 			val edge: DNarsEdge = e
-			st += Statement(s.term, edge.copula, p.term, edge.truth)
+			val statement = Statement(s.term, edge.copula, p.term, edge.truth)
+			if (statement.pack.lengthCompare(0) == 0)
+				res += statement
 		}
-		st.toList
+		res.toList
 	}
 
 	/**

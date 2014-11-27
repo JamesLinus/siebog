@@ -105,6 +105,13 @@ object ForwardInference {
 		res.toList
 	}
 
+	def deduction_analogy(graph: DNarsGraph, judgements: Seq[Statement]): List[Statement] = {
+		val res = ListBuffer[Statement]()
+		for (j <- judgements)
+			res ++= deduction_analogy(graph, j)
+		res.toList
+	}
+
 	// M ~ P ::
 	//		S -> M	=> S -> P ana'
 	//		S ~ M	=> S ~ P res
@@ -159,6 +166,13 @@ object ForwardInference {
 				}
 			}
 		}
+		res.toList
+	}
+
+	def abduction_comparison_analogy(graph: DNarsGraph, judgements: Seq[Statement]): List[Statement] = {
+		val res = ListBuffer[Statement]()
+		for (j <- judgements)
+			res ++= abduction_comparison_analogy(graph, j)
 		res.toList
 	}
 

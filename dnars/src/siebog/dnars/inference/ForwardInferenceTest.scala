@@ -22,50 +22,45 @@ package siebog.dnars.inference
 
 import scala.collection.mutable.ListBuffer
 import org.junit.Test
-import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
-import siebog.dnars.DNarsTestUtils.assertSeq
-import siebog.dnars.DNarsTestUtils.createAndAdd
-import siebog.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsGraphFactory
 import org.junit.Before
 import org.junit.After
 import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.DNarsTestBase
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class ForwardInferenceTest {
-	var graph: DNarsGraph = null
-
-	@Before
-	def setUp(): Unit = {
-		graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-	}
-
-	@After
-	def tearDown(): Unit = {
-		graph.shutdown
-		graph.clear
-		graph = null
-	}
-
+class ForwardInferenceTest extends DNarsTestBase {
 	@Test
 	def deduction_analogy: Unit = {
 		// M -> P  
 		//		S -> M	=> S -> P ded 
 		//		S ~ M	=> S -> P ana
-		val stset = InferenceSets.getDeductionAnalogy
-		graph.statements.addAll(stset.kb)
+		val kb = createAndAdd(graph,
+			"cat -> animal (0.82, 0.91)",
+			"water -> liquid (1.0, 0.9)",
+			"tiger -> cat (0.5, 0.7)",
+			"developer ~ job (1.0, 0.9)",
+			"feline ~ cat (0.76, 0.83)",
+			"(x einstein physics) -> field (1.0, 0.9)",
+			"quantum ~ physics (1.0, 0.9)")
 
-		val derived = new ListBuffer[Statement]()
-		for (st <- stset.kb)
-			derived ++= ForwardInference.deduction_analogy(graph, st)
+		val derived = ForwardInference.deduction_analogy(graph, kb)
 		graph.statements.addAll(derived)
 
-		stset.assertGraph(graph)
+		val expected = List(
+			invert(kb(3)),
+			invert(kb(4)),
+			StatementParser("tiger -> animal " + kb(0).truth.deduction(kb(2).truth)),
+			StatementParser("feline -> animal " + kb(0).truth.analogy(kb(4).truth, false)),
+			invert(kb(6)),
+			StatementParser("(x einstein quantum) -> field " + kb(5).truth.analogy(kb(6).truth, false)))
+
+		assertGraph(graph, kb.toList ::: expected)
 	}
 
 	@Test
@@ -89,15 +84,29 @@ class ForwardInferenceTest {
 		// P -> M 
 		//		S -> M	=> S -> P abd, S ~ P cmp
 		//		S ~ M 	=> P -> S ana
-		val stset = InferenceSets.getAbductionComparisonAnalogy
-		graph.statements.addAll(stset.kb)
+		val kb = createAndAdd(graph,
+			"tiger -> cat (1.0, 0.9)",
+			"water -> liquid (0.68, 0.39)",
+			"developer -> job (0.93, 0.46)",
+			"lion -> cat (0.43, 0.75)",
+			"feline ~ cat (0.49, 0.52)")
 
-		val derived = new ListBuffer[Statement]()
-		for (st <- stset.kb)
-			derived ++= ForwardInference.abduction_comparison_analogy(graph, st)
+		val derived = ForwardInference.abduction_comparison_analogy(graph, kb)
 		graph.statements.addAll(derived)
 
-		stset.assertGraph(graph)
+		val con1 = StatementParser("lion ~ tiger " + kb(0).truth.comparison(kb(3).truth))
+		val con2 = StatementParser("tiger ~ lion " + kb(3).truth.comparison(kb(0).truth))
+		val revised = StatementParser("lion ~ tiger " + con1.truth.revision(con2.truth))
+		val expected = List(
+			invert(kb(4)),
+			StatementParser("lion -> tiger " + kb(0).truth.abduction(kb(3).truth)),
+			revised,
+			StatementParser("tiger -> feline " + kb(0).truth.analogy(kb(4).truth, false)),
+			StatementParser("tiger -> lion " + kb(3).truth.abduction(kb(0).truth)),
+			invert(revised),
+			StatementParser("lion -> feline " + kb(3).truth.analogy(kb(4).truth, false)))
+
+		assertGraph(graph, kb.toList ::: expected)
 	}
 
 	@Test

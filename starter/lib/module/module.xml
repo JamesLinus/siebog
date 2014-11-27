@@ -51,7 +51,7 @@
         <resource-root path="log4j-1.2.17.jar" />
         <resource-root path="metrics-core-3.0.1.jar" />
         <resource-root path="pipes-2.4.0.jar" />
-        <resource-root path="scala-library.jar" />
+        <resource-root path="scala-library_2.11.2.jar" />
         <resource-root path="slf4j-api-1.7.6.jar" />
         <resource-root path="slf4j-log4j12-1.7.6.jar" />
         <resource-root path="spatial4j-0.3.jar" />
