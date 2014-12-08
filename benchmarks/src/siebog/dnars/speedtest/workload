@@ -1,0 +1,10 @@
+recordcount=0
+operationcount=5
+workload=siebog.dnars.speedtest.DNarsWorkload
+
+readproportion=1.0
+updateproportion=0
+scanproportion=0
+insertproportion=0
+
+hostname=localhost
