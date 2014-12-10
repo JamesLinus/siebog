@@ -15,37 +15,32 @@ import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
 
 public class DNarsDB extends DB {
-	private Map<String, Object> config;
+	private DNarsGraph graph;
 
 	@Override
 	public void init() throws DBException {
 		Properties props = getProperties();
-		config = new HashMap<>();
+		Map<String, Object> config = new HashMap<>();
 		String hostname = props.getProperty("hostname");
 		if (hostname == null)
-			throw new DBException("Database hostname cannot be empty.");
+			throw new DBException("Please specify the 'hostname' paramater (Cassanda hostname).");
+		String domain = props.getProperty("domain");
+		if (domain == null)
+			throw new DBException("Please specify the 'domain' parameter.");
 		config.put("storage.hostname", hostname);
+		graph = DNarsGraphFactory.create(domain, config);
 	}
 
 	@Override
-	public int read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
-		if ((int) (Math.random() * 2) == 0)
-			key = key + " -> ? (1.0, 0.9)";
-		else
-			key = "? -> " + key + " (1.0, 0.9)";
-		Statement question = StatementParser.apply(key);
-		System.out.println("Reading " + question);
+	public void cleanup() throws DBException {
+		graph.shutdown();
+	}
 
-		int err = 0;
-		DNarsGraph graph = DNarsGraphFactory.create(table, config);
-		try {
-			Statement[] answers = ResolutionEngine.answer(graph, question, Integer.MAX_VALUE);
-			if (answers.length == 0)
-				err = 1;
-		} finally {
-			graph.shutdown();
-		}
-
+	@Override
+	public int read(String domain, String questionStr, Set<String> fields, HashMap<String, ByteIterator> result) {
+		Statement question = StatementParser.apply(questionStr);
+		Statement[] answers = ResolutionEngine.answer(graph, question, Integer.MAX_VALUE);
+		int err = answers.length > 0 ? 0 : 1;
 		return err;
 	}
 

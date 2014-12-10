@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/dejan/dev/siebog/benchmarks/speedtest.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="/home/dejan/tmp/speedtest.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="siebog.dnars.speedtest.DNarsDB"/>
                 <attribute name="Class-Path" value="."/>

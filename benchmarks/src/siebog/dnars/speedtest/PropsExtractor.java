@@ -42,7 +42,7 @@ public class PropsExtractor {
 
 				++n;
 				if (n % 500000 == 0)
-					System.out.println("\rCompleted " + n);
+					System.out.println("Completed " + n);
 			}
 		}
 
