@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import java.rmi.RemoteException;
 import org.junit.Before;
 import org.junit.Test;
-import siebog.agents.xjaf.ClientBase;
+import siebog.agents.test.TestClientBase;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentManager;
@@ -39,7 +39,7 @@ import siebog.xjaf.radigostlayer.RadigostStub;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class ClientServerTest extends ClientBase {
+public class ClientServerTest extends TestClientBase {
 	private AID clientAid;
 
 	public ClientServerTest() throws RemoteException {

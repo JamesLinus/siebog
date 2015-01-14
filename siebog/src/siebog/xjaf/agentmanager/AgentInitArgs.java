@@ -29,7 +29,7 @@ public class AgentInitArgs implements Serializable {
 	}
 
 	/**
-	 * Accepts an array of strings in form of "key->value".
+	 * Accepts an array of strings in the form of "key=value".
 	 * 
 	 * @param keyValues
 	 */

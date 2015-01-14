@@ -18,14 +18,14 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.agents.test.pingpong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.rmi.RemoteException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
-import siebog.agents.xjaf.ClientBase;
+import siebog.agents.test.TestClientBase;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentManager;
@@ -39,7 +39,7 @@ import siebog.xjaf.messagemanager.MessageManager;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class PingPongTest extends ClientBase {
+public class PingPongTest extends TestClientBase {
 	public PingPongTest() throws RemoteException {
 	}
 
@@ -54,10 +54,10 @@ public class PingPongTest extends ClientBase {
 	private void runPingPong() {
 		AgentManager agm = ObjectFactory.getAgentManager();
 
-		AID pingAid = agm.startAgent(new AgentClass(Global.SERVER, "Ping"), "Ping", null);
+		AID pingAid = agm.startAgent(new AgentClass(Global.SERVER, Ping.class.getSimpleName()), "Ping", null);
 
 		String pongName = "Pong";
-		agm.startAgent(new AgentClass(Global.SERVER, "Pong"), pongName, null);
+		agm.startAgent(new AgentClass(Global.SERVER, Pong.class.getSimpleName()), pongName, null);
 
 		MessageManager msm = ObjectFactory.getMessageManager();
 		ACLMessage message = new ACLMessage(Performative.REQUEST);

@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.ping;
+package siebog.agents.test.pingpong;
 
 import java.io.Serializable;
 import java.util.HashMap;

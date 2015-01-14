@@ -20,22 +20,26 @@
 
 package siebog.xjaf.core;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.Topic;
 import siebog.utils.ObjectFactory;
-import siebog.utils.ExecutorService;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.messagemanager.MessageManager;
+import siebog.xjaf.messagemanager.MessageManagerBean;
 
 /**
  * Base class for all agents.
@@ -44,29 +48,43 @@ import siebog.xjaf.messagemanager.MessageManager;
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  */
 @Lock(LockType.READ)
-public abstract class XjafAgent implements Agent {
+public abstract class XjafAgent implements Agent, MessageListener {
 	private static final long serialVersionUID = 1L;
+	private static ConnectionFactory connectionFactory;
+	private static Connection connection;
+	private static Topic topic;
+	private transient Session session;
 	// the access timeout is needed only when the system is under a heavy load.
 	// under normal circumstances, all methods should return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 5;
 	protected final Logger logger = Logger.getLogger(getClass().getName());
-	private transient Agent myself;
 	protected AID myAid;
 	private transient AgentManager agm;
 	private transient MessageManager msm;
-	private transient boolean processing;
-	private BlockingQueue<ACLMessage> queue = new LinkedBlockingQueue<>();
-	private boolean terminated;
-	private transient ExecutorService exec;
-	private transient long hbHandle;
+	// TODO : Restore support for heartbeats.
+	// private transient long hbHandle;
+
+	static {
+		try {
+			connectionFactory = MessageManagerBean.getConnectionFactory();
+			topic = MessageManagerBean.getTopic();
+			connection = connectionFactory.createConnection();
+			connection.start();
+		} catch (Exception ex) {
+			Logger.getLogger(XjafAgent.class.getName()).log(Level.SEVERE, "Unable to initialize the JMS.", ex);
+		}
+	}
 
 	@Override
-	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
 	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
-		// TODO If the 'myself' reference is not initialized here, it does not work in processNextMessage
-		myself();
+		try {
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			MessageConsumer consumer = session.createConsumer(topic, "aid = '" + aid + "'");
+			consumer.setMessageListener(this);
+		} catch (JMSException ex) {
+			logger.log(Level.SEVERE, "Unable to connect to the JMS topic.", ex);
+		}
 		onInit(args);
 	}
 
@@ -80,6 +98,31 @@ public abstract class XjafAgent implements Agent {
 	 */
 	protected abstract void onMessage(ACLMessage msg);
 
+	@Override
+	public void onMessage(Message jmsMsg) {
+		try {
+			ACLMessage msg = (ACLMessage) ((ObjectMessage) jmsMsg).getObject();
+			// TODO : check if the access to onMessage is protected
+			// TODO : Restore support for heartbeats.
+			if (msg instanceof HeartbeatMessage) {
+				boolean repeat = onHeartbeat(msg.content);
+				if (repeat)
+					; // executor().signalHeartbeat(hbHandle);
+				else
+					; // executor().cancelHeartbeat(hbHandle);
+			} else {
+				if (filter(msg))
+					try {
+						onMessage(msg);
+					} catch (Exception ex) {
+						logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
+					}
+			}
+		} catch (JMSException ex) {
+			logger.log(Level.WARNING, "Unable to extract the ACL message.", ex);
+		}
+	}
+
 	protected boolean onHeartbeat(String content) {
 		return false;
 	}
@@ -88,62 +131,17 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	@Override
-	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
-	public void handleMessage(ACLMessage msg) {
-		queue.add(msg);
-		if (!processing)
-			processNextMessage();
-	}
-
-	@Override
-	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
-	public void processNextMessage() {
-		if (terminated) {
-			onTerminate();
-			// remove stateful beans
-			if (getClass().getAnnotation(Stateful.class) != null)
-				myself().remove();
-			return;
-		}
-
-		final ACLMessage msg = receiveNoWait();
-		if (msg == null)
-			processing = false;
-		else {
-			processing = true;
-			executor().execute(new Runnable() {
-				@Override
-				public void run() {
-					// TODO : check if the access to onMessage is protected
-					if (msg instanceof HeartbeatMessage) {
-						boolean repeat = onHeartbeat(msg.content);
-						if (repeat)
-							executor().signalHeartbeat(hbHandle);
-						else
-							executor().cancelHeartbeat(hbHandle);
-					} else {
-						if (filter(msg))
-							try {
-								onMessage(msg);
-							} catch (Exception ex) {
-								logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
-							}
-					}
-					myself().processNextMessage(); // will acquire lock
-				}
-			});
-		}
-	}
-
-	@Override
-	@Lock(LockType.WRITE)
-	@AccessTimeout(value = ACCESS_TIMEOUT, unit = TimeUnit.MINUTES)
+	@Remove
 	public void stop() {
-		terminated = true;
-		if (!processing)
-			processNextMessage();
+		if (session != null) {
+			try {
+				session.close();
+			} catch (JMSException ex) {
+				logger.log(Level.WARNING, "Error while closing the JMS session.", ex);
+			} finally {
+				session = null;
+			}
+		}
 	}
 
 	/**
@@ -152,28 +150,30 @@ public abstract class XjafAgent implements Agent {
 	 * @return ACLMessage object, or null if the queue is empty.
 	 */
 	protected ACLMessage receiveNoWait() {
-		return queue.poll();
+		return null; // queue.poll(); // TODO : Implement receiveNoWait.
 	}
 
 	/**
-	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary for the message to
-	 * become available.
+	 * Retrieves the next message from the queue, waiting up to the specified wait time if necessary
+	 * for the message to become available.
 	 * 
-	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into account and the
-	 *            method simply waits until a message is available.
-	 * @return ACLMessage object, or null if the specified waiting time elapses before the message is available.
+	 * @param timeout Maximum wait time, in milliseconds. If zero, the real time is not taken into
+	 *            account and the method simply waits until a message is available.
+	 * @return ACLMessage object, or null if the specified waiting time elapses before the message
+	 *         is available.
 	 * @throws IllegalArgumentException if timeout &lt; 0.
 	 */
 	protected ACLMessage receiveWait(long timeout) {
 		if (timeout < 0)
 			throw new IllegalArgumentException("The timeout value cannot be negative.");
 		ACLMessage msg = null;
-		try {
-			if (timeout == 0)
-				timeout = Long.MAX_VALUE;
-			msg = queue.poll(timeout, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException ex) {
-		}
+		// TODO : Implement receiveWait.
+		// try {
+		// if (timeout == 0)
+		// timeout = Long.MAX_VALUE;
+		// msg = queue.poll(timeout, TimeUnit.MILLISECONDS);
+		// } catch (InterruptedException ex) {
+		// }
 		return msg;
 	}
 
@@ -193,13 +193,9 @@ public abstract class XjafAgent implements Agent {
 		return myAid.equals(((XjafAgent) obj).myAid);
 	}
 
-	@Override
-	@Remove
-	public void remove() {
-	}
-
 	/**
-	 * Before being finally delivered to the agent, the message will be passed to this filtering function.
+	 * Before being finally delivered to the agent, the message will be passed to this filtering
+	 * function.
 	 * 
 	 * @param msg
 	 * @return If false, the message will be discarded.
@@ -209,7 +205,8 @@ public abstract class XjafAgent implements Agent {
 	}
 
 	protected void registerHeartbeat(String content) {
-		hbHandle = executor().registerHeartbeat(myAid, 500, content);
+		// TODO : Restore support for heartbeats.
+		// hbHandle = executor().registerHeartbeat(myAid, 500, content);
 	}
 
 	protected void registerHeartbeat() {
@@ -229,12 +226,6 @@ public abstract class XjafAgent implements Agent {
 		logger.info(myAid + " pinged.");
 	}
 
-	private ExecutorService executor() {
-		if (exec == null)
-			exec = ObjectFactory.getExecutorService();
-		return exec;
-	}
-
 	protected AgentManager agm() {
 		if (agm == null)
 			agm = ObjectFactory.getAgentManager();
@@ -245,11 +236,5 @@ public abstract class XjafAgent implements Agent {
 		if (msm == null)
 			msm = ObjectFactory.getMessageManager();
 		return msm;
-	}
-
-	private Agent myself() {
-		if (myself == null)
-			myself = ObjectFactory.getSessionContext().getBusinessObject(Agent.class);
-		return myself;
 	}
 }

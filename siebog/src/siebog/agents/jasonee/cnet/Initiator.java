@@ -29,7 +29,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import siebog.SiebogClient;
-import siebog.agents.xjaf.RemoteAgentListener;
+import siebog.agents.test.RemoteAgentListener;
 import siebog.core.Global;
 import siebog.jasonee.JasonEEAgent;
 import siebog.jasonee.JasonEEProject;

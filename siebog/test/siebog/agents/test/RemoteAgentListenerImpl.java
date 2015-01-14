@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf;
+package siebog.agents.test;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

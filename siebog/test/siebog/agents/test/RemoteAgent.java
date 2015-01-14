@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf;
+package siebog.agents.test;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -61,8 +61,7 @@ public class RemoteAgent extends XjafAgent {
 			Registry reg = LocateRegistry.getRegistry(remoteHost);
 			return (RemoteAgentListener) reg.lookup(RemoteAgentListener.class.getSimpleName());
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot connect to the remote RMI service.", ex);
+			throw new IllegalArgumentException("Cannot connect to the remote RMI service at " + remoteHost + ".", ex);
 		}
 	}
-
 }

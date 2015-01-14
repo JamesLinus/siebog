@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf;
+package siebog.agents.test;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -31,28 +31,34 @@ import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentInitArgs;
+import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.messagemanager.MessageManager;
 
 /**
- * Base class for all client applications.
+ * Base class for all test client applications.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class ClientBase {
+public abstract class TestClientBase {
 	protected Logger logger;
 	protected BlockingQueue<ACLMessage> msgQueue;
 	protected AID testAgentAid;
+	protected AgentManager agm;
+	protected MessageManager msm;
 
-	public ClientBase() throws RemoteException {
+	public TestClientBase() throws RemoteException {
 		this("localhost");
 	}
 
-	public ClientBase(String masterAddr, String... slaveAddrs) throws RemoteException {
+	public TestClientBase(String masterAddr, String... slaveAddrs) throws RemoteException {
 		SiebogClient.connect(masterAddr, slaveAddrs);
 		logger = Logger.getLogger(getClass().getName());
 		msgQueue = new LinkedBlockingQueue<>();
+		agm = ObjectFactory.getAgentManager();
+		msm = ObjectFactory.getMessageManager();
 		startTestAgent(masterAddr);
 	}
 
@@ -73,7 +79,7 @@ public abstract class ClientBase {
 		}
 		reg.rebind(RemoteAgentListener.class.getSimpleName(), new RemoteAgentListenerImpl(msgQueue));
 		AgentClass agClass = new AgentClass(Global.SERVER, RemoteAgent.class.getSimpleName());
-		AgentInitArgs args = new AgentInitArgs("remoteHost->" + masterAddr);
-		testAgentAid = ObjectFactory.getAgentManager().startAgent(agClass, "testAgent", args);
+		AgentInitArgs args = new AgentInitArgs("remoteHost=" + masterAddr);
+		testAgentAid = agm.startAgent(agClass, "testAgent", args);
 	}
 }

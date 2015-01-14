@@ -22,24 +22,17 @@ package siebog.xjaf.core;
 
 import java.io.Serializable;
 import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
- * Remote interface for agents. All of its methods are for internal purposes only, and should not be called or
- * redefined.
+ * Remote interface for agents. All of its methods are for internal purposes only, and should not be
+ * called or redefined.
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface Agent extends Serializable {
 	void init(AID aid, AgentInitArgs args);
 
-	void handleMessage(ACLMessage msg);
-
-	void processNextMessage();
-
 	void stop();
-
-	void remove();
 
 	void ping();
 }

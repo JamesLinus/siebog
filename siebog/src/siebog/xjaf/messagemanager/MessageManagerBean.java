@@ -22,10 +22,20 @@ package siebog.xjaf.messagemanager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.Topic;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -55,6 +65,45 @@ import siebog.xjaf.fipa.Performative;
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageManagerBean implements MessageManager {
 	private static final Logger logger = Logger.getLogger(MessageManagerBean.class.getName());
+	private Connection connection;
+	private Topic topic;
+	private Session session;
+	private MessageProducer producer;
+
+	public static ConnectionFactory getConnectionFactory() {
+		return ObjectFactory.lookup("java:jboss/exported/jms/RemoteConnectionFactory", ConnectionFactory.class);
+	}
+
+	public static Topic getTopic() {
+		return ObjectFactory.lookup("java:jboss/exported/jms/topic/siebog", Topic.class);
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		try {
+			ConnectionFactory connectionFactory = getConnectionFactory();
+			connection = connectionFactory.createConnection();
+			topic = getTopic();
+			session = connection.createSession();
+			producer = session.createProducer(topic);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "Unable to initialize the JMS.", ex);
+		}
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		try {
+			session.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+		try {
+			connection.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@GET
 	@Path("/")
@@ -83,7 +132,10 @@ public class MessageManagerBean implements MessageManager {
 				if (agent == null)
 					logger.info("No such AID: " + aid);
 				else {
-					agent.handleMessage(msg);
+					// agent.handleMessage(msg);
+					ObjectMessage jmsMsg = session.createObjectMessage(msg);
+					jmsMsg.setStringProperty("aid", aid.toString());
+					producer.send(jmsMsg);
 					++successful;
 				}
 			} catch (Exception ex) {

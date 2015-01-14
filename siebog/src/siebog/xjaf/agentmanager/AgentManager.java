@@ -39,8 +39,6 @@ public interface AgentManager extends Serializable {
 
 	/**
 	 * 
-	 * @param runtimeName
-	 * @return
 	 * @throws IllegalArgumentException if no such running agent.
 	 */
 	AID getAIDByRuntimeName(String runtimeName);

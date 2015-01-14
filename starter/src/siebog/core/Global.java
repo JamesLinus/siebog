@@ -26,7 +26,7 @@ package siebog.core;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public abstract class Global {
-	public static final String VERSION = "1.1.1";
+	public static final String VERSION = "1.2.0";
 
 	public static final String GROUP = "xjaf2x-group", USERNAME = "xjaf2xadmin", PASSWORD = "xjaf2xpass~",
 			SERVER = "siebog", MASTER_NAME = "xjaf-master";

@@ -28,7 +28,7 @@
 	
 	<target name="sonar">
 		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-			<classpath path="../siebog/lib/sonar-ant-task-2.2.jar" />
+			<classpath path="lib/sonar-ant-task-2.2.jar" />
 		</taskdef>
 
 		<sonar:sonar />
