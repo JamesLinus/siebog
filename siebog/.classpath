@@ -73,6 +73,8 @@
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/starter"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/resteasy-client-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/scala-library_2.11.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 9.x Siebog">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
@@ -83,7 +85,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/starter/lib/compile/resteasy-client-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/scala-library_2.11.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/compile/gwt-user.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
