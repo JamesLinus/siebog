@@ -28,14 +28,7 @@ import siebog.xjaf.fipa.ACLMessage;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface MessageManager {
-	/**
-	 * Posts an ACL message. Invocation is asynchronous: it will not wait for any of the agents to
-	 * process the message.
-	 * 
-	 * @param message ACLMessage instance.
-	 * @return The number of agents which have successfully received the message.
-	 */
-	int post(ACLMessage message);
+	void post(ACLMessage message);
 
 	String ping();
 }

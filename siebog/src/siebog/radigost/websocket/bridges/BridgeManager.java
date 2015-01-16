@@ -9,7 +9,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.websocket.Session;
-import siebog.radigost.websocket.bridges.jade.JadeBridge;
+//import siebog.radigost.websocket.bridges.jade.JadeBridge;
 
 @Singleton
 @LocalBean
@@ -36,12 +36,12 @@ public class BridgeManager
 	{
 		if (bridges.containsKey(name))
 			throw new IllegalArgumentException("Bridge " + name + " already exists.");
-		switch (name)
-		{
-		case JadeBridge.NAME:
-			bridges.put(name, new JadeBridge(host));
-			break;
-		}
+//		switch (name)
+//		{
+//		case JadeBridge.NAME:
+//			bridges.put(name, new JadeBridge(host));
+//			break;
+//		}
 	}
 	
 	public void stopBridge(String name)

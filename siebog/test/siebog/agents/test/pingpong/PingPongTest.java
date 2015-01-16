@@ -54,10 +54,10 @@ public class PingPongTest extends TestClientBase {
 	private void runPingPong() {
 		AgentManager agm = ObjectFactory.getAgentManager();
 
-		AID pingAid = agm.startAgent(new AgentClass(Global.SERVER, Ping.class.getSimpleName()), "Ping", null);
+		AID pingAid = agm.startAgent(new AgentClass(Global.SIEBOG_MODULE, Ping.class.getSimpleName()), "Ping", null);
 
 		String pongName = "Pong";
-		agm.startAgent(new AgentClass(Global.SERVER, Pong.class.getSimpleName()), pongName, null);
+		agm.startAgent(new AgentClass(Global.SIEBOG_MODULE, Pong.class.getSimpleName()), pongName, null);
 
 		MessageManager msm = ObjectFactory.getMessageManager();
 		ACLMessage message = new ACLMessage(Performative.REQUEST);

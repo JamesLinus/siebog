@@ -18,41 +18,28 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.radigostlayer;
+package siebog.agents.test.hacontractnet;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import siebog.core.Global;
-import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
- * Stub representation of a Radigost agent. Any messages sent to this instance will be forwarded to
- * the client agent.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
 @Remote(Agent.class)
-public class RadigostStub extends XjafAgent {
+public class Participant extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SIEBOG_MODULE, RadigostStub.class.getSimpleName());
-	@Inject
-	@Default
-	private Event<ACLMessage> webSocketEvent;
-
-	@Override
-	protected void onInit(AgentInitArgs args) {
-	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		webSocketEvent.fire(msg);
+		ACLMessage reply = msg.makeReply(Performative.ACCEPT_PROPOSAL);
+		msm().post(reply);
+		// agm().stopAgent(myAid);
 	}
 }

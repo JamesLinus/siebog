@@ -56,7 +56,7 @@ public class WebClientManagerBean implements WebClientManager {
 	public void acceptRadigostAgent(@FormParam("url") String url, @FormParam("aid") String aid,
 			@FormParam("state") String state) {
 		AgentManager agm = ObjectFactory.getAgentManager();
-		AgentClass agClass = new AgentClass(Global.SERVER, RadigostAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, RadigostAgent.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs();
 		args.put("url", url);
 		args.put("aid", aid);

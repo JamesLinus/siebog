@@ -64,7 +64,7 @@ public class LoadBalancingTest extends TestClientBase {
 	}
 
 	private AID createAgent() {
-		AgentClass cls = new AgentClass(Global.SERVER, LoadBalanced.class.getSimpleName());
+		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, LoadBalanced.class.getSimpleName());
 		return agm.startAgent(cls, "LB" + System.currentTimeMillis(), null);
 	}
 

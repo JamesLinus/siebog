@@ -78,7 +78,7 @@ public abstract class TestClientBase {
 			reg = LocateRegistry.getRegistry(1099);
 		}
 		reg.rebind(RemoteAgentListener.class.getSimpleName(), new RemoteAgentListenerImpl(msgQueue));
-		AgentClass agClass = new AgentClass(Global.SERVER, RemoteAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, RemoteAgent.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs("remoteHost=" + masterAddr);
 		testAgentAid = agm.startAgent(agClass, "testAgent", args);
 	}

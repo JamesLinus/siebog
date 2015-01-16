@@ -67,7 +67,7 @@ public class ConcurrencyTest extends TestClientBase {
 	}
 
 	private static final int BUFF_SIZE = 16384;
-	private static final int NUM_THREADS = 16;
+	private static final int NUM_THREADS = 6;
 	private static final int ITERATIONS = BUFF_SIZE / NUM_THREADS;
 
 	@Test
@@ -81,7 +81,7 @@ public class ConcurrencyTest extends TestClientBase {
 	}
 
 	private AID createAgent() {
-		AgentClass cls = new AgentClass(Global.SERVER, ConcurrentReceiver.class.getSimpleName());
+		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, ConcurrentReceiver.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs("buffSize=" + BUFF_SIZE);
 		return agm.startAgent(cls, "CR" + System.currentTimeMillis(), args);
 	}

@@ -72,7 +72,7 @@ public class Initiator extends UnicastRemoteObject implements RemoteAgentListene
 		SiebogClient.connect(nodes[0], slaves);
 		ObjectFactory.getJasonEEStarter().start(p);
 
-		AgentClass remoteAgent = new AgentClass(Global.SERVER, "RemoteAgent");
+		AgentClass remoteAgent = new AgentClass(Global.SIEBOG_MODULE, "RemoteAgent");
 		AgentInitArgs args = new AgentInitArgs();
 		args.put("remoteHost", rmiHost);
 		remoteAgentId = ObjectFactory.getAgentManager().startAgent(remoteAgent, "RemoteAgent", args);
@@ -83,7 +83,7 @@ public class Initiator extends UnicastRemoteObject implements RemoteAgentListene
 	public void start() {
 		startTime = System.currentTimeMillis();
 		final int n = numPart.get();
-		AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, JasonEEAgent.class.getSimpleName());
 		for (int i = 1; i <= n; i++) {
 			AID aid = new AID("c" + i, agClass);
 			ACLMessage cfp = new ACLMessage(Performative.INFORM);

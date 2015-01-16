@@ -29,23 +29,24 @@
 package siebog.jasonee.control;
 
 import jason.runtime.RuntimeServicesInfraTier;
+
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+
 import org.w3c.dom.Document;
+
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * 
@@ -56,7 +57,7 @@ import siebog.xjaf.messagemanager.MessageManager;
 @Lock(LockType.WRITE)
 @AccessTimeout(value = 60000, unit = TimeUnit.MILLISECONDS)
 public class ExecutionControlBean implements ExecutionControl {
-	private static final Logger logger = Logger.getLogger(ExecutionControlBean.class.getName());
+	//private static final Logger logger = Logger.getLogger(ExecutionControlBean.class.getName());
 	private static final long serialVersionUID = 1L;
 	private int cycleNum;
 	private Set<AID> registered;
@@ -78,7 +79,7 @@ public class ExecutionControlBean implements ExecutionControl {
 	}
 
 	private void registerTimeout() {
-		final String name = "ejb:/" + Global.SERVER + "//" + ECTimerServiceImpl.class.getSimpleName() + "!"
+		final String name = "ejb:/" + Global.SIEBOG_MODULE + "//" + ECTimerServiceImpl.class.getSimpleName() + "!"
 				+ ECTimerService.class.getName();
 		ECTimerService timer = ObjectFactory.lookup(name, ECTimerService.class);
 		int time = userExecCtrl != null ? userExecCtrl.getCycleTimeout() : UserExecutionControl.DEFAULT_TIMEOUT;
@@ -170,20 +171,21 @@ public class ExecutionControlBean implements ExecutionControl {
 	}
 
 	private void filterUnavailableAgents() {
-		final MessageManager msm = ObjectFactory.getMessageManager();
-		Iterator<AID> i = registered.iterator();
-		while (i.hasNext()) {
-			AID aid = i.next();
-			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
-			try {
-				int successful = msm.post(tm);
-				if (successful != 1)
-					throw new Exception(); // get() can also throw an exception
-			} catch (Exception ex) {
-				logger.info("Agent " + aid + " no longer available.");
-				i.remove();
-				running.remove(aid);
-			}
-		}
+		// TODO : Implement filterUnavailableAgents
+//		final MessageManager msm = ObjectFactory.getMessageManager();
+//		Iterator<AID> i = registered.iterator();
+//		while (i.hasNext()) {
+//			AID aid = i.next();
+//			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
+//			try {
+//				int successful = msm.post(tm);
+//				if (successful != 1)
+//					throw new Exception(); // get() can also throw an exception
+//			} catch (Exception ex) {
+//				logger.info("Agent " + aid + " no longer available.");
+//				i.remove();
+//				running.remove(aid);
+//			}
+//		}
 	}
 }

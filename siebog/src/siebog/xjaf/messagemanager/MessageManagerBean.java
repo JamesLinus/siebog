@@ -43,11 +43,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.infinispan.Cache;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
 import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.fipa.Performative;
 
@@ -71,7 +69,8 @@ public class MessageManagerBean implements MessageManager {
 	private MessageProducer producer;
 
 	public static ConnectionFactory getConnectionFactory() {
-		return ObjectFactory.lookup("java:jboss/exported/jms/RemoteConnectionFactory", ConnectionFactory.class);
+		return ObjectFactory.lookup("java:jboss/exported/jms/RemoteConnectionFactory",
+				ConnectionFactory.class);
 	}
 
 	public static Topic getTopic() {
@@ -121,28 +120,20 @@ public class MessageManagerBean implements MessageManager {
 	@Override
 	// NOTE: Using @Asynchronous causes an exception
 	// https://issues.jboss.org/browse/WFLY-2515
-	public int post(@FormParam("acl") ACLMessage msg) {
-		Cache<AID, Agent> running = ObjectFactory.getRunningAgentsCache();
-		int successful = 0;
+	public void post(@FormParam("acl") ACLMessage msg) {
+		// TODO : Check if the agent/subscriber exists
+		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
 		for (AID aid : msg.receivers) {
 			if (aid == null)
-				continue;
+				throw new IllegalArgumentException("AID cannot be null.");
 			try {
-				Agent agent = running.get(aid);
-				if (agent == null)
-					logger.info("No such AID: " + aid);
-				else {
-					// agent.handleMessage(msg);
-					ObjectMessage jmsMsg = session.createObjectMessage(msg);
-					jmsMsg.setStringProperty("aid", aid.toString());
-					producer.send(jmsMsg);
-					++successful;
-				}
+				ObjectMessage jmsMsg = session.createObjectMessage(msg);
+				jmsMsg.setStringProperty("aid", aid.getStr());
+				producer.send(jmsMsg);
 			} catch (Exception ex) {
 				logger.warning(ex.getMessage());
 			}
 		}
-		return successful;
 	}
 
 	@Override

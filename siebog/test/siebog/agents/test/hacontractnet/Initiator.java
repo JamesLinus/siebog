@@ -18,41 +18,49 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.radigostlayer;
+package siebog.agents.test.hacontractnet;
 
+import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import siebog.core.Global;
-import siebog.xjaf.agentmanager.AgentInitArgs;
+import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
+import siebog.xjaf.fipa.Performative;
 
 /**
- * Stub representation of a Radigost agent. Any messages sent to this instance will be forwarded to
- * the client agent.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Stateful
 @Remote(Agent.class)
-public class RadigostStub extends XjafAgent {
+public class Initiator extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SIEBOG_MODULE, RadigostStub.class.getSimpleName());
-	@Inject
-	@Default
-	private Event<ACLMessage> webSocketEvent;
-
-	@Override
-	protected void onInit(AgentInitArgs args) {
-	}
+	private int pendingProposals;
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		webSocketEvent.fire(msg);
+		switch (msg.performative) {
+		case REQUEST:
+			AID[] participants = (AID[]) msg.contentObj;
+			sendCfps(participants);
+			pendingProposals = participants.length;
+			break;
+		case ACCEPT_PROPOSAL:
+			--pendingProposals;
+			if (pendingProposals == 0)
+				;// agm().stopAgent(myAid);
+			break;
+		default:
+			logger.info("Message not understood: " + msg);
+		}
+	}
+
+	private void sendCfps(AID[] participants) {
+		ACLMessage msg = new ACLMessage(Performative.CALL_FOR_PROPOSAL);
+		msg.sender = myAid;
+		msg.receivers.addAll(Arrays.asList(participants));
+		msm().post(msg);
 	}
 }

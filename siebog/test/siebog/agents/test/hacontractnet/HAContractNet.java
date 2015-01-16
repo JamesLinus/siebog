@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.dbpedia;
+package siebog.agents.test.hacontractnet;
 
 import siebog.SiebogClient;
 import siebog.core.Global;
@@ -32,17 +32,33 @@ import siebog.xjaf.fipa.Performative;
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class Main {
+public class HAContractNet {
+	private static final int NUM_PARTICIPANTS = 16;
+
 	public static void main(String[] args) {
 		SiebogClient.connect("localhost");
+		AID[] participants = createParticipants();
+		AID initiator = createInitiator();
+		start(initiator, participants);
+	}
 
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Resolver.class.getSimpleName());
-		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "Resolver_" + System.currentTimeMillis(), null);
+	private static AID[] createParticipants() {
+		AID[] aids = new AID[NUM_PARTICIPANTS];
+		AgentClass pcls = new AgentClass(Global.SIEBOG_MODULE, Participant.class.getSimpleName());
+		for (int i = 0; i < NUM_PARTICIPANTS; i++)
+			aids[i] = ObjectFactory.getAgentManager().startAgent(pcls, "P" + i, null);
+		return aids;
+	}
 
+	private static AID createInitiator() {
+		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, Initiator.class.getSimpleName());
+		return ObjectFactory.getAgentManager().startAgent(icls, "I", null);
+	}
+
+	private static void start(AID initiator, AID[] participants) {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
-		msg.sender = AID.EXTERNAL_CLIENT;
-		msg.receivers.add(aid);
-		msg.content = "http://dbpedia.org/resource/Albert_Einstein";
+		msg.receivers.add(initiator);
+		msg.contentObj = participants;
 		ObjectFactory.getMessageManager().post(msg);
 	}
 }

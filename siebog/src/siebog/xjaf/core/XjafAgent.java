@@ -71,21 +71,23 @@ public abstract class XjafAgent implements Agent, MessageListener {
 			connection = connectionFactory.createConnection();
 			connection.start();
 		} catch (Exception ex) {
-			Logger.getLogger(XjafAgent.class.getName()).log(Level.SEVERE, "Unable to initialize the JMS.", ex);
+			Logger.getLogger(XjafAgent.class.getName()).log(Level.SEVERE,
+					"Unable to initialize the JMS.", ex);
 		}
 	}
 
 	@Override
 	public void init(AID aid, AgentInitArgs args) {
 		myAid = aid;
+		onInit(args);
 		try {
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			MessageConsumer consumer = session.createConsumer(topic, "aid = '" + aid + "'");
+			String selector = "aid = '" + myAid.getStr() + "'";
+			MessageConsumer consumer = session.createConsumer(topic, selector);
 			consumer.setMessageListener(this);
 		} catch (JMSException ex) {
 			logger.log(Level.SEVERE, "Unable to connect to the JMS topic.", ex);
 		}
-		onInit(args);
 	}
 
 	protected void onInit(AgentInitArgs args) {
@@ -133,6 +135,19 @@ public abstract class XjafAgent implements Agent, MessageListener {
 	@Override
 	@Remove
 	public void stop() {
+		invokeOnTerminate();
+		closeSession();
+	}
+
+	private void invokeOnTerminate() {
+		try {
+			onTerminate();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error in onTerminate.", ex);
+		}
+	}
+
+	private void closeSession() {
 		if (session != null) {
 			try {
 				session.close();

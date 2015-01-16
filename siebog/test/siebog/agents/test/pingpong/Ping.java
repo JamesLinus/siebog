@@ -56,7 +56,7 @@ public class Ping extends XjafAgent {
 	protected void onMessage(ACLMessage msg) {
 		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
-			AgentClass agClass = new AgentClass(Global.SERVER, Pong.class.getSimpleName());
+			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Pong.class.getSimpleName());
 			AID pongAid = new AID(msg.content, agClass);
 			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
 			msgToPong.sender = myAid;

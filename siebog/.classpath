@@ -38,7 +38,6 @@
 	<classpathentry kind="lib" path="/starter/lib/module/hppc-0.4.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jackson-core-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jackson-mapper-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/jade.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jena-core-2.11.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/joda-time-1.6.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/json-simple-1.1.1.jar"/>
@@ -81,10 +80,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/starter/lib/compile/gwt-user.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_11">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -63,7 +63,7 @@ public class NodeStarter {
 			else {
 				startMaster();
 				// TODO: check if already deployed
-				deploy(config.getRootFolder(), Global.SERVER);
+				deploy(config.getRootFolder(), Global.SIEBOG_MODULE);
 			}
 		} catch (DeploymentExecutionException | DeploymentFailureException | IOException ex) {
 			throw new IllegalStateException("Error while starting node.", ex);

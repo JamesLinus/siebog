@@ -122,7 +122,11 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running/{aid}")
 	@Override
 	public void stopAgent(@PathParam("aid") AID aid) {
-		// TODO Implement 'agent stop'
+		Agent agent = cache.get(aid);
+		if (agent != null) {
+			cache.remove(aid);
+			agent.stop();
+		}
 	}
 
 	@GET

@@ -131,7 +131,7 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createAgent(String agentName, String runtimeName) {
-		AgentClass agClass = new AgentClass(Global.SERVER, JasonEEAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, JasonEEAgent.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs();
 		args.put("mas2jSource", project.getMas2jSource());
 		args.put("agentName", agentName);

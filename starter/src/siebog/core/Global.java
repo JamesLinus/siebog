@@ -28,8 +28,12 @@ package siebog.core;
 public abstract class Global {
 	public static final String VERSION = "1.2.0";
 
-	public static final String GROUP = "xjaf2x-group", USERNAME = "xjaf2xadmin", PASSWORD = "xjaf2xpass~",
-			SERVER = "siebog", MASTER_NAME = "xjaf-master";
+	public static final String // @formatter:off 
+		GROUP = "xjaf2x-group",
+		USERNAME = "xjaf2xadmin",
+		PASSWORD = "xjaf2xpass~",
+		SIEBOG_MODULE = "siebog", 
+		MASTER_NAME = "xjaf-master"; // @formatter:on
 
 	public static void printVersion() {
 		System.out.println("-------------------------------------------------------------");

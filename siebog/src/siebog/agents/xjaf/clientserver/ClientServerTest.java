@@ -54,7 +54,7 @@ public class ClientServerTest extends TestClientBase {
 	@Test
 	public void testClientServerMessaging() throws InterruptedException {
 		// server-side agent
-		AgentClass agClass = new AgentClass(Global.SERVER, ClientServerAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, ClientServerAgent.class.getSimpleName());
 		AgentManager agm = ObjectFactory.getAgentManager();
 		AID csAgent = agm.startAgent(agClass, "CSServer" + System.currentTimeMillis(), null);
 

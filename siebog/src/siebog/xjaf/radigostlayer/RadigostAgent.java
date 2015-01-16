@@ -46,7 +46,7 @@ import siebog.xjaf.fipa.ACLMessage;
 @Remote(Agent.class)
 public class RadigostAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SERVER, RadigostAgent.class.getSimpleName());
+	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SIEBOG_MODULE, RadigostAgent.class.getSimpleName());
 	private String radigostSource;
 
 	@PostConstruct

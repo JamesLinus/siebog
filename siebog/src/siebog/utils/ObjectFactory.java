@@ -47,22 +47,22 @@ import siebog.xjaf.webclientmanager.WebClientManagerBean;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public abstract class ObjectFactory {
-	public static final String AgentManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String AgentManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ AgentManagerBean.class.getSimpleName() + "!" + AgentManager.class.getName();
-	public static final String MessageManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String MessageManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ MessageManagerBean.class.getSimpleName() + "!" + MessageManager.class.getName();
-	public static final String BridgeManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String BridgeManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ BridgeManager.class.getSimpleName();
-	public static final String ExecutorServiceLookup = "java:global/" + Global.SERVER + "/"
+	public static final String ExecutorServiceLookup = "java:global/" + Global.SIEBOG_MODULE + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
-	private static final String JasonEEStarterLookup = "ejb:/" + Global.SERVER + "//"
+	private static final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
-	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ ExecutionControlBean.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
-	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName() + "?stateful";
-	public static final String WebClientManagerLookup = "ejb:/" + Global.SERVER + "//"
+	public static final String WebClientManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ WebClientManagerBean.class.getSimpleName() + "!" + WebClientManager.class.getName() + "?stateful";
 
 	public static AgentManager getAgentManager() {

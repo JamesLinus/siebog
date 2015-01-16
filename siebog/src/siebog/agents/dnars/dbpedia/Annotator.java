@@ -110,7 +110,7 @@ public class Annotator extends XjafAgent {
 
 	private void createNewLearner(String uri) {
 		final String name = Learner.class.getSimpleName();
-		AgentClass agClass = new AgentClass(Global.SERVER, name);
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, name);
 		AgentInitArgs args = new AgentInitArgs("query=" + query);
 		AID aid = agm().startAgent(agClass, name + "_" + System.currentTimeMillis(), args);
 
