@@ -34,7 +34,7 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.base.Truth;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
-import siebog.dnars.inference.ForwardInference;
+import siebog.dnars.inference.forward.ForwardInferenceEngine;
 import siebog.dnars.inference.ResolutionEngine;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
@@ -59,27 +59,32 @@ public class Learner extends XjafAgent {
 			DNarsGraph allProps = DNarsGraphFactory.create(query.getAllProperties(), null);
 			try {
 				Set<Statement> relevant = getRelevantStatements(query.getQuestion(), allProps);
-				logger.info("Retrieved " + relevant.size() + " relevant statements for " + query.getQuestion());
+				logger.info("Retrieved " + relevant.size() + " relevant statements for "
+						+ query.getQuestion());
 				if (relevant.size() > 0) {
 
 					ArrayList<Statement> intermediary = deriveNewConclusions(relevant);
-					logger.info("Derived " + intermediary.size() + " itermediary statements for " + query.getQuestion());
+					logger.info("Derived " + intermediary.size() + " itermediary statements for "
+							+ query.getQuestion());
 					if (intermediary.size() > 0) {
 
 						Statement[] newKnowledge = null;
-						DNarsGraph knownProps = DNarsGraphFactory.create(query.getKnownProperties(), null);
+						DNarsGraph knownProps = DNarsGraphFactory.create(
+								query.getKnownProperties(), null);
 						try {
-							newKnowledge = ForwardInference.conclusions(knownProps,
-									intermediary.toArray(new Statement[0]));
+							newKnowledge = new ForwardInferenceEngine(knownProps)
+									.conclusions(intermediary.toArray(new Statement[0]));
 						} finally {
 							knownProps.shutdown();
 						}
-						logger.info("Derived " + newKnowledge.length + " new statements for " + query.getQuestion());
+						logger.info("Derived " + newKnowledge.length + " new statements for "
+								+ query.getQuestion());
 
 						for (Statement st : newKnowledge) {
 							st = st.allForms().head();
 							if (!ResolutionEngine.hasAnswer(allProps, st)) {
-								knownProps = DNarsGraphFactory.create(query.getKnownProperties(), null);
+								knownProps = DNarsGraphFactory.create(query.getKnownProperties(),
+										null);
 								try {
 									knownProps.statements().add(st);
 								} finally {
@@ -118,7 +123,8 @@ public class Learner extends XjafAgent {
 		ArrayList<Statement> conclusions = new ArrayList<>();
 		DNarsGraph graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
 		try {
-			Statement[] derived = ForwardInference.conclusions(graph, relevant.toArray(new Statement[0]));
+			Statement[] derived = new ForwardInferenceEngine(graph).conclusions(relevant
+					.toArray(new Statement[0]));
 			for (Statement d : derived) {
 				if (d.subj() instanceof CompoundTerm && d.pred() instanceof CompoundTerm) {
 					CompoundTerm subj = (CompoundTerm) d.subj();

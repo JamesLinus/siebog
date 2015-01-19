@@ -24,7 +24,6 @@ import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
-
 import siebog.dnars.base.AtomicTerm.Question
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -33,6 +32,7 @@ import siebog.dnars.base.Truth
 import siebog.dnars.graph.DNarsEdge
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsVertex
+import siebog.dnars.inference.forward.ForwardInferenceEngine
 
 /**
  * Resolution engine for answering questions.
@@ -136,9 +136,9 @@ object ResolutionEngine {
 				else {
 					// construct derived questions such that { P, Q } |- DerivedQ
 					val q = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
-					val derivedQuestions = ForwardInference.conclusions(graph, Array(q))
+					val derivedQuestions = new ForwardInferenceEngine(graph).conclusions(Array(q))
 					// check if the starting question can be derived from { P, DerivedQ }
-					val candidates = ForwardInference.conclusions(graph, derivedQuestions)
+					val candidates = new ForwardInferenceEngine(graph).conclusions(derivedQuestions)
 					candidates.toList
 						.filter(c => c.subj == question.subj && c.pred == question.pred)
 						.sortWith((a, b) => a.truth.expectation > b.truth.expectation)

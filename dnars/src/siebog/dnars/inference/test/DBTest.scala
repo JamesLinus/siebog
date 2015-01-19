@@ -31,8 +31,8 @@ import siebog.dnars.base.Connector.Product
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
 import siebog.dnars.graph.DNarsGraphFactory
-import siebog.dnars.inference.ForwardInference
 import siebog.dnars.inference.ResolutionEngine
+import siebog.dnars.inference.forward.ForwardInferenceEngine
 import siebog.dnars.utils.importers.nt.DNarsConvert
 import siebog.dnars.utils.importers.nt.NTReader
 
@@ -59,7 +59,7 @@ object DBTest {
 					val nt = NTReader.str2nt(line)
 					val st = DNarsConvert.toDNarsStatement(nt)
 
-					val derived = ForwardInference.conclusions(properties, st)
+					val derived = new ForwardInferenceEngine(properties).conclusions(st)
 					for (st <- derived) st match {
 						case Statement(CompoundTerm(Product, Seq(a, b)), Similar, CompoundTerm(Product, Seq(c, d)), truth) =>
 							if (a != c)
@@ -80,7 +80,7 @@ object DBTest {
 			val out = new PrintWriter("/home/dejan/tmp/final.nt")
 			try {
 				val derived =
-					ForwardInference.conclusions(properties, conclusions.toArray)
+					new ForwardInferenceEngine(properties).conclusions(conclusions.toArray)
 						.filter(st => st.subj.toString.contains("Albert_Einstein") || st.pred.toString.contains("Albert_Einstein"))
 						.sortWith((a, b) => a.truth.conf > b.truth.conf)
 				val size = derived.size

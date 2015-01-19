@@ -52,14 +52,14 @@ abstract class DNarsTestBase {
 		graph = null
 	}
 
-	def createAndAdd(graph: DNarsGraph, statements: String*): Array[Statement] = {
+	def createAndAdd(graph: DNarsGraph, statements: String*): List[Statement] = {
 		val res = new ArrayBuffer[Statement]()
 		for (str <- statements) {
 			val stat = StatementParser(str)
 			graph.statements.add(stat)
 			res += stat
 		}
-		res.toArray
+		res.toList
 	}
 
 	def create(statements: String*): List[Statement] = {

@@ -51,7 +51,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	val eventManager = new EventManager()
 
 	def getV(term: Term): Option[Vertex] = {
-		val i = this.query().has("term", term.id).vertices().iterator()
+		val i = this.query().has("term", term.id).limit(1).vertices().iterator()
 		if (i.hasNext())
 			Some(i.next())
 		else
@@ -172,7 +172,7 @@ object DNarsGraphFactory {
 		try {
 			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
 		} catch {
-			case _: IllegalArgumentException =>
+			case _: IllegalArgumentException => // index already exists, ok
 			case e: Throwable => throw e
 		}
 		DNarsGraph(ScalaGraph(graph), domain)
@@ -182,17 +182,7 @@ object DNarsGraphFactory {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
-		// TODO add storage.machine-id-appendix
 		conf.setProperty("storage.keyspace", domain)
-		//conf.setProperty("storage.machine-id-appendix", "x" + (Math.random * 1000000).toInt)
-		// custom serializers
-		/*conf.setProperty("attributes.allow-all", "true")
-		conf.setProperty("attributes.attribute20",  classOf[AtomicTerm].getName)
-		conf.setProperty("attributes.serializer20", classOf[AtomicTermSerializer].getName)
-		conf.setProperty("attributes.attribute21",  classOf[CompoundTerm].getName)
-		conf.setProperty("attributes.serializer21", classOf[CompoundTermSerializer].getName)
-		conf.setProperty("attributes.attribute22",  classOf[Truth].getName)
-		conf.setProperty("attributes.serializer22", classOf[TruthSerializer].getName)*/
 		// additional configuration?
 		if (additionalConfig != null) {
 			val es = additionalConfig.entrySet()

@@ -11,6 +11,12 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.utils.importers.nt.DNarsConvert;
 import siebog.dnars.utils.importers.nt.NTReader;
 
+/**
+ * A utility class which takes an NT RDF file, and outputs individual properties, i.e. subjects,
+ * predicates, and objects.
+ * 
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ */
 public class PropsExtractor {
 
 	public static void main(String[] args) throws IOException {

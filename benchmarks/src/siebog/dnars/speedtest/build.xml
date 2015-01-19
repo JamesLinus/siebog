@@ -9,8 +9,8 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="/home/dejan/dev/siebog/benchmarks/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/benchmarks/lib/core-0.1.4.jar"/>
             <fileset dir="/home/dejan/dev/siebog/dnars/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/benchmarks/lib/core-0.1.4.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/starter/lib/module/astyanax-cassandra-1.56.37.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/starter/lib/module/astyanax-core-1.56.37.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/dejan/dev/siebog/starter/lib/module/astyanax-thrift-1.56.37.jar"/>

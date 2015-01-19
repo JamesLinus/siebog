@@ -37,9 +37,10 @@ public class DNarsDB extends DB {
 	}
 
 	@Override
-	public int read(String domain, String questionStr, Set<String> fields, HashMap<String, ByteIterator> result) {
+	public int read(String domain, String questionStr, Set<String> fields,
+			HashMap<String, ByteIterator> result) {
 		Statement question = StatementParser.apply(questionStr);
-		Statement[] answers = ResolutionEngine.answer(graph, question, Integer.MAX_VALUE);
+		Statement[] answers = ResolutionEngine.answer(graph, question, 1);
 		int err = answers.length > 0 ? 0 : 1;
 		return err;
 	}

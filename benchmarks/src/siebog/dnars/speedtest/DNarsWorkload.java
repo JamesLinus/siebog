@@ -19,12 +19,13 @@ public class DNarsWorkload extends CoreWorkload {
 	public void init(Properties props) throws WorkloadException {
 		String input = props.getProperty("questions");
 		if (input == null || !new File(input).exists())
-			throw new WorkloadException("Input file with questions (parameter 'questions') does not exist.");
+			throw new WorkloadException(
+					"Input file with questions (parameter 'questions') does not exist.");
 		questions = new ArrayList<>();
 		try (BufferedReader in = new BufferedReader(new FileReader(input))) {
 			String line;
 			while ((line = in.readLine()) != null) {
-				if (line.length() > 0)
+				if (line.length() > 0 && line.indexOf("-> ?") > 0)
 					questions.add(line);
 			}
 		} catch (IOException ex) {

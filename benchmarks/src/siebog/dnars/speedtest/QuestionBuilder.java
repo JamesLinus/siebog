@@ -9,6 +9,13 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.utils.importers.nt.DNarsConvert;
 import siebog.dnars.utils.importers.nt.NTReader;
 
+/**
+ * A utility class which takes an NT RDF file and outputs corresponding NAL questions. A single
+ * question will be produced for each NT statement, in the form of ? -> P or S -> ? (chosen
+ * randomly).
+ * 
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ */
 public class QuestionBuilder {
 
 	public static void main(String[] args) throws IOException {
