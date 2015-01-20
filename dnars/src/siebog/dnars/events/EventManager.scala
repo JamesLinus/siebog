@@ -3,8 +3,9 @@ package siebog.dnars.events
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.locks.ReentrantLock
 import scala.collection.mutable.ListBuffer
+import siebog.dnars.graph.DNarsGraphApi
 
-class EventManager {
+trait EventManager extends DNarsGraphApi {
 	private val list = new ListBuffer[EventPayload]
 	private val observers = new ListBuffer[String]()
 	private var _paused: Boolean = false

@@ -72,7 +72,7 @@ public class Resolver extends XjafAgent {
 		DNarsGraph graph = DNarsGraphFactory.create(domain, null);
 		try {
 			for (Statement st : known)
-				graph.statements().add(st);
+				graph.add(st);
 		} finally {
 			graph.shutdown();
 		}

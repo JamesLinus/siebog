@@ -51,7 +51,7 @@ class ForwardInferenceTest extends DNarsTestBase {
 			"quantum ~ physics (1.0, 0.9)")
 
 		val derived = new DeductionAnalogy(graph).apply(kb)
-		graph.statements.addAll(derived)
+		graph.add(derived)
 
 		val expected = List(
 			invert(kb(3)),
@@ -70,12 +70,12 @@ class ForwardInferenceTest extends DNarsTestBase {
 		//		S -> M	=> S -> P ana'
 		//		S ~ M	=> S ~ P res
 		val stset = InferenceSets.getAnalogyResemblance
-		graph.statements.addAll(stset.kb)
+		graph.add(stset.kb)
 
 		val derived = new ListBuffer[Statement]()
 		for (st <- stset.kb)
 			derived ++= new AnalogyResemblance(graph).apply(st)
-		graph.statements.addAll(derived)
+		graph.add(derived)
 
 		stset.assertGraph(graph)
 	}
@@ -93,7 +93,7 @@ class ForwardInferenceTest extends DNarsTestBase {
 			"feline ~ cat (0.49, 0.52)")
 
 		val derived = new AbductionComparisonAnalogy(graph).apply(kb)
-		graph.statements.addAll(derived)
+		graph.add(derived)
 
 		val con1 = StatementParser("lion ~ tiger " + kb(0).truth.comparison(kb(3).truth))
 		val con2 = StatementParser("tiger ~ lion " + kb(3).truth.comparison(kb(0).truth))
@@ -113,12 +113,12 @@ class ForwardInferenceTest extends DNarsTestBase {
 	@Test
 	def compoundExtentional: Unit = {
 		val stset = InferenceSets.getCompoundExtentionalDeduction
-		graph.statements.addAll(stset.kb)
+		graph.add(stset.kb)
 
 		val derived = new ListBuffer[Statement]()
 		for (st <- stset.kb)
 			derived ++= new DeductionAnalogy(graph).apply(st)
-		graph.statements.addAll(derived)
+		graph.add(derived)
 
 		stset.assertGraph(graph)
 	}

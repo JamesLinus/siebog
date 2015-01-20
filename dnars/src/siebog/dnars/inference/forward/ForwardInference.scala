@@ -34,7 +34,7 @@ import siebog.dnars.graph.DNarsVertex
  */
 abstract class ForwardInference(val graph: DNarsGraph) {
 	def apply(judgement: Statement): List[Statement] =
-		judgement.allForms.flatMap { j: Statement => doApply(j) }
+		judgement.allImages.flatMap { j: Statement => doApply(j) }
 
 	def apply(judgements: List[Statement]): List[Statement] =
 		judgements.flatMap { j: Statement => apply(j) }
@@ -42,5 +42,5 @@ abstract class ForwardInference(val graph: DNarsGraph) {
 	protected def doApply(judgement: Statement): List[Statement]
 
 	protected def keepIfValid(st: Statement): List[Statement] =
-		if (graph.statements.validStatement(st)) List(st) else List()
+		if (graph.validStatement(st)) List(st) else List()
 }

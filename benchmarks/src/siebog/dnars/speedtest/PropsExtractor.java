@@ -35,7 +35,7 @@ public class PropsExtractor {
 				try {
 					com.hp.hpl.jena.rdf.model.Statement ntStat = NTReader.str2nt(strLine);
 					Statement st = DNarsConvert.toDNarsStatement(ntStat);
-					Iterator<Statement> i = st.allForms().iterator();
+					Iterator<Statement> i = st.allImages().iterator();
 					// (x A B) -> C :: write C
 					props.add("R" + i.next().pred());
 					// A -> (/ C * B) :: write A

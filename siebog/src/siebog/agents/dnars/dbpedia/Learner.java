@@ -81,12 +81,12 @@ public class Learner extends XjafAgent {
 								+ query.getQuestion());
 
 						for (Statement st : newKnowledge) {
-							st = st.allForms().head();
+							st = st.allImages().head();
 							if (!ResolutionEngine.hasAnswer(allProps, st)) {
 								knownProps = DNarsGraphFactory.create(query.getKnownProperties(),
 										null);
 								try {
-									knownProps.statements().add(st);
+									knownProps.add(st);
 								} finally {
 									knownProps.shutdown();
 								}

@@ -116,7 +116,7 @@ case class Statement(val subj: Term, val copula: String, val pred: Term, val tru
 	/**
 	 * Returns all possible forms of a statement, e.g. the original form, and two extensional images.
 	 */
-	def allForms(): List[Statement] = {
+	def allImages(): List[Statement] = {
 		val images =
 			pack() match {
 				case a @ List(_, _) => a

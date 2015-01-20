@@ -105,7 +105,7 @@ class ResolutionEngineTest {
 	}
 
 	private def testInferenceSet(stset: InferenceSet): Unit = {
-		graph.statements.addAll(stset.kb)
+		graph.add(stset.kb)
 
 		for (st <- stset.derived) {
 			// expect the packed version, if available

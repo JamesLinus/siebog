@@ -64,6 +64,6 @@ class ForwardInferenceEngine(val graph: DNarsGraph) {
 	 */
 	def include(input: Array[Statement]): Unit = {
 		val concl = conclusions(input)
-		graph.statements.addAll(input.toList ::: concl.toList)
+		graph.add(input.toList ::: concl.toList)
 	}
 }

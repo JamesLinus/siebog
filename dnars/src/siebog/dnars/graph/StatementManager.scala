@@ -21,9 +21,7 @@
 package siebog.dnars.graph
 
 import scala.collection.mutable.ListBuffer
-
 import com.tinkerpop.blueprints.Direction
-
 import siebog.dnars.base.CompoundTerm
 import siebog.dnars.base.Connector.ExtImage
 import siebog.dnars.base.Connector.IntImage
@@ -35,74 +33,52 @@ import siebog.dnars.events.EventKind
 import siebog.dnars.events.EventPayload
 import siebog.dnars.graph.Wrappers.edge2DNarsEdge
 import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
+import siebog.dnars.base.Truth
+import com.tinkerpop.blueprints.Edge
+import com.tinkerpop.blueprints.Graph
+import siebog.dnars.events.EventManager
+import siebog.dnars.base.StatementParser
 
 /**
- * A set of functions for manipulating statements in the graph.
+ * A set of functions for manipulating statements in the theGraph.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class StatementManager(val graph: DNarsGraph) {
-	def add(st: Statement): Unit = if (validStatement(st)) {
+trait StatementManager extends DNarsGraphApi {
+	override def add(st: Statement): Unit = if (validStatement(st)) {
 		// TODO : when adding statements, consider that "S~P <=> S->P & P->S" and "S~P => S->P"
-		val existing = graph.getE(st)
+		val existing = getE(st)
 		existing match {
-			case Some(e) => // already exists, apply revision
-				val truth = e.truth.revision(st.truth)
-				e.truth = truth
-				if (st.copula == Similar) {
-					// update in the opposite direction as well
-					val invStat = Statement(st.pred, Similar, st.subj, st.truth)
-					val invEdge: DNarsEdge = graph.getE(invStat).get
-					invEdge.truth = truth
-				} else {
-					// are there any structural transformations?
-					st.pack match {
-						case List(su1, su2) =>
-							val e1: DNarsEdge = graph.getE(su1).get
-							val e2: DNarsEdge = graph.getE(su2).get
-							e1.truth = truth
-							e2.truth = truth
-						case _ => st.unpack match {
-							case List(sp1, sp2) =>
-								val e1: DNarsEdge = graph.getE(sp1).get
-								val e2: DNarsEdge = graph.getE(sp2).get
-								e1.truth = truth
-								e2.truth = truth
-							case _ =>
-						}
-					}
-				}
-				val event = new EventPayload(EventKind.UPDATED, st.toString)
-				graph.eventManager.addEvent(event)
+			case Some(e) =>
+				reviseExistingStatement(st, e)
+				addEvent(new EventPayload(EventKind.UPDATED, st.toString))
 			case None =>
-				addE(st)
-				if (st.copula == Similar)
-					addE(Statement(st.pred, Similar, st.subj, st.truth))
-				else {
-					// structural transformations?
-					val unpacked = unpackAndAdd(graph, st)
-					if (!unpacked)
-						packAndAdd(graph, st)
-				}
-				val event = new EventPayload(EventKind.ADDED, st.toString)
-				graph.eventManager.addEvent(event)
+				addNewStatement(st)
+				addEvent(new EventPayload(EventKind.ADDED, st.toString))
 		}
 	}
 
-	def addAll(st: Seq[Statement]): Unit = {
-		graph.eventManager.paused = true
+	override def add(st: String): Unit =
 		try {
-			for (s <- st)
-				add(s)
+			add(StatementParser(st))
+		} catch {
+			case e: Throwable =>
+				throw new IllegalArgumentException(e.getMessage)
+		}
+
+	override def add(st: Seq[Statement]): Unit = {
+		paused = true
+		try {
+			st.foreach { add(_) }
 		} finally {
-			graph.eventManager.paused = false
+			paused = false
 		}
 	}
 
 	/**
 	 * Checks if the given statement is valid. For now, it only checks compound terms with product connectors.
 	 */
-	def validStatement(st: Statement): Boolean = (st.subj, st.copula, st.pred) match {
+	override def validStatement(st: Statement): Boolean = (st.subj, st.copula, st.pred) match {
 		case (CompoundTerm(Product, _), Inherit, CompoundTerm(_, _)) =>
 			false // predicate should be an atomic term
 		case (CompoundTerm(_, _), Inherit, CompoundTerm(Product, _)) =>
@@ -115,63 +91,71 @@ class StatementManager(val graph: DNarsGraph) {
 			true
 	}
 
-	/**
-	 * Checks if the given statement exists in the graph.
-	 *
-	 * @throws IllegalArgumentException if the statement is not found, or if it has different truth-value.
-	 */
-	def assert(st: Statement): Unit = {
-		graph.getE(st) match {
+	override def assert(st: Statement): Unit = {
+		getE(st) match {
 			case None =>
 				throw new IllegalArgumentException("Not found.");
 			case Some(e) =>
-				val edge: DNarsEdge = e
-				if (!edge.truth.closeTo(st.truth))
-					throw new IllegalArgumentException(edge.truth.toString)
+				if (!e.truth.closeTo(st.truth))
+					throw new IllegalArgumentException(e.truth.toString)
 		}
 	}
+
+	private def reviseExistingStatement(st: Statement, e: Edge): Unit = {
+		val revisedTruth = e.truth.revision(st.truth)
+		e.truth = revisedTruth
+		if (st.copula == Similar)
+			reviseOppositeEdge(st, revisedTruth)
+		else
+			reviseImages(st, revisedTruth)
+	}
+
+	private def reviseOppositeEdge(st: Statement, revisedTruth: Truth): Unit = {
+		val oppStat = Statement(st.pred, Similar, st.subj, st.truth)
+		val edge = getE(oppStat).get
+		edge.truth = revisedTruth
+	}
+
+	private def reviseImages(st: Statement, truth: Truth): Unit = {
+		val images = st.allImages.tail.iterator
+		while (images.hasNext) {
+			val edge = getE(images.next).get
+			edge.truth = truth
+		}
+	}
+
+	private def addNewStatement(st: Statement): Unit = {
+		addE(st)
+		if (st.copula == Similar) {
+			val opposite = Statement(st.pred, Similar, st.subj, st.truth)
+			addE(opposite)
+		} else
+			addNewImages(st)
+	}
+
+	private def addNewImages(st: Statement): Unit = {
+		val images = st.allImages.tail.iterator
+		while (images.hasNext)
+			addE(images.next)
+	}
+
+	private def addE(st: Statement): Unit =
+		addE(getOrAddV(st.subj), st.copula, getOrAddV(st.pred), st.truth)
 
 	/**
 	 * For testing purposes only. Returns all statements in the graph.
 	 */
 	def getAll: List[Statement] = {
-		val edges = graph.E.toList
+		val edges = E.toList
 		val n = edges.size
 		val res = new ListBuffer[Statement]()
 		for (e <- edges) {
-			val s: DNarsVertex = e.getVertex(Direction.OUT)
-			val p: DNarsVertex = e.getVertex(Direction.IN)
-			val edge: DNarsEdge = e
-			val statement = Statement(s.term, edge.copula, p.term, edge.truth)
+			val s = e.getVertex(Direction.OUT)
+			val p = e.getVertex(Direction.IN)
+			val statement = Statement(s.term, e.copula, p.term, e.truth)
 			if (statement.pack.lengthCompare(0) == 0)
 				res += statement
 		}
 		res.toList
 	}
-
-	/**
-	 * Unpacks the given statement and adds its images to the graph.
-	 *
-	 * @return true if the statement could be transformed, false otherwise.
-	 */
-	def unpackAndAdd(graph: DNarsGraph, st: Statement): Boolean = st.unpack match {
-		case List(st1, st2) =>
-			addE(st1)
-			addE(st2)
-			true
-		case _ =>
-			false
-	}
-
-	def packAndAdd(graph: DNarsGraph, st: Statement): Boolean = st.pack match {
-		case List(st1, st2) =>
-			addE(st1)
-			addE(st2)
-			true
-		case _ =>
-			false
-	}
-
-	private def addE(st: Statement): Unit =
-		graph.addE(graph.getOrAddV(st.subj), st.copula, graph.getOrAddV(st.pred), st.truth)
 }

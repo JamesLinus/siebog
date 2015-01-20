@@ -31,7 +31,7 @@ class InferenceSet(val kb: List[Statement], val derived: List[Statement]) {
 	def assertGraph(graph: DNarsGraph): Unit = {
 		try {
 			val expected = kb ::: derived
-			val actual = graph.statements.getAll
+			val actual = graph.getAll
 			assertSeq(expected, actual)
 		} catch {
 			case ex: AssertionError =>

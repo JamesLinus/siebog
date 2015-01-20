@@ -22,23 +22,18 @@ package siebog.dnars.graph
 
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.commons.configuration.Configuration
-
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
 import com.thinkaurelius.titan.core.util.TitanCleanup
 import com.tinkerpop.blueprints.Direction
-import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Graph
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaGraph
-import com.tinkerpop.gremlin.scala.ScalaVertex
-
 import siebog.dnars.base.Statement
-import siebog.dnars.base.StatementParser
-import siebog.dnars.base.Term
-import siebog.dnars.base.Truth
 import siebog.dnars.events.EventManager
-import siebog.dnars.graph.Wrappers._
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
+import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
+import com.tinkerpop.blueprints.GraphQuery
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -46,53 +41,17 @@ import siebog.dnars.graph.Wrappers._
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) {
-	val statements = new StatementManager(this)
-	val eventManager = new EventManager()
+class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) with VertexManager with EdgeManager with StatementManager with EventManager {
 
-	def getV(term: Term): Option[Vertex] = {
-		val i = this.query().has("term", term.id).limit(1).vertices().iterator()
-		if (i.hasNext())
-			Some(i.next())
-		else
-			None
-	}
+	override def query(): GraphQuery = graph.query()
 
-	/**
-	 * Returns a vertex that corresponds to the given term.
-	 * If the vertex does not exist, it will added to the graph.
-	 */
-	def getOrAddV(term: Term): Vertex = {
-		getV(term) match {
-			case Some(v) => v
-			case None =>
-				val added = addV(null)
-				added.term = term
-				added
-		}
-	}
+	def shutdown(): Unit = graph.shutdown()
 
-	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge = {
-		val edge = subj.addEdge(copula, pred)
-		edge.truth = truth
-		edge
-	}
-
-	def getE(st: Statement): Option[Edge] = {
-		val s = getV(st.subj)
-		val p = getV(st.pred)
-		if (s == None || p == None) // no vertex, so no edge
-			None
-		else {
-			// vertices exist, check for an edge
-			val subj: ScalaVertex = s.get
-			val list = subj.outE(st.copula).as("x").inV.retain(Seq(p.get)).back("x").toList
-			list match {
-				case List() => None // nope
-				case h :: Nil => Some(h.asInstanceOf[Edge])
-				case _ => throw new IllegalStateException(s"Multiple edges of the same copula for $st")
-			}
-		}
+	def clear(): Unit = graph match {
+		case tg: TitanGraph =>
+			TitanCleanup.clear(tg)
+		case any: Any =>
+			throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
 	}
 
 	/**
@@ -104,6 +63,9 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		println("------------------- Done -------------------")
 	}
 
+	/**
+	 * Debugging purposes only.
+	 */
 	def forEachStatement(f: (Statement) => Unit): Unit = {
 		val allSt = E.map { e =>
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
@@ -128,35 +90,6 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 		V.as("x").inE.sideEffect { e => count += 1 }.back("x").outE.sideEffect { e => count += 1 }.iterate
 		count
 	}
-
-	def shutdown(): Unit = graph.shutdown()
-
-	def clear(): Unit = graph match {
-		case tg: TitanGraph =>
-			TitanCleanup.clear(tg)
-		case any: Any =>
-			throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
-	}
-
-	def addObserver(aid: String): Unit =
-		eventManager.addObserver(aid)
-
-	def removeObserver(aid: String): Unit =
-		eventManager.removeObserver(aid)
-
-	def addStatement(st: String): Unit =
-		try {
-			statements.add(StatementParser(st))
-		} catch {
-			case e: Throwable =>
-				throw new IllegalArgumentException(e.getMessage)
-		}
-
-	/**
-	 * Debugging purposes only.
-	 */
-	def getRandomVertex(): Vertex =
-		this.V.random(0.5).next
 }
 
 object DNarsGraph {

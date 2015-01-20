@@ -45,7 +45,7 @@ class DNarsGraphTest {
 				"tiger -> cat (1.0, 0.9)") // @formatter:on
 
 			// add the first statement again to test revision
-			graph.statements.add(st(0))
+			graph.add(st(0))
 			// calculate the revised version
 			val t = st(0).truth.revision(st(0).truth)
 			st(0) = Statement(st(0).subj, st(0).copula, st(0).pred, t)
@@ -72,7 +72,7 @@ class DNarsGraphTest {
 			val t = new ListBuffer[Truth]()
 			var i = 0
 			for (kbStat <- kb) {
-				graph.statements.add(kbStat)
+				graph.add(kbStat)
 				val revised = kbStat.truth.revision(kbStat.truth)
 				kb(i) = Statement(kbStat.subj, kbStat.copula, kbStat.pred, revised)
 				t += revised

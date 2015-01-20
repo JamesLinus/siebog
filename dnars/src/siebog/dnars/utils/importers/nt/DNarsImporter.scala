@@ -20,7 +20,7 @@ object DNarsImporter {
 
 		println(s"Importing from $input...")
 		val graph = DNarsGraphFactory.create(domain)
-		graph.eventManager.paused = true
+		graph.paused = true
 		try {
 			var counter = 0
 			Source

@@ -56,7 +56,7 @@ abstract class DNarsTestBase {
 		val res = new ArrayBuffer[Statement]()
 		for (str <- statements) {
 			val stat = StatementParser(str)
-			graph.statements.add(stat)
+			graph.add(stat)
 			res += stat
 		}
 		res.toList
@@ -73,7 +73,7 @@ abstract class DNarsTestBase {
 		assertEquals(expected.size, actual.size)
 		for (ste <- expected) {
 			var found = false
-			for (form <- ste.allForms)
+			for (form <- ste.allImages)
 				// cannot use "contains" because of Truth
 				for (sta <- actual)
 					if (form.equivalent(sta))
@@ -84,7 +84,7 @@ abstract class DNarsTestBase {
 
 	def assertGraph(graph: DNarsGraph, expected: Seq[Statement]): Unit = {
 		try {
-			val actual = graph.statements.getAll
+			val actual = graph.getAll
 			assertSeq(expected, actual)
 		} catch {
 			case ex: AssertionError =>
