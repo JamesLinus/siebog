@@ -21,21 +21,20 @@
 package siebog.dnars.graph
 
 import scala.collection.mutable.ListBuffer
+
 import com.tinkerpop.blueprints.Direction
+
 import siebog.dnars.base.CompoundTerm
-import siebog.dnars.base.Connector.Product
 import siebog.dnars.base.Connector.ExtImage
 import siebog.dnars.base.Connector.IntImage
+import siebog.dnars.base.Connector.Product
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
 import siebog.dnars.events.EventKind
 import siebog.dnars.events.EventPayload
-import siebog.dnars.graph.DNarsEdge.wrap
-import siebog.dnars.graph.DNarsVertex.wrap
-import siebog.dnars.base.Term
-import siebog.dnars.base.Copula
-import siebog.dnars.base.AtomicTerm
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
+import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
 
 /**
  * A set of functions for manipulating statements in the graph.
@@ -48,9 +47,8 @@ class StatementManager(val graph: DNarsGraph) {
 		val existing = graph.getE(st)
 		existing match {
 			case Some(e) => // already exists, apply revision
-				val edge: DNarsEdge = e
-				val truth = edge.truth.revision(st.truth)
-				edge.truth = truth
+				val truth = e.truth.revision(st.truth)
+				e.truth = truth
 				if (st.copula == Similar) {
 					// update in the opposite direction as well
 					val invStat = Statement(st.pred, Similar, st.subj, st.truth)
@@ -113,10 +111,6 @@ class StatementManager(val graph: DNarsGraph) {
 			false // extensional image on the intensional side
 		case (_, _, CompoundTerm(IntImage, _)) =>
 			false // intensional image on the extensional side
-		//case (s, c, CompoundTerm(ExtImage, _)) =>
-		//	s.isInstanceOf[AtomicTerm] && c == Inherit
-		//case (CompoundTerm(IntImage, _), c, p) =>
-		//	p.isInstanceOf[AtomicTerm] && c == Inherit
 		case _ =>
 			true
 	}

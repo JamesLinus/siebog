@@ -27,9 +27,9 @@ import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
 import siebog.dnars.graph.DNarsEdge
-import siebog.dnars.graph.DNarsEdge.wrap
 import siebog.dnars.graph.DNarsGraph
-import siebog.dnars.graph.DNarsVertex
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
+import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
 
 /**
  * <pre><code>
@@ -51,7 +51,7 @@ class AbductionComparisonAnalogy(override val graph: DNarsGraph) extends Forward
 		}
 
 	private def inferForEdge(judgement: Statement, e: DNarsEdge): List[Statement] = {
-		val vertex: DNarsVertex = e.getVertex(Direction.OUT)
+		val vertex = e.getVertex(Direction.OUT)
 		val p = vertex.term
 		if (judgement.subj == p)
 			List()

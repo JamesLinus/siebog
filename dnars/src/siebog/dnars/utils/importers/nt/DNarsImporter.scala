@@ -4,10 +4,10 @@ import scala.io.Source
 
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
-import siebog.dnars.graph.DNarsEdge
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraph.unwrap
 import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
 
 object DNarsImporter {
 	def main(args: Array[String]): Unit = {
@@ -60,6 +60,6 @@ object DNarsImporter {
 		val s = graph.getOrAddV(st.subj)
 		val p = graph.getOrAddV(st.pred)
 		val e = graph.addEdge(null, s, p, st.copula)
-		DNarsEdge(e).truth = st.truth
+		e.truth = st.truth
 	}
 }

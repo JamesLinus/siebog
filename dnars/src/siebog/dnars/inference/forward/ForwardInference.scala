@@ -43,6 +43,4 @@ abstract class ForwardInference(val graph: DNarsGraph) {
 
 	protected def keepIfValid(st: Statement): List[Statement] =
 		if (graph.statements.validStatement(st)) List(st) else List()
-
-	implicit def v2dv(v: Vertex): DNarsVertex = DNarsVertex.wrap(v)
 }

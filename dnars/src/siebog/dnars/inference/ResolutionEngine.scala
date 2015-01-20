@@ -24,14 +24,15 @@ import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
+
 import siebog.dnars.base.AtomicTerm.Question
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
 import siebog.dnars.base.Term
 import siebog.dnars.base.Truth
-import siebog.dnars.graph.DNarsEdge
 import siebog.dnars.graph.DNarsGraph
-import siebog.dnars.graph.DNarsVertex
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
+import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
 import siebog.dnars.inference.forward.ForwardInferenceEngine
 
 /**
@@ -96,8 +97,7 @@ object ResolutionEngine {
 	private def answerForPredicate(graph: DNarsGraph, pred: Term, copula: String, limit: Int): List[Answer] =
 		graph.getV(pred) match {
 			case Some(vert) =>
-				val pipe = DNarsVertex.wrap(vert).inE(copula)
-				bestAnswer(pipe, Direction.OUT, limit)
+				bestAnswer(vert.inE(copula), Direction.OUT, limit)
 			case None => // does not exist
 				List()
 		}
@@ -105,16 +105,15 @@ object ResolutionEngine {
 	private def answerForSubject(graph: DNarsGraph, subj: Term, copula: String, limit: Int): List[Answer] =
 		graph.getV(subj) match {
 			case Some(vert) =>
-				val pipe = DNarsVertex.wrap(vert).outE(copula)
-				bestAnswer(pipe, Direction.IN, limit)
+				bestAnswer(vert.outE(copula), Direction.IN, limit)
 			case None => // does not exist
 				List()
 		}
 
 	private def bestAnswer(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction, limit: Int): List[Answer] = {
 		pipe.map { e =>
-			val term = DNarsVertex.wrap(e.getVertex(dir)).term
-			val truth = DNarsEdge.wrap(e).truth
+			val term = e.getVertex(dir).term
+			val truth = e.truth
 			val expectation = truth.expectation
 			val simplicity = 1.0 / term.complexity
 			new Answer(term, truth, expectation, simplicity)
@@ -127,8 +126,7 @@ object ResolutionEngine {
 	private def inferBackwards(graph: DNarsGraph, question: Statement, limit: Int): List[Statement] = {
 		graph.getE(question) match {
 			case Some(edge) => // answer is directly present in the graph 
-				val e = DNarsEdge.wrap(edge)
-				List(Statement(question.subj, question.copula, question.pred, e.truth))
+				List(Statement(question.subj, question.copula, question.pred, edge.truth))
 			case None =>
 				// make sure both terms exist in the graph
 				if (graph.getV(question.subj) == None || graph.getV(question.pred) == None)

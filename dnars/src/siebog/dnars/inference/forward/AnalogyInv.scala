@@ -20,13 +20,17 @@
 
 package siebog.dnars.inference.forward
 
-import siebog.dnars.graph.DNarsGraph
-import siebog.dnars.base.Statement
-import siebog.dnars.base.Copula._
-import siebog.dnars.graph.DNarsEdge
-import com.tinkerpop.blueprints.Edge
-import siebog.dnars.graph.DNarsVertex
 import com.tinkerpop.blueprints.Direction
+import com.tinkerpop.blueprints.Edge
+
+import siebog.dnars.base.Copula.Inherit
+import siebog.dnars.base.Copula.Similar
+import siebog.dnars.base.Statement
+import siebog.dnars.graph.DNarsEdge
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.graph.DNarsVertex
+import siebog.dnars.graph.Wrappers.edge2DNarsEdge
+import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
 
 /**
  * M ~ P, M -> S :: P -> S ana'

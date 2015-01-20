@@ -38,7 +38,7 @@ import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Term
 import siebog.dnars.base.Truth
 import siebog.dnars.events.EventManager
-import siebog.dnars.graph.DNarsVertex.wrap
+import siebog.dnars.graph.Wrappers._
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -67,14 +67,14 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 			case Some(v) => v
 			case None =>
 				val added = addV(null)
-				DNarsVertex(added).term = term
+				added.term = term
 				added
 		}
 	}
 
 	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge = {
 		val edge = subj.addEdge(copula, pred)
-		DNarsEdge(edge).truth = truth
+		edge.truth = truth
 		edge
 	}
 
@@ -109,7 +109,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
 			val c = e.getLabel
-			val t = DNarsEdge(e).truth
+			val t = e.truth
 			val st = Statement(s.term, c, p.term, t)
 			// print only the packed version
 			st.pack() match {
