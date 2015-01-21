@@ -37,33 +37,46 @@ import scala.collection.mutable.ListBuffer
 object DNarsTestUtils {
 	val TEST_KEYSPACE = "TestUtils123"
 
-	def createAndAdd(graph: DNarsGraph, statements: String*): Array[Statement] = {
-		val res = new ArrayBuffer[Statement]()
-		for (str <- statements) {
+	def createAndAdd(graph: DNarsGraph, statements: String*): List[Statement] = {
+		for (str <- statements.toList) yield {
 			val stat = StatementParser(str)
 			graph.add(stat)
-			res += stat
+			stat
 		}
-		res.toArray
 	}
 
-	def create(statements: String*): List[Statement] = {
-		val res = new ListBuffer[Statement]()
-		for (str <- statements)
-			res += StatementParser(str)
-		res.toList
-	}
+	def create(statements: String*): List[Statement] =
+		for (str <- statements.toList)
+			yield StatementParser(str)
 
 	def assertSeq(expected: Seq[Statement], actual: Seq[Statement]): Unit = {
-		assertEquals(expected.size, actual.size)
+		try {
+			assertEquals(expected.size, actual.size)
+		} catch {
+			case e: AssertionError =>
+				actual.foreach { println(_) }
+				throw e
+
+		}
+		// cannot use "contains" because of Truth similarities
 		for (ste <- expected) {
 			var found = false
 			for (form <- ste.allImages)
-				// cannot use "contains" because of Truth
 				for (sta <- actual)
 					if (form.equivalent(sta))
 						found = true
 			assertTrue("Statement " + ste + " not found.", found)
+		}
+	}
+
+	def assertGraph(graph: DNarsGraph, expected: Seq[Statement]): Unit = {
+		try {
+			val actual = graph.getAll
+			assertSeq(expected, actual)
+		} catch {
+			case ex: AssertionError =>
+				graph.printEdges
+				throw ex
 		}
 	}
 

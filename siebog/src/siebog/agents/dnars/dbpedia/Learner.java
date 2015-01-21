@@ -35,7 +35,6 @@ import siebog.dnars.base.Truth;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.dnars.inference.forward.ForwardInferenceEngine;
-import siebog.dnars.inference.ResolutionEngine;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
 import siebog.xjaf.fipa.ACLMessage;
@@ -82,7 +81,7 @@ public class Learner extends XjafAgent {
 
 						for (Statement st : newKnowledge) {
 							st = st.allImages().head();
-							if (!ResolutionEngine.hasAnswer(allProps, st)) {
+							if (!allProps.hasAnswer(st)) {
 								knownProps = DNarsGraphFactory.create(query.getKnownProperties(),
 										null);
 								try {
@@ -110,11 +109,11 @@ public class Learner extends XjafAgent {
 		Truth truth = new Truth(1.0, 0.9);
 		// uri -> ?
 		Statement st = new Statement(uriTerm, Copula.Inherit(), AtomicTerm.Question(), truth);
-		Statement[] relevant = ResolutionEngine.answer(graph, st, Integer.MAX_VALUE);
+		Statement[] relevant = graph.answer(st, Integer.MAX_VALUE);
 		set.addAll(Arrays.asList(relevant));
 		// ? -> uri
 		st = new Statement(AtomicTerm.Question(), Copula.Inherit(), uriTerm, truth);
-		relevant = ResolutionEngine.answer(graph, st, Integer.MAX_VALUE);
+		relevant = graph.answer(st, Integer.MAX_VALUE);
 		set.addAll(Arrays.asList(relevant));
 		return set;
 	}

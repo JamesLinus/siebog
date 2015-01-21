@@ -34,6 +34,13 @@ import siebog.dnars.events.EventManager
 import siebog.dnars.graph.Wrappers.edge2DNarsEdge
 import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
 import com.tinkerpop.blueprints.GraphQuery
+import siebog.dnars.inference.forward.DeductionAnalogy
+import siebog.dnars.inference.forward.AnalogyResemblance
+import siebog.dnars.inference.forward.AbductionComparisonAnalogy
+import siebog.dnars.inference.forward.InductionComparison
+import siebog.dnars.inference.forward.AnalogyInv
+import siebog.dnars.inference.ResolutionEngine
+import siebog.dnars.inference.BackwardInference
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -41,7 +48,30 @@ import com.tinkerpop.blueprints.GraphQuery
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph) with VertexManager with EdgeManager with StatementManager with EventManager {
+class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph)
+	with DNarsGraphAPI with VertexAPI with EdgeAPI with StatementAPI with EventManager
+	with ResolutionEngine with BackwardInference {
+
+	val engines = List(
+		new DeductionAnalogy(this),
+		new AnalogyResemblance(this),
+		new AbductionComparisonAnalogy(this),
+		new InductionComparison(this),
+		new AnalogyInv(this))
+
+	override def conclusions(input: Array[Statement]): Array[Statement] = {
+		val inputList = input.toList // for compatibility with Java
+		val result = engines.flatMap { engine => engine.apply(inputList) }
+		result.toArray
+	}
+
+	override def conclusions(input: Statement): Array[Statement] =
+		conclusions(Array(input))
+
+	override def include(input: Array[Statement]): Unit = {
+		val concl = conclusions(input)
+		add(input.toList ::: concl.toList)
+	}
 
 	override def query(): GraphQuery = graph.query()
 

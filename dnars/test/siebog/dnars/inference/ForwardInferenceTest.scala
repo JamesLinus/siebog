@@ -20,13 +20,17 @@
 
 package siebog.dnars.inference
 
-import scala.collection.mutable.ListBuffer
-
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
-import siebog.dnars.DNarsTestBase
-import siebog.dnars.base.Statement
+import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
+import siebog.dnars.DNarsTestUtils.assertSeq
+import siebog.dnars.DNarsTestUtils.create
+import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.base.StatementParser
+import siebog.dnars.graph.DNarsGraph
+import siebog.dnars.graph.DNarsGraphFactory
 import siebog.dnars.inference.forward.AbductionComparisonAnalogy
 import siebog.dnars.inference.forward.AnalogyResemblance
 import siebog.dnars.inference.forward.DeductionAnalogy
@@ -35,9 +39,21 @@ import siebog.dnars.inference.forward.DeductionAnalogy
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class ForwardInferenceTest extends DNarsTestBase {
+class ForwardInferenceTest {
+	var graph: DNarsGraph = null
+
+	@Before
+	def setUp(): Unit =
+		graph = DNarsGraphFactory.create(TEST_KEYSPACE)
+
+	@After
+	def tearDown(): Unit = {
+		graph.shutdown()
+		graph.clear()
+	}
+
 	@Test
-	def deductionAnalogy: Unit = {
+	def deductionAnalogy(): Unit = {
 		// M -> P  ::
 		//		S -> M	=> S -> P ded 
 		//		S ~ M	=> S -> P ana
@@ -51,17 +67,12 @@ class ForwardInferenceTest extends DNarsTestBase {
 			"quantum ~ physics (1.0, 0.9)")
 
 		val derived = new DeductionAnalogy(graph).apply(kb)
-		graph.add(derived)
+		val expected = create(
+			"tiger -> animal " + kb(0).truth.deduction(kb(2).truth),
+			"feline -> animal " + kb(0).truth.analogy(kb(4).truth, false),
+			"(x einstein quantum) -> field " + kb(5).truth.analogy(kb(6).truth, false))
 
-		val expected = List(
-			invert(kb(3)),
-			invert(kb(4)),
-			StatementParser("tiger -> animal " + kb(0).truth.deduction(kb(2).truth)),
-			StatementParser("feline -> animal " + kb(0).truth.analogy(kb(4).truth, false)),
-			invert(kb(6)),
-			StatementParser("(x einstein quantum) -> field " + kb(5).truth.analogy(kb(6).truth, false)))
-
-		assertGraph(graph, kb.toList ::: expected)
+		assertSeq(expected, derived)
 	}
 
 	@Test
@@ -69,15 +80,20 @@ class ForwardInferenceTest extends DNarsTestBase {
 		// M ~ P ::
 		//		S -> M	=> S -> P ana'
 		//		S ~ M	=> S ~ P res
-		val stset = InferenceSets.getAnalogyResemblance
-		graph.add(stset.kb)
+		val kb = createAndAdd(graph,
+			"developer -> job (0.6, 0.77)",
+			"cat ~ feline (0.33, 0.51)",
+			"tiger -> cat (0.95, 0.83)",
+			"water -> liquid (0.63, 0.72)",
+			"lion ~ cat (0.85, 0.48)")
 
-		val derived = new ListBuffer[Statement]()
-		for (st <- stset.kb)
-			derived ++= new AnalogyResemblance(graph).apply(st)
-		graph.add(derived)
+		val derived = new AnalogyResemblance(graph).apply(kb)
+		val expected = create(
+			"tiger -> feline " + kb(1).truth.analogy(kb(2).truth, true),
+			"tiger -> lion " + kb(4).truth.analogy(kb(2).truth, true),
+			"lion ~ feline " + kb(1).truth.resemblance(kb(4).truth))
 
-		stset.assertGraph(graph)
+		assertSeq(expected, derived)
 	}
 
 	@Test
@@ -93,43 +109,44 @@ class ForwardInferenceTest extends DNarsTestBase {
 			"feline ~ cat (0.49, 0.52)")
 
 		val derived = new AbductionComparisonAnalogy(graph).apply(kb)
-		graph.add(derived)
 
-		val con1 = StatementParser("lion ~ tiger " + kb(0).truth.comparison(kb(3).truth))
-		val con2 = StatementParser("tiger ~ lion " + kb(3).truth.comparison(kb(0).truth))
-		val revised = StatementParser("lion ~ tiger " + con1.truth.revision(con2.truth))
-		val expected = List(
-			invert(kb(4)),
-			StatementParser("lion -> tiger " + kb(0).truth.abduction(kb(3).truth)),
-			revised,
-			StatementParser("tiger -> feline " + kb(0).truth.analogy(kb(4).truth, false)),
-			StatementParser("tiger -> lion " + kb(3).truth.abduction(kb(0).truth)),
-			invert(revised),
-			StatementParser("lion -> feline " + kb(3).truth.analogy(kb(4).truth, false)))
+		val expected = create(
+			"lion -> tiger " + kb(0).truth.abduction(kb(3).truth),
+			"lion ~ tiger " + kb(0).truth.comparison(kb(3).truth),
+			"tiger ~ lion " + kb(0).truth.comparison(kb(3).truth),
+			"tiger -> feline " + kb(0).truth.analogy(kb(4).truth, false),
+			"tiger -> lion " + kb(3).truth.abduction(kb(0).truth),
+			"lion -> feline " + kb(3).truth.analogy(kb(4).truth, false))
 
-		assertGraph(graph, kb.toList ::: expected)
+		assertSeq(expected, derived)
 	}
 
 	@Test
 	def compoundExtentional: Unit = {
-		val stset = InferenceSets.getCompoundExtentionalDeduction
-		graph.add(stset.kb)
+		val kb = createAndAdd(graph,
+			"(cat x bird) -> eat (1.0, 0.9)",
+			"tiger -> cat (1.0, 0.9)")
 
-		val derived = new ListBuffer[Statement]()
-		for (st <- stset.kb)
-			derived ++= new DeductionAnalogy(graph).apply(st)
-		graph.add(derived)
+		val derived = new DeductionAnalogy(graph).apply(kb)
+		val expected = create(
+			"(tiger x bird) -> eat " + kb(0).truth.deduction(kb(1).truth))
 
-		stset.assertGraph(graph)
+		assertSeq(expected, derived)
 	}
 
 	@Test
 	def compoundTest: Unit = {
-		val kb = createAndAdd(graph, "(x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.00,0.90)")
-		val st = StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (1.0, 0.9)")
+		val kb = createAndAdd(graph,
+			"(x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (0.84, 0.77)")
+
+		val st = StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) -> http://dbpedia.org/ontology/field (0.94, 0.63)")
 		val derived = new AbductionComparisonAnalogy(graph).apply(st)
-		val res = List(StatementParser("(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) ~ (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) (1.00,0.45)"))
-		assertSeq(res, derived)
+		val expected = create(
+			"(x http://dbpedia.org/resource/Lise_Meitner http://dbpedia.org/resource/Physics) ~ (x http://dbpedia.org/resource/Albert_Einstein http://dbpedia.org/resource/Physics) " + kb(0).truth.comparison(st.truth),
+			"http://dbpedia.org/resource/Lise_Meitner -> http://dbpedia.org/resource/Albert_Einstein " + kb(0).truth.abduction(st.truth),
+			"http://dbpedia.org/resource/Lise_Meitner ~ http://dbpedia.org/resource/Albert_Einstein " + kb(0).truth.comparison(st.truth))
+
+		assertSeq(expected, derived)
 	}
 
 	@Test
@@ -137,7 +154,7 @@ class ForwardInferenceTest extends DNarsTestBase {
 		val kb = createAndAdd(graph, "tiger -> cat (1.0, 0.9)")
 		val st = StatementParser("eat -> (x tiger bird) (1.0, 0.9)")
 		val derived = new DeductionAnalogy(graph).apply(st)
-		val res = List(StatementParser("eat -> (x cat bird) (1.0, 0.81)"))
-		assertSeq(res, derived)
+		val expected = create("eat -> (x cat bird) (1.0, 0.81)")
+		assertSeq(expected, derived)
 	}
 }

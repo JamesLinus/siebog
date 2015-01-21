@@ -18,35 +18,37 @@
  * and limitations under the License.
  */
 
-package siebog.dnars.graph
+package siebog.dnars.base
 
-import com.tinkerpop.blueprints.Graph
-import com.tinkerpop.blueprints.Vertex
-import com.tinkerpop.gremlin.scala.ScalaGraph
+import org.junit.Test
 
-import siebog.dnars.base.Term
-import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
+import siebog.dnars.DNarsTestUtils.assertSeq
+import siebog.dnars.DNarsTestUtils.create
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-trait VertexManager extends DNarsGraphApi {
-	override def getV(term: Term): Option[Vertex] = {
-		val i = query().has("term", term.id).limit(1).vertices().iterator()
-		if (i.hasNext())
-			Some(i.next())
-		else
-			None
-	}
+class StatementTest {
+	@Test
+	def testImages(): Unit = {
+		val st1 = "(cat x bird) -> eat (1.0, 0.9)"
+		assertSeq(
+			StatementParser(st1).allImages(),
+			create(st1,
+				"cat -> (/ eat * bird) (1.0, 0.9)",
+				"bird -> (/ eat cat *) (1.0, 0.9)"))
 
-	override def getOrAddV(term: Term): Vertex = {
-		getV(term) match {
-			case Some(v) => v
-			case None =>
-				val added = addV(null)
-				added.term = term
-				added
-		}
+		val st2 = "dissolve -> (x water salt) (1.0, 0.9)"
+		assertSeq(
+			StatementParser(st2).allImages(),
+			create(st2,
+				"(\\ dissolve * salt) -> water (1.0, 0.9)",
+				"(\\ dissolve water *) -> salt (1.0, 0.9)"))
+
+		val st3 = "cat -> animal (1.0, 0.9)"
+		assertSeq(
+			StatementParser(st3).allImages(),
+			create(st3))
 	}
 }

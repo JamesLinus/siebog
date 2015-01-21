@@ -9,7 +9,6 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.base.StatementParser;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
-import siebog.dnars.inference.ResolutionEngine;
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
@@ -40,7 +39,7 @@ public class DNarsDB extends DB {
 	public int read(String domain, String questionStr, Set<String> fields,
 			HashMap<String, ByteIterator> result) {
 		Statement question = StatementParser.apply(questionStr);
-		Statement[] answers = ResolutionEngine.answer(graph, question, 1);
+		Statement[] answers = graph.answer(question, 1);
 		int err = answers.length > 0 ? 0 : 1;
 		return err;
 	}

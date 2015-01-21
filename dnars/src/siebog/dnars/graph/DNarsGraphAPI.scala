@@ -33,7 +33,7 @@ import com.tinkerpop.gremlin.scala.GremlinScalaPipeline
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-trait DNarsGraphApi {
+trait DNarsGraphAPI {
 	def query(): GraphQuery
 
 	def addV(id: Any): Vertex
@@ -42,10 +42,12 @@ trait DNarsGraphApi {
 
 	def getV(term: Term): Option[Vertex]
 
-	/**
-	 * Returns a vertex that corresponds to the given term. If the vertex does not exist,
-	 * it will added to the graph.
-	 */
+	def conclusions(input: Array[Statement]): Array[Statement]
+
+	def conclusions(input: Statement): Array[Statement]
+
+	def include(input: Array[Statement]): Unit
+
 	def getOrAddV(term: Term): Vertex
 
 	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge
@@ -60,12 +62,13 @@ trait DNarsGraphApi {
 
 	def validStatement(st: Statement): Boolean
 
-	/**
-	 * Checks if the given statement exists in the theGraph.
-	 *
-	 * @throws IllegalArgumentException if the statement is not found, or if it has different truth-value.
-	 */
-	def assert(st: Statement): Unit
+	def assertStatementExists(st: Statement): Unit
+
+	def answer(question: Statement, limit: Int = 1): Array[Statement]
+
+	def hasAnswer(question: Statement): Boolean
+
+	def inferBackwards(question: Statement): List[Statement]
 
 	def addEvent(event: EventPayload): Unit
 

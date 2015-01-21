@@ -29,10 +29,10 @@ import siebog.dnars.graph.Wrappers._
 import com.tinkerpop.gremlin.scala.ScalaVertex
 
 /**
- *
+ * Subset of the DNarsGraph API focused on raw graph edges.
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-trait EdgeManager extends DNarsGraphApi {
+trait EdgeAPI extends DNarsGraphAPI {
 	override def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge = {
 		val edge = subj.addEdge(copula, pred)
 		edge.truth = truth

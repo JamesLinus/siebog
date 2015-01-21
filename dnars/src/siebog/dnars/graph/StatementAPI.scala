@@ -40,11 +40,11 @@ import siebog.dnars.events.EventManager
 import siebog.dnars.base.StatementParser
 
 /**
- * A set of functions for manipulating statements in the theGraph.
+ * Subset of the DNarsGraph API focused on NAL statements.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-trait StatementManager extends DNarsGraphApi {
+trait StatementAPI extends DNarsGraphAPI {
 	override def add(st: Statement): Unit = if (validStatement(st)) {
 		// TODO : when adding statements, consider that "S~P <=> S->P & P->S" and "S~P => S->P"
 		val existing = getE(st)
@@ -75,9 +75,6 @@ trait StatementManager extends DNarsGraphApi {
 		}
 	}
 
-	/**
-	 * Checks if the given statement is valid. For now, it only checks compound terms with product connectors.
-	 */
 	override def validStatement(st: Statement): Boolean = (st.subj, st.copula, st.pred) match {
 		case (CompoundTerm(Product, _), Inherit, CompoundTerm(_, _)) =>
 			false // predicate should be an atomic term
@@ -91,13 +88,15 @@ trait StatementManager extends DNarsGraphApi {
 			true
 	}
 
-	override def assert(st: Statement): Unit = {
+	override def assertStatementExists(st: Statement): Unit = {
 		getE(st) match {
 			case None =>
-				throw new IllegalArgumentException("Not found.");
+				throw new IllegalArgumentException(s"Statement does not exist: $st")
 			case Some(e) =>
-				if (!e.truth.closeTo(st.truth))
-					throw new IllegalArgumentException(e.truth.toString)
+				if (!e.truth.closeTo(st.truth)) {
+					val msg = s"Invalid truth value, expected ${st.truth}, found ${e.truth}"
+					throw new IllegalArgumentException(msg)
+				}
 		}
 	}
 
@@ -111,16 +110,22 @@ trait StatementManager extends DNarsGraphApi {
 	}
 
 	private def reviseOppositeEdge(st: Statement, revisedTruth: Truth): Unit = {
-		val oppStat = Statement(st.pred, Similar, st.subj, st.truth)
-		val edge = getE(oppStat).get
-		edge.truth = revisedTruth
+		val oppositeStatement = Statement(st.pred, Similar, st.subj, st.truth)
+		setTruthValue(oppositeStatement, revisedTruth)
 	}
 
 	private def reviseImages(st: Statement, truth: Truth): Unit = {
 		val images = st.allImages.tail.iterator
-		while (images.hasNext) {
-			val edge = getE(images.next).get
-			edge.truth = truth
+		while (images.hasNext)
+			setTruthValue(images.next(), truth)
+	}
+
+	private def setTruthValue(st: Statement, truth: Truth): Unit = {
+		getE(st) match {
+			case Some(e) =>
+				e.truth = truth
+			case None =>
+				throw new IllegalArgumentException("No edge for statement " + st)
 		}
 	}
 

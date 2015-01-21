@@ -20,126 +20,82 @@
 
 package siebog.dnars.graph
 
-import scala.collection.mutable.ListBuffer
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
+import siebog.dnars.DNarsTestUtils.assertGraph
+import siebog.dnars.DNarsTestUtils.create
 import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
-import siebog.dnars.base.StatementParser
 import siebog.dnars.base.Truth
-import siebog.dnars.inference.InferenceSet
 
 /**
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 class DNarsGraphTest {
+	var graph: DNarsGraph = null
+
+	@Before
+	def setUp(): Unit =
+		graph = DNarsGraphFactory.create(TEST_KEYSPACE)
+
+	@After
+	def tearDown(): Unit = {
+		graph.shutdown()
+		graph.clear()
+	}
+
 	@Test
 	def testAtomicAddition: Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val st = createAndAdd(graph, // @formatter:off
-				"cat -> animal (0.8, 0.77)",
-				"cat ~ mammal (1.0, 0.9)",
-				"tiger -> cat (1.0, 0.9)") // @formatter:on
+		val st = createAndAdd(graph, // @formatter:off
+			"cat -> animal (0.8, 0.77)",
+			"cat ~ mammal (1.0, 0.9)",
+			"tiger -> cat (1.0, 0.9)").toArray // @formatter:on
 
-			// add the first statement again to test revision
-			graph.add(st(0))
-			// calculate the revised version
-			val t = st(0).truth.revision(st(0).truth)
-			st(0) = Statement(st(0).subj, st(0).copula, st(0).pred, t)
+		// add the first statement again to test revision
+		graph.add(st(0))
 
-			val derived = List(invert(st(1)))
-			new InferenceSet(st.toList, derived).assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		val revisedTruth = st(0).truth.revision(st(0).truth)
+		val revisedStatement = Statement(st(0).subj, st(0).copula, st(0).pred, revisedTruth)
+		val expected = List(revisedStatement, st(1), invert(st(1)), st(2))
+		assertGraph(graph, expected)
 	}
 
 	@Test
-	def testCompoundAddition: Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val kb = createAndAdd(graph, // @formatter:off
-				"(cat x bird) -> eat (0.66, 0.93)",
-				"dissolve -> (water x salt) (0.73, 0.52)",
-				"poo -> (/ eat dog *) (0.13, 0.44)",
-				"(\\ hate * cat) -> dog (0.85, 0.9)") // @formatter:on
+	def testPack() = {
+		val kb = createAndAdd(graph,
+			"cat -> (/ eat * bird) (1.0, 0.9)",
+			"poo -> (/ eat dog *) (1.0, 0.9)",
+			"(\\ dissolve * salt) -> liquid (1.0, 0.9)",
+			"(\\ hate * cat) -> dog (1.0, 0.9)",
+			"trout -> fish (1.0, 0.9)")
 
-			// apply revision
-			val t = new ListBuffer[Truth]()
-			var i = 0
-			for (kbStat <- kb) {
-				graph.add(kbStat)
-				val revised = kbStat.truth.revision(kbStat.truth)
-				kb(i) = Statement(kbStat.subj, kbStat.copula, kbStat.pred, revised)
-				t += revised
-				i += 1
-			}
+		val expected = create(
+			"(x cat bird) -> eat (1.0, 0.9)",
+			"(x dog poo) -> eat (1.0, 0.9)",
+			"dissolve -> (x liquid salt) (1.0, 0.9)",
+			"hate -> (x dog cat) (1.0, 0.9)",
+			"trout -> fish (1.0, 0.9)")
 
-			val derived = List(
-				StatementParser("cat -> (/ eat * bird) " + t(0)),
-				StatementParser("bird -> (/ eat cat *) " + t(0)),
-				StatementParser("(\\ dissolve * salt) -> water " + t(1)),
-				StatementParser("(\\ dissolve water *) -> salt " + t(1)),
-				StatementParser("(dog x poo) -> eat " + t(2)),
-				StatementParser("dog -> (/ eat * poo) " + t(2)),
-				StatementParser("hate -> (dog x cat) " + t(3)),
-				StatementParser("(\\ hate dog *) -> cat " + t(3)))
-			new InferenceSet(kb.toList, derived).assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		assertGraph(graph, expected)
 	}
 
 	@Test
-	def testUnpack: Unit = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val kb = createAndAdd(graph,
-				"(cat x bird) -> eat (1.0, 0.9)",
-				"developer -> job (1.0, 0.9)",
-				"dissolve -> (x water salt) (1.0, 0.9)")
-			val derived = List(
-				StatementParser("cat -> (/ eat * bird) (1.0, 0.9)"),
-				StatementParser("bird -> (/ eat cat *) (1.0, 0.9)"),
-				StatementParser("(\\ dissolve * salt) -> water (1.0, 0.9)"),
-				StatementParser("(\\ dissolve water *) -> salt (1.0, 0.9)"))
-			new InferenceSet(kb.toList, derived).assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
-	}
+	def testPackWithRevision(): Unit = {
+		val kb = createAndAdd(graph,
+			"(cat x bird) -> eat (0.66, 0.93)",
+			"dissolve -> (x water salt) (0.73, 0.52)",
+			"cat -> (/ eat * bird) (0.14, 0.8)",
+			"(\\ dissolve water *) -> salt (0.55, 0.91)")
 
-	@Test
-	def testPack = {
-		val graph = DNarsGraphFactory.create(TEST_KEYSPACE, null)
-		try {
-			val kb = createAndAdd(graph,
-				"cat -> (/ eat * bird) (1.0, 0.9)",
-				"poo -> (/ eat dog *) (1.0, 0.9)",
-				"(\\ dissolve * salt) -> liquid (1.0, 0.9)",
-				"(\\ hate * cat) -> dog (1.0, 0.9)")
-			val derived = List(
-				StatementParser("(x cat bird) -> eat (1.0, 0.9)"),
-				StatementParser("bird -> (/ eat cat *) (1.0, 0.9)"),
+		val expected = create(
+			"(cat x bird) -> eat " + kb(0).truth.revision(kb(2).truth),
+			"dissolve -> (water x salt) " + kb(1).truth.revision(kb(3).truth))
 
-				StatementParser("(x dog poo) -> eat (1.0, 0.9)"),
-				StatementParser("dog -> (/ eat * poo) (1.0, 0.9)"),
-
-				StatementParser("dissolve -> (x liquid salt) (1.0, 0.9)"),
-				StatementParser("(\\ dissolve liquid *) -> salt (1.0, 0.9)"),
-
-				StatementParser("hate -> (x dog cat) (1.0, 0.9)"),
-				StatementParser("(\\ hate dog *) -> cat (1.0, 0.9)"))
-			new InferenceSet(kb.toList, derived).assertGraph(graph)
-		} finally {
-			graph.shutdown
-			graph.clear
-		}
+		assertGraph(graph, expected)
 	}
 }

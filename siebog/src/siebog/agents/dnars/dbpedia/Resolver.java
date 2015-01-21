@@ -33,7 +33,6 @@ import siebog.dnars.base.Statement;
 import siebog.dnars.base.StatementParser;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
-import siebog.dnars.inference.ResolutionEngine;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
@@ -83,7 +82,7 @@ public class Resolver extends XjafAgent {
 		DNarsGraph graph = DNarsGraphFactory.create(properties, null);
 		try {
 			Statement question = StatementParser.apply(query + " -> ? (1.0, 0.9)");
-			Statement[] answers = ResolutionEngine.answer(graph, question, Integer.MAX_VALUE);
+			Statement[] answers = graph.answer(question, Integer.MAX_VALUE);
 			Set<Statement> known = new HashSet<>();
 			for (Statement st : answers) {
 				if (st.pred() instanceof AtomicTerm)
