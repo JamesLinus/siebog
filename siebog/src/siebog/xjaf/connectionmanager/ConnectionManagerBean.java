@@ -20,20 +20,34 @@
 
 package siebog.xjaf.connectionmanager;
 
+import java.util.List;
+import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+
+import org.jgroups.Address;
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.MessageListener;
+import org.jgroups.ReceiverAdapter;
+import org.jgroups.View;
+
+import siebog.xjaf.core.XjafAgent;
 
 /**
  * Default connection manager implementation.
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateless
+@Singleton
+@Startup
 @Remote(ConnectionManager.class)
-public class ConnectionManagerBean implements ConnectionManager {
-	// private static final Logger logger = Logger.getLogger(ConnectionManagerImpl.class.getName());
-	// private JChannel channel;
+public class ConnectionManagerBean extends ReceiverAdapter implements MessageListener, ConnectionManager {
+	private static final Logger logger = Logger.getLogger(ConnectionManagerBean.class.getName());
+	private JChannel channel;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -46,5 +60,44 @@ public class ConnectionManagerBean implements ConnectionManager {
 		 * }); if (logger.isLoggable(Level.INFO)) logger.info("ConnectionManager initialized"); }
 		 * catch (Exception ex) { logger.log(Level.SEVERE, "Unable to create channel", ex); } }
 		 */
+		
+		try {
+			channel = new JChannel(getClass().getResourceAsStream("xjaf-tcpA.xml"));
+			System.out.println(channel.printProtocolSpec(true));
+			channel.setReceiver(this);
+			channel.connect("xjaf_master_cluster");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
+	
+	public void send(Address dest, XjafAgent agent) throws Exception {
+		channel.send(dest, agent);
+	}
+	
+	public List<Address> getMembers() {
+		return channel.getView().getMembers();
+	}
+	
+	public Address getLocalAddress() {
+		return channel.getAddress();
+	}
+	
+	@Override
+	public void receive(Message msg) {
+		try {
+			System.out.println("received " + msg.getObject());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	};
+	
+	@Override
+	public void viewAccepted(View view) {
+		System.out.println(view);
+	}
+
 }

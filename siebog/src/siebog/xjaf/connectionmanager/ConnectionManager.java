@@ -20,6 +20,12 @@
 
 package siebog.xjaf.connectionmanager;
 
+import java.util.List;
+
+import org.jgroups.Address;
+
+import siebog.xjaf.core.XjafAgent;
+
 /**
  * Remote interface for the connection manager.
  *
@@ -27,4 +33,10 @@ package siebog.xjaf.connectionmanager;
  */
 public interface ConnectionManager {
 
+	public void send(Address dest, XjafAgent agent) throws Exception;
+	
+	public List<Address> getMembers();
+	
+	public Address getLocalAddress();
+	
 }

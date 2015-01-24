@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
+
 import siebog.core.FileUtils;
 
 public class NodeConfig {
@@ -13,6 +14,8 @@ public class NodeConfig {
 	private File rootFolder;
 	private File configFile;
 	private NodeInfo node;
+	private int portOffset;
+	private String jgroupsAddress;
 	private static NodeConfig instance;
 
 	public static synchronized NodeConfig get(String[] args) {
@@ -96,7 +99,7 @@ public class NodeConfig {
 	}
 
 	public int getPortOffset() {
-		return 0;
+		return portOffset;
 	}
 
 	public RelayInfo getRelay() {
@@ -123,6 +126,16 @@ public class NodeConfig {
 			case "node":
 				node = new NodeInfo(value);
 				break;
+			case "--portoffset":
+			case "-portoffset":
+			case "portoffset":
+				portOffset = Integer.parseInt(value);
+				break;
+			case "--djgroups.bind_addr":
+			case "-djgroups.bind_addr":
+			case "djgroups.bind_addr":
+				jgroupsAddress = value;
+				break;
 			case "--help":
 			case "-help":
 			case "help":
@@ -137,6 +150,10 @@ public class NodeConfig {
 		if (node == null)
 			throw new IllegalArgumentException("Parameter --node not specified.");
 		makeConfigFile(node);
+	}
+
+	public String getJgroupsAddress() {
+		return jgroupsAddress;
 	}
 
 	private void makeConfigFile(NodeInfo fromNode) throws IOException {

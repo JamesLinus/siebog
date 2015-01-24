@@ -82,23 +82,44 @@ public class NodeStarter {
 		File hostConfig = new File(config.getJBossHome(), "domain/configuration/host-master.xml");
 		FileUtils.write(hostConfig, hostMaster);
 
-		// @formatter:off
-		String[] jbossArgs = {
-			"-jboss-home", config.getJBossHome().getAbsolutePath(),
-			"-mp", new File(config.getJBossHome(), "modules").getAbsolutePath(),
-			"-jar", new File(config.getJBossHome(), "jboss-modules.jar").getAbsolutePath(),
-			"--",
-			//"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf.log",
-			//"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
-			"-server",
-			"--",
-			// 
-			"--host-config=host-master.xml",
-			"-Djboss.bind.address.management=" + ADDR
-		};
-		// @formatter:on
-
-		org.jboss.as.process.Main.start(jbossArgs);
+		if (config.getJgroupsAddress() != null) {
+			// @formatter:off
+			String[] jbossArgs = {
+				"-jboss-home", config.getJBossHome().getAbsolutePath(),
+				"-mp", new File(config.getJBossHome(), "modules").getAbsolutePath(),
+				"-jar", new File(config.getJBossHome(), "jboss-modules.jar").getAbsolutePath(),
+				"--",
+				//"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf.log",
+				//"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
+				"-server",
+				"--",
+				// 
+				"--host-config=host-master.xml",
+				"-Djboss.bind.address.management=" + ADDR,
+				"-Djgroups.bind_addr=" + config.getJgroupsAddress()
+			};
+			// @formatter:on
+			org.jboss.as.process.Main.start(jbossArgs);
+		}
+		else {
+			// @formatter:off
+			String[] jbossArgs = {
+				"-jboss-home", config.getJBossHome().getAbsolutePath(),
+				"-mp", new File(config.getJBossHome(), "modules").getAbsolutePath(),
+				"-jar", new File(config.getJBossHome(), "jboss-modules.jar").getAbsolutePath(),
+				"--",
+				//"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf.log",
+				//"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
+				"-server",
+				"--",
+				// 
+				"--host-config=host-master.xml",
+				"-Djboss.bind.address.management=" + ADDR
+			};
+			// @formatter:on
+			org.jboss.as.process.Main.start(jbossArgs);
+		}
+		
 		waitForServer(ADDR, Global.MASTER_NAME, "master");
 	}
 
