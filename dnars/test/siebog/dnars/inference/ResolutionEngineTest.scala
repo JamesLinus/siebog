@@ -54,8 +54,10 @@ class ResolutionEngineTest {
 	@Test
 	def testAnswer(): Unit = {
 		createAndAdd(graph,
+			"tiger -> mammal (1.0, 0.9)",
 			"cat -> animal (1.0, 0.9)",
 			"developer ~ job (0.87, 0.91)")
+		assertAnswer("tiger -> ?", "tiger -> mammal (1.0, 0.9)")
 		assertAnswer("? -> cat", null)
 		assertAnswer("? -> animal", "cat -> animal (1.0, 0.9)")
 		assertAnswer("cat -> ?", "cat -> animal (1.0, 0.9)")
@@ -68,10 +70,10 @@ class ResolutionEngineTest {
 	@Test
 	def testMultipleAnswers(): Unit = {
 		val kb = createAndAdd(graph,
-			"cat -> animal (0.6, 0.3)",
-			"bird -> animal (1.0, 0.9)",
+			"cat -> animal (0.6, 0.3)", // expectation 0.53
+			"bird -> animal (1.0, 0.9)", // expectation 0.95
 			"developer ~ job (0.87, 0.91)",
-			"tiger -> animal (0.6, 0.4)")
+			"tiger -> animal (0.6, 0.4)") // expectation 0.54
 
 		val q = StatementParser("? -> animal (1.0, 0.9)")
 		val answers = graph.answer(q, 2)

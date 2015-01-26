@@ -44,11 +44,13 @@ import siebog.dnars.inference.forward.ForwardInferenceEngine
 trait ResolutionEngine extends DNarsGraphAPI {
 
 	def answer(question: Statement, limit: Int = 1): Array[Statement] = {
-		if (question.subj == Question)
-			answerMissingSubject(question, limit)
-		else if (question.pred == Question)
-			answerMissingPredicate(question, limit)
-		else {
+		if (question.subj == Question) {
+			val list = getBestSubjects(question.pred, question.copula, limit).toArray // answerMissingSubject(question, limit)
+			for (s <- list) yield Statement(s, question.copula, question.pred, Truth(1.0, 0.9))
+		} else if (question.pred == Question) {
+			val list = getBestPredicates(question.subj, question.copula, limit).toArray // answerMissingPredicate(question, limit)
+			for (p <- list) yield Statement(question.subj, question.copula, p, Truth(1.0, 0.9))
+		} else {
 			val candidates = for (q <- question.allImages()) yield inferBackwards(q)
 			candidates.flatten.take(limit).toArray
 		}

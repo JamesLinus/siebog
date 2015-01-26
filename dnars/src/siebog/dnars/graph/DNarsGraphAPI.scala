@@ -40,6 +40,8 @@ trait DNarsGraphAPI {
 
 	def E(): GremlinScalaPipeline[Edge, Edge]
 
+	def V(): GremlinScalaPipeline[Vertex, Vertex]
+
 	def getV(term: Term): Option[Vertex]
 
 	def conclusions(input: Array[Statement]): Array[Statement]
@@ -49,6 +51,10 @@ trait DNarsGraphAPI {
 	def include(input: Array[Statement]): Unit
 
 	def getOrAddV(term: Term): Vertex
+
+	def getBestPredicates(subj: Term, copula: String, limit: Int): List[Term]
+
+	def getBestSubjects(pred: Term, copula: String, limit: Int): List[Term]
 
 	def addE(subj: Vertex, copula: String, pred: Vertex, truth: Truth): Edge
 

@@ -24,6 +24,7 @@ import org.apache.commons.configuration.BaseConfiguration
 import org.apache.commons.configuration.Configuration
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
+import com.thinkaurelius.titan.core.Order
 import com.thinkaurelius.titan.core.util.TitanCleanup
 import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Graph
@@ -41,6 +42,8 @@ import siebog.dnars.inference.forward.InductionComparison
 import siebog.dnars.inference.forward.AnalogyInv
 import siebog.dnars.inference.ResolutionEngine
 import siebog.dnars.inference.BackwardInference
+import siebog.dnars.base.Copula
+import siebog.dnars.base.AtomicTerm
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -97,6 +100,7 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 	 * Debugging purposes only.
 	 */
 	def forEachStatement(f: (Statement) => Unit): Unit = {
+		V
 		val allSt = E.map { e =>
 			val s: DNarsVertex = e.getVertex(Direction.OUT)
 			val p: DNarsVertex = e.getVertex(Direction.IN)
@@ -132,12 +136,21 @@ object DNarsGraphFactory {
 	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
 		val conf = getConfig(domain, additionalConfig)
 		val graph = TitanFactory.open(conf)
-		try {
-			graph.makeKey("term").dataType(classOf[String]).indexed(classOf[Vertex]).unique().make()
-		} catch {
-			case _: IllegalArgumentException => // index already exists, ok
-			case e: Throwable => throw e
-		}
+
+		val management = graph.getManagementSystem
+		val key = management.makePropertyKey("term").dataType(classOf[String]).make()
+		management.buildIndex("byTerm", classOf[Vertex]).addKey(key).unique().buildCompositeIndex()
+
+		val label = management.makeEdgeLabel(Copula.Inherit).make()
+		val label2 = management.makeEdgeLabel(Copula.Similar).make()
+
+		val order = graph.makePropertyKey("subjExp").dataType(classOf[Integer]).make()
+		management.buildEdgeIndex(label, "bySubjExp", Direction.BOTH, Order.DESC, order)
+		management.buildEdgeIndex(label2, "bySubjExp", Direction.BOTH, Order.DESC, order)
+		val order2 = graph.makePropertyKey("predExp").dataType(classOf[Integer]).make()
+		management.buildEdgeIndex(label, "byPredExp", Direction.BOTH, Order.DESC, order2)
+		management.buildEdgeIndex(label2, "byPredExp", Direction.BOTH, Order.DESC, order2)
+
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 
@@ -145,7 +158,7 @@ object DNarsGraphFactory {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
-		conf.setProperty("storage.keyspace", domain)
+		//conf.setProperty("storage.keyspace", domain)
 		// additional configuration?
 		if (additionalConfig != null) {
 			val es = additionalConfig.entrySet()

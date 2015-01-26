@@ -19,38 +19,23 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/starter/lib/module/astyanax-cassandra-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/astyanax-core-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/astyanax-thrift-1.56.37.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/blueprints-core-2.4.0.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/cassandra-all-1.2.2.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/cassandra-thrift-1.2.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/colt-1.2.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/commons-codec-1.7.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/commons-configuration-1.6.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/gremlin-java-2.4.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/gremlin-scala-2.4.2.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/guava-14.0.1.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/high-scale-lib-1.1.2.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/hppc-0.4.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jackson-core-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jackson-mapper-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jena-core-2.11.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/joda-time-1.6.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/kryo-2.21-shaded.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/libthrift-0.7.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/metrics-core-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/pipes-2.4.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/slf4j-log4j12-1.7.6.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/spatial4j-0.3.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/titan-cassandra-0.4.4.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/titan-core-0.4.4.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/xml-apis-1.4.01.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
@@ -81,5 +66,21 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/starter/lib/compile/gwt-user.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-cassandra-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-core-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/astyanax-thrift-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/blueprints-core-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/cassandra-all-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/cassandra-thrift-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/gremlin-java-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/guava-15.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/hppc-0.6.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/kryo-2.22.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/libthrift-0.9.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/pipes-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/spatial4j-0.4.1.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/titan-cassandra-0.5.3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/titan-core-0.5.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
