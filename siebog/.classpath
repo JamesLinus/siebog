@@ -53,7 +53,6 @@
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jason.jar" sourcepath="/Jason/src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/starter"/>
@@ -82,5 +81,6 @@
 	<classpathentry kind="lib" path="/starter/lib/module/spatial4j-0.4.1.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/titan-cassandra-0.5.3.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/titan-core-0.5.3.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/dnars.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

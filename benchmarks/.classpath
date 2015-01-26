@@ -5,8 +5,8 @@
 	<classpathentry kind="lib" path="lib/jason.jar"/>
 	<classpathentry kind="lib" path="lib/core-0.1.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
 	<classpathentry kind="lib" path="/starter/lib/module/scala-library_2.11.2.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/jena-core-2.11.2.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/dnars.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
