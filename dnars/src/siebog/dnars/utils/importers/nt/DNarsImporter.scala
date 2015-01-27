@@ -31,7 +31,7 @@ object DNarsImporter {
 					add(graph, statement)
 
 					counter += 1
-					if (counter % 16384 == 0) {
+					if (counter % 1000 == 0) {
 						print("\r                                              ")
 						print(s"\rImported $counter statements...")
 					}

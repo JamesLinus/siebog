@@ -44,6 +44,11 @@ import siebog.dnars.inference.ResolutionEngine
 import siebog.dnars.inference.BackwardInference
 import siebog.dnars.base.Copula
 import siebog.dnars.base.AtomicTerm
+import com.thinkaurelius.titan.core.schema.TitanManagement
+import com.thinkaurelius.titan.core.schema.EdgeLabelMaker
+import com.thinkaurelius.titan.core.EdgeLabel
+import com.thinkaurelius.titan.core.PropertyKey
+import com.thinkaurelius.titan.core.SchemaViolationException
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -136,39 +141,57 @@ object DNarsGraphFactory {
 	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
 		val conf = getConfig(domain, additionalConfig)
 		val graph = TitanFactory.open(conf)
-
-		val management = graph.getManagementSystem
-		val key = management.makePropertyKey("term").dataType(classOf[String]).make()
-		management.buildIndex("byTerm", classOf[Vertex]).addKey(key).unique().buildCompositeIndex()
-
-		val label = management.makeEdgeLabel(Copula.Inherit).make()
-		val label2 = management.makeEdgeLabel(Copula.Similar).make()
-
-		val order = graph.makePropertyKey("subjExp").dataType(classOf[Integer]).make()
-		management.buildEdgeIndex(label, "bySubjExp", Direction.BOTH, Order.DESC, order)
-		management.buildEdgeIndex(label2, "bySubjExp", Direction.BOTH, Order.DESC, order)
-		val order2 = graph.makePropertyKey("predExp").dataType(classOf[Integer]).make()
-		management.buildEdgeIndex(label, "byPredExp", Direction.BOTH, Order.DESC, order2)
-		management.buildEdgeIndex(label2, "byPredExp", Direction.BOTH, Order.DESC, order2)
-
+		addVertexKey(graph)
+		try {
+			val keys = getOrderKeys(graph)
+			addEdgeIndex(graph, Copula.Inherit, keys)
+			addEdgeIndex(graph, Copula.Similar, keys)
+		} catch {
+			case _: SchemaViolationException => // keys already exist
+			case e: Exception => throw e
+		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 
 	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
-		conf.setProperty("storage.backend", "cassandra")
+		conf.setProperty("storage.backend", "cassandrathrift")
 		conf.setProperty("storage.hostname", "localhost");
-		//conf.setProperty("storage.keyspace", domain)
-		// additional configuration?
+		conf.setProperty("storage.cassandra.keyspace", domain)
+		withAdditionalConfig(conf, additionalConfig)
+	}
+
+	private def withAdditionalConfig(conf: BaseConfiguration, additionalConfig: java.util.Map[String, Any]): BaseConfiguration = {
 		if (additionalConfig != null) {
-			val es = additionalConfig.entrySet()
-			val i = es.iterator()
+			val i = additionalConfig.entrySet().iterator
 			while (i.hasNext()) {
 				val c = i.next()
 				conf.setProperty(c.getKey(), c.getValue())
 			}
 		}
-		// done
 		conf
+	}
+
+	private def addVertexKey(graph: TitanGraph): Unit = {
+		try {
+			val management = graph.getManagementSystem
+			val key = management.makePropertyKey("term").dataType(classOf[String]).make()
+			management.buildIndex("byTerm", classOf[Vertex]).addKey(key).unique().buildCompositeIndex()
+		} catch {
+			case _: SchemaViolationException => // already exists
+			case e: Exception => throw e
+		}
+	}
+
+	private def getOrderKeys(graph: TitanGraph): List[PropertyKey] =
+		List(graph.makePropertyKey("subjExp").dataType(classOf[Integer]).make(),
+			graph.makePropertyKey("predExp").dataType(classOf[Integer]).make())
+
+	private def addEdgeIndex(graph: TitanGraph, copula: String, keys: List[PropertyKey]): Unit = {
+		val management = graph.getManagementSystem
+		val label = management.makeEdgeLabel(copula).make()
+		keys.foreach { key: PropertyKey =>
+			management.buildEdgeIndex(label, "by" + key.getName, Direction.BOTH, Order.DESC, key)
+		}
 	}
 }
