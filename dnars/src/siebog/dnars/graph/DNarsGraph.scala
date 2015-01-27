@@ -49,6 +49,10 @@ import com.thinkaurelius.titan.core.schema.EdgeLabelMaker
 import com.thinkaurelius.titan.core.EdgeLabel
 import com.thinkaurelius.titan.core.PropertyKey
 import com.thinkaurelius.titan.core.SchemaViolationException
+import com.tinkerpop.blueprints.Edge
+import com.thinkaurelius.titan.core.Cardinality
+import scala.actors.Logger
+import java.util.logging.Level
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -138,19 +142,27 @@ object DNarsGraph {
 }
 
 object DNarsGraphFactory {
+	val logger = java.util.logging.Logger.getLogger(classOf[DNarsGraph].getName)
+	
 	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
+		val initSchema = needToInitSchema(additionalConfig)
 		val conf = getConfig(domain, additionalConfig)
 		val graph = TitanFactory.open(conf)
-		addVertexKey(graph)
-		try {
-			val keys = getOrderKeys(graph)
-			addEdgeIndex(graph, Copula.Inherit, keys)
-			addEdgeIndex(graph, Copula.Similar, keys)
-		} catch {
-			case _: SchemaViolationException => // keys already exist
-			case e: Exception => throw e
+		if (initSchema) {
+			addVertexKey(graph)
+			addEdgeKeys(graph)
 		}
 		DNarsGraph(ScalaGraph(graph), domain)
+	}
+	
+	private def needToInitSchema(cfg: java.util.Map[String, Any]): Boolean = {
+		if (cfg != null && cfg.containsKey("init-schema")) {
+			val initSchema = cfg.get("init-schema") == "true"
+			cfg.remove("init-schema") // titan complains otherwise
+			initSchema
+		}
+		else
+			false
 	}
 
 	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
@@ -177,18 +189,34 @@ object DNarsGraphFactory {
 			val management = graph.getManagementSystem
 			val key = management.makePropertyKey("term").dataType(classOf[String]).make()
 			management.buildIndex("byTerm", classOf[Vertex]).addKey(key).unique().buildCompositeIndex()
+			management.commit()
 		} catch {
-			case _: SchemaViolationException => // already exists
+			case e: SchemaViolationException =>
+				logger.log(Level.WARNING, "init-schema was set to true", e)
 			case e: Exception => throw e
 		}
 	}
-
+	
+	private def addEdgeKeys(graph: TitanGraph): Unit = {
+		try {
+			val management = graph.getManagementSystem
+			graph.makePropertyKey("truth").dataType(classOf[String]).cardinality(Cardinality.SINGLE).make()
+			val keys = getOrderKeys(graph)
+			addEdgeIndex(graph, management, Copula.Inherit, keys)
+			addEdgeIndex(graph, management, Copula.Similar, keys)
+			management.commit()
+		} catch {
+			case e: SchemaViolationException => 
+				logger.log(Level.WARNING, "init-schema was set to true", e)
+			case e: Exception => throw e
+		}
+	}
+	
 	private def getOrderKeys(graph: TitanGraph): List[PropertyKey] =
-		List(graph.makePropertyKey("subjExp").dataType(classOf[Integer]).make(),
-			graph.makePropertyKey("predExp").dataType(classOf[Integer]).make())
+		List(graph.makePropertyKey("subjExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make(),
+			graph.makePropertyKey("predExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make())
 
-	private def addEdgeIndex(graph: TitanGraph, copula: String, keys: List[PropertyKey]): Unit = {
-		val management = graph.getManagementSystem
+	private def addEdgeIndex(graph: TitanGraph, management: TitanManagement, copula: String, keys: List[PropertyKey]): Unit = {
 		val label = management.makeEdgeLabel(copula).make()
 		keys.foreach { key: PropertyKey =>
 			management.buildEdgeIndex(label, "by" + key.getName, Direction.BOTH, Order.DESC, key)

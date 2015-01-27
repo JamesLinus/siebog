@@ -50,13 +50,13 @@ trait VertexAPI extends DNarsGraphAPI {
 	}
 
 	override def getOrAddV(term: Term): Vertex = {
-		getV(term) match {
-			case Some(v) => v
-			case None =>
+//		getV(term) match {
+//			case Some(v) => v
+//			case None =>
 				val added = addV(null)
 				added.term = term
 				added
-		}
+//		}
 	}
 
 	override def getBestPredicates(subj: Term, copula: String, limit: Int): List[Term] = {
