@@ -20,39 +20,38 @@
 
 package siebog.dnars.graph
 
+import scala.actors.Logger
+
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.commons.configuration.Configuration
+
+import com.thinkaurelius.titan.core.Cardinality
+import com.thinkaurelius.titan.core.EdgeLabel
+import com.thinkaurelius.titan.core.Order
+import com.thinkaurelius.titan.core.PropertyKey
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
-import com.thinkaurelius.titan.core.Order
+import com.thinkaurelius.titan.core.schema.EdgeLabelMaker
+import com.thinkaurelius.titan.core.schema.TitanManagement
 import com.thinkaurelius.titan.core.util.TitanCleanup
 import com.tinkerpop.blueprints.Direction
+import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Graph
+import com.tinkerpop.blueprints.GraphQuery
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.gremlin.scala.ScalaGraph
+
+import siebog.dnars.base.Copula
 import siebog.dnars.base.Statement
 import siebog.dnars.events.EventManager
 import siebog.dnars.graph.Wrappers.edge2DNarsEdge
 import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
-import com.tinkerpop.blueprints.GraphQuery
-import siebog.dnars.inference.forward.DeductionAnalogy
-import siebog.dnars.inference.forward.AnalogyResemblance
-import siebog.dnars.inference.forward.AbductionComparisonAnalogy
-import siebog.dnars.inference.forward.InductionComparison
-import siebog.dnars.inference.forward.AnalogyInv
 import siebog.dnars.inference.ResolutionEngine
-import siebog.dnars.inference.BackwardInference
-import siebog.dnars.base.Copula
-import siebog.dnars.base.AtomicTerm
-import com.thinkaurelius.titan.core.schema.TitanManagement
-import com.thinkaurelius.titan.core.schema.EdgeLabelMaker
-import com.thinkaurelius.titan.core.EdgeLabel
-import com.thinkaurelius.titan.core.PropertyKey
-import com.thinkaurelius.titan.core.SchemaViolationException
-import com.tinkerpop.blueprints.Edge
-import com.thinkaurelius.titan.core.Cardinality
-import scala.actors.Logger
-import java.util.logging.Level
+import siebog.dnars.inference.forward.AbductionComparisonAnalogy
+import siebog.dnars.inference.forward.AnalogyInv
+import siebog.dnars.inference.forward.AnalogyResemblance
+import siebog.dnars.inference.forward.DeductionAnalogy
+import siebog.dnars.inference.forward.InductionComparison
 
 /**
  * Wrapper around the ScalaGraph class. Inspired by
@@ -62,7 +61,7 @@ import java.util.logging.Level
  */
 class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGraph(graph)
 	with DNarsGraphAPI with VertexAPI with EdgeAPI with StatementAPI with EventManager
-	with ResolutionEngine with BackwardInference {
+	with ResolutionEngine {
 
 	val engines = List(
 		new DeductionAnalogy(this),
@@ -153,37 +152,27 @@ object DNarsGraph {
 object DNarsGraphFactory {
 	val logger = java.util.logging.Logger.getLogger(classOf[DNarsGraph].getName)
 
-	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
-		val initSchema = needToInitSchema(additionalConfig)
-		val conf = getConfig(domain, additionalConfig)
+	def create(domain: String, customConfig: java.util.Map[String, Any] = null): DNarsGraph = {
+		val conf = getConfig(domain, customConfig)
 		val graph = TitanFactory.open(conf)
-		if (initSchema) {
-			addVertexKey(graph)
-			addEdgeKeys(graph)
+		if (!graph.containsPropertyKey("term")) {
+			logger.info("Initializing empty domain " + domain)
+			GraphSchemaBuilder(graph)
 		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
 
-	private def needToInitSchema(cfg: java.util.Map[String, Any]): Boolean = {
-		if (cfg != null && cfg.containsKey("init-schema")) {
-			val initSchema = cfg.get("init-schema") == "true"
-			cfg.remove("init-schema") // titan complains otherwise
-			initSchema
-		} else
-			false
-	}
-
-	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
+	private def getConfig(domain: String, customConfig: java.util.Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
 		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
 		conf.setProperty("storage.cassandra.keyspace", domain)
-		withAdditionalConfig(conf, additionalConfig)
+		includeCustomConfig(conf, customConfig)
 	}
 
-	private def withAdditionalConfig(conf: BaseConfiguration, additionalConfig: java.util.Map[String, Any]): BaseConfiguration = {
-		if (additionalConfig != null) {
-			val i = additionalConfig.entrySet().iterator
+	private def includeCustomConfig(conf: BaseConfiguration, customConfig: java.util.Map[String, Any]): BaseConfiguration = {
+		if (customConfig != null) {
+			val i = customConfig.entrySet().iterator
 			while (i.hasNext()) {
 				val c = i.next()
 				conf.setProperty(c.getKey(), c.getValue())
@@ -191,43 +180,39 @@ object DNarsGraphFactory {
 		}
 		conf
 	}
+}
+
+object GraphSchemaBuilder {
+	def apply(graph: TitanGraph): Unit = {
+		addVertexKey(graph)
+		addEdgeKeys(graph)
+	}
 
 	private def addVertexKey(graph: TitanGraph): Unit = {
-		try {
-			val management = graph.getManagementSystem
-			val key = management.makePropertyKey("term").dataType(classOf[String]).make()
-			management.buildIndex("byTerm", classOf[Vertex]).addKey(key).buildCompositeIndex()
-			management.commit()
-		} catch {
-			case e: SchemaViolationException =>
-				logger.log(Level.WARNING, "init-schema was set to true", e)
-			case e: Exception => throw e
-		}
+		val management = graph.getManagementSystem
+		val key = management.makePropertyKey("term").dataType(classOf[String]).make()
+		management.buildIndex("byTerm", classOf[Vertex]).addKey(key).buildCompositeIndex()
+		management.commit()
 	}
 
 	private def addEdgeKeys(graph: TitanGraph): Unit = {
-		try {
-			val management = graph.getManagementSystem
-			graph.makePropertyKey("truth").dataType(classOf[String]).cardinality(Cardinality.SINGLE).make()
-			val keys = getOrderKeys(graph)
-			addEdgeIndex(graph, management, Copula.Inherit, keys)
-			addEdgeIndex(graph, management, Copula.Similar, keys)
-			management.commit()
-		} catch {
-			case e: SchemaViolationException =>
-				logger.log(Level.WARNING, "init-schema was set to true", e)
-			case e: Exception => throw e
+		val management = graph.getManagementSystem
+		graph.makePropertyKey("truth").dataType(classOf[String]).cardinality(Cardinality.SINGLE).make()
+		addOrderedIndexes(graph, management)
+		management.commit()
+	}
+
+	private def addOrderedIndexes(graph: TitanGraph, management: TitanManagement): Unit = {
+		val keys = List(makePropertyKey(graph, "subjExp"), makePropertyKey(graph, "predExp"))
+		val copulas = List(Copula.Inherit, Copula.Similar)
+		copulas.foreach { c: String =>
+			val label = management.makeEdgeLabel(c).make()
+			keys.foreach { key: PropertyKey =>
+				management.buildEdgeIndex(label, "by" + key.getName, Direction.BOTH, Order.DESC, key)
+			}
 		}
 	}
 
-	private def getOrderKeys(graph: TitanGraph): List[PropertyKey] =
-		List(graph.makePropertyKey("subjExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make(),
-			graph.makePropertyKey("predExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make())
-
-	private def addEdgeIndex(graph: TitanGraph, management: TitanManagement, copula: String, keys: List[PropertyKey]): Unit = {
-		val label = management.makeEdgeLabel(copula).make()
-		keys.foreach { key: PropertyKey =>
-			management.buildEdgeIndex(label, "by" + key.getName, Direction.BOTH, Order.DESC, key)
-		}
-	}
+	private def makePropertyKey(graph: TitanGraph, name: String): PropertyKey =
+		graph.makePropertyKey(name).dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make()
 }

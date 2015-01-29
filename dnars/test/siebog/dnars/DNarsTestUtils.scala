@@ -29,6 +29,7 @@ import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsGraph
 import scala.collection.mutable.ListBuffer
+import siebog.dnars.base.Term
 
 /**
  *
@@ -68,6 +69,9 @@ object DNarsTestUtils {
 			assertTrue("Statement " + ste + " not found.", found)
 		}
 	}
+	
+	def assertTerms(expected: Seq[Term], actual: Seq[Term]): Unit = 
+		assertEquals(expected, actual)
 
 	def assertGraph(graph: DNarsGraph, expected: Seq[Statement]): Unit = {
 		try {

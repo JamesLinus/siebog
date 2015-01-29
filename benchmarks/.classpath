@@ -44,6 +44,6 @@
 	<classpathentry kind="lib" path="/starter/lib/module/titan-core-0.5.3.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/module/xml-apis-1.4.01.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
+	<classpathentry kind="lib" path="/starter/lib/module/dnars.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

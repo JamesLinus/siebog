@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.Vector;
 import siebog.dnars.base.Statement;
 import siebog.dnars.base.StatementParser;
+import siebog.dnars.base.Term;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
 import com.yahoo.ycsb.ByteIterator;
@@ -39,10 +40,9 @@ public class DNarsDB extends DB {
 	public int read(String domain, String questionStr, Set<String> fields,
 			HashMap<String, ByteIterator> result) {
 		Statement question = StatementParser.apply(questionStr);
-		Statement[] answers = graph.answer(question, 1);
-		// int err = answers.length > 0 ? 0 : 1;
-		// return err;
-		return 0;
+		Term[] answers = graph.answer(question, 1);
+		int err = answers.length > 0 ? 0 : 1;
+		return err;
 	}
 
 	@Override

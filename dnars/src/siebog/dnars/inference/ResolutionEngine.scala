@@ -43,99 +43,45 @@ import siebog.dnars.inference.forward.ForwardInferenceEngine
  */
 trait ResolutionEngine extends DNarsGraphAPI {
 
-	def answer(question: Statement, limit: Int = 1): Array[Statement] = {
-		if (question.subj == Question) {
-			val list = getBestSubjects(question.pred, question.copula, limit).toArray // answerMissingSubject(question, limit)
-			for (s <- list) yield Statement(s, question.copula, question.pred, Truth(1.0, 0.9))
-		} else if (question.pred == Question) {
-			val list = getBestPredicates(question.subj, question.copula, limit).toArray // answerMissingPredicate(question, limit)
-			for (p <- list) yield Statement(question.subj, question.copula, p, Truth(1.0, 0.9))
-		} else {
-			val candidates = for (q <- question.allImages()) yield inferBackwards(q)
-			candidates.flatten.take(limit).toArray
-		}
+	override def answer(question: Statement, limit: Int = 1): Array[Term] = {
+		if (question.subj == Question) 
+			getBestSubjects(question.pred, question.copula, limit).toArray 
+		else if (question.pred == Question)
+			getBestPredicates(question.subj, question.copula, limit).toArray 
+		else
+			throw new IllegalArgumentException("The question should be either ? -> P or S -> ?")
+	}
+	
+	override def backwardInference(question: Statement, limit: Int = 1): Array[Statement] = {
+		val candidates = 
+			for (q <- question.allImages()) 
+				yield inferBackwards(q)
+		candidates.flatten.take(limit).toArray
+	}
+	
+	private def inferBackwards(question: Statement): List[Statement] = {
+		if (getV(question.subj) == None || getV(question.pred) == None)
+			List()
+		else
+			getE(question) match {
+				case Some(edge) =>
+					List(Statement(question.subj, question.copula, question.pred, edge.truth))
+				case None =>
+					inferUsingForwardInference(question)
+			}
+	}
+
+	private def inferUsingForwardInference(question: Statement): List[Statement] = {
+		// construct derived questions such that { P, Q } |- DerivedQ
+		val q = Statement(question.subj, question.copula, question.pred, Truth(1.0, 0.9))
+		val derivedQuestions = conclusions(Array(q))
+		// check if the starting question can be derived from { P, DerivedQ }
+		val candidates = conclusions(derivedQuestions)
+		candidates.toList
+			.filter(c => c.subj == question.subj && c.pred == question.pred)
+			.sortWith((a, b) => a.truth.expectation > b.truth.expectation)
 	}
 
 	def hasAnswer(question: Statement): Boolean =
 		getE(question) != None
-
-	private def answerMissingSubject(question: Statement, limit: Int): Array[Statement] = {
-		val candidates =
-			getAnswersForMissingSubject(question.pred, question.copula) :::
-				(if (question.copula == Similar)
-					getAnswersForMissingPredicate(question.pred, question.copula)
-				else
-					Nil)
-		candidates.sorted.take(limit).map(_.toStatementWithMissingSubj(question.pred, question.copula)).toArray
-	}
-
-	private def answerMissingPredicate(question: Statement, limit: Int): Array[Statement] = {
-		val candidates =
-			getAnswersForMissingPredicate(question.subj, question.copula) :::
-				(if (question.copula == Similar)
-					getAnswersForMissingSubject(question.subj, question.copula)
-				else
-					Nil)
-		candidates.sorted.take(limit).map(_.toStatementWithMissingPred(question.subj, question.copula)).toArray
-	}
-
-	private def getAnswersForMissingSubject(pred: Term, copula: String): List[Answer] =
-		getV(pred) match {
-			case Some(vert) =>
-				createPossibleAnswers(vert.inE(copula), Direction.OUT)
-			case None =>
-				List()
-		}
-
-	private def getAnswersForMissingPredicate(subj: Term, copula: String): List[Answer] =
-		getV(subj) match {
-			case Some(vert) =>
-				createPossibleAnswers(vert.outE(copula), Direction.IN)
-			case None => // does not exist
-				List()
-		}
-
-	private def createPossibleAnswers(pipe: GremlinScalaPipeline[Vertex, Edge], dir: Direction): List[Answer] = {
-		pipe.map { e =>
-			val term = e.getVertex(dir).term
-			val truth = e.truth
-			val expectation = truth.expectation
-			val simplicity = 1.0 / term.complexity
-			new Answer(term, truth, expectation, simplicity)
-		}.toList()
-	}
-}
-
-class Answer(val term: Term, val truth: Truth, val expectation: Double, val simplicity: Double) extends Comparable[Answer] {
-	val EPSILON = 0.001
-
-	override def compareTo(other: Answer): Int = {
-		val expectationDifference = math.abs(expectation - other.expectation)
-		if (expectationDifference < EPSILON)
-			chooseSimplerAnswer(other)
-		else
-			chooseHigherExpectationAndSimplicity(other)
-	}
-
-	def toStatementWithMissingSubj(pred: Term, copula: String): Statement =
-		Statement(term, copula, pred, truth)
-
-	def toStatementWithMissingPred(subj: Term, copula: String): Statement =
-		Statement(subj, copula, term, truth)
-
-	private def chooseSimplerAnswer(other: Answer): Int = {
-		val simp = simplicity - other.simplicity
-		if (math.abs(simp) < EPSILON) term.compareTo(other.term)
-		else if (simp < 0) -1
-		else 1
-	}
-
-	private def chooseHigherExpectationAndSimplicity(other: Answer): Int = {
-		val p1 = expectation * simplicity
-		val p2 = other.expectation * other.simplicity
-		val diff = p1 - p2
-		if (math.abs(diff) < EPSILON) term.compareTo(other.term)
-		else if (diff < 0) 1
-		else -1
-	}
 }

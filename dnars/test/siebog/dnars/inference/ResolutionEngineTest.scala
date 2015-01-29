@@ -24,15 +24,17 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
 import siebog.dnars.DNarsTestUtils.assertSeq
+import siebog.dnars.DNarsTestUtils.assertTerms
 import siebog.dnars.DNarsTestUtils.create
 import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.base.Statement
 import siebog.dnars.base.StatementParser
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.DNarsGraphFactory
+import siebog.dnars.base.AtomicTerm
+import siebog.dnars.base.Truth
 
 /**
  *
@@ -57,14 +59,14 @@ class ResolutionEngineTest {
 			"tiger -> mammal (1.0, 0.9)",
 			"cat -> animal (1.0, 0.9)",
 			"developer ~ job (0.87, 0.91)")
-		assertAnswer("tiger -> ?", "tiger -> mammal (1.0, 0.9)")
-		assertAnswer("? -> cat", null)
-		assertAnswer("? -> animal", "cat -> animal (1.0, 0.9)")
-		assertAnswer("cat -> ?", "cat -> animal (1.0, 0.9)")
-		assertAnswer("animal -> ?", null)
-		assertAnswer("water -> ?", null)
-		assertAnswer("developer ~ ?", "developer ~ job (0.87, 0.91)")
-		assertAnswer("? ~ developer", "job ~ developer (0.87, 0.91)")
+		assertAtomicAnswer("tiger -> ?", "mammal")
+		assertAtomicAnswer("? -> cat", null)
+		assertAtomicAnswer("? -> animal", "cat")
+		assertAtomicAnswer("cat -> ?", "animal")
+		assertAtomicAnswer("animal -> ?", null)
+		assertAtomicAnswer("water -> ?", null)
+		assertAtomicAnswer("developer ~ ?", "job")
+		assertAtomicAnswer("? ~ developer", "job")
 	}
 
 	@Test
@@ -77,7 +79,22 @@ class ResolutionEngineTest {
 
 		val q = StatementParser("? -> animal (1.0, 0.9)")
 		val answers = graph.answer(q, 2)
-		assertSeq(List(kb(1), kb(3)), answers)
+		assertTerms(List(AtomicTerm("bird"), AtomicTerm("tiger")), answers)
+	}
+	
+	@Test
+	def testEdgeReordering(): Unit = {
+		val t = Truth(1.0, 0.9).revision(Truth(0.5, 0.5))
+		println(s"+++++++++++ ${Truth(1.0, 0.9).expectation} ${Truth(1.0, 0.85).expectation}")
+		
+		val kb = createAndAdd(graph,
+			"cat -> animal (1.0, 0.85)", // exp 0.925
+			"bird -> animal (1.0, 0.9)" // exp 0.95
+		)
+		graph.add(StatementParser("bird -> animal (0.5, 0.5)")) // now 0.90
+		val q = StatementParser("? -> animal (1.0, 0.9)")
+		val answers = graph.answer(q, 2)
+		assertTerms(List(AtomicTerm("cat"), AtomicTerm("bird")), answers)
 	}
 
 	@Test
@@ -94,7 +111,7 @@ class ResolutionEngineTest {
 			"tiger -> animal " + kb(2).truth.deduction(kb(0).truth),
 			"feline -> animal " + kb(0).truth.analogy(kb(4).truth, false),
 			"(x einstein quantum) -> field " + kb(5).truth.analogy(kb(6).truth, false))
-		assertAnswers(expected)
+		assertBackwards(expected)
 	}
 
 	@Test
@@ -112,7 +129,7 @@ class ResolutionEngineTest {
 			"tiger -> feline " + kb(0).truth.analogy(kb(4).truth, false),
 			"tiger -> lion " + kb(3).truth.abduction(kb(0).truth),
 			"lion -> feline " + kb(3).truth.analogy(kb(4).truth, false))
-		assertAnswers(expected)
+		assertBackwards(expected)
 	}
 
 	@Test
@@ -127,7 +144,7 @@ class ResolutionEngineTest {
 			"tiger -> feline " + kb(1).truth.analogy(kb(2).truth, true),
 			"tiger -> lion " + kb(4).truth.analogy(kb(2).truth, true),
 			"lion ~ feline " + kb(1).truth.resemblance(kb(4).truth))
-		assertAnswers(expected)
+		assertBackwards(expected)
 	}
 
 	@Test
@@ -137,22 +154,22 @@ class ResolutionEngineTest {
 			"tiger -> cat (1.0, 0.9)")
 		val expected = create(
 			"(tiger x bird) -> eat " + kb(0).truth.deduction(kb(1).truth))
-		assertAnswers(expected)
+		assertBackwards(expected)
 	}
 
-	private def assertAnswers(expected: List[Statement]): Unit = {
+	private def assertBackwards(expected: List[Statement]): Unit = {
 		expected.foreach { q: Statement =>
-			val answers = graph.answer(q, Int.MaxValue)
+			val answers = graph.backwardInference(q, Int.MaxValue)
 			assertTrue("No answers for question " + q, answers.length > 0)
 		}
 	}
 
-	private def assertAnswer(question: String, answer: String): Unit = {
+	private def assertAtomicAnswer(question: String, answer: String): Unit = {
 		val st = StatementParser(question)
 		val a = graph.answer(st, 1).toList
 		a match {
 			case List() => assertTrue(answer == null)
-			case _ => assertSeq(create(answer), a)
+			case _ => a.head == AtomicTerm(answer)
 		}
 	}
 }

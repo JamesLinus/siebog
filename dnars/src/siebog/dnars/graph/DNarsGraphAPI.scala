@@ -72,11 +72,11 @@ trait DNarsGraphAPI {
 
 	def assertStatementExists(st: Statement): Unit
 
-	def answer(question: Statement, limit: Int = 1): Array[Statement]
+	def answer(question: Statement, limit: Int = 1): Array[Term]
+	
+	def backwardInference(question: Statement, limit: Int = 1): Array[Statement]
 
 	def hasAnswer(question: Statement): Boolean
-
-	def inferBackwards(question: Statement): List[Statement]
 
 	def addEvent(event: EventPayload): Unit
 

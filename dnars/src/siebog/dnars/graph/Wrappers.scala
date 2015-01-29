@@ -20,15 +20,14 @@
 
 package siebog.dnars.graph
 
+import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Vertex
-import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.gremlin.scala.ScalaEdge
 import com.tinkerpop.gremlin.scala.ScalaVertex
 
 import siebog.dnars.base.AtomicTerm
 import siebog.dnars.base.CompoundTerm
-import siebog.dnars.graph.Wrappers._
 import siebog.dnars.base.Term
 import siebog.dnars.base.Truth
 
@@ -50,6 +49,7 @@ class DNarsEdge(override val edge: Edge) extends ScalaEdge(edge) {
 	}
 
 	def truth_=(value: Truth): Unit = {
+		import Wrappers.vertex2DNarsVertex
 		val str = value.freq + "_" + value.conf
 		setProperty("truth", str)
 		//

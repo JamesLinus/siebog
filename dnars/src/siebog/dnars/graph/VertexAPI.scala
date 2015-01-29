@@ -57,11 +57,14 @@ trait VertexAPI extends DNarsGraphAPI {
 	override def getBestPredicates(subj: Term, copula: String, limit: Int): List[Term] = {
 		getV(subj) match {
 			case Some(v) =>
-				val i = v.asInstanceOf[TitanVertex].query().labels(copula).direction(Direction.OUT).limit(limit).vertices().iterator()
-				val res = ListBuffer[Term]()
-				while (i.hasNext())
-					res += i.next().term
-				res.toList
+				val vertices = v.asInstanceOf[TitanVertex]
+					.query()
+					.labels(copula)
+					.direction(Direction.OUT)
+					.orderBy("predExp", Order.DESC)
+					.limit(limit)
+					.vertices()
+				iterableToList(vertices)
 			case None =>
 				List()
 		}
@@ -70,13 +73,24 @@ trait VertexAPI extends DNarsGraphAPI {
 	override def getBestSubjects(pred: Term, copula: String, limit: Int): List[Term] = {
 		getV(pred) match {
 			case Some(v) =>
-				val i = v.asInstanceOf[TitanVertex].query().labels(copula).direction(Direction.IN).limit(limit).vertices().iterator()
-				val res = ListBuffer[Term]()
-				while (i.hasNext())
-					res += i.next().term
-				res.toList
+				val vertices = v.asInstanceOf[TitanVertex]
+					.query()
+					.labels(copula)
+					.direction(Direction.IN)
+					.orderBy("subjExp", Order.DESC)
+					.limit(limit)
+					.vertices()
+				iterableToList(vertices)
 			case None =>
 				List()
 		}
+	}
+
+	private def iterableToList(vertices: java.lang.Iterable[Vertex]): List[Term] = {
+		val iter = vertices.iterator()
+		val res = ListBuffer[Term]()
+		while (iter.hasNext())
+			res += iter.next().term
+		res.toList
 	}
 }
