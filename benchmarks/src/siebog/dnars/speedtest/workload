@@ -1,8 +1,8 @@
 recordcount=0
 operationcount=0
 maxexecutiontime=60
-threadcount=4
-target=100
+threadcount=64
+target=5000
 
 db=siebog.dnars.speedtest.DNarsDB
 workload=siebog.dnars.speedtest.DNarsWorkload
@@ -13,7 +13,7 @@ scanproportion=0
 insertproportion=0
 
 domain=props
-hostname=localhost
-# questions=/home/dejan/tmp/questions.txt
+hostname=192.168.100.102
+questions=/home/dejan/tmp/questions.txt
 
 # measurementtype=timeseries

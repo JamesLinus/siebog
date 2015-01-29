@@ -25,8 +25,8 @@ public class DNarsWorkload extends CoreWorkload {
 		try (BufferedReader in = new BufferedReader(new FileReader(input))) {
 			String line;
 			while ((line = in.readLine()) != null) {
-				if (line.length() > 0 && line.indexOf("-> ?") > 0)
-					questions.add(line);
+				// if (line.length() > 0 && line.indexOf("-> ?") > 0)
+				questions.add(line);
 			}
 		} catch (IOException ex) {
 			throw new WorkloadException(ex);

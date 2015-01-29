@@ -44,6 +44,8 @@ trait DNarsGraphAPI {
 
 	def getV(term: Term): Option[Vertex]
 
+	def getVertex(id: Any): Vertex
+
 	def conclusions(input: Array[Statement]): Array[Statement]
 
 	def conclusions(input: Statement): Array[Statement]

@@ -40,8 +40,9 @@ public class DNarsDB extends DB {
 			HashMap<String, ByteIterator> result) {
 		Statement question = StatementParser.apply(questionStr);
 		Statement[] answers = graph.answer(question, 1);
-		int err = answers.length > 0 ? 0 : 1;
-		return err;
+		// int err = answers.length > 0 ? 0 : 1;
+		// return err;
+		return 0;
 	}
 
 	@Override

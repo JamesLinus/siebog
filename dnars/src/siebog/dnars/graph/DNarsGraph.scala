@@ -89,6 +89,15 @@ class DNarsGraph(override val graph: Graph, val domain: String) extends ScalaGra
 
 	def shutdown(): Unit = graph.shutdown()
 
+	def getVertex(id: Any): Vertex = graph.getVertex(id)
+
+	def commit(): Unit = graph match {
+		case tg: TitanGraph =>
+			tg.commit()
+		case any: Any =>
+			throw new IllegalArgumentException(any.getClass.getName + " cannot be cleared")
+	}
+
 	def clear(): Unit = graph match {
 		case tg: TitanGraph =>
 			TitanCleanup.clear(tg)
@@ -143,7 +152,7 @@ object DNarsGraph {
 
 object DNarsGraphFactory {
 	val logger = java.util.logging.Logger.getLogger(classOf[DNarsGraph].getName)
-	
+
 	def create(domain: String, additionalConfig: java.util.Map[String, Any] = null): DNarsGraph = {
 		val initSchema = needToInitSchema(additionalConfig)
 		val conf = getConfig(domain, additionalConfig)
@@ -154,20 +163,19 @@ object DNarsGraphFactory {
 		}
 		DNarsGraph(ScalaGraph(graph), domain)
 	}
-	
+
 	private def needToInitSchema(cfg: java.util.Map[String, Any]): Boolean = {
 		if (cfg != null && cfg.containsKey("init-schema")) {
 			val initSchema = cfg.get("init-schema") == "true"
 			cfg.remove("init-schema") // titan complains otherwise
 			initSchema
-		}
-		else
+		} else
 			false
 	}
 
 	private def getConfig(domain: String, additionalConfig: java.util.Map[String, Any]): Configuration = {
 		val conf = new BaseConfiguration
-		conf.setProperty("storage.backend", "cassandrathrift")
+		conf.setProperty("storage.backend", "cassandra")
 		conf.setProperty("storage.hostname", "localhost");
 		conf.setProperty("storage.cassandra.keyspace", domain)
 		withAdditionalConfig(conf, additionalConfig)
@@ -188,7 +196,7 @@ object DNarsGraphFactory {
 		try {
 			val management = graph.getManagementSystem
 			val key = management.makePropertyKey("term").dataType(classOf[String]).make()
-			management.buildIndex("byTerm", classOf[Vertex]).addKey(key).unique().buildCompositeIndex()
+			management.buildIndex("byTerm", classOf[Vertex]).addKey(key).buildCompositeIndex()
 			management.commit()
 		} catch {
 			case e: SchemaViolationException =>
@@ -196,7 +204,7 @@ object DNarsGraphFactory {
 			case e: Exception => throw e
 		}
 	}
-	
+
 	private def addEdgeKeys(graph: TitanGraph): Unit = {
 		try {
 			val management = graph.getManagementSystem
@@ -206,12 +214,12 @@ object DNarsGraphFactory {
 			addEdgeIndex(graph, management, Copula.Similar, keys)
 			management.commit()
 		} catch {
-			case e: SchemaViolationException => 
+			case e: SchemaViolationException =>
 				logger.log(Level.WARNING, "init-schema was set to true", e)
 			case e: Exception => throw e
 		}
 	}
-	
+
 	private def getOrderKeys(graph: TitanGraph): List[PropertyKey] =
 		List(graph.makePropertyKey("subjExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make(),
 			graph.makePropertyKey("predExp").dataType(classOf[Integer]).cardinality(Cardinality.SINGLE).make())
