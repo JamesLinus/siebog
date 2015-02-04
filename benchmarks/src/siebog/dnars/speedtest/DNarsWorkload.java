@@ -24,10 +24,8 @@ public class DNarsWorkload extends CoreWorkload {
 		questions = new ArrayList<>();
 		try (BufferedReader in = new BufferedReader(new FileReader(input))) {
 			String line;
-			while ((line = in.readLine()) != null) {
-				// if (line.length() > 0 && line.indexOf("-> ?") > 0)
+			while ((line = in.readLine()) != null)
 				questions.add(line);
-			}
 		} catch (IOException ex) {
 			throw new WorkloadException(ex);
 		}
@@ -35,14 +33,16 @@ public class DNarsWorkload extends CoreWorkload {
 	}
 
 	@Override
-	public boolean doInsert(DB db, Object threadstate) {
-		return true;
-	}
-
-	@Override
 	public boolean doTransaction(DB db, Object threadstate) {
 		String question = questions.get((int) (Math.random() * qsize));
 		int err = db.read(null, question, null, null);
+		return err == 0;
+	}
+
+	@Override
+	public boolean doInsert(DB db, Object threadstate) {
+		String st = questions.get((int) (Math.random() * qsize));
+		int err = db.update(null, st, null);
 		return err == 0;
 	}
 }

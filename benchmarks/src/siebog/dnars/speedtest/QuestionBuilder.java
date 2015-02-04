@@ -28,14 +28,20 @@ public class QuestionBuilder {
 			try (PrintWriter out = new PrintWriter(args[1])) {
 				String strLine;
 				while ((strLine = in.readLine()) != null) {
-					com.hp.hpl.jena.rdf.model.Statement ntStat = NTReader.str2nt(strLine);
-					Statement st = DNarsConvert.toDNarsStatement(ntStat);
-					Statement q;
-					if (Math.random() < 0.5)
-						q = new Statement(AtomicTerm.Question(), st.copula(), st.pred(), st.truth());
-					else
-						q = new Statement(st.subj(), st.copula(), AtomicTerm.Question(), st.truth());
-					out.println(q);
+					try {
+						com.hp.hpl.jena.rdf.model.Statement ntStat = NTReader.str2nt(strLine);
+						Statement st = DNarsConvert.toDNarsStatement(ntStat);
+						Statement q;
+						if (Math.random() < 0.5)
+							q = new Statement(AtomicTerm.Question(), st.copula(), st.pred(),
+									st.truth());
+						else
+							q = new Statement(st.subj(), st.copula(), AtomicTerm.Question(),
+									st.truth());
+						out.println(q);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 			}
 		}

@@ -10,6 +10,8 @@ import siebog.dnars.base.StatementParser;
 import siebog.dnars.base.Term;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
+import siebog.dnars.utils.importers.nt.DNarsConvert;
+import siebog.dnars.utils.importers.nt.NTReader;
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
@@ -41,7 +43,7 @@ public class DNarsDB extends DB {
 			HashMap<String, ByteIterator> result) {
 		Statement question = StatementParser.apply(questionStr);
 		Term[] answers = graph.answer(question, 1);
-		int err = answers.length > 0 ? 0 : 1;
+		int err = answers != null ? 0 : 1;
 		return err;
 	}
 
@@ -62,10 +64,16 @@ public class DNarsDB extends DB {
 	}
 
 	@Override
-	public int update(String table, String key, HashMap<String, ByteIterator> values) {
+	public int update(String domain, String questionStr, HashMap<String, ByteIterator> values) {
+		try {
+			com.hp.hpl.jena.rdf.model.Statement ntStat = NTReader.str2nt(questionStr);
+			Statement st = DNarsConvert.toDNarsStatement(ntStat);
+			graph.add(st);
+		} catch (Exception ex) {
+		}
 		return 0;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { // keep for export
 	}
 }

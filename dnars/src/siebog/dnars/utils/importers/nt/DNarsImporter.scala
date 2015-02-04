@@ -14,19 +14,18 @@ import com.tinkerpop.blueprints.util.wrappers.batch.BatchGraph
 import com.tinkerpop.blueprints.TransactionalGraph
 
 object DNarsImporter {
-	def initGraph(domain: String): Unit = 
-		DNarsGraphFactory.create(domain).shutdown()
-
 	def main(args: Array[String]): Unit = {
-		if (args.length != 2) {
-			println("I need 2 arguments: InputFile DomainName")
+		if (args.length != 3) {
+			println("I need 3 arguments: InputFile DomainName ZeroToInitializeEmptyGraph")
 			return
 		}
 		val input = args(0)
 		val domain = args(1)
-		
-		// cannot build schema in batch loading
-		initGraph(domain)
+
+		if (args(2) == "0") {
+			println("Initializing empty graph")
+			DNarsGraphFactory.create(domain).shutdown() // cannot build schema in batch loading
+		}
 
 		println(s"Importing from $input...")
 		val props = new java.util.HashMap[String, Any]()

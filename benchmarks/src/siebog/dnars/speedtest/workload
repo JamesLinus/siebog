@@ -1,8 +1,8 @@
 recordcount=0
 operationcount=0
 maxexecutiontime=60
-threadcount=64
-target=5000
+threadcount=32
+target=50
 
 db=siebog.dnars.speedtest.DNarsDB
 workload=siebog.dnars.speedtest.DNarsWorkload
