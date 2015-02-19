@@ -21,7 +21,6 @@
 package siebog.agents.dnars.dbpedia;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ejb.Remote;
@@ -103,18 +102,19 @@ public class Learner extends XjafAgent {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Set<Statement> getRelevantStatements(String uri, DNarsGraph graph) {
 		Set<Statement> set = new HashSet<>();
 		AtomicTerm uriTerm = new AtomicTerm(uri);
 		Truth truth = new Truth(1.0, 0.9);
 		// uri -> ?
 		Statement st = new Statement(uriTerm, Copula.Inherit(), AtomicTerm.Question(), truth);
-		Statement[] relevant = graph.answer(st, Integer.MAX_VALUE);
-		set.addAll(Arrays.asList(relevant));
+		// Statement[] relevant = graph.answer(st, Integer.MAX_VALUE);
+		// set.addAll(Arrays.asList(relevant));
 		// ? -> uri
 		st = new Statement(AtomicTerm.Question(), Copula.Inherit(), uriTerm, truth);
-		relevant = graph.answer(st, Integer.MAX_VALUE);
-		set.addAll(Arrays.asList(relevant));
+		// relevant = graph.answer(st, Integer.MAX_VALUE);
+		// set.addAll(Arrays.asList(relevant));
 		return set;
 	}
 

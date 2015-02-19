@@ -59,7 +59,7 @@ object DNarsConvert {
 			NTReader.read(input.getAbsolutePath(), (_, ntStat, counter) => {
 				val statement = toDNarsStatement(ntStat)
 				outStream.println(statement.toString)
-				if (counter % linesPerFile == 0) {
+				if (linesPerFile > 0 && counter % linesPerFile == 0) {
 					outStream.close
 					fileIndex += 1
 					outStream = newPrintWriter(outDir, fileName, fileIndex)

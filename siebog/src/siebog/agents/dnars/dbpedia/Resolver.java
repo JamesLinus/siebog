@@ -78,18 +78,19 @@ public class Resolver extends XjafAgent {
 		return domain;
 	}
 
+	@SuppressWarnings("unused")
 	private Set<Statement> getKnownProperties(String query) {
 		DNarsGraph graph = DNarsGraphFactory.create(properties, null);
 		try {
 			Statement question = StatementParser.apply(query + " -> ? (1.0, 0.9)");
-			Statement[] answers = graph.answer(question, Integer.MAX_VALUE);
+			// Statement[] answers = graph.answer(question, Integer.MAX_VALUE);
 			Set<Statement> known = new HashSet<>();
-			for (Statement st : answers) {
-				if (st.pred() instanceof AtomicTerm)
-					known.add(st);
-				else if (properExtensionalImage((CompoundTerm) st.pred()))
-					known.add(st);
-			}
+			// for (Statement st : answers) {
+			// if (st.pred() instanceof AtomicTerm)
+			// known.add(st);
+			// else if (properExtensionalImage((CompoundTerm) st.pred()))
+			// known.add(st);
+			// }
 			return known;
 		} finally {
 			graph.shutdown();
@@ -97,6 +98,7 @@ public class Resolver extends XjafAgent {
 	}
 
 	// checks if the given term is (/ xxx * xxx)
+	@SuppressWarnings("unused")
 	private boolean properExtensionalImage(CompoundTerm term) {
 		if (term.con().equals(Connector.ExtImage())) {
 			Iterator<AtomicTerm> i = term.comps().iterator();

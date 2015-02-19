@@ -23,7 +23,6 @@ package siebog.dnars.graph
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-
 import siebog.dnars.DNarsTestUtils.TEST_KEYSPACE
 import siebog.dnars.DNarsTestUtils.assertGraph
 import siebog.dnars.DNarsTestUtils.create
@@ -31,6 +30,7 @@ import siebog.dnars.DNarsTestUtils.createAndAdd
 import siebog.dnars.DNarsTestUtils.invert
 import siebog.dnars.base.Statement
 import siebog.dnars.base.Truth
+import com.tinkerpop.blueprints.util.wrappers.batch.BatchGraph
 
 /**
  *
