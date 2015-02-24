@@ -1,0 +1,143 @@
+<span>
+	<div class="col-sm-5">
+	    <accordion>
+	        <accordion-group is-open="status.open">
+	            <accordion-heading>
+	                <div class="hover">Available XJAF agents <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i></div>
+	            </accordion-heading>
+	            <div class="form-group">
+	                <table class="table table-condensed table-bordered table-hover table-striped row-clickable">
+	                    <thead>
+	                    <tr>
+	                        <th><label class="control-label">Agent Class</label></th>
+	                    </tr>
+	                    </thead>
+	                    <tbody>
+	                    <tr class="hover" ng-repeat="agent in agents" ng-click="newAgent(agent)">
+	                        <td>{{agent.ejbName}}</td>
+	                    </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+	        </accordion-group>
+	    </accordion>
+    </div>
+    <div class="col-sm-5 col-sm-offset-1">
+	    <accordion>
+	        <accordion-group is-open="status.open2">
+	            <accordion-heading>
+	                <div class="hover">Messages <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open2, 'glyphicon-chevron-right': !status.open2}"></i></div>
+	            </accordion-heading>
+	            <form>
+	                <div class="form-group">
+	                    <label for="performative" class="control-label">
+	                        Performative:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <select id="performative" ng-options="performative for performative in performatives" ng-model="request.performative" class="form-control">
+	                            <option value="">---</option>
+	                        </select>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label for="sender" class="control-label">
+	                        Sender:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <select id="sender" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.sender" class="form-control">
+	                            <option value="">---</option>
+	                        </select>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label for="receiver" class="control-label">
+	                        Receiver:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <select id="receiver" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.receivers[0]" class="form-control">
+	                            <option value="">---</option>
+	                        </select>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label for="replyTo" class="control-label">
+	                        Reply to:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <select id="replyTo" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.replyTo" class="form-control">
+	                            <option value="">---</option>
+	                        </select>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Content:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.content" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Language:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.language" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Encoding:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.encoding" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Ontology:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.ontology" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Protocol:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.protocol" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Conversation ID:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.conversationId" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Reply with:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.replyWith" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label">
+	                        Reply by:
+	                    </label>
+	                    <div class="input-wrap">
+	                        <input type="text" ng-model="request.replyBy" class="form-control">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <button type="button" class="btn btn-primary save" ng-click="sendMessage()">Send ACL message</button>
+	                </div>
+	            </form>
+	        </accordion-group>
+	    </accordion>
+    </div>
+</span>
