@@ -44,14 +44,6 @@ trait VertexAPI extends DNarsGraphAPI {
 			None
 	}
 
-	def getAll(term: Term): List[Vertex] = {
-		val i = query().has("term", term.id).vertices().iterator()
-		val res = new ListBuffer[Vertex]()
-		while (i.hasNext())
-			res += i.next()
-		res.toList
-	}
-
 	override def getOrAddV(term: Term): Vertex = {
 		getV(term) match {
 			case Some(v) => v

@@ -22,7 +22,6 @@ package siebog.dnars.inference.forward
 
 import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Edge
-
 import siebog.dnars.base.Copula.Inherit
 import siebog.dnars.base.Copula.Similar
 import siebog.dnars.base.Statement
@@ -30,6 +29,7 @@ import siebog.dnars.graph.DNarsEdge
 import siebog.dnars.graph.DNarsGraph
 import siebog.dnars.graph.Wrappers.edge2DNarsEdge
 import siebog.dnars.graph.Wrappers.vertex2DNarsVertex
+import siebog.dnars.base.Term
 
 /**
  * <pre><code>
@@ -44,30 +44,37 @@ class AbductionComparisonAnalogy(override val graph: DNarsGraph) extends Forward
 	override def doApply(judgement: Statement): List[Statement] =
 		graph.getV(judgement.pred) match {
 			case Some(m) =>
-				val edges = m.inE(Inherit).toList
-				edges.flatMap { e: Edge => inferForEdge(judgement, e) }
+				val incomingEdges = m.inE(Inherit).toList
+				incomingEdges.flatMap { e: Edge => inferForEdge(judgement, e) }
 			case None =>
 				List()
 		}
 
-	private def inferForEdge(judgement: Statement, e: DNarsEdge): List[Statement] = {
-		val vertex = e.getVertex(Direction.OUT)
-		val p = vertex.term
+	private def inferForEdge(judgement: Statement, e: Edge): List[Statement] = {
+		val p = e.getVertex(Direction.OUT).term
 		if (judgement.subj == p)
 			List()
-		else {
-			if (judgement.copula == Inherit) {
-				val abd = e.truth.abduction(judgement.truth)
-				val cmp = e.truth.comparison(judgement.truth)
-				val derivedAbd = Statement(judgement.subj, Inherit, p, abd)
-				val derivedCmp = Statement(judgement.subj, Similar, p, cmp)
-				keepIfValid(derivedAbd) ::: keepIfValid(derivedCmp)
-			} else {
-				val ana = e.truth.analogy(judgement.truth, false)
-				val derived = Statement(p, Inherit, judgement.subj, ana)
-				keepIfValid(derived)
-			}
-		}
+		else if (judgement.copula == Inherit)
+			abduction(p, judgement, e) ::: comparison(p, judgement, e)
+		else
+			analogy(p, judgement, e)
 	}
 
+	private def abduction(p: Term, judgement: Statement, e: Edge): List[Statement] = {
+		val truth = e.truth.abduction(judgement.truth)
+		val derived = Statement(judgement.subj, Inherit, p, truth)
+		keepIfValid(derived)
+	}
+
+	private def comparison(p: Term, judgement: Statement, e: Edge): List[Statement] = {
+		val truth = e.truth.comparison(judgement.truth)
+		val derived = Statement(judgement.subj, Similar, p, truth)
+		keepIfValid(derived)
+	}
+
+	private def analogy(p: Term, judgement: Statement, e: Edge): List[Statement] = {
+		val truth = e.truth.analogy(judgement.truth, false)
+		val derived = Statement(p, Inherit, judgement.subj, truth)
+		keepIfValid(derived)
+	}
 }

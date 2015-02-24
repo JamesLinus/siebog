@@ -20,10 +20,6 @@
 
 package siebog.agents.xjaf.aco.tsp;
 
-import java.io.IOException;
-import javax.naming.NamingException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
@@ -38,18 +34,17 @@ import siebog.xjaf.core.AgentClass;
  * @author <a href="mailto:milan.laketic@yahoo.com">Milan Laketic</a>
  */
 public class ACOStarter {
-	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException,
-			SAXException {
+	public static void main(String[] args) {
 		if (args.length != 2) {
 			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
 			return;
 		}
 
-		SiebogClient.connect(null);
+		SiebogClient.connect("localhost");
 
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Global.SIEBOG_MODULE, "Map");
-		AgentInitArgs mapArgs = new AgentInitArgs("fileName->" + args[1]);
+		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + args[1]);
 		agm.startAgent(mapClass, "Map", mapArgs);
 
 		int nAnts = Integer.parseInt(args[0].toString());

@@ -135,8 +135,9 @@ public abstract class XjafAgent implements Agent, MessageListener {
 	@Override
 	@Remove
 	public void stop() {
-		invokeOnTerminate();
-		closeSession();
+		// invokeOnTerminate();
+		// closeSession();
+		// TODO : Implement XjafAgent.stop()
 	}
 
 	private void invokeOnTerminate() {
