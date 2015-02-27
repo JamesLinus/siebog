@@ -48,6 +48,7 @@ public class Pong extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
+		System.out.println("Message to Pong: " + msg);
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.userArgs.put("pongCreatedOn", nodeName);
 		reply.userArgs.put("pongWorkingOn", getNodeName());

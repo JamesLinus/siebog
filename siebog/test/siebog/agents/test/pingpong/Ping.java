@@ -54,6 +54,7 @@ public class Ping extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
+		System.out.println("Message to Ping: " + msg);
 		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
 			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Pong.class.getSimpleName());
@@ -62,10 +63,10 @@ public class Ping extends XjafAgent {
 			msgToPong.sender = myAid;
 			msgToPong.receivers.add(pongAid);
 			msm().post(msgToPong);
-
+		} else if(msg.performative == Performative.INFORM) {
 			// wait for the message
-			ACLMessage msgFromPong = receiveWait(0);
-
+			//ACLMessage msgFromPong = receiveWait(0);
+			ACLMessage msgFromPong = msg;
 			Map<String, Serializable> args = new HashMap<>(msgFromPong.userArgs);
 			args.put("pingCreatedOn", nodeName);
 			args.put("pingWorkingOn", getNodeName());
