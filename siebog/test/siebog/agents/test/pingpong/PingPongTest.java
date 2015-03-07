@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import siebog.agents.test.TestClientBase;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentManager;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 import siebog.xjaf.messagemanager.MessageManager;
 
 /**

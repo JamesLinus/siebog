@@ -23,11 +23,11 @@ package siebog.agents.test.concurrency;
 import java.io.Serializable;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 

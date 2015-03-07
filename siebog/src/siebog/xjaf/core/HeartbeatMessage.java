@@ -20,8 +20,8 @@
 
 package siebog.xjaf.core;
 
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 
 /**
  * 

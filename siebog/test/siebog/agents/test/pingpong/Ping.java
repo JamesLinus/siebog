@@ -27,13 +27,13 @@ import java.util.Map.Entry;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Example of a ping agent.

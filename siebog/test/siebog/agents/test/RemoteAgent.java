@@ -26,10 +26,10 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.interaction.ACLMessage;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * All messages sent to this agent will be forwarded to the remote RMI service.

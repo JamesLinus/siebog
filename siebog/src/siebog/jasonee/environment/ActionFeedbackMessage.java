@@ -20,9 +20,9 @@
 
 package siebog.jasonee.environment;
 
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Outcome of a scheduled action.

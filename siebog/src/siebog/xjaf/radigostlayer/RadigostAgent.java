@@ -31,11 +31,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * A placeholder for Radigost agents running on the server.

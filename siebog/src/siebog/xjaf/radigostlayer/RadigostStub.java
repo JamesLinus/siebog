@@ -26,11 +26,11 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * Stub representation of a Radigost agent. Any messages sent to this instance will be forwarded to

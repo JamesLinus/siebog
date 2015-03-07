@@ -40,10 +40,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import siebog.interaction.ACLMessage;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 

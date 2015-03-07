@@ -34,10 +34,10 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.Topic;
+import siebog.interaction.ACLMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.agentmanager.AgentManager;
-import siebog.xjaf.fipa.ACLMessage;
 import siebog.xjaf.messagemanager.MessageManager;
 import siebog.xjaf.messagemanager.MessageManagerBean;
 

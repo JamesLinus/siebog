@@ -20,9 +20,9 @@
 
 package siebog.jasonee.control;
 
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * An ACL message informing synchronized agents that they should complete the current reasoning cycle.

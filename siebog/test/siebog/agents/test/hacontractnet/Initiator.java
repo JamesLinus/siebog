@@ -23,11 +23,11 @@ package siebog.agents.test.hacontractnet;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 

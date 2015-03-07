@@ -22,7 +22,7 @@ package siebog.agents.test;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import siebog.xjaf.fipa.ACLMessage;
+import siebog.interaction.ACLMessage;
 
 /**
  * 

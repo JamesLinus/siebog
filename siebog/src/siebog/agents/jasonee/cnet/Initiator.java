@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import siebog.SiebogClient;
 import siebog.agents.test.RemoteAgentListener;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.jasonee.JasonEEAgent;
 import siebog.jasonee.JasonEEProject;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 import siebog.xjaf.messagemanager.MessageManager;
 
 /**

@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.interaction.ACLMessage;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 

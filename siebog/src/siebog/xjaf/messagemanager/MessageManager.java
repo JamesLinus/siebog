@@ -20,7 +20,7 @@
 
 package siebog.xjaf.messagemanager;
 
-import siebog.xjaf.fipa.ACLMessage;
+import siebog.interaction.ACLMessage;
 
 /**
  * Remote interface of the message manager.

@@ -21,9 +21,9 @@
 package siebog.jasonee.control;
 
 import java.util.Collection;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * An ACL message informing synchronized agents to start the next reasoning cycle.

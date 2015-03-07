@@ -41,9 +41,9 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
 import java.io.Serializable;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Transformations between FIPA ACL and KQML messages.

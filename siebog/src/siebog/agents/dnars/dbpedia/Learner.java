@@ -34,10 +34,10 @@ import siebog.dnars.base.Truth;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.dnars.inference.forward.ForwardInferenceEngine;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 

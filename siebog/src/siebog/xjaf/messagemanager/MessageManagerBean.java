@@ -44,10 +44,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Default message manager implementation.

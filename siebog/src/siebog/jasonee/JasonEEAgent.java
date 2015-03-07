@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import siebog.core.FileUtils;
+import siebog.interaction.ACLMessage;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ReasoningCycleMessage;
 import siebog.jasonee.control.ReasoningCycleTimeout;
@@ -51,7 +52,6 @@ import siebog.utils.ObjectFactory;
 import siebog.xjaf.agentmanager.AgentInitArgs;
 import siebog.xjaf.core.Agent;
 import siebog.xjaf.core.XjafAgent;
-import siebog.xjaf.fipa.ACLMessage;
 
 /**
  * 

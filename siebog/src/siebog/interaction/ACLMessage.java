@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.fipa;
+package siebog.interaction;
 
 import java.io.Serializable;
 import java.util.ArrayList;

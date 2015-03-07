@@ -24,7 +24,10 @@ import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
+import org.jboss.as.server.CurrentServiceContainer;
+import org.jboss.msc.service.ServiceController;
 import siebog.core.Global;
+import siebog.interaction.bsp.BarrierService;
 import siebog.jasonee.JasonEEStarter;
 import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
@@ -58,12 +61,15 @@ public abstract class ObjectFactory {
 	private static final String XjafCacheLookup = "java:jboss/infinispan/container/xjaf2x-cache";
 	private static final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
-	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ ExecutionControlBean.class.getSimpleName() + "!" + ExecutionControl.class.getName() + "?stateful";
+	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE
+			+ "//" + ExecutionControlBean.class.getSimpleName() + "!"
+			+ ExecutionControl.class.getName() + "?stateful";
 	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName() + "?stateful";
+			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName()
+			+ "?stateful";
 	public static final String WebClientManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ WebClientManagerBean.class.getSimpleName() + "!" + WebClientManager.class.getName() + "?stateful";
+			+ WebClientManagerBean.class.getSimpleName() + "!" + WebClientManager.class.getName()
+			+ "?stateful";
 
 	public static AgentManager getAgentManager() {
 		return lookup(AgentManagerLookup, AgentManager.class);
@@ -123,6 +129,12 @@ public abstract class ObjectFactory {
 		ejbName = ejbName.replace("\"", "");
 		String name = "ejb:/" + module + "//" + ejbName + "!" + RemoteObjectFactory.class.getName();
 		return lookup(name, RemoteObjectFactory.class);
+	}
+
+	public static BarrierService getBarrierService() {
+		ServiceController<?> service = CurrentServiceContainer.getServiceContainer().getService(
+				BarrierService.DEFAULT_SERVICE_NAME);
+		return (BarrierService) service.getService();
 	}
 
 	@SuppressWarnings("unchecked")

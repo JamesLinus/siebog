@@ -30,30 +30,47 @@ import scala.collection.mutable.ListBuffer
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-class EDT(val list: ListBuffer[EventPayload], val observers: ListBuffer[String]) extends Thread {
+class EDT(val pendingEvents: ListBuffer[EventPayload], val observers: ListBuffer[String]) extends Thread {
 	val logger = Logger.getLogger(classOf[EDT].getName)
 
-	override def run: Unit = {
-		while (!Thread.interrupted()) {
-			try {
-				var events: Array[EventPayload] = null
-				list synchronized {
-					while (list.length == 0)
-						list.wait
-					events = list.toArray
-					list.clear
-				}
-				dispatch(events)
-			} catch {
-				case _: InterruptedException =>
-					return
-				case ex: Exception =>
-					logger.log(Level.WARNING, "Exception in EDT.", ex)
-			}
+	override def run(): Unit = {
+		while (!Thread.interrupted) {
+			processEvents()
 		}
 	}
 
-	private def dispatch(events: Array[EventPayload]): Unit = {
+	private def processEvents(): Unit = {
+		try {
+			waitAndDispatch()
+		} catch {
+			case _: InterruptedException =>
+				Thread.currentThread.interrupt()
+			case ex: Exception =>
+				logger.log(Level.WARNING, "Exception in EDT.", ex)
+		}
+	}
+
+	private def waitAndDispatch(): Unit = {
+		var eventsToDispatch: List[EventPayload] = null
+		pendingEvents synchronized {
+			waitForEvents()
+			eventsToDispatch = cloneOfPendingEvents
+		}
+		dispatch(eventsToDispatch)
+	}
+
+	private def waitForEvents(): Unit = {
+		while (pendingEvents.length == 0)
+			pendingEvents.wait
+	}
+
+	private def cloneOfPendingEvents(): List[EventPayload] = {
+		val copy = pendingEvents.toBuffer
+		pendingEvents.clear()
+		copy.toList
+	}
+
+	private def dispatch(events: List[EventPayload]): Unit = {
 		// TODO Implement event dispatching
 	}
 }

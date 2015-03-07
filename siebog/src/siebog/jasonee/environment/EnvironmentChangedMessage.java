@@ -20,9 +20,9 @@
 
 package siebog.jasonee.environment;
 
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * An ACL message informing the agents that their environment has changed.

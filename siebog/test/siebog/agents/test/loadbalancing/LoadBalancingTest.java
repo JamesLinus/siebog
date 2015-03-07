@@ -28,10 +28,10 @@ import java.util.Set;
 import org.junit.Test;
 import siebog.agents.test.TestClientBase;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * Tests if agents are properly distributed over all cluster nodes.

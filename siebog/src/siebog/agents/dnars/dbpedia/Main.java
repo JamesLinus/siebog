@@ -22,11 +22,11 @@ package siebog.agents.dnars.dbpedia;
 
 import siebog.SiebogClient;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
 import siebog.xjaf.core.AID;
 import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.fipa.ACLMessage;
-import siebog.xjaf.fipa.Performative;
 
 /**
  * 
