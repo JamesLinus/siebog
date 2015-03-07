@@ -20,6 +20,9 @@
 
 package siebog.agents.xjaf.aco.tsp;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
@@ -40,7 +43,7 @@ public class ACOStarter {
 		if (args.length != 2) {
 			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
 			nAnts = 5;
-			path = "C:/Users/Milos/Desktop/Fakultet/Agenti/GITHUB/siebog/siebog/src/siebog/agents/xjaf/aco/tsp/maps/eil51.tsp";
+			path = getMapFilePath("eil51.tsp");
 		} else {
 			nAnts = Integer.parseInt(args[0].toString());
 			path = args[1];
@@ -56,6 +59,15 @@ public class ACOStarter {
 		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
 			agm.startAgent(agClass, "Ant" + i, null);
+		}
+	}
+
+	private static String getMapFilePath(String mapName) {
+		URL url = ACOStarter.class.getResource("maps/" + mapName);
+		try {
+			return new File(url.toURI()).getAbsolutePath();
+		} catch (URISyntaxException ex) {
+			throw new IllegalArgumentException("Cannot load map " + mapName, ex);
 		}
 	}
 }
