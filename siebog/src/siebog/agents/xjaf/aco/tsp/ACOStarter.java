@@ -20,6 +20,9 @@
 
 package siebog.agents.xjaf.aco.tsp;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import siebog.SiebogClient;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
@@ -35,22 +38,36 @@ import siebog.xjaf.core.AgentClass;
  */
 public class ACOStarter {
 	public static void main(String[] args) {
+		int nAnts = 0;
+		String path = "";
 		if (args.length != 2) {
 			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
-			return;
+			nAnts = 5;
+			path = getMapFilePath("eil51.tsp");
+		} else {
+			nAnts = Integer.parseInt(args[0].toString());
+			path = args[1];
 		}
 
 		SiebogClient.connect("localhost");
 
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Global.SIEBOG_MODULE, "Map");
-		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + args[1]);
+		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + path);
 		agm.startAgent(mapClass, "Map", mapArgs);
 
-		int nAnts = Integer.parseInt(args[0].toString());
 		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
 			agm.startAgent(agClass, "Ant" + i, null);
+		}
+	}
+
+	private static String getMapFilePath(String mapName) {
+		URL url = ACOStarter.class.getResource("maps/" + mapName);
+		try {
+			return new File(url.toURI()).getAbsolutePath();
+		} catch (URISyntaxException ex) {
+			throw new IllegalArgumentException("Cannot load map " + mapName, ex);
 		}
 	}
 }

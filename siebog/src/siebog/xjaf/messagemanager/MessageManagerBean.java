@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
@@ -37,12 +38,12 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.Topic;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
@@ -95,12 +96,12 @@ public class MessageManagerBean implements MessageManager {
 		try {
 			session.close();
 		} catch (JMSException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		try {
 			connection.close();
 		} catch (JMSException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -116,11 +117,11 @@ public class MessageManagerBean implements MessageManager {
 
 	@POST
 	@Path("/")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
 	// NOTE: Using @Asynchronous causes an exception
 	// https://issues.jboss.org/browse/WFLY-2515
-	public void post(@FormParam("acl") ACLMessage msg) {
+	public void post(ACLMessage msg) {
 		// TODO : Check if the agent/subscriber exists
 		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
 		for (AID aid : msg.receivers) {

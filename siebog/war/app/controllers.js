@@ -17,7 +17,11 @@ siebog.controller('AppCtrl', [function() {
                 $scope.performatives = data;
             });
         $scope.createdAgents = [];
-        $scope.request = {};
+        $http.get('/siebog/rest/agents/running').
+	        success(function(data) {
+	            $scope.createdAgents = data;
+	        });
+        $scope.request = {receivers: []};
 
         $scope.newAgent = function (agent) {
             var modalInstance = $modal.open({
@@ -52,9 +56,9 @@ siebog.controller('AppCtrl', [function() {
        			 method: 'POST',
        			 url: '/siebog/rest/messages',
        			 headers: {
-       			   'Content-Type': 'application/x-www-form-urlencoded'
+       			   'Content-Type': 'application/json'
        			 },
-       			 data: {acl: $scope.request},
+       			 data: $scope.request
        			}
         	$http(req).success(function(data, status) {
         		console.log("USPEH");

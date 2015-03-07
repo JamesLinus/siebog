@@ -41,6 +41,13 @@ public final class AID implements Serializable {
 	private static final String HOST_NAME = "xjaf"; // TODO Get cluster/host name.
 	public static final AID EXTERNAL_CLIENT = new AID("", "", new AgentClass("", ""));
 
+	public AID() {
+		name = "";
+		host = "";
+		str = "";
+		agClass = null;
+	}
+	
 	public AID(String name, AgentClass agClass) {
 		this(name, HOST_NAME, agClass);
 	}

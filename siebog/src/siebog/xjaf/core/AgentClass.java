@@ -33,6 +33,11 @@ public class AgentClass implements Serializable {
 	private final String module;
 	private final String ejbName;
 
+	public AgentClass() {
+		module = "";
+		ejbName = "";
+	}
+	
 	public AgentClass(String module, String ejbName) {
 		this.module = module;
 		this.ejbName = ejbName;

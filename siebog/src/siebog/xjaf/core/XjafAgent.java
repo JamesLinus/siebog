@@ -153,7 +153,7 @@ public abstract class XjafAgent implements Agent, MessageListener {
 			try {
 				session.close();
 			} catch (JMSException ex) {
-				logger.log(Level.WARNING, "Error while closing the JMS session.", ex);
+				// logger.log(Level.WARNING, "Error while closing the JMS session.");
 			} finally {
 				session = null;
 			}
