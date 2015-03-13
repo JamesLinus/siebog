@@ -29,11 +29,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.AgentManager;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.agentmanager.AgentManager;
-import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.radigostlayer.RadigostAgent;
 
 /**

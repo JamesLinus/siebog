@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.core;
+package siebog.agents;
 
 import java.io.Serializable;
 import org.hornetq.utils.json.JSONException;

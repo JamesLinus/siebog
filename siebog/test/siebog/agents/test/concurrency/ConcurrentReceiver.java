@@ -23,11 +23,13 @@ package siebog.agents.test.concurrency;
 import java.io.Serializable;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import siebog.agents.Agent;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * 
@@ -37,6 +39,7 @@ import siebog.xjaf.core.XjafAgent;
 @Remote(Agent.class)
 public class ConcurrentReceiver extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(ConcurrentReceiver.class);
 
 	private static class Buffer implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -79,6 +82,7 @@ public class ConcurrentReceiver extends XjafAgent {
 		else {
 			ACLMessage reply = msg.makeReply(Performative.INFORM);
 			reply.content = "" + buff.ok();
+			LOG.info("Replying with content: {}", reply.content);
 			msm().post(reply);
 		}
 	}

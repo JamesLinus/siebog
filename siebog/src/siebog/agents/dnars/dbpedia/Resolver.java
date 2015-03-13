@@ -25,6 +25,10 @@ import java.util.Set;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import scala.collection.Iterator;
+import siebog.agents.AID;
+import siebog.agents.Agent;
+import siebog.agents.AgentClass;
+import siebog.agents.XjafAgent;
 import siebog.core.Global;
 import siebog.dnars.base.AtomicTerm;
 import siebog.dnars.base.CompoundTerm;
@@ -35,10 +39,6 @@ import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * 

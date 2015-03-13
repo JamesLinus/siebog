@@ -25,12 +25,12 @@ import javax.ejb.Stateful;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import siebog.agents.Agent;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * Stub representation of a Radigost agent. Any messages sent to this instance will be forwarded to

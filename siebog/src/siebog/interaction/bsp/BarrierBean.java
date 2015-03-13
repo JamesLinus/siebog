@@ -6,12 +6,15 @@ import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
-import siebog.xjaf.core.AID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import siebog.agents.AID;
 
 @Stateful
 @Remote(Barrier.class)
 @LocalBean
 public class BarrierBean implements Barrier {
+	private static final Logger LOG = LoggerFactory.getLogger(BarrierBean.class);
 	private Set<AID> registered;
 	// agents that have registered themselves in the middle of a reasoning cycle.
 	// they will be included in the list of all agents at the beginning of the next cycle
@@ -24,14 +27,14 @@ public class BarrierBean implements Barrier {
 
 	@Override
 	public void register(AID aid) {
-		// TODO Auto-generated method stub
-
+		registered.add(aid);
+		LOG.info("Registered agent {}.", aid);
 	}
 
 	@Override
 	public void deregister(AID aid) {
-		// TODO Auto-generated method stub
-
+		registered.remove(aid);
+		LOG.info("Deregistered agent {}.", aid);
 	}
 
 	@Remove

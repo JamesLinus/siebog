@@ -21,12 +21,12 @@
 package siebog.agents.test.hacontractnet;
 
 import siebog.SiebogClient;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
 
 /**
  * 

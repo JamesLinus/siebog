@@ -29,7 +29,7 @@
 package siebog.jasonee.control;
 
 import java.io.Serializable;
-import siebog.utils.ObjectFactory;
+import siebog.utils.GlobalCache;
 
 /**
  * Base interface for user-defined execution control. Execution sequence:
@@ -68,7 +68,7 @@ public class UserExecutionControl implements Serializable {
 	}
 
 	public void allAgsFinished(int cycleNum) {
-		ExecutionControl control = ObjectFactory.getExecutionControlCache().get(controlName);
+		ExecutionControl control = GlobalCache.get().getExecutionControls().get(controlName);
 		control.informAllAgsToPerformCycle(cycleNum + 1);
 	}
 

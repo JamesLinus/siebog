@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.agentmanager;
+package siebog.agents;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,10 +47,8 @@ import siebog.agents.test.RemoteAgent;
 import siebog.agents.xjaf.GUIAgent;
 import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
+import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
 import siebog.xjaf.radigostlayer.RadigostStub;
 
 /**
@@ -69,7 +67,7 @@ import siebog.xjaf.radigostlayer.RadigostStub;
 public class AgentManagerBean implements AgentManager {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(AgentManagerBean.class.getName());
-	private static Cache<AID, Agent> cache = ObjectFactory.getRunningAgentsCache();
+	private Cache<AID, Agent> agents;
 
 	@PUT
 	@Path("/running/{agClass}/{name}")
@@ -84,14 +82,15 @@ public class AgentManagerBean implements AgentManager {
 		} else
 			aid = new AID(name, agClass);
 
-		if (cache.containsKey(aid)) {
+		if (getCache().containsKey(aid)) {
 			logger.info("Already running: " + aid);
 			return aid;
 		}
 
 		try { // build the JNDI lookup string
 			final String view = Agent.class.getName();
-			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(), view);
+			String jndiNameStateless = String.format("ejb:/%s//%s!%s", agClass.getModule(),
+					agClass.getEjbName(), view);
 			String jndiNameStateful = jndiNameStateless + "?stateful";
 
 			Agent agent = null;
@@ -108,7 +107,7 @@ public class AgentManagerBean implements AgentManager {
 			// the order of the next two statements matters. if we call init first and the agent
 			// sends a message from there, it sometimes happens that the reply arrives before we
 			// register the AID. also some agents might wish to terminate themselves inside init.
-			cache.put(aid, agent);
+			getCache().put(aid, agent);
 			agent.init(aid, args);
 			logger.fine("Agent [" + aid + "] started.");
 			return aid;
@@ -122,9 +121,9 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running/{aid}")
 	@Override
 	public void stopAgent(@PathParam("aid") AID aid) {
-		Agent agent = cache.get(aid);
+		Agent agent = getCache().get(aid);
 		if (agent != null) {
-			cache.remove(aid);
+			getCache().remove(aid);
 			agent.stop();
 		}
 	}
@@ -169,7 +168,7 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running")
 	@Override
 	public List<AID> getRunningAgents() {
-		return new ArrayList<>(cache.keySet());
+		return new ArrayList<>(getCache().keySet());
 	}
 
 	@Override
@@ -183,7 +182,7 @@ public class AgentManagerBean implements AgentManager {
 
 	@Override
 	public void pingAgent(AID aid) {
-		Agent agent = cache.get(aid);
+		Agent agent = getCache().get(aid);
 		if (agent == null)
 			throw new IllegalArgumentException("No such agent: " + aid);
 		try {
@@ -191,5 +190,18 @@ public class AgentManagerBean implements AgentManager {
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Unable to ping the agent.", ex);
 		}
+	}
+
+	private Cache<AID, Agent> getCache() {
+		if (agents == null)
+			agents = GlobalCache.get().getRunningAgents();
+		return agents;
+	}
+
+	public Agent getAgentReference(AID aid) {
+		Agent a = getCache().get(aid);
+		if (a == null)
+			throw new IllegalArgumentException("No such runnin agent: " + aid);
+		return a;
 	}
 }

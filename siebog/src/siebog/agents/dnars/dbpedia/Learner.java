@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import scala.collection.Iterator;
+import siebog.agents.Agent;
+import siebog.agents.XjafAgent;
 import siebog.dnars.base.AtomicTerm;
 import siebog.dnars.base.CompoundTerm;
 import siebog.dnars.base.Copula;
@@ -36,8 +38,6 @@ import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.dnars.inference.forward.ForwardInferenceEngine;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * 

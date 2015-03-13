@@ -26,12 +26,13 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
 import siebog.agents.test.TestClientBase;
+import siebog.agents.test.TestProps;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
 
 /**
  * Tests if agents are properly distributed over all cluster nodes.
@@ -39,16 +40,14 @@ import siebog.xjaf.core.AgentClass;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class LoadBalancingTest extends TestClientBase {
-	private static final String MASTER = "192.168.213.1";
-	private static final String[] SLAVES = { "192.168.213.129" };
 	private static final int NUM_AGENTS_TO_CREATE = 32;
 	private Set<String> unusedNodes;
 
 	public LoadBalancingTest() throws RemoteException {
-		super(MASTER, SLAVES);
-		unusedNodes = new HashSet<>(SLAVES.length + 1);
+		String[] slaves = TestProps.get().getSlaves();
+		unusedNodes = new HashSet<>(slaves.length + 1);
 		unusedNodes.add("master:xjaf-master");
-		for (String s : SLAVES)
+		for (String s : slaves)
 			unusedNodes.add("slave:" + s);
 	}
 

@@ -24,8 +24,8 @@ import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import org.infinispan.Cache;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.Agent;
+import siebog.agents.Agent;
+import siebog.utils.GlobalCache;
 
 /**
  * 
@@ -34,12 +34,12 @@ import siebog.xjaf.core.Agent;
 @Singleton
 @LocalBean
 public class DNarsEventManager {
-
 	private Cache<Event, Agent> cache;
 
 	@PostConstruct
+	@SuppressWarnings("unchecked")
 	public void postConstruct() {
-		cache = ObjectFactory.getCacheContainer().getCache("dnars-events");
+		cache = (Cache<Event, Agent>) GlobalCache.get().getCache("dnars-events");
 		if (cache == null)
 			throw new IllegalStateException("Cannot load cache dnars-events.");
 	}

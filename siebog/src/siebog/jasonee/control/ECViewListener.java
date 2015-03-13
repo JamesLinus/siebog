@@ -27,10 +27,11 @@ import org.infinispan.Cache;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachemanagerlistener.annotation.ViewChanged;
 import org.infinispan.notifications.cachemanagerlistener.event.ViewChangedEvent;
-import siebog.utils.ObjectFactory;
+import siebog.utils.GlobalCache;
 
 /**
- * Listens for changes in the cluster and kick-starts Execution control components in case of node failures.
+ * Listens for changes in the cluster and kick-starts Execution control components in case of node
+ * failures.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -38,7 +39,7 @@ import siebog.utils.ObjectFactory;
 public class ECViewListener {
 	@ViewChanged
 	public void viewChanged(ViewChangedEvent event) {
-		final Cache<String, ExecutionControl> cache = ObjectFactory.getExecutionControlCache();
+		final Cache<String, ExecutionControl> cache = GlobalCache.get().getExecutionControls();
 		Set<String> allExecCtrls = new HashSet<>(cache.keySet());
 		for (String name : allExecCtrls) {
 			ExecutionControl ctrl = cache.get(name);

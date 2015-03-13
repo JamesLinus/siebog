@@ -30,17 +30,17 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import scala.runtime.AbstractFunction1;
 import scala.runtime.BoxedUnit;
+import siebog.agents.AID;
+import siebog.agents.Agent;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.core.Global;
 import siebog.dnars.base.Statement;
 import siebog.dnars.graph.DNarsGraph;
 import siebog.dnars.graph.DNarsGraphFactory;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * 

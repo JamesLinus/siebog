@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.core;
+package siebog.agents;
 
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;

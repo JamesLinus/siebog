@@ -25,7 +25,7 @@ import jason.asSyntax.Structure;
 import jason.environment.EnvironmentInfraTier;
 import java.io.Serializable;
 import java.util.List;
-import siebog.xjaf.core.AID;
+import siebog.agents.AID;
 
 /**
  * 

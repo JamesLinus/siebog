@@ -27,10 +27,10 @@ import javax.ws.rs.client.InvocationCallback;
 import org.hornetq.utils.json.JSONArray;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
+import siebog.agents.AID;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
 
 /**
  * 

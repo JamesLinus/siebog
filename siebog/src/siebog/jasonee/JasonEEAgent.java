@@ -40,6 +40,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.agents.Agent;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.core.FileUtils;
 import siebog.interaction.ACLMessage;
 import siebog.jasonee.control.ExecutionControl;
@@ -48,10 +51,7 @@ import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
+import siebog.utils.GlobalCache;
 
 /**
  * 
@@ -204,13 +204,13 @@ public class JasonEEAgent extends XjafAgent {
 
 	private ExecutionControl executionControl() {
 		if (control == null)
-			control = ObjectFactory.getExecutionControlCache().get(execCtrlName);
+			control = GlobalCache.get().getExecutionControls().get(execCtrlName);
 		return control;
 	}
 
 	private Environment env() {
 		if (env == null)
-			env = ObjectFactory.getEnvironmentCache().get(envName);
+			env = GlobalCache.get().getEnvironments().get(envName);
 		return env;
 	}
 }

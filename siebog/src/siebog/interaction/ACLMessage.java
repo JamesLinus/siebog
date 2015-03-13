@@ -32,7 +32,7 @@ import javax.ws.rs.FormParam;
 import org.hornetq.utils.json.JSONArray;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
-import siebog.xjaf.core.AID;
+import siebog.agents.AID;
 
 /**
  * Represents a FIPA ACL message. Refer to <a

@@ -1,18 +1,19 @@
 package siebog.utils;
 
 import org.infinispan.Cache;
-import org.infinispan.configuration.cache.CacheMode;
-import org.infinispan.configuration.cache.Configuration;
-import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.manager.DefaultCacheManager;
-import org.infinispan.manager.EmbeddedCacheManager;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
+import org.infinispan.manager.CacheContainer;
+import siebog.agents.AID;
+import siebog.agents.Agent;
+import siebog.interaction.bsp.Barrier;
+import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.environment.Environment;
 
 public class GlobalCache {
-	private EmbeddedCacheManager manager;
+	private static final String CACHE_CONTAINER = "java:jboss/infinispan/container/siebog-cache";
 	private static GlobalCache instance;
+	private CacheContainer cacheContainer;
 	private static final String RUNNING_AGENTS = "running-agents";
+	private static final String BSP_BARRIERS = "bsp-barriers";
 	private static final String EXECUTION_CONTROLS = "execution-controls";
 	private static final String ENVIRONMENTS = "environments";
 
@@ -27,21 +28,26 @@ public class GlobalCache {
 	}
 
 	private GlobalCache() {
-		manager = new DefaultCacheManager(true);
-		createConfigurations();
+		cacheContainer = ObjectFactory.lookup(CACHE_CONTAINER, CacheContainer.class);
 	}
 
 	public Cache<AID, Agent> getRunningAgents() {
-		return manager.getCache(RUNNING_AGENTS);
+		return cacheContainer.getCache(RUNNING_AGENTS);
 	}
 
-	private void createConfigurations() {
-		manager.defineConfiguration(RUNNING_AGENTS, getConfig());
-		manager.defineConfiguration(EXECUTION_CONTROLS, getConfig());
-		manager.defineConfiguration(ENVIRONMENTS, getConfig());
+	public Cache<String, Barrier> getBspBarriers() {
+		return cacheContainer.getCache(BSP_BARRIERS);
 	}
 
-	private Configuration getConfig() {
-		return new ConfigurationBuilder().clustering().cacheMode(CacheMode.REPL_SYNC).build();
+	public Cache<String, ExecutionControl> getExecutionControls() {
+		return cacheContainer.getCache(EXECUTION_CONTROLS);
+	}
+
+	public Cache<String, Environment> getEnvironments() {
+		return cacheContainer.getCache(ENVIRONMENTS);
+	}
+
+	public Cache<?, ?> getCache(String name) {
+		return cacheContainer.getCache(name);
 	}
 }

@@ -14,8 +14,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import siebog.agents.AID;
 import siebog.interaction.ACLMessage;
-import siebog.xjaf.core.AID;
 
 @ServerEndpoint("/webclient")
 public class WebClientSocket {

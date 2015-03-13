@@ -29,24 +29,20 @@
 package siebog.jasonee.control;
 
 import jason.runtime.RuntimeServicesInfraTier;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import javax.ejb.AccessTimeout;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-
 import org.w3c.dom.Document;
-
+import siebog.agents.AID;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
 
 /**
  * 

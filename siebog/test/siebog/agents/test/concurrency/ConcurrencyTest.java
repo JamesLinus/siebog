@@ -24,14 +24,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.rmi.RemoteException;
 import org.junit.Test;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
 import siebog.agents.test.TestClientBase;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
 
 /**
  * 
@@ -63,11 +63,10 @@ public class ConcurrencyTest extends TestClientBase {
 	}
 
 	public ConcurrencyTest() throws RemoteException {
-		super("localhost");
 	}
 
-	private static final int BUFF_SIZE = 16384;
-	private static final int NUM_THREADS = 6;
+	private static final int BUFF_SIZE = 5000;
+	private static final int NUM_THREADS = 5;
 	private static final int ITERATIONS = BUFF_SIZE / NUM_THREADS;
 
 	@Test

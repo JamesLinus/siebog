@@ -23,12 +23,12 @@ package siebog.agents.xjaf.pso;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import siebog.agents.AID;
+import siebog.agents.Agent;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * 

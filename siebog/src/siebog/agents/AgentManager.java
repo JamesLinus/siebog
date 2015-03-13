@@ -18,17 +18,30 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.messagemanager;
+package siebog.agents;
 
-import siebog.interaction.ACLMessage;
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * Remote interface of the message manager.
+ * Remote interface of the agent manager.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface MessageManager {
-	void post(ACLMessage message);
+public interface AgentManager extends Serializable {
+	AID startAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
 
-	String ping();
+	void stopAgent(AID aid);
+
+	List<AID> getRunningAgents();
+
+	/**
+	 * 
+	 * @throws IllegalArgumentException if no such running agent.
+	 */
+	AID getAIDByRuntimeName(String runtimeName);
+
+	List<AgentClass> getAvailableAgentClasses();
+
+	void pingAgent(AID aid);
 }

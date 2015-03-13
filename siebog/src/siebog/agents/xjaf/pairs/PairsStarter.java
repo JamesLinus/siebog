@@ -29,15 +29,15 @@ import javax.naming.NamingException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogClient;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.AgentManager;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
+import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.agentmanager.AgentManager;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * Entry point for the Sender-Receiver case study.

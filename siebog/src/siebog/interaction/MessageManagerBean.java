@@ -18,37 +18,30 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.messagemanager;
+package siebog.interaction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import javax.jms.Topic;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import siebog.agents.AID;
 import siebog.core.Global;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.core.AID;
 
 /**
  * Default message manager implementation.
@@ -63,32 +56,16 @@ import siebog.xjaf.core.AID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageManagerBean implements MessageManager {
-	private static final Logger logger = Logger.getLogger(MessageManagerBean.class.getName());
-	private Connection connection;
-	private Topic topic;
+	private static final Logger LOG = LoggerFactory.getLogger(MessageManagerBean.class);
+	@Inject
+	private JMSFactory factory;
 	private Session session;
 	private MessageProducer producer;
 
-	public static ConnectionFactory getConnectionFactory() {
-		return ObjectFactory.lookup("java:jboss/exported/jms/RemoteConnectionFactory",
-				ConnectionFactory.class);
-	}
-
-	public static Topic getTopic() {
-		return ObjectFactory.lookup("java:jboss/exported/jms/topic/siebog", Topic.class);
-	}
-
 	@PostConstruct
 	public void postConstruct() {
-		try {
-			ConnectionFactory connectionFactory = getConnectionFactory();
-			connection = connectionFactory.createConnection();
-			topic = getTopic();
-			session = connection.createSession();
-			producer = session.createProducer(topic);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "Unable to initialize the JMS.", ex);
-		}
+		session = factory.getSession();
+		producer = factory.getProducer(session);
 	}
 
 	@PreDestroy
@@ -96,12 +73,6 @@ public class MessageManagerBean implements MessageManager {
 		try {
 			session.close();
 		} catch (JMSException e) {
-			//e.printStackTrace();
-		}
-		try {
-			connection.close();
-		} catch (JMSException e) {
-			//e.printStackTrace();
 		}
 	}
 
@@ -124,15 +95,19 @@ public class MessageManagerBean implements MessageManager {
 	public void post(ACLMessage msg) {
 		// TODO : Check if the agent/subscriber exists
 		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
-		for (AID aid : msg.receivers) {
+		for (int i = 0; i < msg.receivers.size(); i++) {
+			AID aid = msg.receivers.get(i);
 			if (aid == null)
 				throw new IllegalArgumentException("AID cannot be null.");
 			try {
 				ObjectMessage jmsMsg = session.createObjectMessage(msg);
-				jmsMsg.setStringProperty("aid", aid.getStr());
+				// TODO See meessage grouping in a cluster
+				// http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/message-grouping.html
+				jmsMsg.setStringProperty("JMSXGroupID", aid.getStr());
+				jmsMsg.setIntProperty("AIDIndex", i);
 				producer.send(jmsMsg);
 			} catch (Exception ex) {
-				logger.warning(ex.getMessage());
+				LOG.warn(ex.getMessage());
 			}
 		}
 	}
@@ -141,5 +116,4 @@ public class MessageManagerBean implements MessageManager {
 	public String ping() {
 		return "Pong from " + Global.getNodeName();
 	}
-
 }

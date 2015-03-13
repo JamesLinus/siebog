@@ -22,7 +22,7 @@ package siebog.jasonee.control;
 
 import jason.control.ExecutionControlInfraTier;
 import java.io.Serializable;
-import siebog.xjaf.core.AID;
+import siebog.agents.AID;
 
 /**
  * 

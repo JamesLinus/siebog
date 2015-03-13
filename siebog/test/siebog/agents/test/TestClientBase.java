@@ -28,14 +28,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import siebog.SiebogClient;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.AgentManager;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
+import siebog.interaction.MessageManager;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.agentmanager.AgentManager;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * Base class for all test client applications.
@@ -50,21 +50,18 @@ public abstract class TestClientBase {
 	protected MessageManager msm;
 
 	public TestClientBase() throws RemoteException {
-		this("localhost");
-	}
-
-	public TestClientBase(String masterAddr, String... slaveAddrs) throws RemoteException {
-		SiebogClient.connect(masterAddr, slaveAddrs);
+		TestProps props = TestProps.get();
+		SiebogClient.connect(props.getMaster(), props.getSlaves());
 		logger = Logger.getLogger(getClass().getName());
 		msgQueue = new LinkedBlockingQueue<>();
 		agm = ObjectFactory.getAgentManager();
 		msm = ObjectFactory.getMessageManager();
-		startTestAgent(masterAddr);
+		startTestAgent(props.getMaster());
 	}
 
 	protected ACLMessage pollMessage() {
 		try {
-			return msgQueue.poll(2, TimeUnit.SECONDS);
+			return msgQueue.poll(5, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
 			return null;
 		}

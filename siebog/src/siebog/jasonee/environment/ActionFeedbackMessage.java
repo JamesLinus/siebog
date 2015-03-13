@@ -20,9 +20,9 @@
 
 package siebog.jasonee.environment;
 
+import siebog.agents.AID;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.xjaf.core.AID;
 
 /**
  * Outcome of a scheduled action.

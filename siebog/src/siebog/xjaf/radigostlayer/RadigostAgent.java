@@ -30,12 +30,12 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import siebog.agents.Agent;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.XjafAgent;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.Agent;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.core.XjafAgent;
 
 /**
  * A placeholder for Radigost agents running on the server.

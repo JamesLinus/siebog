@@ -18,32 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.agentmanager;
+package siebog.agents;
 
 import java.io.Serializable;
-import java.util.List;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
+import siebog.interaction.ACLMessage;
 
 /**
- * Remote interface of the agent manager.
- *
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Remote interface for agents. All of its methods are for internal purposes only, and should not be
+ * called or redefined.
+ * 
+ * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface AgentManager extends Serializable {
-	AID startAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
+public interface Agent extends Serializable {
+	void init(AID aid, AgentInitArgs args);
 
-	void stopAgent(AID aid);
+	void stop();
 
-	List<AID> getRunningAgents();
+	void handleMessage(ACLMessage msg);
 
-	/**
-	 * 
-	 * @throws IllegalArgumentException if no such running agent.
-	 */
-	AID getAIDByRuntimeName(String runtimeName);
-
-	List<AgentClass> getAvailableAgentClasses();
-
-	void pingAgent(AID aid);
+	String ping();
 }

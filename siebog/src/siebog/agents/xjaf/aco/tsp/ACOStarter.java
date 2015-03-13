@@ -24,11 +24,11 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import siebog.SiebogClient;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.AgentManager;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.agentmanager.AgentManager;
-import siebog.xjaf.core.AgentClass;
 
 /**
  * Entry point for ACO example.

@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -61,7 +62,8 @@ public class UserEnvironment implements Serializable {
 	private transient Environment env;
 
 	/**
-	 * Called before the MAS execution with the args informed in .mas2j project, the user environment could override it.
+	 * Called before the MAS execution with the args informed in .mas2j project, the user
+	 * environment could override it.
 	 */
 	public void init(String envName, String[] args) {
 		this.envName = envName;
@@ -90,13 +92,15 @@ public class UserEnvironment implements Serializable {
 	}
 
 	/**
-	 * Returns percepts for an agent. A full copy of both common and agent's percepts lists is returned.
+	 * Returns percepts for an agent. A full copy of both common and agent's percepts lists is
+	 * returned.
 	 * 
 	 * It returns null if the agent's perception doesn't changed since last call.
 	 * 
 	 * This method is to be called by TS and should not be called by other objects.
 	 */
-	public List<Literal> getPercepts(String agName) { // TODO in a future release, call this method doPerception, and
+	public List<Literal> getPercepts(String agName) { // TODO in a future release, call this method
+														// doPerception, and
 														// get simply returns the list
 
 		// check whether this agent needs the current version of perception
@@ -132,7 +136,8 @@ public class UserEnvironment implements Serializable {
 	/**
 	 * Returns a copy of the perception for an agent.
 	 * 
-	 * It is the same list returned by getPercepts, but doesn't consider the last call of the method.
+	 * It is the same list returned by getPercepts, but doesn't consider the last call of the
+	 * method.
 	 */
 	public List<Literal> consultPercepts(String agName) {
 		int size = percepts.size();
@@ -179,8 +184,8 @@ public class UserEnvironment implements Serializable {
 	/**
 	 * Removes all percepts from the common perception list that unifies with <i>per</i>.
 	 * 
-	 * Example: removePerceptsByUnif(Literal.parseLiteral("position(_)")) will remove all percepts that unifies
-	 * "position(_)".
+	 * Example: removePerceptsByUnif(Literal.parseLiteral("position(_)")) will remove all percepts
+	 * that unifies "position(_)".
 	 * 
 	 * @return the number of removed percepts.
 	 */
@@ -325,16 +330,18 @@ public class UserEnvironment implements Serializable {
 	}
 
 	/**
-	 * Executes an action on the environment. This method is probably overridden in the user environment class.
+	 * Executes an action on the environment. This method is probably overridden in the user
+	 * environment class.
 	 */
 	public boolean executeAction(String agName, Structure act) {
-		logger.info("The action " + act + " done by " + agName + " is not implemented in the default environment.");
+		logger.info("The action " + act + " done by " + agName
+				+ " is not implemented in the default environment.");
 		return false;
 	}
 
 	private Environment getEnv() {
 		if (env == null)
-			env = ObjectFactory.getEnvironmentCache().get(envName);
+			env = GlobalCache.get().getEnvironments().get(envName);
 		return env;
 	}
 

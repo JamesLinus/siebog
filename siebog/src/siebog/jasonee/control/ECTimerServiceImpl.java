@@ -38,7 +38,7 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import org.infinispan.Cache;
 import org.infinispan.manager.EmbeddedCacheManager;
-import siebog.utils.ObjectFactory;
+import siebog.utils.GlobalCache;
 
 /**
  * A helper timer service for the Execution control component.
@@ -59,13 +59,13 @@ public class ECTimerServiceImpl implements ECTimerService {
 	@PostConstruct
 	public void postConstruct() {
 		viewListener = new ECViewListener();
-		EmbeddedCacheManager manager = ObjectFactory.getExecutionControlCache().getCacheManager();
+		EmbeddedCacheManager manager = GlobalCache.get().getExecutionControls().getCacheManager();
 		manager.addListener(viewListener);
 	}
 
 	@PreDestroy
 	public void preDestroy() {
-		EmbeddedCacheManager manager = ObjectFactory.getExecutionControlCache().getCacheManager();
+		EmbeddedCacheManager manager = GlobalCache.get().getExecutionControls().getCacheManager();
 		manager.removeListener(viewListener);
 		for (Timer t : timerService.getAllTimers())
 			t.cancel();
@@ -80,7 +80,7 @@ public class ECTimerServiceImpl implements ECTimerService {
 
 	@Timeout
 	public void timeout(Timer timer) {
-		final Cache<String, ExecutionControl> cache = ObjectFactory.getExecutionControlCache();
+		final Cache<String, ExecutionControl> cache = GlobalCache.get().getExecutionControls();
 		String info = (String) timer.getInfo();
 		try {
 			int n = info.indexOf(' ');

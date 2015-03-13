@@ -29,17 +29,17 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import siebog.SiebogClient;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
 import siebog.agents.test.RemoteAgentListener;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
+import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
 import siebog.jasonee.JasonEEAgent;
 import siebog.jasonee.JasonEEProject;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.agentmanager.AgentInitArgs;
-import siebog.xjaf.core.AID;
-import siebog.xjaf.core.AgentClass;
-import siebog.xjaf.messagemanager.MessageManager;
 
 /**
  * Alternative implementation of the Initiator agent, i.e. in form of a plain Java client application.

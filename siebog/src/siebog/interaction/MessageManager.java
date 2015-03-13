@@ -18,21 +18,16 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.core;
+package siebog.interaction;
 
-import java.io.Serializable;
-import siebog.xjaf.agentmanager.AgentInitArgs;
 
 /**
- * Remote interface for agents. All of its methods are for internal purposes only, and should not be
- * called or redefined.
- * 
- * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * Remote interface of the message manager.
+ *
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface Agent extends Serializable {
-	void init(AID aid, AgentInitArgs args);
+public interface MessageManager {
+	void post(ACLMessage message);
 
-	void stop();
-
-	void ping();
+	String ping();
 }

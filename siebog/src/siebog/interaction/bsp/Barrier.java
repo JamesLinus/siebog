@@ -1,6 +1,6 @@
 package siebog.interaction.bsp;
 
-import siebog.xjaf.core.AID;
+import siebog.agents.AID;
 
 public interface Barrier {
 	void register(AID aid);
