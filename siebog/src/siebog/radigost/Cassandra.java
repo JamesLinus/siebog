@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
-import siebog.agents.AID;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
@@ -24,7 +23,7 @@ public class Cassandra {
 
 	@PostConstruct
 	public void postConstruct() {
-		cluster = Cluster.builder().addContactPoint("localhost").build();
+		cluster = Cluster.builder().addContactPoint("100.73.154.4").build();
 		session = cluster.connect(KEYSPACE);
 
 		stGet = session.prepare(String.format("SELECT state FROM %s WHERE aid = ?;", TABLE_STATES));
@@ -38,15 +37,15 @@ public class Cassandra {
 		cluster.close();
 	}
 
-	public String getState(AID aid) {
-		BoundStatement bound = stGet.bind(aid.toString());
+	public String getState(String aid) {
+		BoundStatement bound = stGet.bind(aid);
 		ResultSet set = session.execute(bound);
 		Row row = set.one();
 		return row == null ? "" : row.getString(0);
 	}
 
-	public void setState(AID aid, String state) {
-		BoundStatement bound = stSet.bind(aid.toString(), state);
+	public void setState(String aid, String state) {
+		BoundStatement bound = stSet.bind(aid, state);
 		session.executeAsync(bound);
 	}
 }

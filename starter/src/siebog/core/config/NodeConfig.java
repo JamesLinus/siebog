@@ -1,9 +1,10 @@
 package siebog.core.config;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.Logger;
 import siebog.core.FileUtils;
 
@@ -13,6 +14,7 @@ public class NodeConfig {
 	private File rootFolder;
 	private File configFile;
 	private NodeInfo node;
+	private String cassandraHost;
 	private static NodeConfig instance;
 
 	public static synchronized NodeConfig get(String[] args) {
@@ -28,12 +30,17 @@ public class NodeConfig {
 
 	private NodeConfig(String[] args) {
 		try {
+			String homeStr = System.getenv("JBOSS_HOME");
+			if (homeStr == null || homeStr.isEmpty())
+				throw new IllegalStateException(
+						"Environment variable JBOSS_HOME not (properly) set.");
 			// get JBoss home folder
-			jbossHome = new File(System.getenv("JBOSS_HOME"));
+			jbossHome = new File(homeStr);
 			// make sure it is set correctly
 			File modules = new File(jbossHome, "jboss-modules.jar");
 			if (!modules.exists())
-				throw new IllegalStateException("Environment variable JBOSS_HOME not (properly) set.");
+				throw new IllegalStateException(
+						"Environment variable JBOSS_HOME not (properly) set.");
 			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
 			// configuration file
 			configFile = new File(getRootFolder(), "siebog.properties");
@@ -71,16 +78,15 @@ public class NodeConfig {
 	}
 
 	private void loadConfig() throws IOException {
-		try (BufferedReader in = new BufferedReader(new FileReader(configFile))) {
-			String line;
-			while ((line = in.readLine()) != null) {
-				line = line.trim().toLowerCase();
-				if (line.startsWith("node="))
-					node = new NodeInfo(line.substring(5));
-			}
+		Properties p = new Properties();
+		try (InputStream in = new FileInputStream(configFile)) {
+			p.load(in);
+			String nodeStr = p.getProperty("node");
+			if (nodeStr == null || nodeStr.isEmpty())
+				throw new IllegalArgumentException("Parameter --node not specified.");
+			node = new NodeInfo(nodeStr);
+			this.cassandraHost = p.getProperty("cassandra.host", "localhost");
 		}
-		if (node == null)
-			throw new IllegalArgumentException("Parameter --node not specified.");
 	}
 
 	public boolean isSlave() {
@@ -105,6 +111,10 @@ public class NodeConfig {
 
 	public String getSlaveName() {
 		return node.getName();
+	}
+
+	public String getCassandraHost() {
+		return cassandraHost;
 	}
 
 	private void createConfigFromArgs(String[] args) throws IOException {
