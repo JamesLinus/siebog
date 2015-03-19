@@ -76,5 +76,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/starter/lib/module/cassandra-driver-core-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/starter/lib/module/netty-3.9.0.Final.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
