@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import siebog.core.config.NodeConfig;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
@@ -23,7 +24,7 @@ public class Cassandra {
 
 	@PostConstruct
 	public void postConstruct() {
-		cluster = Cluster.builder().addContactPoint("100.73.154.4").build();
+		cluster = Cluster.builder().addContactPoint(NodeConfig.get().getCassandraHost()).build();
 		session = cluster.connect(KEYSPACE);
 
 		stGet = session.prepare(String.format("SELECT state FROM %s WHERE aid = ?;", TABLE_STATES));

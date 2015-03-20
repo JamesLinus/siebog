@@ -76,16 +76,19 @@
 		<copy todir="${dist.dir}/${server.name}">
 			<fileset dir="wildfly-base" includes="**" />
 		</copy>
+		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/core/standalone-full-ha.xml" overwrite="true" verbose="true" />
+		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/core/domain.xml" overwrite="true" verbose="true" />
 		<mkdir dir="${module.dir}" />
 		<copy todir="${module.dir}">
 			<fileset dir="lib/module" includes="*" />
 		</copy>
-		<copy todir="${module.dir}" file="${starter.path}" />
-		<copy todir="${module.dir}" file="${dnars.path}" />
-		<move todir="${dist.dir}" file="${siebog.path}" />
-		<move todir="${dist.dir}" file="${starter.path}" />
+		<copy todir="${module.dir}" file="${starter.path}" overwrite="true" verbose="true" />
+		<copy todir="${module.dir}" file="${dnars.path}" overwrite="true" verbose="true" />
+		<move todir="${dist.dir}" file="${siebog.path}" overwrite="true" verbose="true" />
+		<move todir="${dist.dir}" file="${starter.path}" overwrite="true" verbose="true" />
 		<copy todir="${dist.dir}" file="../LICENSE" />
 		<copy todir="${dist.dir}" file="../NOTICE" />
 		<copy todir="${dist.dir}" file="../README.md" />
+		<copy todir="${dist.dir}" file="siebog.properties" />
 	</target>
 </project>

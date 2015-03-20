@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
-import siebog.core.FileUtils;
+import siebog.core.NoJBossHomeException;
 
 public class NodeConfig {
 	private static final Logger logger = Logger.getLogger(NodeConfig.class.getName());
@@ -17,51 +17,31 @@ public class NodeConfig {
 	private String cassandraHost;
 	private static NodeConfig instance;
 
+	public static synchronized NodeConfig get() {
+		return get(null);
+	}
+
 	public static synchronized NodeConfig get(String[] args) {
 		if (instance == null)
 			instance = new NodeConfig(args);
 		return instance;
 	}
 
-	public static synchronized NodeConfig get() {
-		return get(null);
-
-	}
-
 	private NodeConfig(String[] args) {
+		this.jbossHome = detectJBossHome();
 		try {
-			String homeStr = System.getenv("JBOSS_HOME");
-			if (homeStr == null || homeStr.isEmpty())
-				throw new IllegalStateException(
-						"Environment variable JBOSS_HOME not (properly) set.");
-			// get JBoss home folder
-			jbossHome = new File(homeStr);
-			// make sure it is set correctly
-			File modules = new File(jbossHome, "jboss-modules.jar");
-			if (!modules.exists())
-				throw new IllegalStateException(
-						"Environment variable JBOSS_HOME not (properly) set.");
 			rootFolder = new File(new File(jbossHome, "..").getCanonicalPath());
-			// configuration file
-			configFile = new File(getRootFolder(), "siebog.properties");
-
-			boolean hasArgs = args != null && args.length > 0;
-			if (hasArgs)
-				createConfigFromArgs(args);
-
-			if (configFile.exists()) {
-				if (hasArgs)
-					logger.info("Loaded configuration from program arguments. Configuration has been stored in "
-							+ configFile + " for future use.");
-				else
-					logger.info("Loading configuration from " + configFile);
-			} else {
-				logger.info("Creating default configuration file " + configFile);
-				makeConfigFile(new NodeInfo("localhost"));
-			}
-			loadConfig();
 		} catch (IOException ex) {
-			throw new IllegalArgumentException("Input/output error: " + ex.getMessage(), ex);
+			throw new IllegalStateException(ex);
+		}
+		if (args != null && args.length > 0) {
+			parseArgs(args);
+		} else {
+			configFile = new File(getRootFolder(), "siebog.properties");
+			if (!configFile.exists()) {
+				throw new IllegalArgumentException("No configuration file nor program arguments.");
+			}
+			parseConfigFile();
 		}
 	}
 
@@ -75,18 +55,6 @@ public class NodeConfig {
 
 	public File getConfigFile() {
 		return configFile;
-	}
-
-	private void loadConfig() throws IOException {
-		Properties p = new Properties();
-		try (InputStream in = new FileInputStream(configFile)) {
-			p.load(in);
-			String nodeStr = p.getProperty("node");
-			if (nodeStr == null || nodeStr.isEmpty())
-				throw new IllegalArgumentException("Parameter --node not specified.");
-			node = new NodeInfo(nodeStr);
-			this.cassandraHost = p.getProperty("cassandra.host", "localhost");
-		}
 	}
 
 	public boolean isSlave() {
@@ -117,7 +85,19 @@ public class NodeConfig {
 		return cassandraHost;
 	}
 
-	private void createConfigFromArgs(String[] args) throws IOException {
+	private File detectJBossHome() {
+		String home = System.getenv("JBOSS_HOME");
+		if (home == null || home.isEmpty())
+			throw new NoJBossHomeException();
+		// make sure it is set correctly
+		File modules = new File(home, "jboss-modules.jar");
+		if (!modules.exists())
+			throw new NoJBossHomeException();
+		return new File(home);
+	}
+
+	private void parseArgs(String[] args) {
+		logger.info("Loading configuration from program arguments");
 		NodeInfo node = null;
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
@@ -133,6 +113,11 @@ public class NodeConfig {
 			case "node":
 				node = new NodeInfo(value);
 				break;
+			case "--cassandra.host":
+			case "-cassandra.host":
+			case "cassandra.host":
+				cassandraHost = value;
+				break;
 			case "--help":
 			case "-help":
 			case "help":
@@ -145,11 +130,21 @@ public class NodeConfig {
 		}
 
 		if (node == null)
-			throw new IllegalArgumentException("Parameter --node not specified.");
-		makeConfigFile(node);
+			throw new IllegalArgumentException("Parameter --node is required.");
 	}
 
-	private void makeConfigFile(NodeInfo fromNode) throws IOException {
-		FileUtils.write(configFile, "node=" + fromNode);
+	private void parseConfigFile() {
+		logger.info("Loading configuration from " + configFile.getAbsolutePath());
+		Properties p = new Properties();
+		try (InputStream in = new FileInputStream(configFile)) {
+			p.load(in);
+			String nodeStr = p.getProperty("node");
+			if (nodeStr == null || nodeStr.isEmpty())
+				throw new IllegalArgumentException("Parameter --node is required.");
+			node = new NodeInfo(nodeStr);
+			this.cassandraHost = p.getProperty("cassandra.host", "localhost");
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 }

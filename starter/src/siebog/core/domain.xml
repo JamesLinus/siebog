@@ -1148,7 +1148,7 @@
                 <default-missing-method-permissions-deny-access value="true"/>
             </subsystem>
             <subsystem xmlns="urn:jboss:domain:io:1.1">
-                <worker name="default" io-threads="16" task-max-threads="1024" />
+                <worker name="default" io-threads="32" task-max-threads="1024" />
                 <buffer-pool name="default"/>
             </subsystem>
             <subsystem xmlns="urn:jboss:domain:infinispan:2.0">
