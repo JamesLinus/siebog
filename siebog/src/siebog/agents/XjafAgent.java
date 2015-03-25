@@ -69,12 +69,13 @@ public abstract class XjafAgent implements Agent {
 			else
 				; // executor().cancelHeartbeat(hbHandle);
 		} else {
-			if (filter(msg))
+			if (filter(msg)) {
 				try {
 					onMessage(msg);
 				} catch (Exception ex) {
 					logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
 				}
+			}
 		}
 	}
 

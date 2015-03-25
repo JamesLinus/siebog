@@ -117,6 +117,12 @@ public class AgentManagerBean implements AgentManager {
 		}
 	}
 
+	@Override
+	public AID startAgent(Class<? extends XjafAgent> siebogAgentClass, String runtimeName,
+			AgentInitArgs args) {
+		return startAgent(AgentClass.forSiebogEjb(siebogAgentClass), runtimeName, args);
+	}
+
 	@DELETE
 	@Path("/running/{aid}")
 	@Override
@@ -199,9 +205,7 @@ public class AgentManagerBean implements AgentManager {
 	}
 
 	public Agent getAgentReference(AID aid) {
-		Agent a = getCache().get(aid);
-		if (a == null)
-			throw new IllegalArgumentException("No such runnin agent: " + aid);
-		return a;
+		// don't throw an exception here if there's no such agent
+		return getCache().get(aid);
 	}
 }

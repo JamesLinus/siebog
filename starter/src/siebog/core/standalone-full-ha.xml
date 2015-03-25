@@ -458,10 +458,10 @@
                     <jms-queue name="DLQ">
                         <entry name="java:/jms/queue/DLQ"/>
                     </jms-queue>
-                    <jms-topic name="TopicSiebog">
-                        <entry name="topic/siebog"/>
-                        <entry name="java:jboss/exported/jms/topic/siebog"/>
-                    </jms-topic>
+                    <jms-queue name="QueueSiebog">
+                        <entry name="queue/siebog"/>
+                        <entry name="java:jboss/exported/jms/queue/siebog"/>
+                    </jms-queue>
                 </jms-destinations>
             </hornetq-server>
         </subsystem>

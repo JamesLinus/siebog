@@ -47,7 +47,7 @@ public final class AID implements Serializable {
 		str = "";
 		agClass = null;
 	}
-	
+
 	public AID(String name, AgentClass agClass) {
 		this(name, HOST_NAME, agClass);
 	}
@@ -72,6 +72,10 @@ public final class AID implements Serializable {
 		} catch (JSONException ex) {
 			throw new IllegalArgumentException(ex);
 		}
+	}
+
+	public AID(String name, Class<? extends XjafAgent> siebogAgentClass) {
+		this(name, AgentClass.forSiebogEjb(siebogAgentClass));
 	}
 
 	@Override

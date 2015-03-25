@@ -21,6 +21,7 @@
 package siebog.agents;
 
 import java.io.Serializable;
+import siebog.core.Global;
 
 /**
  * Description of a deployed agent.
@@ -37,10 +38,14 @@ public class AgentClass implements Serializable {
 		module = "";
 		ejbName = "";
 	}
-	
+
 	public AgentClass(String module, String ejbName) {
 		this.module = module;
 		this.ejbName = ejbName;
+	}
+
+	public static <T extends XjafAgent> AgentClass forSiebogEjb(Class<T> clazz) {
+		return new AgentClass(Global.SIEBOG_MODULE, clazz.getSimpleName());
 	}
 
 	/**

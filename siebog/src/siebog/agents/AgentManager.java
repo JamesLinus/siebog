@@ -31,6 +31,9 @@ import java.util.List;
 public interface AgentManager extends Serializable {
 	AID startAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
 
+	AID startAgent(Class<? extends XjafAgent> siebogAgentClass, String runtimeName,
+			AgentInitArgs args);
+
 	void stopAgent(AID aid);
 
 	List<AID> getRunningAgents();

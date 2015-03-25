@@ -97,8 +97,7 @@ public class NodeConfig {
 	}
 
 	private void parseArgs(String[] args) {
-		logger.info("Loading configuration from program arguments");
-		NodeInfo node = null;
+		logger.info("Loading configuration from program arguments.");
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			int n = arg.indexOf('=');

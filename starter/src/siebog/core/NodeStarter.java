@@ -74,7 +74,8 @@ public class NodeStarter {
 		final String ADDR = config.getAddress();
 
 		logger.info("Starting master node " + Global.MASTER_NAME + "@" + ADDR);
-		String hostMaster = FileUtils.read(NodeStarter.class.getResourceAsStream("host-master.txt"));
+		String hostMaster = FileUtils
+				.read(NodeStarter.class.getResourceAsStream("host-master.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostMaster = hostMaster.replace("<!-- interface-def -->", intfDef);
@@ -108,13 +109,15 @@ public class NodeStarter {
 		final String NAME = config.getSlaveName(); // + "@" + ADDR;
 		final int portOffset = config.getPortOffset();
 
-		logger.info(String.format("Starting slave node %s@%s, with %s@%s", NAME, ADDR, Global.MASTER_NAME, MASTER));
+		logger.info(String.format("Starting slave node %s@%s, with %s@%s", NAME, ADDR,
+				Global.MASTER_NAME, MASTER));
 		String hostSlave = FileUtils.read(NodeStarter.class.getResourceAsStream("host-slave.txt"));
 
 		String intfDef = INTF_DEF.replace("ADDR", ADDR);
 		hostSlave = hostSlave.replace("<!-- interface-def -->", intfDef);
 
-		String serverDef = SLAVE_SERVER_DEF.replace("NAME", ADDR).replace("POFFSET", portOffset + "");
+		String serverDef = SLAVE_SERVER_DEF.replace("NAME", ADDR).replace("POFFSET",
+				portOffset + "");
 		hostSlave = hostSlave.replace("<!-- server-def -->", serverDef);
 
 		int nativePort = 9999;
@@ -155,28 +158,30 @@ public class NodeStarter {
 			int maxTries = 10;
 			do {
 				Thread.sleep(500);
-				DomainClient client = DomainClient.Factory.create(addr, 9990);
-				ServerIdentity id = new ServerIdentity(hostName, Global.GROUP, serverName);
-				try {
-					Map<ServerIdentity, ServerStatus> statuses = client.getServerStatuses();
-					status = statuses.get(id);
-				} catch (RuntimeException e) {
-					final Throwable cause = e.getCause();
-					if (cause != null && (cause instanceof IOException)) {
-						if (--maxTries < 0)
+				try (DomainClient client = DomainClient.Factory.create(addr, 9990)) {
+					ServerIdentity id = new ServerIdentity(hostName, Global.GROUP, serverName);
+					try {
+						Map<ServerIdentity, ServerStatus> statuses = client.getServerStatuses();
+						status = statuses.get(id);
+					} catch (RuntimeException e) {
+						final Throwable cause = e.getCause();
+						if (cause != null && (cause instanceof IOException)) {
+							if (--maxTries < 0)
+								throw e;
+							status = ServerStatus.STARTING;
+						} else
 							throw e;
-						status = ServerStatus.STARTING;
-					} else
-						throw e;
+					}
 				}
 			} while (status == ServerStatus.STARTING || status == ServerStatus.UNKNOWN);
 		} catch (Throwable ex) {
-			throw new IllegalStateException("Error while waiting for the server to start: " + ex.getMessage());
+			throw new IllegalStateException("Error while waiting for the server to start: "
+					+ ex.getMessage());
 		}
 	}
 
-	private void deploy(File root, String name) throws DeploymentExecutionException, DeploymentFailureException,
-			IOException {
+	private void deploy(File root, String name) throws DeploymentExecutionException,
+			DeploymentFailureException, IOException {
 		final String appName = name + ".war";
 		File file = new File(root, appName);
 		logger.info("Deploying " + file.getCanonicalPath());

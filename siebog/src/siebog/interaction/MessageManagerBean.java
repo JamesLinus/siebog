@@ -22,6 +22,7 @@ package siebog.interaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
@@ -101,10 +102,11 @@ public class MessageManagerBean implements MessageManager {
 				throw new IllegalArgumentException("AID cannot be null.");
 			try {
 				ObjectMessage jmsMsg = session.createObjectMessage(msg);
-				// TODO See meessage grouping in a cluster
+				// TODO See message grouping in a cluster
 				// http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/message-grouping.html
 				jmsMsg.setStringProperty("JMSXGroupID", aid.getStr());
 				jmsMsg.setIntProperty("AIDIndex", i);
+				jmsMsg.setStringProperty("_HQ_DUPL_ID", UUID.randomUUID().toString());
 				producer.send(jmsMsg);
 			} catch (Exception ex) {
 				LOG.warn(ex.getMessage());
