@@ -1590,6 +1590,10 @@
 							<entry name="queue/siebog" />
 							<entry name="java:jboss/exported/jms/queue/siebog" />
 						</jms-queue>
+						<jms-queue name="QueueTestSiebog">
+							<entry name="queue/testSiebog" />
+							<entry name="java:jboss/exported/jms/queue/testSiebog" />
+						</jms-queue>
 					</jms-destinations>
 				</hornetq-server>
 			</subsystem>

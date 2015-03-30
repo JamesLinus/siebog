@@ -9,12 +9,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 public class FileUtils {
-	public static String read(String fileName) throws IOException {
-		return read(new FileInputStream(fileName));
-	}
-
 	public static String read(File file) throws IOException {
 		return read(new FileInputStream(file));
+	}
+
+	public static String read(String resource, int dummy) throws IOException {
+		return read(FileUtils.class.getResourceAsStream(resource));
 	}
 
 	public static String read(InputStream in) throws IOException {

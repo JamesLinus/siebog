@@ -89,13 +89,13 @@ OpCode.MOVE_TO_SERVER = 3;
 
 function WebClientOpCode() {
 }
-WebClientOpCode.REGISTER 	= 'r';
-WebClientOpCode.DEREGISTER 	= 'd';
-WebClientOpCode.NEW_AGENT	= 'a';
+WebClientOpCode.REGISTER = 'r';
+WebClientOpCode.DEREGISTER = 'd';
+WebClientOpCode.NEW_AGENT = 'a';
 
 function WebClientSocket(radigost) {
 	this.radigost = radigost;
-	
+
 	var url = "ws://" + window.location.host + "/siebog/webclient";
 	this.socket = new WebSocket(url);
 	var self = this;
@@ -114,7 +114,7 @@ function WebClientSocket(radigost) {
 		self.socket.send(WebClientOpCode.REGISTER + self.radigost.hap);
 	};
 	this.socket.onclose = function(e) {
-		//self.socket = null;
+		// self.socket = null;
 		console.log("WebSocket connection closed.");
 	};
 	this.socket.onerror = function(e) {
@@ -126,7 +126,7 @@ function Radigost(hap) {
 	this.hap = hap;
 	this.running = {};
 	this.socket = new WebClientSocket(this);
-	
+
 	var self = this;
 	var onWorkerMessage = function(ev) {
 		var msg = ev.data;
@@ -154,7 +154,7 @@ function Radigost(hap) {
 			}
 		}
 	};
-	
+
 	this.start = function(url, name, agentObserver, agentInitArgs) {
 		var newAid = new AID(name, this.hap);
 		if (this.getAgent(newAid) == null) {
@@ -188,8 +188,9 @@ function Radigost(hap) {
 				var ag = this.getAgent(aid);
 				if (ag !== null && ag.worker !== null)
 					ag.worker.postMessage(msg);
-			} else
+			} else {
 				server[j++] = aid;
+			}
 		}
 		// send to server?
 		if (server.length > 0) {
@@ -261,13 +262,13 @@ ACLMessage.makeReply = function(msg, performative, sender) {
 function Agent() {
 	this.aid = null;
 	this.radigostHelper = null;
-	
+
 	this.getRadigostHelper = function() {
 		if (this.radigostHelper == null) {
 			importClass(Packages.siebog.xjaf.radigostlayer.RadigostHelper);
 			this.radigostHelper = Packages.siebog.xjaf.radigostlayer.RadigostHelper;
 		}
-		return this.radigostHelper;	
+		return this.radigostHelper;
 	};
 }
 
@@ -294,8 +295,8 @@ Agent.prototype.onStep = function(step) {
 };
 
 Agent.prototype.getState = function() {
-	var state = { };
-	for (var prop in this)
+	var state = {};
+	for ( var prop in this)
 		if (typeof this[prop] !== "function")
 			state[prop] = this[prop];
 	return state;
@@ -303,7 +304,7 @@ Agent.prototype.getState = function() {
 
 Agent.prototype.setState = function(state) {
 	var st = typeof state === "string" ? JSON.parse(state) : state;
-	for (var prop in st)
+	for ( var prop in st)
 		this[prop] = st[prop];
 };
 
@@ -317,8 +318,10 @@ Agent.prototype.moveToServer = function() {
 	this.post(msg);
 };
 
+/** * Web Worker ** */
+
 if (typeof self === "undefined")
-	self = new Object(); // needed for the JS scripting engine on the server 
+	self = new Object(); // needed for the JS scripting engine on the server
 
 self.agentInstance = null;
 
@@ -332,8 +335,22 @@ self.onmessage = function(ev) {
 			aid : msg.aid
 		};
 		postMessage(initMsg);
-	} else
+		self.interceptor = msg.interceptor;
+	} else {
+		if (typeof msg.interceptor !== "undefined"
+				&& typeof msg.interceptor.preconditions !== "undefined") {
+			assertState(msg.interceptor.preconditions, self.agentInstance);
+			console.log("Pre-conditions for the MessagingTest agent satisfied.");
+		}
 		self.agentInstance.onMessage(msg);
+		if (typeof msg.interceptor !== "undefined") {
+			if (typeof msg.interceptor.postconditions === "undefined") {
+				throw new Error("Interceptors must include post-conditions.");
+			}
+			assertState(msg.interceptor.postconditions, self.agentInstance);
+			console.log("Post-conditions for the MessagingTest agent satisfied.");
+		}
+	}
 };
 
 function getAgentInstance() {
@@ -342,4 +359,17 @@ function getAgentInstance() {
 
 function setAgentInstance(agent) {
 	self.agentInstance = agent;
+}
+
+function assertState(expected, actual) {
+	for ( var key in expected) {
+		if (!actual.hasOwnProperty(key)) {
+			throw new Error("Property " + key + " not found.");
+		}
+		if (expected[key] !== actual[key]) {
+			var msg = "Mismatched property " + key + ", expected:"
+					+ expected[key] + ", actual:" + actual[key] + "."
+			throw new Error(msg);
+		}
+	}
 }

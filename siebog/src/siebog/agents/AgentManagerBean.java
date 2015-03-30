@@ -43,7 +43,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
-import siebog.agents.test.RemoteAgent;
 import siebog.agents.xjaf.GUIAgent;
 import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
@@ -140,7 +139,6 @@ public class AgentManagerBean implements AgentManager {
 	public List<AgentClass> getAvailableAgentClasses() {
 		Set<String> ignored = new HashSet<>();
 		ignored.add(JasonEEAgent.class.getSimpleName());
-		ignored.add(RemoteAgent.class.getSimpleName());
 		ignored.add(GUIAgent.class.getSimpleName());
 
 		final Context ctx = ContextFactory.get();

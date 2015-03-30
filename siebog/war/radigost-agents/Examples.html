@@ -15,9 +15,13 @@ function runHelloWorld() {
 	HWObserver.prototype.onStep = function(aid, msg) {
 		alert(msg);
 	}
-	var aid = radigost.start("HelloWorld.js", "HelloWorld", new HWObserver());
+	var aid = radigost.start("HelloWorld.js", "HelloWorld", new HWObserver(), null);
 	var msg = new ACLMessage(ACLPerformative.REQUEST);
 	msg.receivers.push(aid);
+	msg.interceptor = {
+		preconditions: { messageProcessed: false },
+		postconditions: { messageProcessed: true }
+	};
 	radigost.post(msg);
 }
 

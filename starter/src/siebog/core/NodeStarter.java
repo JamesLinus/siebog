@@ -38,7 +38,7 @@ import siebog.core.config.NodeConfig;
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class NodeStarter {
-	private static final Logger logger = Logger.getLogger(NodeStarter.class.getName());
+	private static final Logger LOG = Logger.getLogger(NodeStarter.class.getName());
 	private NodeConfig config;
 
 	// @formatter:off
@@ -58,9 +58,10 @@ public class NodeStarter {
 
 	public void start() {
 		try {
-			if (config.isSlave())
+			copyProfile();
+			if (config.isSlave()) {
 				startSlave();
-			else {
+			} else {
 				startMaster();
 				// TODO: check if already deployed
 				deploy(config.getRootFolder(), Global.SIEBOG_MODULE);
@@ -70,37 +71,43 @@ public class NodeStarter {
 		}
 	}
 
+	public void copyProfile() throws IOException {
+		String resDomain = FileUtils.read(NodeStarter.class.getResourceAsStream("profile.xml"));
+		File domainFile = new File(config.getJBossHome(), "domain/configuration/domain.xml");
+		String domain = FileUtils.read(domainFile);
+		int start = domain.indexOf("<profile name=\"full-ha\">");
+		int end = domain.indexOf("</profile>", start + 1) + "</profile>".length();
+		StringBuilder str = new StringBuilder(domain);
+		str.replace(start, end, resDomain);
+		FileUtils.write(domainFile, str.toString());
+	}
+
 	private void startMaster() throws IOException {
-		final String ADDR = config.getAddress();
-
-		logger.info("Starting master node " + Global.MASTER_NAME + "@" + ADDR);
-		String hostMaster = FileUtils
-				.read(NodeStarter.class.getResourceAsStream("host-master.txt"));
-
-		String intfDef = INTF_DEF.replace("ADDR", ADDR);
-		hostMaster = hostMaster.replace("<!-- interface-def -->", intfDef);
-
-		File hostConfig = new File(config.getJBossHome(), "domain/configuration/host-master.xml");
-		FileUtils.write(hostConfig, hostMaster);
-
+		LOG.info("Starting master node " + Global.MASTER_NAME + "@" + config.getAddress());
+		prepareHostMaster();
 		// @formatter:off
 		String[] jbossArgs = {
 			"-jboss-home", config.getJBossHome().getAbsolutePath(),
 			"-mp", new File(config.getJBossHome(), "modules").getAbsolutePath(),
 			"-jar", new File(config.getJBossHome(), "jboss-modules.jar").getAbsolutePath(),
 			"--",
-			//"-Dorg.jboss.boot.log.file=file://" + jbossHome + "domain/log/xjaf.log",
-			//"-Dlogging.configuration=file://" + jbossHome + "domain/configuration/logging.properties",
 			"-server",
 			"--",
-			// 
 			"--host-config=host-master.xml",
-			"-Djboss.bind.address.management=" + ADDR
+			"-Djboss.bind.address.management=" + config.getAddress()
 		};
 		// @formatter:on
-
 		org.jboss.as.process.Main.start(jbossArgs);
-		waitForServer(ADDR, Global.MASTER_NAME, "master");
+		waitForServer(config.getAddress(), Global.MASTER_NAME, "master");
+	}
+
+	private void prepareHostMaster() throws IOException {
+		String intfDef = INTF_DEF.replace("ADDR", config.getAddress());
+		String host = FileUtils.read("host-master.txt", 0);
+		host = host.replace("<!-- interface-def -->", intfDef);
+		File outFile = new File(config.getJBossHome(), "domain/configuration/host-master.xml");
+		FileUtils.write(outFile, host);
+
 	}
 
 	private void startSlave() throws IOException {
@@ -109,7 +116,7 @@ public class NodeStarter {
 		final String NAME = config.getSlaveName(); // + "@" + ADDR;
 		final int portOffset = config.getPortOffset();
 
-		logger.info(String.format("Starting slave node %s@%s, with %s@%s", NAME, ADDR,
+		LOG.info(String.format("Starting slave node %s@%s, with %s@%s", NAME, ADDR,
 				Global.MASTER_NAME, MASTER));
 		String hostSlave = FileUtils.read(NodeStarter.class.getResourceAsStream("host-slave.txt"));
 
@@ -184,7 +191,7 @@ public class NodeStarter {
 			DeploymentFailureException, IOException {
 		final String appName = name + ".war";
 		File file = new File(root, appName);
-		logger.info("Deploying " + file.getCanonicalPath());
+		LOG.info("Deploying " + file.getCanonicalPath());
 		InetAddress addr = InetAddress.getByName(config.getAddress());
 		Deployment.deploy(addr, file, appName);
 	}

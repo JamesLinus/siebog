@@ -20,13 +20,14 @@
 
 package siebog.interaction;
 
-
 /**
  * Remote interface of the message manager.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface MessageManager {
+	public static final String REPLY_WITH_TEST = "siebog-test";
+
 	void post(ACLMessage message);
 
 	String ping();

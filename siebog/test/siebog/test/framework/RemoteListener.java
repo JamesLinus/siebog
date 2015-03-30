@@ -18,27 +18,16 @@
  * and limitations under the License.
  */
 
-package siebog.agents.test;
+package siebog.test.framework;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Queue;
 import siebog.interaction.ACLMessage;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class RemoteAgentListenerImpl extends UnicastRemoteObject implements RemoteAgentListener {
-	private static final long serialVersionUID = 1L;
-	private Queue<ACLMessage> queue;
-
-	public RemoteAgentListenerImpl(Queue<ACLMessage> queue) throws RemoteException {
-		this.queue = queue;
-	}
-
-	@Override
-	public void onMessage(ACLMessage msg) throws RemoteException {
-		queue.add(msg);
-	}
+public interface RemoteListener extends Remote {
+	void onMessage(ACLMessage msg) throws RemoteException;
 }

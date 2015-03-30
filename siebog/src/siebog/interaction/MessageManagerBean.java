@@ -61,12 +61,13 @@ public class MessageManagerBean implements MessageManager {
 	@Inject
 	private JMSFactory factory;
 	private Session session;
-	private MessageProducer producer;
+	private MessageProducer defaultProducer;
+	private MessageProducer testProducer;
 
 	@PostConstruct
 	public void postConstruct() {
 		session = factory.getSession();
-		producer = factory.getProducer(session);
+		defaultProducer = factory.getDefaultProducer(session);
 	}
 
 	@PreDestroy
@@ -94,6 +95,13 @@ public class MessageManagerBean implements MessageManager {
 	// NOTE: Using @Asynchronous causes an exception
 	// https://issues.jboss.org/browse/WFLY-2515
 	public void post(ACLMessage msg) {
+		MessageProducer producer;
+		if (MessageManager.REPLY_WITH_TEST.equals(msg.inReplyTo)) {
+			producer = getTestProducer();
+		} else {
+			producer = defaultProducer;
+		}
+
 		// TODO : Check if the agent/subscriber exists
 		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
 		for (int i = 0; i < msg.receivers.size(); i++) {
@@ -117,5 +125,12 @@ public class MessageManagerBean implements MessageManager {
 	@Override
 	public String ping() {
 		return "Pong from " + Global.getNodeName();
+	}
+
+	private MessageProducer getTestProducer() {
+		if (testProducer == null) {
+			testProducer = factory.getTestProducer(session);
+		}
+		return testProducer;
 	}
 }

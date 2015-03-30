@@ -18,29 +18,27 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf;
+package siebog.test.framework;
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Queue;
+import siebog.interaction.ACLMessage;
 
 /**
- * Implemented by classes whose instances need to be matched against a pattern.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface Matchable<T> {
-	/**
-	 * Determines whether this object matches the provided pattern. In general, the following
-	 * algorithm is used:
-	 * 
-	 * <pre>
-	 * <code>
-	 * for (each non-null field f in pattern)
-	 *   if (!this.f.matches(pattern.f))
-	 *     return false;
-	 * return true;
-	 * </code>
-	 * </pre>
-	 * 
-	 * @param pattern
-	 * @return
-	 */
-	boolean matches(T pattern);
+public class RemoteListenerImpl extends UnicastRemoteObject implements RemoteListener {
+	private static final long serialVersionUID = 1L;
+	private Queue<ACLMessage> queue;
+
+	public RemoteListenerImpl(Queue<ACLMessage> queue) throws RemoteException {
+		this.queue = queue;
+	}
+
+	@Override
+	public void onMessage(ACLMessage msg) throws RemoteException {
+		queue.add(msg);
+	}
 }

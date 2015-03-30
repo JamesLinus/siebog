@@ -18,16 +18,31 @@
  * and limitations under the License.
  */
 
-package siebog.agents.test;
-
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import siebog.interaction.ACLMessage;
+package siebog.test.framework.receivers;
 
 /**
- * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public interface RemoteAgentListener extends Remote {
-	void onMessage(ACLMessage msg) throws RemoteException;
+public class MsgField {
+	private final String name;
+	private final Object value;
+	private final boolean pattern;
+
+	public MsgField(String name, Object value, boolean pattern) {
+		this.name = name;
+		this.value = value;
+		this.pattern = pattern;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public boolean isPattern() {
+		return pattern;
+	}
 }
