@@ -35,9 +35,8 @@ import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
-import siebog.radigost.websocket.bridges.BridgeManager;
-import siebog.xjaf.webclientmanager.WebClientManager;
-import siebog.xjaf.webclientmanager.WebClientManagerBean;
+import siebog.radigost.WebClientManager;
+import siebog.radigost.WebClientManager;
 
 /**
  * 
@@ -48,8 +47,6 @@ public abstract class ObjectFactory {
 			+ AgentManagerBean.class.getSimpleName() + "!" + AgentManager.class.getName();
 	public static final String MessageManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ MessageManagerBean.class.getSimpleName() + "!" + MessageManager.class.getName();
-	public static final String BridgeManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ BridgeManager.class.getSimpleName();
 	public static final String ExecutorServiceLookup = "java:global/" + Global.SIEBOG_MODULE + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
 	private static final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
@@ -61,7 +58,7 @@ public abstract class ObjectFactory {
 			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName()
 			+ "?stateful";
 	public static final String WebClientManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ WebClientManagerBean.class.getSimpleName() + "!" + WebClientManager.class.getName()
+			+ WebClientManager.class.getSimpleName() + "!" + WebClientManager.class.getName()
 			+ "?stateful";
 	public static final String JMSFactoryLookup = "java:app/" + Global.SIEBOG_MODULE + "/"
 			+ JMSFactory.class.getSimpleName();
@@ -72,10 +69,6 @@ public abstract class ObjectFactory {
 
 	public static MessageManager getMessageManager() {
 		return lookup(MessageManagerLookup, MessageManager.class);
-	}
-
-	public static BridgeManager getBridgeManager() {
-		return lookup(BridgeManagerLookup, BridgeManager.class);
 	}
 
 	public static WebClientManager getWebClientManager() {

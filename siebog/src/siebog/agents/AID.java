@@ -23,7 +23,7 @@ package siebog.agents;
 import java.io.Serializable;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
-import siebog.xjaf.radigostlayer.RadigostStub;
+import siebog.radigost.server.RadigostStub;
 
 /**
  * Agent identifier, consists of the runtime name and the platform identifier, in the form of

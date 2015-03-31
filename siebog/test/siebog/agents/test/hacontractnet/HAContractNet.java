@@ -46,13 +46,13 @@ public class HAContractNet {
 		AID[] aids = new AID[NUM_PARTICIPANTS];
 		AgentClass pcls = new AgentClass(Global.SIEBOG_MODULE, Participant.class.getSimpleName());
 		for (int i = 0; i < NUM_PARTICIPANTS; i++)
-			aids[i] = ObjectFactory.getAgentManager().startAgent(pcls, "P" + i, null);
+			aids[i] = ObjectFactory.getAgentManager().startServerAgent(pcls, "P" + i, null);
 		return aids;
 	}
 
 	private static AID createInitiator() {
 		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, Initiator.class.getSimpleName());
-		return ObjectFactory.getAgentManager().startAgent(icls, "I", null);
+		return ObjectFactory.getAgentManager().startServerAgent(icls, "I", null);
 	}
 
 	private static void start(AID initiator, AID[] participants) {

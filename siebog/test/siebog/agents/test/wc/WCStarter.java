@@ -23,7 +23,7 @@ public class WCStarter {
 		final int numAgents = 4;
 		Set<AID> aids = new HashSet<>();
 		for (int i = 0; i < numAgents; i++) {
-			AID aid = agm.startAgent(cls, "WC-" + i, null);
+			AID aid = agm.startServerAgent(cls, "WC-" + i, null);
 			aids.add(aid);
 		}
 

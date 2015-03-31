@@ -33,7 +33,6 @@ import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
-import siebog.xjaf.radigostlayer.RadigostStub;
 
 /**
  * 
@@ -48,15 +47,16 @@ public class ClientServerTest extends TestClientBase {
 	@Before
 	public void before() {
 		logger.info("For these tests to succeed, the ClientServer Radigost example should be running.");
-		clientAid = new AID("CSClient", "ClientServer", RadigostStub.AGENT_CLASS);
+		clientAid = new AID("CSClient", "ClientServer", null);
 	}
 
 	@Test
 	public void testClientServerMessaging() throws InterruptedException {
 		// server-side agent
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, ClientServerAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE,
+				ClientServerAgent.class.getSimpleName());
 		AgentManager agm = ObjectFactory.getAgentManager();
-		AID csAgent = agm.startAgent(agClass, "CSServer" + System.currentTimeMillis(), null);
+		AID csAgent = agm.startServerAgent(agClass, "CSServer" + System.currentTimeMillis(), null);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = testAgentAid;

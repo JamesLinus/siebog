@@ -20,6 +20,8 @@
 
 package siebog.agents;
 
+import java.util.HashSet;
+import java.util.Set;
 import siebog.core.Global;
 import siebog.utils.ObjectFactory;
 
@@ -32,6 +34,7 @@ public class AgentBuilder {
 	private AgentInitArgs args;
 	private String lastArgName;
 	private String name;
+	private boolean radigost;
 
 	private AgentBuilder(String module) {
 		this.module = module;
@@ -80,7 +83,16 @@ public class AgentBuilder {
 	}
 
 	public AgentBuilder randomName() {
-		this.name = "Agent-" + (int) (Math.random() * Integer.MAX_VALUE);
+		return name(getRandomName());
+	}
+
+	public AgentBuilder client() {
+		radigost = true;
+		return this;
+	}
+
+	public AgentBuilder server() {
+		radigost = false;
 		return this;
 	}
 
@@ -91,7 +103,42 @@ public class AgentBuilder {
 		if (name == null) {
 			throw new IllegalStateException("Missing agent name.");
 		}
+		return startAgent(name);
+	}
+
+	public Set<AID> startNInstances(int n) {
+		if (n <= 0) {
+			throw new IllegalArgumentException("Invalid number of agent instances: " + n);
+		}
+		if (name != null) {
+			throw new IllegalStateException("Cannot set the name when creating multiple agents.");
+		}
+		Set<AID> set = new HashSet<>();
+		for (int i = 0; i < n; i++) {
+			AID aid = startAgent(getRandomName());
+			set.add(aid);
+		}
+		return set;
+	}
+
+	private String getRandomName() {
+		return "Agent-" + (int) (Math.random() * Integer.MAX_VALUE);
+	}
+
+	private AID startAgent(String name) {
+		if (radigost) {
+			return startClientAgent(name);
+		}
+		return startServerAgent(name);
+	}
+
+	private AID startClientAgent(String name) {
 		AgentManager agm = ObjectFactory.getAgentManager();
-		return agm.startAgent(agClass, name, args);
+		return agm.startClientAgent(agClass, name, args);
+	}
+
+	private AID startServerAgent(String name) {
+		AgentManager agm = ObjectFactory.getAgentManager();
+		return agm.startServerAgent(agClass, name, args);
 	}
 }

@@ -79,6 +79,6 @@ public abstract class TestClientBase {
 		// AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE,
 		// RemoteAgent.class.getSimpleName());
 		// AgentInitArgs args = new AgentInitArgs("remoteHost=" + masterAddr);
-		// testAgentAid = agm.startAgent(agClass, "testAgent", args);
+		// testAgentAid = agm.startServerAgent(agClass, "testAgent", args);
 	}
 }

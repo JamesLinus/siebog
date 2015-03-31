@@ -83,7 +83,7 @@ public class ConcurrencyTest extends TestClientBase {
 		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE,
 				ConcurrentReceiver.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs("buffSize=" + BUFF_SIZE);
-		return agm.startAgent(cls, "CR" + System.currentTimeMillis(), args);
+		return agm.startServerAgent(cls, "CR" + System.currentTimeMillis(), args);
 	}
 
 	private Thread[] createThreads(AID aid) {

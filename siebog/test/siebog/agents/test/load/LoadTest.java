@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
+import siebog.agents.AgentClass;
 import siebog.agents.AgentManager;
 import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
@@ -28,7 +29,7 @@ public class LoadTest extends TestClientBase {
 
 	private AID createAgent() {
 		AgentManager agm = ObjectFactory.getAgentManager();
-		return agm.startAgent(LoadAgent.class, "LoadAgent", null);
+		return agm.startServerAgent(AgentClass.forSiebogEjb(LoadAgent.class), "LoadAgent", null);
 	}
 
 	private void sendMessages(int count, AID aid) {

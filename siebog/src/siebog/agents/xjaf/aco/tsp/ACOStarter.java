@@ -54,11 +54,11 @@ public class ACOStarter {
 		final AgentManager agm = ObjectFactory.getAgentManager();
 		AgentClass mapClass = new AgentClass(Global.SIEBOG_MODULE, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + path);
-		agm.startAgent(mapClass, "Map", mapArgs);
+		agm.startServerAgent(mapClass, "Map", mapArgs);
 
 		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
-			agm.startAgent(agClass, "Ant" + i, null);
+			agm.startServerAgent(agClass, "Ant" + i, null);
 		}
 	}
 

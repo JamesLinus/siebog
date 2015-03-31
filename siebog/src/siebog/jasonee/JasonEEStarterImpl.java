@@ -145,6 +145,6 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 		args.put("remObjFactEjb", remObjFactEjb);
 		args.put("envName", envName);
 		args.put("execCtrlName", ctrlName);
-		ObjectFactory.getAgentManager().startAgent(agClass, runtimeName, args);
+		ObjectFactory.getAgentManager().startServerAgent(agClass, runtimeName, args);
 	}
 }

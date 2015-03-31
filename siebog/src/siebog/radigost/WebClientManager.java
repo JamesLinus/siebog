@@ -18,49 +18,44 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.webclientmanager;
+package siebog.radigost;
 
 import javax.ejb.LocalBean;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import siebog.agents.AgentClass;
-import siebog.agents.AgentInitArgs;
-import siebog.agents.AgentManager;
-import siebog.core.Global;
-import siebog.utils.ObjectFactory;
-import siebog.xjaf.radigostlayer.RadigostAgent;
+import siebog.agents.AgentBuilder;
+import siebog.radigost.server.AgentPlaceholder;
 
 /**
  * Default implementation of the WebClient Manager.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(WebClientManager.class)
+@Stateless
 @LocalBean
 @Path("/webclient")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class WebClientManagerBean implements WebClientManager {
-	private static final long serialVersionUID = 1L;
-
+public class WebClientManager {
 	@PUT
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void acceptRadigostAgent(@FormParam("url") String url, @FormParam("aid") String aid,
 			@FormParam("state") String state) {
-		AgentManager agm = ObjectFactory.getAgentManager();
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, RadigostAgent.class.getSimpleName());
-		AgentInitArgs args = new AgentInitArgs();
-		args.put("url", url);
-		args.put("aid", aid);
-		args.put("state", state);
-		agm.startAgent(agClass, aid + System.currentTimeMillis(), args);
+		// @formatter:off
+		AgentBuilder
+			.siebog()
+			.ejb(AgentPlaceholder.class)
+			.randomName()
+			.arg("url").value(url)
+			.arg("aid").value(aid)
+			.arg("state").value(state)
+			.start();
+		// @formatter:on
 	}
 }

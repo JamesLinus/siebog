@@ -325,6 +325,14 @@ if (typeof self === "undefined")
 
 self.agentInstance = null;
 
+function getAgentInstance() {
+	return self.agentInstance;
+}
+
+function setAgentInstance(agent) {
+	self.agentInstance = agent;
+}
+
 self.onmessage = function(ev) {
 	var msg = ev.data;
 	if (msg.opcode === OpCode.INIT) {
@@ -335,30 +343,29 @@ self.onmessage = function(ev) {
 			aid : msg.aid
 		};
 		postMessage(initMsg);
-		self.interceptor = msg.interceptor;
 	} else {
-		if (typeof msg.interceptor !== "undefined"
-				&& typeof msg.interceptor.preconditions !== "undefined") {
-			assertState(msg.interceptor.preconditions, self.agentInstance);
-			console.log("Pre-conditions for the MessagingTest agent satisfied.");
-		}
+		checkPreconditions(msg.interceptor);
 		self.agentInstance.onMessage(msg);
-		if (typeof msg.interceptor !== "undefined") {
-			if (typeof msg.interceptor.postconditions === "undefined") {
-				throw new Error("Interceptors must include post-conditions.");
-			}
-			assertState(msg.interceptor.postconditions, self.agentInstance);
-			console.log("Post-conditions for the MessagingTest agent satisfied.");
-		}
+		checkPostconditions(msg.interceptor);
 	}
 };
 
-function getAgentInstance() {
-	return self.agentInstance;
+function checkPreconditions(interceptor) {
+	if (typeof interceptor !== "undefined"
+			&& typeof interceptor.preconditions !== "undefined") {
+		assertState(interceptor.preconditions, self.agentInstance);
+		console.log("Pre-conditions for the agent satisfied.");
+	}
 }
 
-function setAgentInstance(agent) {
-	self.agentInstance = agent;
+function checkPostconditions(interceptor) {
+	if (typeof interceptor !== "undefined") {
+		if (typeof interceptor.postconditions === "undefined") {
+			throw new Error("Interceptors must include post-conditions.");
+		}
+		assertState(interceptor.postconditions, self.agentInstance);
+		console.log("Post-conditions for the agent satisfied.");
+	}
 }
 
 function assertState(expected, actual) {

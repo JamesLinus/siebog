@@ -18,84 +18,71 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.radigostlayer;
+package siebog.radigost.server;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.core.Global;
-import siebog.interaction.ACLMessage;
 
 /**
- * A placeholder for Radigost agents running on the server.
+ * A placeholder for Radigost agents that have migrated to the server.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class RadigostAgent extends XjafAgent {
+public abstract class AgentPlaceholder extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SIEBOG_MODULE, RadigostAgent.class.getSimpleName());
+	public static final AgentClass AGENT_CLASS = AgentClass.forSiebogEjb(AgentPlaceholder.class);
 	private String radigostSource;
-
-	@PostConstruct
-	public void postConstruct() {
-		try {
-			// TODO Replace absolute paths in JS loading.
-			radigostSource = getJSSource("/home/dejan/dev/siebog/siebog/war/radigost.js");
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
+		radigostSource = getJSSource("/home/dejan/dev/siebog/siebog/war/radigost.js");
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine engine = manager.getEngineByName("JavaScript");
 		try {
-			String js = getJSSource("/home/dejan/dev/siebog/siebog/war/radigost-agents/photo/PhotoAgent.js");
-			final String src = radigostSource + "\nload(\"nashorn:mozilla_compat.js\");\n" + js;
-			engine.eval(src);
-
+			String jspath = args.get("jspath");
+			engine.eval(getFullAgentSouce(jspath));
 			Invocable inv = (Invocable) engine;
 			Object jsAgent = inv.invokeFunction("getAgentInstance");
-
 			// inject state and signal arrival
 			inv.invokeMethod(jsAgent, "setState", args.get("state"));
 			inv.invokeMethod(jsAgent, "onArrived", Global.getNodeName(), true);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (ScriptException ex) {
-			ex.printStackTrace();
-		} catch (NoSuchMethodException ex) {
-			ex.printStackTrace();
+		} catch (ScriptException | NoSuchMethodException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
-	private String getJSSource(String url) throws IOException {
-		StringBuilder str = new StringBuilder();
+	protected String getJSSource(String url) {
 		try (BufferedReader in = new BufferedReader(new FileReader(url))) {
-			String line;
-			while ((line = in.readLine()) != null) {
-				if (!line.isEmpty() && !line.startsWith("importScripts"))
-					str.append(line).append("\n");
-			}
+			return readJSSource(in);
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private String readJSSource(BufferedReader in) throws IOException {
+		StringBuilder str = new StringBuilder();
+		String line;
+		while ((line = in.readLine()) != null) {
+			if (!line.isEmpty() && !line.startsWith("importScripts"))
+				str.append(line).append("\n");
 		}
 		return str.toString();
 	}
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
+	private String getFullAgentSouce(String jspath) {
+		String js = getJSSource(jspath);
+		StringBuilder sb = new StringBuilder(radigostSource);
+		sb.append("\nload(\"nashorn:mozilla_compat.js\");\n");
+		sb.append(js);
+		return sb.toString();
 	}
 }

@@ -45,7 +45,7 @@ public class SequencerMain extends TestClientBase {
 	private void createAgent(int index, AID next) {
 		AgentInitArgs args = new AgentInitArgs();
 		args.put("next", next.toString());
-		agm.startAgent(agClass, getName(index), args);
+		agm.startServerAgent(agClass, getName(index), args);
 	}
 
 	private int sendMessages(int number) {

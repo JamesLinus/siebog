@@ -112,7 +112,7 @@ public class Annotator extends XjafAgent {
 		final String name = Learner.class.getSimpleName();
 		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, name);
 		AgentInitArgs args = new AgentInitArgs("query=" + query);
-		AID aid = agm().startAgent(agClass, name + "_" + System.currentTimeMillis(), args);
+		AID aid = agm().startServerAgent(agClass, name + "_" + System.currentTimeMillis(), args);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = myAid;

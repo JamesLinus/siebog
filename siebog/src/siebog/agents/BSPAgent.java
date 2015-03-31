@@ -47,6 +47,6 @@ public class BSPAgent extends XjafAgent {
 		SiebogClient.connect("localhost");
 
 		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, BSPAgent.class.getSimpleName());
-		ObjectFactory.getAgentManager().startAgent(cls, "bsp" + System.currentTimeMillis(), null);
+		ObjectFactory.getAgentManager().startServerAgent(cls, "bsp" + System.currentTimeMillis(), null);
 	}
 }

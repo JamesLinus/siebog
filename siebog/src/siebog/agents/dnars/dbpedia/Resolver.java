@@ -111,7 +111,7 @@ public class Resolver extends XjafAgent {
 	private void activateAnnotator(QueryDesc query) {
 		final String name = Annotator.class.getSimpleName();
 		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, name);
-		AID aid = agm().startAgent(cls, name + "_" + System.currentTimeMillis(), null);
+		AID aid = agm().startServerAgent(cls, name + "_" + System.currentTimeMillis(), null);
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.receivers.add(aid);
 		msg.contentObj = query;

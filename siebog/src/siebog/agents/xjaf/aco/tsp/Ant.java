@@ -243,7 +243,7 @@ public class Ant extends XjafAgent {
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
 				AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
-				agm().startAgent(agClass, name, null);
+				agm().startServerAgent(agClass, name, null);
 				agm().stopAgent(myAid);
 				return;
 			}

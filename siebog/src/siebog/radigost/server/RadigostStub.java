@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.xjaf.radigostlayer;
+package siebog.radigost.server;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
@@ -29,7 +29,6 @@ import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 
 /**
@@ -42,7 +41,8 @@ import siebog.interaction.ACLMessage;
 @Remote(Agent.class)
 public class RadigostStub extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = new AgentClass(Global.SIEBOG_MODULE, RadigostStub.class.getSimpleName());
+	// for speed purposes
+	public static final AgentClass AGENT_CLASS = AgentClass.forSiebogEjb(RadigostStub.class);
 	@Inject
 	@Default
 	private Event<ACLMessage> webSocketEvent;

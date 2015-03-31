@@ -37,7 +37,7 @@ public class Main {
 		SiebogClient.connect("localhost");
 
 		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Resolver.class.getSimpleName());
-		AID aid = ObjectFactory.getAgentManager().startAgent(agClass, "Resolver_" + System.currentTimeMillis(), null);
+		AID aid = ObjectFactory.getAgentManager().startServerAgent(agClass, "Resolver_" + System.currentTimeMillis(), null);
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = AID.EXTERNAL_CLIENT;
