@@ -54,6 +54,16 @@ public class AgentBuilder {
 			throw new IllegalStateException("Agent class already set.");
 		}
 		agClass = new AgentClass(module, ejbClass.getSimpleName());
+		radigost = false;
+		return this;
+	}
+
+	public AgentBuilder js(String jsFileName) {
+		if (agClass != null) {
+			throw new IllegalStateException("Agent class already set.");
+		}
+		agClass = new AgentClass(module, jsFileName);
+		radigost = true;
 		return this;
 	}
 
@@ -84,16 +94,6 @@ public class AgentBuilder {
 
 	public AgentBuilder randomName() {
 		return name(getRandomName());
-	}
-
-	public AgentBuilder client() {
-		radigost = true;
-		return this;
-	}
-
-	public AgentBuilder server() {
-		radigost = false;
-		return this;
 	}
 
 	public AID start() {
