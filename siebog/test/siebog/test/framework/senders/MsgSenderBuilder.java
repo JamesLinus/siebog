@@ -43,7 +43,7 @@ public class MsgSenderBuilder {
 		return setSender(new SequentialSender());
 	}
 
-	public MsgSenderBuilder parallel() {
+	public MsgSenderBuilder inParallel() {
 		return setSender(new ParallelSender());
 	}
 
