@@ -29,11 +29,13 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
@@ -64,13 +66,25 @@ public class AgentManagerBean implements AgentManager {
 
 	@Override
 	public void startServerAgent(AID aid, AgentInitArgs args) {
+		startServerAgent(aid, args, true);
+	}
+
+	@Override
+	public void startServerAgent(AID aid, AgentInitArgs args, boolean replace) {
 		if (getCache().containsKey(aid)) {
-			LOG.info("Already running: {}", aid);
+			if (!replace) {
+				throw new IllegalStateException("Agent already running: " + aid);
+			}
+			stopAgent(aid);
 		} else {
 			Agent agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass()), Agent.class);
 			initAgent(agent, aid, args);
-			LOG.debug("Agent [{}] started.", aid);
+			LOG.debug("Agent {} started.", aid.getStr());
 		}
+	}
+
+	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
+		return startServerAgent(agClass, runtimeName, args, true);
 	}
 
 	@PUT
@@ -78,7 +92,8 @@ public class AgentManagerBean implements AgentManager {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
 	public AID startServerAgent(@PathParam("agClass") AgentClass agClass,
-			@PathParam("name") String name, @Form AgentInitArgs args) {
+			@PathParam("name") String name, @Form AgentInitArgs args,
+			@QueryParam("replace") @DefaultValue("true") boolean replace) {
 		AID aid = new AID(name, agClass);
 		startServerAgent(aid, args);
 		return aid;
@@ -137,15 +152,15 @@ public class AgentManagerBean implements AgentManager {
 		}
 	}
 
+	public Agent getAgentReference(AID aid) {
+		// don't throw an exception here if there's no such agent
+		return getCache().get(aid);
+	}
+
 	private Cache<AID, Agent> getCache() {
 		if (agents == null)
 			agents = GlobalCache.get().getRunningAgents();
 		return agents;
-	}
-
-	public Agent getAgentReference(AID aid) {
-		// don't throw an exception here if there's no such agent
-		return getCache().get(aid);
 	}
 
 	private String getAgentLookup(AgentClass agClass) {
