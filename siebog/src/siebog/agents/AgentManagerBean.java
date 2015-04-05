@@ -62,6 +62,17 @@ public class AgentManagerBean implements AgentManager {
 	@Inject
 	private JndiTreeParser jndiTreeParser;
 
+	@Override
+	public void startServerAgent(AID aid, AgentInitArgs args) {
+		if (getCache().containsKey(aid)) {
+			LOG.info("Already running: {}", aid);
+		} else {
+			Agent agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass()), Agent.class);
+			initAgent(agent, aid, args);
+			LOG.debug("Agent [{}] started.", aid);
+		}
+	}
+
 	@PUT
 	@Path("/running/{agClass}/{name}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -69,13 +80,7 @@ public class AgentManagerBean implements AgentManager {
 	public AID startServerAgent(@PathParam("agClass") AgentClass agClass,
 			@PathParam("name") String name, @Form AgentInitArgs args) {
 		AID aid = new AID(name, agClass);
-		if (getCache().containsKey(aid)) {
-			LOG.info("Already running: {}", aid);
-			return aid;
-		}
-		Agent agent = ObjectFactory.lookup(getAgentLookup(agClass), Agent.class);
-		initAgent(agent, aid, args);
-		LOG.debug("Agent [{}] started.", aid);
+		startServerAgent(aid, args);
 		return aid;
 	}
 

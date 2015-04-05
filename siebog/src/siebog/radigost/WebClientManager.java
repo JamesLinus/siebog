@@ -28,8 +28,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import siebog.agents.AgentBuilder;
-import siebog.radigost.server.AgentPlaceholder;
+import siebog.agents.AID;
+import siebog.agents.AgentInitArgs;
+import siebog.agents.AgentManager;
+import siebog.utils.ObjectFactory;
 
 /**
  * Default implementation of the WebClient Manager.
@@ -45,17 +47,12 @@ public class WebClientManager {
 	@PUT
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void acceptRadigostAgent(@FormParam("url") String url, @FormParam("aid") String aid,
+	public void acceptRadigostAgent(@FormParam("url") String url, @FormParam("aid") AID aid,
 			@FormParam("state") String state) {
-		// @formatter:off
-		AgentBuilder
-			.siebog()
-			.ejb(AgentPlaceholder.class)
-			.randomName()
-			.arg("url").value(url)
-			.arg("aid").value(aid)
-			.arg("state").value(state)
-			.start();
-		// @formatter:on
+		AgentInitArgs args = new AgentInitArgs();
+		args.put("url", url);
+		args.put("state", state);
+		AgentManager agm = ObjectFactory.getAgentManager();
+		agm.startServerAgent(aid, args);
 	}
 }

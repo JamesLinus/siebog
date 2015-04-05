@@ -62,7 +62,8 @@
 		<datasources>
 			<datasource jndi-name="java:jboss/datasources/ExampleDS"
 				pool-name="ExampleDS" enabled="true" use-java-context="true">
-				<connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
+				<connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+				</connection-url>
 				<driver>h2</driver>
 				<security>
 					<user-name>sa</user-name>
@@ -71,17 +72,19 @@
 			</datasource>
 			<drivers>
 				<driver name="h2" module="com.h2database.h2">
-					<xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+					<xa-datasource-class>org.h2.jdbcx.JdbcDataSource
+					</xa-datasource-class>
 				</driver>
 			</drivers>
 		</datasources>
 	</subsystem>
-<!-- 	<subsystem xmlns="urn:jboss:domain:deployment-scanner:2.0"> -->
-<!-- 		<deployment-scanner path="deployments" relative-to="jboss.server.base.dir" -->
-<!-- 			scan-interval="5000" /> -->
-<!-- 	</subsystem> -->
+	<!-- <subsystem xmlns="urn:jboss:domain:deployment-scanner:2.0"> -->
+	<!-- <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" -->
+	<!-- scan-interval="5000" /> -->
+	<!-- </subsystem> -->
 	<subsystem xmlns="urn:jboss:domain:ee:3.0">
-		<spec-descriptor-property-replacement>false</spec-descriptor-property-replacement>
+		<spec-descriptor-property-replacement>false
+		</spec-descriptor-property-replacement>
 		<concurrent>
 			<context-services>
 				<context-service name="default"
@@ -372,7 +375,8 @@
 					<expiry-address>jms.queue.ExpiryQueue</expiry-address>
 					<max-size-bytes>10485760</max-size-bytes>
 					<page-size-bytes>2097152</page-size-bytes>
-					<message-counter-history-day-limit>10</message-counter-history-day-limit>
+					<message-counter-history-day-limit>10
+					</message-counter-history-day-limit>
 					<redistribution-delay>1000</redistribution-delay>
 				</address-setting>
 			</address-settings>
@@ -416,10 +420,14 @@
 				<jms-queue name="DLQ">
 					<entry name="java:/jms/queue/DLQ" />
 				</jms-queue>
-				<jms-topic name="TopicSiebog">
-					<entry name="topic/siebog" />
-					<entry name="java:jboss/exported/jms/topic/siebog" />
-				</jms-topic>
+				<jms-queue name="QueueSiebog">
+					<entry name="queue/siebog" />
+					<entry name="java:jboss/exported/jms/queue/siebog" />
+				</jms-queue>
+				<jms-queue name="QueueTestSiebog">
+					<entry name="queue/testSiebog" />
+					<entry name="java:jboss/exported/jms/queue/testSiebog" />
+				</jms-queue>
 			</jms-destinations>
 		</hornetq-server>
 	</subsystem>

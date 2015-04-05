@@ -18,50 +18,43 @@
  * and limitations under the License.
  */
 
-package siebog.radigost.server;
+package siebog.radigost.stub;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import siebog.agents.AgentClass;
-import siebog.agents.AgentInitArgs;
-import siebog.agents.XjafAgent;
 import siebog.core.Global;
 
 /**
- * A placeholder for Radigost agents that have migrated to the server.
- * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public abstract class AgentPlaceholder extends XjafAgent {
-	private static final long serialVersionUID = 1L;
-	public static final AgentClass AGENT_CLASS = AgentClass.forSiebogEjb(AgentPlaceholder.class);
+public class ScriptLoader {
 	private String radigostSource;
 
-	@Override
-	protected void onInit(AgentInitArgs args) {
-		radigostSource = getJSSource("/home/dejan/dev/siebog/siebog/war/radigost.js");
-		ScriptEngineManager manager = new ScriptEngineManager();
-		ScriptEngine engine = manager.getEngineByName("JavaScript");
-		try {
-			String jspath = args.get("jspath");
-			engine.eval(getFullAgentSouce(jspath));
-			Invocable inv = (Invocable) engine;
-			Object jsAgent = inv.invokeFunction("getAgentInstance");
-			// inject state and signal arrival
-			inv.invokeMethod(jsAgent, "setState", args.get("state"));
-			inv.invokeMethod(jsAgent, "onArrived", Global.getNodeName(), true);
-		} catch (ScriptException | NoSuchMethodException ex) {
-			throw new IllegalStateException(ex);
-		}
+	public ScriptLoader() {
+		radigostSource = getJSSource("radigost.js");
 	}
 
-	protected String getJSSource(String url) {
-		try (BufferedReader in = new BufferedReader(new FileReader(url))) {
+	public Invocable load(String url, String state) throws ScriptException, NoSuchMethodException {
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine engine = manager.getEngineByName("JavaScript");
+		engine.eval(getFullAgentSouce(url));
+		Invocable invocable = (Invocable) engine;
+		Object jsAgent = invocable.invokeFunction("getAgentInstance");
+		// inject state and signal arrival
+		invocable.invokeMethod(jsAgent, "setState", state);
+		invocable.invokeMethod(jsAgent, "onArrived", Global.getNodeName(), true);
+		return invocable;
+	}
+
+	protected String getJSSource(String name) {
+		InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
 			return readJSSource(in);
 		} catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -78,8 +71,8 @@ public abstract class AgentPlaceholder extends XjafAgent {
 		return str.toString();
 	}
 
-	private String getFullAgentSouce(String jspath) {
-		String js = getJSSource(jspath);
+	private String getFullAgentSouce(String url) {
+		String js = getJSSource(url);
 		StringBuilder sb = new StringBuilder(radigostSource);
 		sb.append("\nload(\"nashorn:mozilla_compat.js\");\n");
 		sb.append(js);

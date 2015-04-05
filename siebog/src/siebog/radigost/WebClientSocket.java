@@ -64,7 +64,6 @@ public class WebClientSocket {
 		case MSG_STORE_STATE:
 			doStoreState(content);
 			break;
-
 		}
 	}
 

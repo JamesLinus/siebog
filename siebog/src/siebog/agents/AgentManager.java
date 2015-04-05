@@ -29,6 +29,8 @@ import java.util.List;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface AgentManager extends Serializable {
+	void startServerAgent(AID aid, AgentInitArgs args);
+
 	AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
 
 	AID startClientAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);

@@ -65,11 +65,11 @@ XJAF.accept = function(url, aid, state, onSuccess, onError) {
 	});
 };
 
-function AID(name, hap) {
+function AID(name, host) {
 	this.name = name;
-	this.hap = hap;
+	this.host = host;
 	this.radigost = true;
-	this.str = "" + this.name + "@" + this.hap;
+	this.str = "" + this.name + "@" + this.host;
 }
 
 function AgentObserver() {
@@ -111,7 +111,7 @@ function WebClientSocket(radigost) {
 		self.radigost.post(msg);
 	};
 	this.socket.onopen = function(e) {
-		self.socket.send(WebClientOpCode.REGISTER + self.radigost.hap);
+		self.socket.send(WebClientOpCode.REGISTER + self.radigost.host);
 	};
 	this.socket.onclose = function(e) {
 		// self.socket = null;
@@ -122,9 +122,10 @@ function WebClientSocket(radigost) {
 	};
 };
 
-function Radigost(hap) {
-	this.hap = hap;
+function Radigost(host, autoCreateStubs) {
+	this.host = host;
 	this.running = {};
+	this.autoCreateStubs = autoCreateStubs ? autoCreateSubs : false;
 	this.socket = new WebClientSocket(this);
 
 	var self = this;
@@ -147,16 +148,16 @@ function Radigost(hap) {
 			case OpCode.MOVE_TO_SERVER:
 				var ag = self.getAgent(msg.aid);
 				if (ag !== null && ag.url !== null)
-					XJAF.accept(ag.url, msg.aid.str, msg.state);
+					XJAF.accept(ag.url, JSON.stringify(msg.aid), msg.state);
 				break;
 			default:
-				console.log("Unrecognized OpCode: " + JSON.stringify(msg));
+				throw new Error("Unrecognized OpCode: " + JSON.stringify(msg));
 			}
 		}
 	};
 
 	this.start = function(url, name, agentObserver, agentInitArgs) {
-		var newAid = new AID(name, this.hap);
+		var newAid = new AID(name, this.host);
 		if (this.getAgent(newAid) == null) {
 			var agent = {};
 			agent.url = url;
@@ -173,9 +174,11 @@ function Radigost(hap) {
 				args : agentInitArgs
 			};
 			agent.worker.postMessage(msg);
-			// create the server-side stub
-			var agClass = "siebog$RadigostStub";
-			XJAF.start(agClass, name, "arg[host].value=" + this.hap);
+			if (this.autoCreateStubs) {
+				// create the server-side stub
+				var agClass = "siebog$RadigostStub";
+				XJAF.start(agClass, name, "arg[host].value=" + this.host);
+			}
 		}
 		return newAid;
 	};

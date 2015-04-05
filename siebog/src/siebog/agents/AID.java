@@ -23,11 +23,11 @@ package siebog.agents;
 import java.io.Serializable;
 import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
-import siebog.radigost.server.RadigostStub;
+import siebog.radigost.stub.RadigostStub;
 
 /**
  * Agent identifier, consists of the runtime name and the platform identifier, in the form of
- * "name@hap".
+ * "name@host".
  * 
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
