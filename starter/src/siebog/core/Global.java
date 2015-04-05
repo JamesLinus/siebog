@@ -20,6 +20,10 @@
 
 package siebog.core;
 
+import java.io.File;
+import java.io.IOException;
+import siebog.core.config.NodeConfig;
+
 /**
  * Global constants and utility functions.
  *
@@ -39,6 +43,20 @@ public abstract class Global {
 		System.out.println("-------------------------------------------------------------");
 		System.out.println("Siebog Multiagent Framework v" + VERSION);
 		System.out.println("-------------------------------------------------------------");
+	}
+
+	public static void checkServerVersion() {
+		File f = new File(NodeConfig.get().getJBossHome(), "siebog.version");
+		try {
+			String stored = FileUtils.read(f);
+			if (!VERSION.equals(stored)) {
+				String msg = String.format("Version mismatch, expected %s, got %s.", VERSION,
+						stored);
+				throw new IllegalStateException(msg);
+			}
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex.getMessage());
+		}
 	}
 
 	public static String getNodeName() {
