@@ -1,4 +1,4 @@
-package siebog.interaction.contractnet;
+package siebog.interaction.contractnet.example;
 
 import siebog.SiebogClient;
 import siebog.agents.AID;
@@ -7,6 +7,8 @@ import siebog.agents.AgentClass;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.interaction.contractnet.Initiator;
+import siebog.interaction.contractnet.Participant;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -14,7 +16,7 @@ import siebog.utils.ObjectFactory;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class Test {
-	private static final int NUM_PARTICIPANTS = 8;
+	private static final int NUM_PARTICIPANTS = 4;
 
 	public static void main(String[] args) {
 		SiebogClient.connect("localhost");
@@ -26,18 +28,19 @@ public class Test {
 	private static AID[] createParticipants() {
 		return AgentBuilder
 			.siebog()
-			.ejb(ParticipantImpl.class)
+			.ejb(ParticipantExample.class)
 			.startNInstances(NUM_PARTICIPANTS).toArray(new AID[0]);
 	}
 
 	private static AID createInitiator() {
-		return AgentBuilder.siebog().ejb(InitiatorImpl.class).start();
+		//return AgentBuilder.siebog().ejb(InitiatorExample.class).start();
+		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, InitiatorExample.class.getSimpleName());
+		return ObjectFactory.getAgentManager().startServerAgent(icls, "I", null);
 	}
 
 	private static void start(AID initiator, AID[] participants) {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.receivers.add(initiator);
-		//msg.contentObj = participants;
 		ObjectFactory.getMessageManager().post(msg);
 		
 	}

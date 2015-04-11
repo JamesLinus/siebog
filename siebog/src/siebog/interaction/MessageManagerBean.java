@@ -23,6 +23,7 @@ package siebog.interaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
@@ -39,10 +40,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import siebog.agents.AID;
 import siebog.core.Global;
+import siebog.interaction.contractnet.Delay;
 
 /**
  * Default message manager implementation.
@@ -115,6 +119,11 @@ public class MessageManagerBean implements MessageManager {
 				jmsMsg.setStringProperty("JMSXGroupID", aid.getStr());
 				jmsMsg.setIntProperty("AIDIndex", i);
 				jmsMsg.setStringProperty("_HQ_DUPL_ID", UUID.randomUUID().toString());
+
+				if (msg.contentObj instanceof Delay) {
+					jmsMsg.setLongProperty("_HQ_SCHED_DELIVERY", ((Delay)msg.contentObj).getDelay());
+				}
+				
 				producer.send(jmsMsg);
 			} catch (Exception ex) {
 				LOG.warn(ex.getMessage());
