@@ -36,7 +36,6 @@ import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.WebClientManager;
-import siebog.radigost.WebClientManager;
 
 /**
  * 

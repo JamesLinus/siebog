@@ -22,6 +22,7 @@ package siebog.interaction;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import siebog.agents.AID;
 
 /**
@@ -46,6 +47,10 @@ public class ACLMsgBuilder {
 	public ACLMsgBuilder receivers(AID... receivers) {
 		msg.receivers.addAll(Arrays.asList(receivers));
 		return this;
+	}
+
+	public ACLMsgBuilder receivers(Collection<AID> receivers) {
+		return receivers(receivers.toArray(new AID[0]));
 	}
 
 	public ACLMsgBuilder replyTo(AID replyTo) {

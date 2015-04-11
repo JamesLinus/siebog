@@ -18,13 +18,15 @@
  * and limitations under the License.
  */
 
-package siebog.radigost.server;
+package siebog.radigost.stub;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.script.Invocable;
+import javax.script.ScriptException;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
@@ -43,16 +45,47 @@ public class RadigostStub extends XjafAgent {
 	private static final long serialVersionUID = 1L;
 	// for speed purposes
 	public static final AgentClass AGENT_CLASS = AgentClass.forSiebogEjb(RadigostStub.class);
+	private boolean emptyStub;
+	private transient Invocable invocable;
+	private transient Object jsAgent;
 	@Inject
 	@Default
 	private Event<ACLMessage> webSocketEvent;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
+		if (args == null || args.get("url") == null) {
+			emptyStub = true;
+		} else {
+			emptyStub = false;
+			loadJsAgent(args.get("url"), args.get("state"));
+		}
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		webSocketEvent.fire(msg);
+		if (emptyStub) {
+			webSocketEvent.fire(msg);
+		} else {
+			sendMsgToJsAgent(msg);
+		}
+	}
+
+	private void loadJsAgent(String url, String state) {
+		try {
+			invocable = new ScriptLoader().load(url, state);
+			jsAgent = invocable.invokeFunction("getAgentInstance");
+		} catch (ScriptException | NoSuchMethodException ex) {
+			throw new IllegalArgumentException(ex);
+		}
+	}
+
+	private void sendMsgToJsAgent(ACLMessage msg) {
+		String jsonMsg = msg.toString();
+		try {
+			invocable.invokeMethod(jsAgent, "onMessage", jsonMsg);
+		} catch (NoSuchMethodException | ScriptException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 }

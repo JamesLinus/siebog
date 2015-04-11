@@ -1,4 +1,4 @@
-importScripts("/siebog/radigost.js");
+importScripts("/siebog/radigost/radigost.js");
 
 function HelloWorld() {
 	this.messageProcessed = false;

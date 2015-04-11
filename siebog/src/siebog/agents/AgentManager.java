@@ -29,7 +29,19 @@ import java.util.List;
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface AgentManager extends Serializable {
+	/**
+	 * Equivalent to startServerAgent(aid, args, true)
+	 */
+	void startServerAgent(AID aid, AgentInitArgs args);
+
+	void startServerAgent(AID aid, AgentInitArgs args, boolean replace);
+
+	/**
+	 * Equivalent to startServerAgent(agClass, runtimeName, args, true)
+	 */
 	AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
+
+	AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args, boolean replace);
 
 	AID startClientAgent(AgentClass agClass, String runtimeName, AgentInitArgs args);
 
