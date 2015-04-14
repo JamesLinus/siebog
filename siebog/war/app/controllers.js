@@ -19,7 +19,8 @@ siebog.controller('AppCtrl', [function() {
         $scope.createdAgents = [];
         $http.get('/siebog/rest/agents/running').
 	        success(function(data) {
-	            $scope.createdAgents = data;
+	        	if (data != '')
+	        		$scope.createdAgents = data;
 	        });
         $scope.request = {receivers: []};
 
@@ -46,7 +47,17 @@ siebog.controller('AppCtrl', [function() {
             			}
 
             	$http(req).success(function(data) {
-    				$scope.createdAgents = $scope.createdAgents.concat(data);
+            		var found = false;
+            		for (var aid in $scope.createdAgents) {
+            			var agent = $scope.createdAgents[aid];
+            			if (agent.str == data.str) {
+            				found = true;
+            				break;
+            			}
+            		}
+            		if (!found) {
+            			$scope.createdAgents = $scope.createdAgents.concat(data);
+            		}
                 });
             });
         };
@@ -67,10 +78,15 @@ siebog.controller('AppCtrl', [function() {
         };
 }])
 
-.controller('ModalInstanceCtrl', function ($scope, $modalInstance, agent) {
+.controller('ModalInstanceCtrl', function ($scope, $modalInstance, $timeout, agent) {
         $scope.agent = agent;
         $scope.agentName = '';
-
+        
+        $timeout(function () {
+        	var el = document.getElementById("agentName");
+        	el.focus();
+        }, 200);
+        
         $scope.ok = function () {
             var agentInstance = {'name':$scope.agentName,'host':"xjaf", 'agClass':agent};
             $modalInstance.close(agentInstance);
@@ -79,4 +95,12 @@ siebog.controller('AppCtrl', [function() {
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
+        
+        $scope.keyFn = function (event) {
+        	if (event.keyCode == 13) {
+        		 var agentInstance = {'name':$scope.agentName,'host':"xjaf", 'agClass':agent};
+                 $modalInstance.close(agentInstance);
+        	}
+        }
+
 });
