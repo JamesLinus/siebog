@@ -22,6 +22,8 @@ package siebog.agents;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -37,10 +39,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
 
@@ -76,11 +80,15 @@ public class AgentManagerBean implements AgentManager {
 				throw new IllegalStateException("Agent already running: " + aid);
 			}
 			stopAgent(aid);
-		} else {
-			Agent agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass()), Agent.class);
-			initAgent(agent, aid, args);
-			LOG.debug("Agent {} started.", aid.getStr());
 		}
+		Agent agent = null; 
+		try {
+			agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), true), Agent.class);
+		} catch (IllegalStateException ex) {
+			agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), false), Agent.class);
+		}
+		initAgent(agent, aid, args);
+		LOG.info("Agent {} started.", aid.getStr());
 	}
 
 	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
@@ -111,7 +119,8 @@ public class AgentManagerBean implements AgentManager {
 		Agent agent = getCache().get(aid);
 		if (agent != null) {
 			getCache().remove(aid);
-			agent.stop();
+			//agent.stop();
+			LOG.info("Stopped agent: {}", aid);
 		}
 	}
 
@@ -130,7 +139,21 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running")
 	@Override
 	public List<AID> getRunningAgents() {
-		return new ArrayList<>(getCache().keySet());
+		Set<AID> set = getCache().keySet();
+		if (set.size() > 0) {
+			try {
+				AID aid = set.iterator().next();
+				try {
+					ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), true), Agent.class);
+				} catch (Exception ex) {
+					ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), false), Agent.class);
+				}
+			} catch (Exception ex) {
+				getCache().clear();
+				return new ArrayList<AID>();
+			}
+		}
+		return new ArrayList<AID>(set);
 	}
 
 	@Override
@@ -163,9 +186,13 @@ public class AgentManagerBean implements AgentManager {
 		return agents;
 	}
 
-	private String getAgentLookup(AgentClass agClass) {
-		return String.format("ejb:/%s//%s!%s?stateful", agClass.getModule(), agClass.getEjbName(),
+	private String getAgentLookup(AgentClass agClass, boolean stateful) {
+		if (stateful)
+			return String.format("ejb:/%s//%s!%s?stateful", agClass.getModule(), agClass.getEjbName(),
 				Agent.class.getName());
+		else
+			return String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(),
+					Agent.class.getName());
 	}
 
 	private void initAgent(Agent agent, AID aid, AgentInitArgs args) {
