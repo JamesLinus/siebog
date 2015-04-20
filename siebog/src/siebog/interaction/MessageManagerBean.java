@@ -23,7 +23,6 @@ package siebog.interaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
@@ -40,13 +39,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import siebog.agents.AID;
 import siebog.core.Global;
-import siebog.interaction.contractnet.Delay;
 
 /**
  * Default message manager implementation.
@@ -96,44 +92,55 @@ public class MessageManagerBean implements MessageManager {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
-	// NOTE: Using @Asynchronous causes an exception
-	// https://issues.jboss.org/browse/WFLY-2515
 	public void post(ACLMessage msg) {
-		MessageProducer producer;
-		if (MessageManager.REPLY_WITH_TEST.equals(msg.inReplyTo)) {
-			producer = getTestProducer();
-		} else {
-			producer = defaultProducer;
-		}
+		post(msg, 0);
+	}
 
+	@Override
+	public void post(ACLMessage msg, long delayMillisec) {
 		// TODO : Check if the agent/subscriber exists
 		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
 		for (int i = 0; i < msg.receivers.size(); i++) {
-			AID aid = msg.receivers.get(i);
-			if (aid == null)
+			if (msg.receivers.get(i) == null) {
 				throw new IllegalArgumentException("AID cannot be null.");
-			try {
-				ObjectMessage jmsMsg = session.createObjectMessage(msg);
-				// TODO See message grouping in a cluster
-				// http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/message-grouping.html
-				jmsMsg.setStringProperty("JMSXGroupID", aid.getStr());
-				jmsMsg.setIntProperty("AIDIndex", i);
-				jmsMsg.setStringProperty("_HQ_DUPL_ID", UUID.randomUUID().toString());
-
-				if (msg.contentObj instanceof Delay) {
-					jmsMsg.setLongProperty("_HQ_SCHED_DELIVERY", ((Delay)msg.contentObj).getDelay());
-				}
-				
-				producer.send(jmsMsg);
-			} catch (Exception ex) {
-				LOG.warn(ex.getMessage());
 			}
+			postToReceiver(msg, i, delayMillisec);
 		}
 	}
 
 	@Override
 	public String ping() {
 		return "Pong from " + Global.getNodeName();
+	}
+
+	private void postToReceiver(ACLMessage msg, int index, long delayMillisec) {
+		AID aid = msg.receivers.get(index);
+		try {
+			ObjectMessage jmsMsg = session.createObjectMessage(msg);
+			setupJmsMsg(jmsMsg, aid, index, delayMillisec);
+			getProducer(msg).send(jmsMsg);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage());
+		}
+	}
+
+	private void setupJmsMsg(ObjectMessage jmsMsg, AID aid, int index, long delayMillisec)
+			throws JMSException {
+		// TODO See message grouping in a cluster
+		// http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/message-grouping.html
+		jmsMsg.setStringProperty("JMSXGroupID", aid.getStr());
+		jmsMsg.setIntProperty("AIDIndex", index);
+		jmsMsg.setStringProperty("_HQ_DUPL_ID", UUID.randomUUID().toString());
+		if (delayMillisec > 0) {
+			jmsMsg.setLongProperty("_HQ_SCHED_DELIVERY", System.currentTimeMillis() + delayMillisec);
+		}
+	}
+
+	private MessageProducer getProducer(ACLMessage msg) {
+		if (MessageManager.REPLY_WITH_TEST.equals(msg.inReplyTo)) {
+			return getTestProducer();
+		}
+		return defaultProducer;
 	}
 
 	private MessageProducer getTestProducer() {

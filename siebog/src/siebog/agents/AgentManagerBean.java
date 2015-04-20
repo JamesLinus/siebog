@@ -23,7 +23,6 @@ package siebog.agents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -39,12 +38,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
 
@@ -81,7 +78,7 @@ public class AgentManagerBean implements AgentManager {
 			}
 			stopAgent(aid);
 		}
-		Agent agent = null; 
+		Agent agent = null;
 		try {
 			agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), true), Agent.class);
 		} catch (IllegalStateException ex) {
@@ -116,10 +113,13 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running/{aid}")
 	@Override
 	public void stopAgent(@PathParam("aid") AID aid) {
+		if (System.currentTimeMillis() > 0) {
+			throw new IllegalStateException("Here!");
+		}
 		Agent agent = getCache().get(aid);
 		if (agent != null) {
 			getCache().remove(aid);
-			//agent.stop();
+			// agent.stop();
 			LOG.info("Stopped agent: {}", aid);
 		}
 	}
@@ -158,11 +158,8 @@ public class AgentManagerBean implements AgentManager {
 
 	@Override
 	public AID getAIDByRuntimeName(String runtimeName) {
-		AID aid = findInRunning(runtimeName, getRunningAgents());
-		if (aid != null) {
-			return aid;
-		}
-		throw new IllegalArgumentException("No such agent: " + runtimeName);
+		// don't throw an exception if not found, because it will be intercepted
+		return findInRunning(runtimeName, getRunningAgents());
 	}
 
 	@Override
@@ -188,8 +185,8 @@ public class AgentManagerBean implements AgentManager {
 
 	private String getAgentLookup(AgentClass agClass, boolean stateful) {
 		if (stateful)
-			return String.format("ejb:/%s//%s!%s?stateful", agClass.getModule(), agClass.getEjbName(),
-				Agent.class.getName());
+			return String.format("ejb:/%s//%s!%s?stateful", agClass.getModule(),
+					agClass.getEjbName(), Agent.class.getName());
 		else
 			return String.format("ejb:/%s//%s!%s", agClass.getModule(), agClass.getEjbName(),
 					Agent.class.getName());

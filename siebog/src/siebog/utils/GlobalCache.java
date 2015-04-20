@@ -4,7 +4,6 @@ import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
 import siebog.agents.AID;
 import siebog.agents.Agent;
-import siebog.interaction.bsp.Barrier;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.environment.Environment;
 
@@ -13,7 +12,6 @@ public class GlobalCache {
 	private static GlobalCache instance;
 	private CacheContainer cacheContainer;
 	private static final String RUNNING_AGENTS = "running-agents";
-	private static final String BSP_BARRIERS = "bsp-barriers";
 	private static final String EXECUTION_CONTROLS = "execution-controls";
 	private static final String ENVIRONMENTS = "environments";
 
@@ -33,10 +31,6 @@ public class GlobalCache {
 
 	public Cache<AID, Agent> getRunningAgents() {
 		return cacheContainer.getCache(RUNNING_AGENTS);
-	}
-
-	public Cache<String, Barrier> getBspBarriers() {
-		return cacheContainer.getCache(BSP_BARRIERS);
 	}
 
 	public Cache<String, ExecutionControl> getExecutionControls() {

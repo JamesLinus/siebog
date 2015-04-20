@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import siebog.agents.AID;
+import siebog.utils.ObjectFactory;
 
 /**
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -115,5 +116,13 @@ public class ACLMsgBuilder {
 
 	public ACLMessage build() {
 		return msg;
+	}
+
+	public void post() {
+		ObjectFactory.getMessageManager().post(build());
+	}
+
+	public void post(long delayMillisec) {
+		ObjectFactory.getMessageManager().post(build(), delayMillisec);
 	}
 }

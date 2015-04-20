@@ -21,9 +21,6 @@
 package siebog.utils;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siebog.core.Global;

@@ -7,12 +7,10 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siebog.SiebogClient;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
-import siebog.interaction.bsp.BarrierFactory;
+import siebog.interaction.bsp.BarrierManager;
 import siebog.interaction.bsp.OnSuperstep;
 import siebog.interaction.bsp.Superstep;
-import siebog.utils.ObjectFactory;
 
 @Stateful
 @Remote(Agent.class)
@@ -21,32 +19,32 @@ public class BSPAgent extends XjafAgent {
 	private static final Logger LOG = LoggerFactory.getLogger(BSPAgent.class);
 	private static final String BARRIER_ID = "default";
 	@Inject
-	private BarrierFactory barrierFactory;
+	private BarrierManager barrierManager;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		barrierFactory.getBarrier(BARRIER_ID).register(myAid);
+		barrierManager.register(BARRIER_ID, myAid);
 	}
 
 	@Override
 	protected void onTerminate() {
-		barrierFactory.getBarrier(BARRIER_ID).deregister(myAid);
+		barrierManager.deregister(BARRIER_ID, myAid);
 	}
 
 	@OnSuperstep(barrier = BARRIER_ID)
 	public void onSuperstep(Superstep superstep, Serializable param) {
-		LOG.info("Agent {} executing superstep #{}.", myAid, superstep.getCounter());
+		LOG.info("Agent {} executing superstep #{}.", myAid.getName(), superstep.getCounter());
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		// process regular messages
+		Superstep superstep = ((Superstep) msg.contentObj);
+		LOG.info("Agent {} executing superstep #{}.", myAid.getName(), superstep.getCounter());
+		barrierManager.agentCompletedSuperstep(superstep, myAid);
 	}
 
 	public static void main(String[] args) {
-		SiebogClient.connect("localhost");
-
-		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, BSPAgent.class.getSimpleName());
-		ObjectFactory.getAgentManager().startServerAgent(cls, "bsp" + System.currentTimeMillis(), null);
+		SiebogClient.connect("192.168.213.1", "192.168.213.129");
+		AgentBuilder.siebog().ejb(BSPAgent.class).startNInstances(2);
 	}
 }

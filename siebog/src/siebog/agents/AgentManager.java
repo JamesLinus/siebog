@@ -49,10 +49,6 @@ public interface AgentManager extends Serializable {
 
 	List<AID> getRunningAgents();
 
-	/**
-	 * 
-	 * @throws IllegalArgumentException if no such running agent.
-	 */
 	AID getAIDByRuntimeName(String runtimeName);
 
 	List<AgentClass> getAvailableAgentClasses();
