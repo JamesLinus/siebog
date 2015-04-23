@@ -48,8 +48,7 @@ public abstract class Initiator extends XjafAgent {
 		delayedMsg.sender=myAid;
 		delayedMsg.receivers.add(myAid);
 		delayedMsg.content = "replyBy";
-		delayedMsg.contentObj = new Delay(proposal.getReplyBy());
-		msm().post(delayedMsg);
+		msm().post(delayedMsg, proposal.getReplyBy()-System.currentTimeMillis());
 	}
 
 	public void rejectProposal() {
@@ -80,11 +79,10 @@ public abstract class Initiator extends XjafAgent {
 			ACLMessage delayedMsg = new ACLMessage();
 			delayedMsg.sender=myAid;
 			delayedMsg.receivers.add(myAid);
-			Delay delay = new Delay(bestProposal.getTimeEstimation());
-			delay.setWaitingOn(bestProposal.getParticipant());
-			delayedMsg.contentObj = delay;
-			delayedMsg.content = "waiting";
-			msm().post(delayedMsg);
+			delayedMsg.content="waiting";
+			delayedMsg.contentObj=bestProposal.getParticipant();
+		
+			msm().post(delayedMsg,bestProposal.getTimeEstimate());
 
 		} else {
 			logger.info("No proposals made");
@@ -162,8 +160,8 @@ public abstract class Initiator extends XjafAgent {
 				acceptProposal();
 
 			} else if (msg.content.equals("waiting")&& status>1){
-				if (bestProposal!=null && ((Delay)msg.contentObj).getWaitingOn().equals(bestProposal.getParticipant())){
-					logger.info("Participant hasn't finished in time." +  ((Delay)msg.contentObj).getWaitingOn());
+				if (bestProposal!=null && ((AID)msg.contentObj).equals(bestProposal.getParticipant())){
+					logger.info("Participant hasn't finished in time." +  ((AID)msg.contentObj));
 					handleFailure();
 				}
 			}

@@ -36,7 +36,7 @@ public class Proposal implements Serializable {
 	private AID participant;
 	private AID initiator;
 	private boolean proposing;
-	private long timeEstimation;
+	private long timeEstimate;
 	
 	public String getContent() {
 		return content;
@@ -73,11 +73,11 @@ public class Proposal implements Serializable {
 	public void setContentObj(Serializable contentObj) {
 		this.contentObj = contentObj;
 	}
-	public long getTimeEstimation() {
-		return timeEstimation;
+	public long getTimeEstimate() {
+		return timeEstimate;
 	}
-	public void setTimeEstimation(long timeEstimation) {
-		this.timeEstimation = timeEstimation;
+	public void setTimeEstimate(long timeEstimate) {
+		this.timeEstimate = timeEstimate;
 	}
 
 }

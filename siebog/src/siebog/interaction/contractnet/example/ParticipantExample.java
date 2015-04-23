@@ -61,7 +61,7 @@ public class ParticipantExample extends Participant {
 			proposal.setProposing(true);
 			//Proposed time needed to finish the task
 			proposal.setContent(Integer.toString(rndNum));
-			proposal.setTimeEstimation(System.currentTimeMillis()+rndNum*1000);
+			proposal.setTimeEstimate(rndNum*1000l);
 			logger.info(myAid + ": My bid is " + rndNum);
 		}
 

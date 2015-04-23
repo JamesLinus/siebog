@@ -33,7 +33,7 @@ public class Test {
 	private static AID createInitiator() {
 		//return AgentBuilder.siebog().ejb(InitiatorExample.class).start();
 		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, InitiatorExample.class.getSimpleName());
-		return ObjectFactory.getAgentManager().startServerAgent(icls, "I", null);
+		return ObjectFactory.getAgentManager().startServerAgent(icls, "I1", null);
 	}
 
 	private static void start(AID initiator, AID[] participants) {

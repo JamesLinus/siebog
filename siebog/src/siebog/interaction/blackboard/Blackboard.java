@@ -31,7 +31,6 @@ import siebog.agents.AID;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.interaction.contractnet.Delay;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -83,10 +82,8 @@ public abstract class Blackboard extends XjafAgent {
 		delayedMsg.sender=myAid;
 		delayedMsg.receivers.add(myAid);
 		//wait for 2 seconds for KS to send their estimation
-		Delay delay = new Delay(System.currentTimeMillis()+2000);
-		delayedMsg.contentObj = delay;
 		delayedMsg.content = event.getName();
-		msm().post(delayedMsg);
+		msm().post(delayedMsg,2000);
 	}
 
 	public void handleProposal(ACLMessage msg){

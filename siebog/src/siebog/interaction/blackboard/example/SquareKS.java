@@ -56,7 +56,7 @@ public class SquareKS extends KnowledgeSource {
 		int num = rnd.nextInt(20-1+1)+1;
 		estimate.setContent(Integer.toString(num));
 		estimate.setEvent(e);
-		logger.info(myAid+": my estimate is "+num);
+		logger.info(myAid+": My estimate is "+num);
 		return estimate;
 	}
 
