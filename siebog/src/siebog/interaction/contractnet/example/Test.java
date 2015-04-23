@@ -7,8 +7,6 @@ import siebog.agents.AgentClass;
 import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.interaction.contractnet.Initiator;
-import siebog.interaction.contractnet.Participant;
 import siebog.utils.ObjectFactory;
 
 /**

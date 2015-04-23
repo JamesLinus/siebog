@@ -6,7 +6,6 @@ package siebog.interaction.contractnet;
  * @author <a href="jovanai.191@gmail.com">Jovana Ivkovic</a>
  */
 
-import java.util.Random;
 
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
