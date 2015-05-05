@@ -42,6 +42,7 @@ public class SimplePingTest {
 	public void setup() {
 		// @formatter:off
 		pingAgent = AgentBuilder.siebog()
+			.ejb(SimplePingAgent.class)
 			.randomName()
 			.start();
 		// @formatter:on

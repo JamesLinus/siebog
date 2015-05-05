@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.dbpedia;
+package siebog.dnars.agents.dbpedia;
 
 import java.util.ArrayList;
 import java.util.HashSet;

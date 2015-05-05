@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.dbpedia;
+package siebog.dnars.agents.dbpedia;
 
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -61,7 +61,8 @@ public class AnnotationProcessor implements InvocationCallback<String> {
 			for (int i = 0, n = resources.length(); i < n; i++)
 				uris.add(resources.getJSONObject(i).getString("@URI"));
 		} catch (JSONException ex) {
-			logger.log(Level.WARNING, "Error while parsing DBpedia Spotlight response:\n" + response, ex);
+			logger.log(Level.WARNING, "Error while parsing DBpedia Spotlight response:\n"
+					+ response, ex);
 		}
 		return uris;
 	}

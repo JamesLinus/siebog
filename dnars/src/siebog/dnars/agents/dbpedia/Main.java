@@ -18,41 +18,31 @@
  * and limitations under the License.
  */
 
-package siebog.agents.dnars.dbpedia;
+package siebog.dnars.agents.dbpedia;
 
-import java.io.Serializable;
+import siebog.SiebogClient;
+import siebog.agents.AID;
+import siebog.agents.AgentClass;
+import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
+import siebog.utils.ObjectFactory;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-public class QueryDesc implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private final String question;
-	private final String text;
-	private final String allProperties;
-	private final String knownProperties;
+public class Main {
+	public static void main(String[] args) {
+		SiebogClient.connect("localhost");
 
-	public QueryDesc(String question, String text, String allProperties, String knownProperties) {
-		this.question = question;
-		this.text = text;
-		this.allProperties = allProperties;
-		this.knownProperties = knownProperties;
-	}
+		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Resolver.class.getSimpleName());
+		AID aid = ObjectFactory.getAgentManager().startServerAgent(agClass, "Resolver_" + System.currentTimeMillis(), null);
 
-	public String getQuestion() {
-		return question;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public String getAllProperties() {
-		return allProperties;
-	}
-
-	public String getKnownProperties() {
-		return knownProperties;
+		ACLMessage msg = new ACLMessage(Performative.REQUEST);
+		msg.sender = AID.EXTERNAL_CLIENT;
+		msg.receivers.add(aid);
+		msg.content = "http://dbpedia.org/resource/Albert_Einstein";
+		ObjectFactory.getMessageManager().post(msg);
 	}
 }
