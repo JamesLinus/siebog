@@ -25,9 +25,13 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
 import siebog.agents.Agent;
 import siebog.agents.XjafAgent;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import dnars.base.AtomicTerm;
 import dnars.base.CompoundTerm;
 import dnars.base.Copula;
@@ -36,8 +40,6 @@ import dnars.base.Truth;
 import dnars.graph.DNarsGraph;
 import dnars.graph.DNarsGraphFactory;
 import dnars.inference.forward.ForwardInferenceEngine;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
 
 /**
  * 
@@ -47,6 +49,7 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Learner extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Learner.class);
 	private QueryDesc query;
 
 	@Override
@@ -57,13 +60,13 @@ public class Learner extends XjafAgent {
 			DNarsGraph allProps = DNarsGraphFactory.create(query.getAllProperties(), null);
 			try {
 				Set<Statement> relevant = getRelevantStatements(query.getQuestion(), allProps);
-				logger.info("Retrieved " + relevant.size() + " relevant statements for "
-						+ query.getQuestion());
+				LOG.info("Retrieved {} relevant statements for {}.", relevant.size(),
+						query.getQuestion());
 				if (relevant.size() > 0) {
 
 					ArrayList<Statement> intermediary = deriveNewConclusions(relevant);
-					logger.info("Derived " + intermediary.size() + " itermediary statements for "
-							+ query.getQuestion());
+					LOG.info("Derived {} intermediary statements for {}.", intermediary.size(),
+							query.getQuestion());
 					if (intermediary.size() > 0) {
 
 						Statement[] newKnowledge = null;
@@ -75,8 +78,8 @@ public class Learner extends XjafAgent {
 						} finally {
 							knownProps.shutdown();
 						}
-						logger.info("Derived " + newKnowledge.length + " new statements for "
-								+ query.getQuestion());
+						LOG.info("Derived {} new statements for {}.", newKnowledge.length,
+								query.getQuestion());
 
 						for (Statement st : newKnowledge) {
 							st = st.allImages().head();

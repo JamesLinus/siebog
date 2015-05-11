@@ -28,6 +28,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.runtime.AbstractFunction1;
 import scala.runtime.BoxedUnit;
 import siebog.agents.AID;
@@ -36,11 +38,11 @@ import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import dnars.base.Statement;
 import dnars.graph.DNarsGraph;
 import dnars.graph.DNarsGraphFactory;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
 
 /**
  * 
@@ -50,6 +52,7 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Annotator extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Annotator.class);
 	private static final String CONFIDENCE = "0.2";
 	private static final String SUPPORT = "20";
 	private QueryDesc query;
@@ -72,7 +75,7 @@ public class Annotator extends XjafAgent {
 				createNewLearner(u);
 		} else if (msg.performative == Performative.CONFIRM) {
 			--pendingLearners;
-			logger.info("Pending learners: " + pendingLearners);
+			LOG.info("Pending learners: {}.", pendingLearners);
 			if (pendingLearners == 0) {
 				DNarsGraph graph = DNarsGraphFactory.create(query.getKnownProperties(), null);
 				try {
@@ -117,7 +120,8 @@ public class Annotator extends XjafAgent {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = myAid;
 		msg.receivers.add(aid);
-		msg.contentObj = new QueryDesc(uri, query.getText(), query.getAllProperties(), query.getKnownProperties());
+		msg.contentObj = new QueryDesc(uri, query.getText(), query.getAllProperties(),
+				query.getKnownProperties());
 		msm().post(msg);
 	}
 }

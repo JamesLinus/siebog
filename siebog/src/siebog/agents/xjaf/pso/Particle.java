@@ -23,6 +23,8 @@ package siebog.agents.xjaf.pso;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
@@ -41,6 +43,7 @@ import siebog.interaction.Performative;
 public class Particle extends XjafAgent {
 
 	private static final long serialVersionUID = -4667142176673603367L;
+	private static final Logger LOG = LoggerFactory.getLogger(Particle.class);
 
 	/**
 	 * Agent ID of a Swarm agent
@@ -147,7 +150,8 @@ public class Particle extends XjafAgent {
 		// compose the message
 		ACLMessage message = new ACLMessage();
 		message.performative = Performative.REQUEST;
-		PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, bestFitness, bestPosition);
+		PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, bestFitness,
+				bestPosition);
 		message.content = psoMessage.toString();
 		message.sender = myAid;
 		message.receivers.add(swarmAID);
@@ -184,8 +188,8 @@ public class Particle extends XjafAgent {
 
 	/**
 	 * Represents one iteration of a Particle. <br>
-	 * Calculates new velocity, position and fitness, and updates local and global best position and fitness if
-	 * necessary.
+	 * Calculates new velocity, position and fitness, and updates local and global best position and
+	 * fitness if necessary.
 	 * 
 	 * @param bestGlobalFitness
 	 * @param bestGlobalPosition
@@ -234,7 +238,7 @@ public class Particle extends XjafAgent {
 		fitness = newFitness;
 
 		// log line for debugging
-		logger.warning("Particle [" + myAid + "] iteration fitness: " + fitness);
+		LOG.warn("Particle {} iteration fitness: {}.", myAid, fitness);
 
 		// update local best fitness if necessary
 		if (newFitness < bestFitness) {
@@ -246,7 +250,8 @@ public class Particle extends XjafAgent {
 		if (newFitness < bestGlobalFitness) {
 			ACLMessage message = new ACLMessage();
 			message.performative = Performative.REQUEST;
-			PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, newFitness, newPosition);
+			PsoMessage psoMessage = new PsoMessage(PsoMessage.UPDATE_GLOBAL_SOLUTION, newFitness,
+					newPosition);
 			message.content = psoMessage.toString();
 			message.sender = myAid;
 			message.receivers.add(swarmAID);

@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
@@ -44,12 +46,13 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Ping extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 	private String nodeName;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
-		logger.info("Ping created on " + nodeName);
+		LOG.info("Ping created on {}.", nodeName);
 	}
 
 	@Override
@@ -63,18 +66,18 @@ public class Ping extends XjafAgent {
 			msgToPong.sender = myAid;
 			msgToPong.receivers.add(pongAid);
 			msm().post(msgToPong);
-		} else if(msg.performative == Performative.INFORM) {
+		} else if (msg.performative == Performative.INFORM) {
 			// wait for the message
-			//ACLMessage msgFromPong = receiveWait(0);
+			// ACLMessage msgFromPong = receiveWait(0);
 			ACLMessage msgFromPong = msg;
 			Map<String, Serializable> args = new HashMap<>(msgFromPong.userArgs);
 			args.put("pingCreatedOn", nodeName);
 			args.put("pingWorkingOn", getNodeName());
 
 			// print info
-			logger.info("Ping-Pong interaction details:");
+			LOG.info("Ping-Pong interaction details:");
 			for (Entry<String, Serializable> e : args.entrySet())
-				logger.info(e.getKey() + " " + e.getValue());
+				LOG.info("{} {}", e.getKey(), e.getValue());
 
 			// reply to the original sender (if any)
 			if (msg.canReplyTo()) {

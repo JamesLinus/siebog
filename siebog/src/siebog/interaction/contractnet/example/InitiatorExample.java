@@ -21,10 +21,10 @@
 package siebog.interaction.contractnet.example;
 
 import java.util.List;
-
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.interaction.contractnet.CallForProposal;
 import siebog.interaction.contractnet.Initiator;
@@ -38,46 +38,44 @@ import siebog.interaction.contractnet.Result;
 @Stateful
 @Remote(Agent.class)
 public class InitiatorExample extends Initiator {
-
-	
-	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(InitiatorExample.class);
 	private long needsToBeFinished;
-	
+
 	@Override
 	public Proposal getOptimalProposal(List<Proposal> proposals) {
-		//will look for the fastest
-		int bestValue  = 10000;
-		Proposal bestProposal= null;
-		for (Proposal p: proposals){
-			if (Integer.parseInt(p.getContent())<bestValue){
+		// will look for the fastest
+		int bestValue = 10000;
+		Proposal bestProposal = null;
+		for (Proposal p : proposals) {
+			if (Integer.parseInt(p.getContent()) < bestValue) {
 				bestProposal = p;
 				bestValue = Integer.parseInt(p.getContent());
 			}
 		}
-		logger.info("Accepting proposal with value " + bestProposal.getContent());
+		LOG.info("Accepting proposal with value {}.", bestProposal.getContent());
 		return bestProposal;
 	}
 
 	@Override
 	public CallForProposal createCfp() {
-		//he's asking for the sum of the numbers in the string
-		CallForProposal cfp = new CallForProposal(myAid,"1,2,3,4,5,6,7,8,9");
-		cfp.setReplyBy(System.currentTimeMillis()+10*1000);
-		needsToBeFinished = System.currentTimeMillis()+30*1000;
+		// he's asking for the sum of the numbers in the string
+		CallForProposal cfp = new CallForProposal(myAid, "1,2,3,4,5,6,7,8,9");
+		cfp.setReplyBy(System.currentTimeMillis() + 10 * 1000);
+		needsToBeFinished = System.currentTimeMillis() + 30 * 1000;
 		return cfp;
 	}
 
 	@Override
 	public void failure() {
-		logger.info("No contractor was able to preform the action.");
-		
+		LOG.info("No contractor was able to preform the action.");
+
 	}
 
 	@Override
 	public void success(Result result) {
-		logger.info("The result of the task is " + result.getContent());
-		
+		LOG.info("The result of the task is {}.", result.getContent());
+
 	}
 
 }

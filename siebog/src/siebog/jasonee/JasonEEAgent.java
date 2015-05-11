@@ -37,9 +37,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
@@ -61,6 +62,7 @@ import siebog.utils.GlobalCache;
 @Remote(Agent.class)
 public class JasonEEAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(JasonEEAgent.class);
 	private String execCtrlName;
 	private transient ExecutionControl control;
 	private String envName;
@@ -99,7 +101,7 @@ public class JasonEEAgent extends XjafAgent {
 			arch.init(args.get("remObjFactModule"), args.get("remObjFactEjb"), agp);
 		} catch (Exception ex) {
 			final String msg = "Error while initializing agent architecture.";
-			logger.log(Level.SEVERE, msg, ex);
+			LOG.error(msg, ex);
 			throw new IllegalStateException(msg, ex);
 		}
 	}
@@ -142,12 +144,12 @@ public class JasonEEAgent extends XjafAgent {
 		this.cycleNum = cycleNum;
 		try {
 			if (arch.getTS() == null) {
-				logger.warning("Re-initializing the agent architecture.");
+				LOG.warn("Re-initializing the agent architecture.");
 				initArch();
 			}
 			arch.reasoningCycle();
 		} catch (Exception ex) {
-			logger.log(Level.WARNING, "Error in reasoning cycle.", ex);
+			LOG.warn("Error in reasoning cycle.", ex);
 		} finally {
 			if (syncMode)
 				executionControl().agentCycleFinished(myAid, isBreakpoint(), cycleNum);

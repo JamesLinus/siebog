@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Random;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.interaction.blackboard.Estimate;
 import siebog.interaction.blackboard.Event;
@@ -37,11 +38,11 @@ import siebog.interaction.blackboard.KnowledgeSource;
 @Stateful
 @Remote(Agent.class)
 public class GenerateKS extends KnowledgeSource {
-	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(GenerateKS.class);
 
 	@Override
-	public void defineTriggers(){
+	public void defineTriggers() {
 		List<String> list = new ArrayList<String>();
 		list.add("GENERATE");
 		defineTriggers(list, "Numbers");
@@ -51,26 +52,26 @@ public class GenerateKS extends KnowledgeSource {
 	public Estimate giveEstimate(Event e) {
 		Estimate estimate = new Estimate();
 		estimate.setAid(myAid);
-		//generate a random estimate that expresses necessary time
+		// generate a random estimate that expresses necessary time
 		Random rnd = new Random();
-		int num = rnd.nextInt(10-1+1)+1;
+		int num = rnd.nextInt(10 - 1 + 1) + 1;
 		estimate.setContent(Integer.toString(num));
 		estimate.setEvent(e);
-		logger.info(myAid+": My estimate is "+num);
+		LOG.info("{}: my estimate is {}.", myAid, num);
 		return estimate;
 	}
 
 	@Override
 	public Event handleEvent(Event e) {
-		//event is GENERATE
-		//generating 10 random numbers
-		logger.info(myAid+": Generating numbers.");
+		// event is GENERATE
+		// generating 10 random numbers
+		LOG.info("{}: Generating numbers.", myAid);
 		Random rnd = new Random();
-		int num = rnd.nextInt(20-1+1)+1;
+		int num = rnd.nextInt(20 - 1 + 1) + 1;
 		String numbers = Integer.toString(num);
-		for (int i=0;i<9;i++){
-			num = rnd.nextInt(10-1+1)+1;
-			numbers+=";"+num;
+		for (int i = 0; i < 9; i++) {
+			num = rnd.nextInt(10 - 1 + 1) + 1;
+			numbers += ";" + num;
 		}
 		Event newEvent = new Event();
 		newEvent.setContent(numbers);

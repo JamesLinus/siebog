@@ -24,9 +24,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
@@ -37,9 +38,9 @@ import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 
 /**
- * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number of iterations can be
- * performed, averaging calculated RTTs in order reduce any noise in the results. In any case, the end RTT is reported
- * to a RMI service.
+ * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number
+ * of iterations can be performed, averaging calculated RTTs in order reduce any noise in the
+ * results. In any case, the end RTT is reported to a RMI service.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -47,6 +48,7 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Sender extends XjafAgent {
 	private static final long serialVersionUID = -5648061637952026195L;
+	private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
 	private int numIterations;
 	private int iterationIndex;
 	private AID receiver;
@@ -83,7 +85,7 @@ public class Sender extends XjafAgent {
 					ResultsService results = (ResultsService) reg.lookup("ResultsService");
 					results.add(avg, myAid.getHost());
 				} catch (RemoteException | NotBoundException ex) {
-					logger.log(Level.SEVERE, "Cannot connect to ResultsService.", ex);
+					LOG.error("Cannot connect to ResultsService.", ex);
 				} finally {
 					agm().stopAgent(myAid);
 				}

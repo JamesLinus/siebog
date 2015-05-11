@@ -23,6 +23,8 @@ package siebog.agents.test.hacontractnet;
 import java.util.Arrays;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.XjafAgent;
@@ -37,6 +39,7 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Initiator extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Initiator.class);
 	private int pendingProposals;
 
 	@Override
@@ -53,7 +56,7 @@ public class Initiator extends XjafAgent {
 				;// agm().stopAgent(myAid);
 			break;
 		default:
-			logger.info("Message not understood: " + msg);
+			LOG.info("Message not understood: {}.", msg);
 		}
 	}
 

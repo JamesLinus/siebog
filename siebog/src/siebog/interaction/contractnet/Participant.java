@@ -1,21 +1,20 @@
 package siebog.interaction.contractnet;
 
-
 /**
  * 
  * @author <a href="jovanai.191@gmail.com">Jovana Ivkovic</a>
  */
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 
-public abstract class Participant  extends XjafAgent {
-
-	private CallForProposal cfp;
-
+public abstract class Participant extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Participant.class);
+	private CallForProposal cfp;
 
 	public void propose(Proposal proposal) {
 		ACLMessage reply = new ACLMessage(Performative.PROPOSE);
@@ -36,33 +35,32 @@ public abstract class Participant  extends XjafAgent {
 
 	}
 
-
 	public void handleCfp(ACLMessage msg) {
-		if (msg.replyBy<System.currentTimeMillis())
+		if (msg.replyBy < System.currentTimeMillis())
 
-			logger.info(myAid + ": ReplyBy time has elapsed, so I'm not bidding.");
+			LOG.info("{}: ReplyBy time has elapsed, so I'm not bidding.", myAid);
 		else {
 
-			Proposal proposal = createProposal((CallForProposal)msg.contentObj);
+			Proposal proposal = createProposal((CallForProposal) msg.contentObj);
 			proposal.setInitiator(msg.sender);
-			if (!proposal.isProposing()){
+			if (!proposal.isProposing()) {
 				refuse(proposal);
 			} else {
-				cfp = (CallForProposal)msg.contentObj;
+				cfp = (CallForProposal) msg.contentObj;
 				propose(proposal);
 			}
 		}
 	}
 
 	public abstract Proposal createProposal(CallForProposal cfp);
+
 	public abstract Result performTask(CallForProposal cfp);
 
 	public void handleAcceptProposal() {
 		Result result = performTask(cfp);
 
-
-		ACLMessage msg=null;
-		if (result.isSuccesful()){
+		ACLMessage msg = null;
+		if (result.isSuccesful()) {
 			msg = new ACLMessage(Performative.INFORM);
 			msg.sender = myAid;
 			msg.receivers.add(cfp.getInitiator());
@@ -84,12 +82,12 @@ public abstract class Participant  extends XjafAgent {
 			handleCfp(msg);
 			break;
 		case REJECT_PROPOSAL:
-			//handleRejectProposal();
+			// handleRejectProposal();
 			break;
 		case ACCEPT_PROPOSAL:
 			handleAcceptProposal();
 			break;
-		default: 
+		default:
 			break;
 		}
 	}

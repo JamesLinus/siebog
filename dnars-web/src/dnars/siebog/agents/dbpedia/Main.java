@@ -22,8 +22,7 @@ package dnars.siebog.agents.dbpedia;
 
 import siebog.SiebogClient;
 import siebog.agents.AID;
-import siebog.agents.AgentClass;
-import siebog.core.Global;
+import siebog.agents.AgentBuilder;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.utils.ObjectFactory;
@@ -35,9 +34,7 @@ import siebog.utils.ObjectFactory;
 public class Main {
 	public static void main(String[] args) {
 		SiebogClient.connect("localhost");
-
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Resolver.class.getSimpleName());
-		AID aid = ObjectFactory.getAgentManager().startServerAgent(agClass, "Resolver_" + System.currentTimeMillis(), null);
+		AID aid = AgentBuilder.module("dnars-web").ejb(Resolver.class).randomName().start();
 
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.sender = AID.EXTERNAL_CLIENT;

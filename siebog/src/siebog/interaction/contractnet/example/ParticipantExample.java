@@ -21,10 +21,10 @@
 package siebog.interaction.contractnet.example;
 
 import java.util.Random;
-
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.interaction.contractnet.CallForProposal;
 import siebog.interaction.contractnet.Participant;
@@ -38,8 +38,8 @@ import siebog.interaction.contractnet.Result;
 @Stateful
 @Remote(Agent.class)
 public class ParticipantExample extends Participant {
-
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(ParticipantExample.class);
 
 	@Override
 	public Proposal createProposal(CallForProposal cfp) {
@@ -47,22 +47,21 @@ public class ParticipantExample extends Participant {
 		proposal.setInitiator(cfp.getInitiator());
 		proposal.setParticipant(myAid);
 
-		//calculate how long it will take
+		// calculate how long it will take
 		Random rnd = new Random();
 		int rndNum = rnd.nextInt(20 - 1 + 1) + 1;
 
-		if (rndNum<10){
+		if (rndNum < 10) {
 			proposal.setProposing(false);
 
-			logger.info(myAid + ": I'm not bidding.");
-		
-			
+			LOG.info("{}: I'm not bidding.", myAid);
+
 		} else {
 			proposal.setProposing(true);
-			//Proposed time needed to finish the task
+			// Proposed time needed to finish the task
 			proposal.setContent(Integer.toString(rndNum));
-			proposal.setTimeEstimate(rndNum*1000l);
-			logger.info(myAid + ": My bid is " + rndNum);
+			proposal.setTimeEstimate(rndNum * 1000l);
+			LOG.info("{}: My bid is {}.", myAid, rndNum);
 		}
 
 		return proposal;
@@ -72,24 +71,24 @@ public class ParticipantExample extends Participant {
 	public Result performTask(CallForProposal cfp) {
 		String[] nums = cfp.getContent().split(",");
 		int sum = 0;
-		for (String num: nums){
-			sum+=Integer.parseInt(num);
+		for (String num : nums) {
+			sum += Integer.parseInt(num);
 		}
-		Result result  = new Result();
+		Result result = new Result();
 
-		//simulate failure in performing task
+		// simulate failure in performing task
 
 		Random rnd = new Random();
 		int rndNum = rnd.nextInt(20 - 1 + 1) + 1;
 
-		if (rndNum%4==0){
+		if (rndNum % 4 == 0) {
 			result.setSuccesful(false);
-			logger.info(myAid + ": Failure in preforming the task.");
-		}else{
+			LOG.info("{}: Failure in preforming the task.", myAid);
+		} else {
 			result.setSuccesful(true);
 			result.setContent(Integer.toString(sum));
 
-			logger.info(myAid + ": Task succesfully preformed.");
+			LOG.info("{}: Task succesfully preformed.", myAid);
 		}
 		return result;
 	}

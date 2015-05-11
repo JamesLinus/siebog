@@ -20,11 +20,11 @@
 
 package siebog.agents;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
 import siebog.utils.ObjectFactory;
@@ -38,10 +38,10 @@ import siebog.utils.ObjectFactory;
 @Lock(LockType.READ)
 public abstract class XjafAgent implements Agent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(XjafAgent.class);
 	// the access timeout is needed only when the system is under a heavy load.
 	// under normal circumstances, all methods should return as quickly as possible
 	public static final long ACCESS_TIMEOUT = 5;
-	protected final Logger logger = Logger.getLogger(getClass().getName());
 	protected AID myAid;
 	private AgentManager agm;
 	private MessageManager msm;
@@ -73,7 +73,7 @@ public abstract class XjafAgent implements Agent {
 				try {
 					onMessage(msg);
 				} catch (Exception ex) {
-					logger.log(Level.WARNING, "Error while delivering message " + msg, ex);
+					LOG.warn("Error while delivering message {}.", msg, ex);
 				}
 			}
 		}
@@ -94,7 +94,7 @@ public abstract class XjafAgent implements Agent {
 		try {
 			onTerminate();
 		} catch (Exception ex) {
-			logger.log(Level.WARNING, "Error in onTerminate.", ex);
+			LOG.warn("Error in onTerminate.", ex);
 		}
 	}
 

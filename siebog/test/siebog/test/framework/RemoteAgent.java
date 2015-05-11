@@ -23,9 +23,10 @@ package siebog.test.framework;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.logging.Level;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
@@ -40,6 +41,7 @@ import siebog.interaction.ACLMessage;
 @Remote(Agent.class)
 public class RemoteAgent extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(RemoteAgent.class);
 	private static String remoteHost;
 
 	@Override
@@ -52,7 +54,7 @@ public class RemoteAgent extends XjafAgent {
 		try {
 			getListener().onMessage(msg);
 		} catch (RemoteException ex) {
-			logger.log(Level.WARNING, "Message forwarding failed.", ex);
+			LOG.warn("Message forwarding failed.", ex);
 		}
 	}
 
@@ -61,7 +63,8 @@ public class RemoteAgent extends XjafAgent {
 			Registry reg = LocateRegistry.getRegistry(remoteHost);
 			return (RemoteListener) reg.lookup(RemoteListener.class.getSimpleName());
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot connect to the remote RMI service at " + remoteHost + ".", ex);
+			throw new IllegalArgumentException("Cannot connect to the remote RMI service at "
+					+ remoteHost + ".", ex);
 		}
 	}
 }

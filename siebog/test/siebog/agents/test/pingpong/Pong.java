@@ -22,6 +22,8 @@ package siebog.agents.test.pingpong;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
@@ -37,13 +39,14 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Pong extends XjafAgent {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(Pong.class);
 	private String nodeName;
 	private int counter;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
-		logger.info("Pong created on " + nodeName);
+		LOG.info("Pong created on {}.", nodeName);
 	}
 
 	@Override

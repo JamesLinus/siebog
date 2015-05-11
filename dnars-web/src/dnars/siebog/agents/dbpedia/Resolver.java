@@ -30,15 +30,16 @@ import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.XjafAgent;
 import siebog.core.Global;
+import siebog.interaction.ACLMessage;
+import siebog.interaction.Performative;
 import dnars.base.AtomicTerm;
 import dnars.base.CompoundTerm;
 import dnars.base.Connector;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
+import dnars.base.Term;
 import dnars.graph.DNarsGraph;
 import dnars.graph.DNarsGraphFactory;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
 
 /**
  * 
@@ -78,19 +79,19 @@ public class Resolver extends XjafAgent {
 		return domain;
 	}
 
-	@SuppressWarnings("unused")
 	private Set<Statement> getKnownProperties(String query) {
 		DNarsGraph graph = DNarsGraphFactory.create(properties, null);
 		try {
 			Statement question = StatementParser.apply(query + " -> ? (1.0, 0.9)");
-			// Statement[] answers = graph.answer(question, Integer.MAX_VALUE);
+			Term[] answers = graph.answer(question, Integer.MAX_VALUE);
 			Set<Statement> known = new HashSet<>();
-			// for (Statement st : answers) {
-			// if (st.pred() instanceof AtomicTerm)
-			// known.add(st);
-			// else if (properExtensionalImage((CompoundTerm) st.pred()))
-			// known.add(st);
-			// }
+			for (Term term : answers) {
+				if (term instanceof AtomicTerm) {
+					known.add(answer(question, term));
+				} else if (properExtensionalImage((CompoundTerm) term)) {
+					known.add(answer(question, term));
+				}
+			}
 			return known;
 		} finally {
 			graph.shutdown();
@@ -98,7 +99,6 @@ public class Resolver extends XjafAgent {
 	}
 
 	// checks if the given term is (/ xxx * xxx)
-	@SuppressWarnings("unused")
 	private boolean properExtensionalImage(CompoundTerm term) {
 		if (term.con().equals(Connector.ExtImage())) {
 			Iterator<AtomicTerm> i = term.comps().iterator();
@@ -116,6 +116,10 @@ public class Resolver extends XjafAgent {
 		msg.receivers.add(aid);
 		msg.contentObj = query;
 		msm().post(msg);
+	}
+
+	private Statement answer(Statement question, Term pred) {
+		return new Statement(question.subj(), question.copula(), pred, question.truth());
 	}
 
 	private static final String text = "Albert Einstein (/\u02C8\u00E6lb\u0259rt \u02C8a\u026Ansta\u026An/; German: "
