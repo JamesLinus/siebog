@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
-import siebog.core.FileUtils;
 import siebog.interaction.ACLMessage;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.ReasoningCycleMessage;
@@ -52,6 +51,7 @@ import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
+import siebog.starter.FileUtils;
 import siebog.utils.GlobalCache;
 
 /**

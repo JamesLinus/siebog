@@ -3,15 +3,14 @@ package siebog.interaction.blackboard.example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import siebog.SiebogClient;
 import siebog.agents.AID;
 import siebog.agents.AgentBuilder;
 import siebog.agents.AgentClass;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 import siebog.interaction.blackboard.Event;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

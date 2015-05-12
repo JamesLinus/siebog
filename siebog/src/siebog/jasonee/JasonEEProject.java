@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import siebog.core.FileUtils;
+import siebog.starter.FileUtils;
 
 /**
  * Description of a Jason EE project that can be sent to remote nodes. Includes the full source of mas2j and of all the

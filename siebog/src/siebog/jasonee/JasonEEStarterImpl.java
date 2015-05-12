@@ -28,11 +28,11 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
-import siebog.core.Global;
 import siebog.jasonee.control.ExecutionControl;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.UserEnvironment;
+import siebog.starter.Global;
 import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
 

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="package-all" name="start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
+	<property environment="env" />
+	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="bin.dir" value="bin" />
+	<property file="build.properties" />
+
+	<property name="wildfly.modules" value="./${server.name}/modules/system/layers/base" />
+	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
+
+	<target name="package-siebog">
+		<delete file="${siebog.path}" />
+		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
+			<fileset dir="war" includes="WEB-INF/classes/**,WEB-INF/*.xml,WEB-INF/lib/**" excludes="WEB-INF/classes/siebog/starter/**,WEB-INF/classes/org/**" />
+			<fileset dir="war/WEB-INF/classes" includes="siebog/starter/**,org/**"  />
+			<fileset dir="war" includes="WEB-INF/*.xml,*.html,*.js,admin/**,img/**,radigost-agents/**" />
+			<fileset dir="war" includes="META-INF/**" />
+			<manifest>
+				<attribute name="Dependencies" value="org.infinispan export, org.jgroups export, javax.websocket.api export, siebog-core export, org.hornetq export, org.jboss.as.server export" />
+				<attribute name="Main-Class" value="siebog.starter.Siebog" />
+				<attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar" />
+			</manifest>
+		</war>
+	</target>
+
+	<target name="package-dnars">
+		<!--delete file="${dnars.path}" /-->
+		<!-- don't delete it, in case the scala ide is missing -->
+		<jar destfile="${dnars.path}" basedir="../dnars/bin" includes="**" />
+		<copy file="${dnars.path}" todir="lib/module" />
+	</target>
+
+	<target name="package-all" depends="package-siebog, package-dnars">
+		<delete file="${starter.path}" />
+		<jar destfile="${starter.path}">
+			<manifest>
+				<attribute name="Main-Class" value="siebog.core.Siebog" />
+				<attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar" />
+			</manifest>
+			<fileset dir="${bin.dir}" />
+		</jar>
+	</target>
+
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="lib/sonar-ant-task-2.2.jar" />
+		</taskdef>
+
+		<sonar:sonar />
+	</target>
+
+	<target name="undeploy">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${jboss.controller}" />
+			<arg value='undeploy ${siebog.name} --server-groups=${server.group}' />
+		</exec>
+	</target>
+
+	<target name="deploy" depends="package-siebog, undeploy">
+		<exec executable="/bin/bash">
+			<arg value="${jboss.cli}" />
+			<arg value="--connect" />
+			<arg value="--controller=${jboss.controller}" />
+			<arg value='deploy ${siebog.path} --name=${siebog.name} --server-groups=${server.group}' />
+		</exec>
+	</target>
+
+	<target name="dist-cleanup">
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="dist" depends="dist-cleanup, package-all">
+		<property name="module.dir" value="${dist.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
+		<copy todir="${dist.dir}/${server.name}">
+			<fileset dir="wildfly-base" includes="**" />
+		</copy>
+		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/core/standalone-full-ha.xml" overwrite="true" verbose="true" />
+		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/core/domain.xml" overwrite="true" verbose="true" />
+		<mkdir dir="${module.dir}" />
+		<copy todir="${module.dir}">
+			<fileset dir="lib/module" includes="*" />
+		</copy>
+		<copy todir="${module.dir}" file="${starter.path}" overwrite="true" verbose="true" />
+		<copy todir="${module.dir}" file="${dnars.path}" overwrite="true" verbose="true" />
+		<move todir="${dist.dir}" file="${siebog.path}" overwrite="true" verbose="true" />
+		<move todir="${dist.dir}" file="${starter.path}" overwrite="true" verbose="true" />
+		<copy todir="${dist.dir}" file="../LICENSE" />
+		<copy todir="${dist.dir}" file="../NOTICE" />
+		<copy todir="${dist.dir}" file="../README.md" />
+		<copy todir="${dist.dir}" file="siebog.properties" />
+	</target>
+</project>

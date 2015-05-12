@@ -4,9 +4,9 @@ import siebog.SiebogClient;
 import siebog.agents.AID;
 import siebog.agents.AgentBuilder;
 import siebog.agents.AgentClass;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

@@ -10,7 +10,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/starter"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-core-6.0.2.Final.jar"/>
 	<classpathentry kind="lib" path="/starter/lib/compile/jaxrs-api-3.0.8.Final.jar"/>

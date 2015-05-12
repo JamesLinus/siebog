@@ -28,7 +28,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import siebog.core.Global;
+import siebog.starter.Global;
 
 /**
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>

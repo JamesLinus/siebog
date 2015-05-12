@@ -30,9 +30,9 @@ import siebog.agents.AID;
 import siebog.agents.AgentClass;
 import siebog.agents.test.TestClientBase;
 import siebog.agents.test.TestProps;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.starter.Global;
 
 /**
  * Tests if agents are properly distributed over all cluster nodes.

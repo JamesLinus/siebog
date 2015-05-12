@@ -24,7 +24,6 @@ import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 import siebog.agents.AgentManager;
 import siebog.agents.AgentManagerBean;
-import siebog.core.Global;
 import siebog.interaction.JMSFactory;
 import siebog.interaction.MessageManager;
 import siebog.interaction.MessageManagerBean;
@@ -36,6 +35,7 @@ import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.WebClientManager;
+import siebog.starter.Global;
 
 /**
  * 

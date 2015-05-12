@@ -6,10 +6,10 @@ import siebog.SiebogClient;
 import siebog.agents.AID;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentManager;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 public class WCStarter {

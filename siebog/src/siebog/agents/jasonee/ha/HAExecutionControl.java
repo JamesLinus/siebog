@@ -21,8 +21,8 @@
 package siebog.agents.jasonee.ha;
 
 import java.util.logging.Logger;
-import siebog.core.Global;
 import siebog.jasonee.control.UserExecutionControl;
+import siebog.starter.Global;
 
 /**
  * 

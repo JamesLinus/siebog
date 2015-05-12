@@ -23,8 +23,8 @@ package siebog.utils;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import siebog.core.Global;
-import siebog.core.Setup;
+import siebog.starter.Global;
+import siebog.starter.Setup;
 
 /**
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>

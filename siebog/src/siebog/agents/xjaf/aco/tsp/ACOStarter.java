@@ -27,7 +27,7 @@ import siebog.SiebogClient;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
-import siebog.core.Global;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

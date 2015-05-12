@@ -41,7 +41,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
 import siebog.agents.AID;
-import siebog.core.Global;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

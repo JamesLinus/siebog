@@ -22,7 +22,7 @@ package siebog.agents;
 
 import java.util.HashSet;
 import java.util.Set;
-import siebog.core.Global;
+import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

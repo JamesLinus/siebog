@@ -26,8 +26,8 @@ import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import siebog.core.Global;
-import siebog.core.config.NodeConfig;
+import siebog.starter.Global;
+import siebog.starter.config.NodeConfig;
 
 /**
  * Helper class for client initialization.

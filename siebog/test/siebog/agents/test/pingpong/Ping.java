@@ -33,9 +33,9 @@ import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
-import siebog.core.Global;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.starter.Global;
 
 /**
  * Example of a ping agent.

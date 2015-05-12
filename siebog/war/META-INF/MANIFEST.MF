@@ -1,2 +1,3 @@
 Manifest-Version: 1.0
 Dependencies: org.infinispan export, org.jgroups export, javax.websocket.api export, siebog-core export, org.hornetq export, org.jboss.as.server export
+Main-Class: siebog.starter.Siebog

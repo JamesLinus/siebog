@@ -21,7 +21,7 @@
 package siebog.agents;
 
 import java.io.Serializable;
-import siebog.core.Global;
+import siebog.starter.Global;
 
 /**
  * Description of a deployed agent.
