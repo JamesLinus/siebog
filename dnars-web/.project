@@ -3,6 +3,7 @@
 	<name>dnars-web</name>
 	<comment></comment>
 	<projects>
+		<project>dnars</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

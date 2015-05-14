@@ -27,51 +27,84 @@ import java.util.Arrays;
 import java.util.List;
 import dnars.base.Statement;
 import dnars.base.StatementParser;
+import dnars.siebog.DNarsAgent;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class BeliefParser {
-	public static List<Statement> getInitialBeliefs(Object target) {
+	private DNarsAgent agent;
+
+	public <T extends DNarsAgent> BeliefParser(T agent) {
+		this.agent = agent;
+	}
+
+	public List<Statement> getInitialBeliefs() {
+		Method[] methods = agent.getClass().getDeclaredMethods();
+		return getInitialBeliefs(methods);
+	}
+
+	private List<Statement> getInitialBeliefs(Method[] methods) {
 		List<Statement> beliefs = new ArrayList<>();
-		for (Method m : target.getClass().getDeclaredMethods())
-			if (m.isAnnotationPresent(Beliefs.class))
-				parseInitialBeliefs(target, m, beliefs);
+		for (Method m : methods) {
+			if (m.isAnnotationPresent(Beliefs.class)) {
+				parseInitialBeliefs(m, beliefs);
+			}
+		}
 		return beliefs;
 	}
 
-	private static void parseInitialBeliefs(Object target, Method m, List<Statement> beliefs) {
+	private void parseInitialBeliefs(Method method, List<Statement> beliefs) {
+		List<Statement> st = getStatements(method);
+		beliefs.addAll(st);
+	}
+
+	private List<Statement> getStatements(Method method) {
+		checkReturnType(method);
 		try {
-			List<Statement> st = getStatements(target, m);
-			beliefs.addAll(st);
-		} catch (ClassCastException ex) {
-			throw new IllegalStateException("Method " + m.getName()
-					+ " should return an array of Statement's or String's.");
+			return tryGetStatements(method);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new IllegalStateException("Cannot invoke method " + m.getName(), ex);
+			throw new IllegalStateException("Error while retrieving initial beliefs.", ex);
 		}
 	}
 
-	private static List<Statement> getStatements(Object target, Method m) throws IllegalAccessException,
+	private void checkReturnType(Method method) {
+		Class<?> rt = method.getReturnType();
+		if (!rt.equals(Statement[].class) && !rt.equals(String[].class)) {
+			String msg = String.format("Method %s should return an array of "
+					+ "Statement's or String's.", method.getName());
+			throw new IllegalStateException(msg);
+		}
+	}
+
+	private List<Statement> tryGetStatements(Method method) throws IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		Object result = m.invoke(target);
-		Statement[] st;
-		try {
-			st = Statement[].class.cast(result);
-		} catch (ClassCastException ex) {
-			String[] str = String[].class.cast(result);
-			st = processStrings(str);
+		Object result = method.invoke(agent);
+		Statement[] st = castTo(result, Statement[].class);
+		if (st == null) {
+			String[] str = castTo(result, String[].class);
+			st = strToStat(str);
 		}
 		return Arrays.asList(st);
 	}
 
-	private static Statement[] processStrings(String[] str) {
-		if (str == null || str.length == 0)
-			return new Statement[0];
+	private <X> X castTo(Object obj, Class<X> clazz) {
+		try {
+			return clazz.cast(obj);
+		} catch (ClassCastException ex) {
+			return null;
+		}
+	}
+
+	private Statement[] strToStat(String[] str) {
+		if (str == null) {
+			return null;
+		}
 		Statement[] res = new Statement[str.length];
-		for (int i = 0; i < str.length; i++)
+		for (int i = 0; i < str.length; i++) {
 			res[i] = StatementParser.apply(str[i]);
+		}
 		return res;
 	}
 }

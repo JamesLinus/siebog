@@ -29,8 +29,10 @@ import javax.ejb.Stateless;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.jasonee.control.ExecutionControl;
+import siebog.jasonee.control.ExecutionControlBean;
 import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
+import siebog.jasonee.environment.EnvironmentBean;
 import siebog.jasonee.environment.UserEnvironment;
 import siebog.starter.Global;
 import siebog.utils.GlobalCache;
@@ -76,7 +78,10 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createExecutionControl() {
-		ExecutionControl ctrl = ObjectFactory.lookup(ObjectFactory.JasonEEExecutionControlLookup,
+		final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+				+ ExecutionControlBean.class.getSimpleName() + "!"
+				+ ExecutionControl.class.getName() + "?stateful";
+		ExecutionControl ctrl = ObjectFactory.lookup(JasonEEExecutionControlLookup,
 				ExecutionControl.class);
 		ctrlName = "ExecCtrl" + System.currentTimeMillis();
 		GlobalCache.get().getExecutionControls().put(ctrlName, ctrl);
@@ -96,8 +101,10 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createEnvironment() {
-		Environment env = ObjectFactory.lookup(ObjectFactory.JasonEEEnvironmentLookup,
-				Environment.class);
+		final String JasonEEEnvironmentLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+				+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName()
+				+ "?stateful";
+		Environment env = ObjectFactory.lookup(JasonEEEnvironmentLookup, Environment.class);
 		envName = "Env" + System.currentTimeMillis();
 		GlobalCache.get().getEnvironments().put(envName, env);
 

@@ -2,6 +2,10 @@
     <wb-module deploy-name="dnars-web">
         <wb-resource deploy-path="/" source-path="/war" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+        <dependent-module archiveName="dnars.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dnars/dnars">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="dnars-web"/>
         <property name="java-output-path" value="/dnars-web/build/classes"/>
     </wb-module>

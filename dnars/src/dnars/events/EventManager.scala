@@ -15,6 +15,7 @@ trait EventManager extends DNarsGraphAPI {
 	//		new EDT(list, observers).start
 
 	def addEvent(event: EventPayload): Unit = {
+		println(event.event + ":::" + event.statement)
 		//		list synchronized {
 		//			list += event
 		//			if (!paused)

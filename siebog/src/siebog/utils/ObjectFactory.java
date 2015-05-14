@@ -30,10 +30,6 @@ import siebog.interaction.MessageManagerBean;
 import siebog.jasonee.JasonEEStarter;
 import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
-import siebog.jasonee.control.ExecutionControl;
-import siebog.jasonee.control.ExecutionControlBean;
-import siebog.jasonee.environment.Environment;
-import siebog.jasonee.environment.EnvironmentBean;
 import siebog.radigost.WebClientManager;
 import siebog.starter.Global;
 
@@ -48,14 +44,6 @@ public abstract class ObjectFactory {
 			+ MessageManagerBean.class.getSimpleName() + "!" + MessageManager.class.getName();
 	public static final String ExecutorServiceLookup = "java:global/" + Global.SIEBOG_MODULE + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
-	private static final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
-	public static final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE
-			+ "//" + ExecutionControlBean.class.getSimpleName() + "!"
-			+ ExecutionControl.class.getName() + "?stateful";
-	public static final String JasonEEEnvironmentLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
-			+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName()
-			+ "?stateful";
 	public static final String WebClientManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
 			+ WebClientManager.class.getSimpleName() + "!" + WebClientManager.class.getName()
 			+ "?stateful";
@@ -83,6 +71,8 @@ public abstract class ObjectFactory {
 	}
 
 	public static JasonEEStarter getJasonEEStarter() {
+		final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+				+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
 		return lookup(JasonEEStarterLookup, JasonEEStarter.class);
 	}
 
