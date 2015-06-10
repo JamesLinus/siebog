@@ -16,7 +16,7 @@
 		<mkdir dir="${bin.dir}" />
 		<taskdef resource="scala/tools/ant/antlib.xml">
 			<classpath>
-				<pathelement location="${lib.dir}/scala-library.jar" />
+				<pathelement location="${lib.dir}/ant/scala-library.jar" />
 				<pathelement location="${lib.dir}/ant/scala-reflect.jar" />
 				<pathelement location="${lib.dir}/ant/scala-compiler.jar" />
 			</classpath>

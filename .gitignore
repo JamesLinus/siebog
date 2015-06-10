@@ -18,3 +18,4 @@ benchmarks/APDescription.txt
 benchmarks/MTPs-Main-Container.txt
 /build/
 /dist/
+/wildfly-base/

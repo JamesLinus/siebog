@@ -14,23 +14,37 @@
 		<delete file="${siebog.path}" />
 		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="war" includes="WEB-INF/classes/**,WEB-INF/*.xml,WEB-INF/lib/**" excludes="WEB-INF/classes/siebog/starter/**,WEB-INF/classes/org/**" />
-			<fileset dir="war/WEB-INF/classes" includes="siebog/starter/**,org/**"  />
-			<fileset dir="war" includes="WEB-INF/*.xml,*.html,*.js,admin/**,img/**,radigost-agents/**" />
+			<fileset dir="war/WEB-INF/classes" includes="siebog/starter/**,org/**" />
+			<fileset dir="war" includes="WEB-INF/*.xml,*.html,*.js,admin/**,img/**,radigost/**" />
 			<fileset dir="war" includes="META-INF/**" />
 			<manifest>
-				<attribute name="Dependencies" value="org.infinispan export, org.jgroups export, javax.websocket.api export, siebog-core export, org.hornetq export, org.jboss.as.server export" />
+				<attribute name="Dependencies" value="org.infinispan export, org.jgroups export, javax.websocket.api export, dnars export, org.hornetq export, org.jboss.as.server export" />
 				<attribute name="Main-Class" value="siebog.starter.Siebog" />
 				<attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar" />
 			</manifest>
 		</war>
 	</target>
 
-	<target name="sonar">
-		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-			<classpath path="lib/sonar-ant-task-2.2.jar" />
-		</taskdef>
-
-		<sonar:sonar />
+	<target name="dist">
+		<!-- Cleanup -->
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<!-- Package Siebog -->
+		<antcall target="package" />
+		<!-- Starting WildFly -->
+		<copy todir="${dist.dir}/${server.name}">
+			<fileset dir="../wildfly-base" includes="**" />
+		</copy>
+		<!-- Configuration Files -->
+		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/starter/standalone-full-ha.xml" overwrite="true" verbose="true" />
+		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/starter/domain.xml" overwrite="true" verbose="true" />
+		<!-- DNARS Module -->
+		<ant antfile="../dnars/build.xml" target="module" inheritall="false" useNativeBasedir="true" />
+		<!-- Auxiliary Files -->
+		<copy todir="${dist.dir}" file="../LICENSE" />
+		<copy todir="${dist.dir}" file="../NOTICE" />
+		<copy todir="${dist.dir}" file="../README.md" />
+		<copy todir="${dist.dir}" file="siebog.properties" />
 	</target>
 
 	<target name="undeploy">
@@ -51,29 +65,11 @@
 		</exec>
 	</target>
 
-	<target name="dist-cleanup">
-		<delete dir="${dist.dir}" />
-		<mkdir dir="${dist.dir}" />
-	</target>
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="lib/sonar-ant-task-2.2.jar" />
+		</taskdef>
 
-	<target name="dist" depends="dist-cleanup, package">
-		<property name="module.dir" value="${dist.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
-		<copy todir="${dist.dir}/${server.name}">
-			<fileset dir="wildfly-base" includes="**" />
-		</copy>
-		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/core/standalone-full-ha.xml" overwrite="true" verbose="true" />
-		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/core/domain.xml" overwrite="true" verbose="true" />
-		<mkdir dir="${module.dir}" />
-		<copy todir="${module.dir}">
-			<fileset dir="lib/module" includes="*" />
-		</copy>
-		<copy todir="${module.dir}" file="${starter.path}" overwrite="true" verbose="true" />
-		<copy todir="${module.dir}" file="${dnars.path}" overwrite="true" verbose="true" />
-		<move todir="${dist.dir}" file="${siebog.path}" overwrite="true" verbose="true" />
-		<move todir="${dist.dir}" file="${starter.path}" overwrite="true" verbose="true" />
-		<copy todir="${dist.dir}" file="../LICENSE" />
-		<copy todir="${dist.dir}" file="../NOTICE" />
-		<copy todir="${dist.dir}" file="../README.md" />
-		<copy todir="${dist.dir}" file="siebog.properties" />
+		<sonar:sonar />
 	</target>
 </project>
