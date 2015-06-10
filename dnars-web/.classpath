@@ -2,175 +2,59 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle">
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/dnars">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/siebog">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/dnars/lib/astyanax-cassandra-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/astyanax-core-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/astyanax-thrift-1.56.48.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/blueprints-core-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/cassandra-all-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/cassandra-thrift-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/commons-codec-1.7.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/gremlin-java-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/gremlin-scala-2.4.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/guava-15.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/high-scale-lib-1.1.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/hppc-0.6.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/jackson-core-asl-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/jackson-mapper-asl-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/jena-core-2.11.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/joda-time-1.6.2.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/kryo-2.22.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/libthrift-0.9.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/metrics-core-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/pipes-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/slf4j-log4j12-1.7.6.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/spatial4j-0.4.1.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/titan-cassandra-0.5.3.jar"/>
+	<classpathentry kind="lib" path="/dnars/lib/titan-core-0.5.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 9.x Siebog">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dnars"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/siebog"/>
-	<classpathentry kind="lib" path="/dnars-lib/lib/astyanax-cassandra-1.56.48.jar">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle">
 		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/astyanax-core-1.56.48.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/astyanax-thrift-1.56.48.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/blueprints-core-2.5.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/cassandra-all-2.0.8.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/cassandra-thrift-2.0.8.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/commons-codec-1.7.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/commons-collections-3.2.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/commons-configuration-1.6.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/commons-lang-2.5.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/commons-logging-1.1.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/gremlin-java-2.5.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/gremlin-scala-2.4.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/guava-15.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/high-scale-lib-1.1.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/hppc-0.6.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/jackson-core-2.2.3.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/jackson-core-asl-1.9.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/jackson-mapper-asl-1.9.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/jena-core-2.11.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/joda-time-1.6.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/kryo-2.22.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/libthrift-0.9.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/log4j-1.2.17.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/metrics-core-3.0.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/pipes-2.5.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/slf4j-api-1.7.6.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/slf4j-log4j12-1.7.6.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/spatial4j-0.4.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/titan-cassandra-0.5.3.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/dnars-lib/lib/titan-core-0.5.3.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

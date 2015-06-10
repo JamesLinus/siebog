@@ -26,11 +26,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation for methods that should be called when existing statements are updated (i.e. their
+ * truth-values change). Each argument represents a regular expression for pattern matching.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeliefUpdated {
-	String pattern() default ".";
+	String subj() default ".*";
+
+	String copula() default ".*";
+
+	String pred() default ".*";
+
+	String truth() default ".*";
 }

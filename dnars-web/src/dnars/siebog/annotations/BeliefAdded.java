@@ -26,17 +26,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation for methods that should be called when new statements are added to the belief base.
+ * Each argument represents a regular expression for pattern matching.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeliefAdded {
-	String subj() default ".";
+	String subj() default ".*";
 
-	String copula() default ".";
+	String copula() default ".*";
 
-	String pred() default ".";
+	String pred() default ".*";
 
-	String truth() default ".";
+	String truth() default ".*";
 }

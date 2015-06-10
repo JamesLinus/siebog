@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE project>
-<project default="package-all" name="start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
+<project default="package" name="start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
 	<property environment="env" />
 	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
-	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="dist.dir" value="${basedir}/../dist" />
 	<property name="bin.dir" value="bin" />
 	<property file="build.properties" />
 
 	<property name="wildfly.modules" value="./${server.name}/modules/system/layers/base" />
 	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
 
-	<target name="package-siebog">
+	<target name="package">
 		<delete file="${siebog.path}" />
 		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="war" includes="WEB-INF/classes/**,WEB-INF/*.xml,WEB-INF/lib/**" excludes="WEB-INF/classes/siebog/starter/**,WEB-INF/classes/org/**" />
@@ -23,24 +23,6 @@
 				<attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar" />
 			</manifest>
 		</war>
-	</target>
-
-	<target name="package-dnars">
-		<!--delete file="${dnars.path}" /-->
-		<!-- don't delete it, in case the scala ide is missing -->
-		<jar destfile="${dnars.path}" basedir="../dnars/bin" includes="**" />
-		<copy file="${dnars.path}" todir="lib/module" />
-	</target>
-
-	<target name="package-all" depends="package-siebog, package-dnars">
-		<delete file="${starter.path}" />
-		<jar destfile="${starter.path}">
-			<manifest>
-				<attribute name="Main-Class" value="siebog.core.Siebog" />
-				<attribute name="Class-Path" value=". ./${server.name}/bin/client/jboss-cli-client.jar ${starter.modules}/as/process-controller/main/wildfly-process-controller-1.0.0.Alpha3.jar ${starter.modules}/as/controller-client/main/wildfly-controller-client-1.0.0.Alpha3.jar ${starter.modules}/logmanager/main/jboss-logmanager-1.5.2.Final.jar ${wildfly.modules}/siebog-core/main/jason.jar" />
-			</manifest>
-			<fileset dir="${bin.dir}" />
-		</jar>
 	</target>
 
 	<target name="sonar">
@@ -60,7 +42,7 @@
 		</exec>
 	</target>
 
-	<target name="deploy" depends="package-siebog, undeploy">
+	<target name="deploy" depends="package, undeploy">
 		<exec executable="/bin/bash">
 			<arg value="${jboss.cli}" />
 			<arg value="--connect" />
@@ -74,7 +56,7 @@
 		<mkdir dir="${dist.dir}" />
 	</target>
 
-	<target name="dist" depends="dist-cleanup, package-all">
+	<target name="dist" depends="dist-cleanup, package">
 		<property name="module.dir" value="${dist.dir}/${server.name}/modules/system/layers/base/siebog-core/main" />
 		<copy todir="${dist.dir}/${server.name}">
 			<fileset dir="wildfly-base" includes="**" />

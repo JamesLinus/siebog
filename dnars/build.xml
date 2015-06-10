@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project default="package" name="dnars" basedir=".">
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="bin.dir" value="bin" />
+	<property name="dnars.jar" value="${basedir}/${ant.project.name}.jar" />
+
+	<path id="build.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${bin.dir}" />
+		<taskdef resource="scala/tools/ant/antlib.xml">
+			<classpath>
+				<pathelement location="${lib.dir}/scala-library.jar" />
+				<pathelement location="${lib.dir}/ant/scala-reflect.jar" />
+				<pathelement location="${lib.dir}/ant/scala-compiler.jar" />
+			</classpath>
+		</taskdef>
+	</target>
+
+	<target name="compile" depends="init">
+		<scalac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath">
+			<include name="**/*.java" />
+			<include name="**/*.scala" />
+		</scalac>
+	</target>
+
+	<target name="package" depends="compile">
+		<jar destfile="${dnars.jar}">
+			<fileset dir="${bin.dir}" includes="**/*.class" />
+		</jar>
+	</target>
+
+	<target name="module" depends="package">
+		<!-- Init -->
+		<property environment="env" />
+		<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
+		<property name="module.dir" value="${env.JBOSS_HOME}/modules/system/layers/base/dnars/main" />
+		<!-- Clean -->
+		<delete dir="${module.dir}" />
+		<mkdir dir="${module.dir}" />
+		<!-- Copy -->
+		<copy todir="${module.dir}" overwrite="true" failonerror="true">
+			<fileset file="${dnars.jar}" />
+			<fileset dir="${lib.dir}">
+				<include name="*.jar" />
+				<include name="module.xml" />
+			</fileset>
+		</copy>
+	</target>
+</project>

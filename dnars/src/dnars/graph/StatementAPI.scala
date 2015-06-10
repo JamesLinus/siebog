@@ -21,10 +21,8 @@
 package dnars.graph
 
 import scala.collection.mutable.ListBuffer
-
 import com.tinkerpop.blueprints.Direction
 import com.tinkerpop.blueprints.Edge
-
 import dnars.base.CompoundTerm
 import dnars.base.Connector.ExtImage
 import dnars.base.Connector.IntImage
@@ -34,11 +32,10 @@ import dnars.base.Copula.Similar
 import dnars.base.Statement
 import dnars.base.StatementParser
 import dnars.base.Truth
-import dnars.events.Added
 import dnars.events.EventPayload
-import dnars.events.Updated
 import dnars.graph.Wrappers.edge2DNarsEdge
 import dnars.graph.Wrappers.vertex2DNarsVertex
+import dnars.events.EventPayload.Type
 
 /**
  * Subset of the DNarsGraph API focused on NAL statements.
@@ -52,10 +49,10 @@ trait StatementAPI extends DNarsGraphAPI {
 		existing match {
 			case Some(e) =>
 				reviseExistingStatement(st, e)
-				addEvent(new EventPayload(Updated(), st.toString))
+				addEvent(new EventPayload(Type.UPDATED, st.toString))
 			case None =>
 				addNewStatement(st)
-				addEvent(new EventPayload(Added(), st.toString))
+				addEvent(new EventPayload(Type.ADDED, st.toString))
 		}
 	}
 
