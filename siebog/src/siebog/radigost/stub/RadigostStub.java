@@ -54,11 +54,11 @@ public class RadigostStub extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		if (args == null || args.get("url") == null) {
+		if (args == null || args.get("url", null) == null) {
 			emptyStub = true;
 		} else {
 			emptyStub = false;
-			loadJsAgent(args.get("url"), args.get("state"));
+			loadJsAgent(args.get("url", ""), args.get("state", "{}"));
 		}
 	}
 

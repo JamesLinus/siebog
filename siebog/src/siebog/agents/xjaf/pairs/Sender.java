@@ -59,12 +59,12 @@ public class Sender extends XjafAgent {
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Receiver.class.getSimpleName());
-		receiver = new AID(args.get("rcvrAid"), agClass);
-		numIterations = Integer.parseInt(args.get("numIterations"));
+		receiver = new AID(args.get("rcvrAid", null), agClass);
+		numIterations = args.getInt("numIterations", 0);
 		// create message content
-		int contentLength = Integer.parseInt(args.get("contentLength"));
+		int contentLength = args.getInt("contentLength", 0);
 		content = makeContent(contentLength);
-		resultsServiceAddr = args.get("resultsServiceAddr").toString();
+		resultsServiceAddr = args.get("resultsServiceAddr", null).toString();
 	}
 
 	@Override

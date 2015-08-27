@@ -106,9 +106,9 @@ public class Particle extends XjafAgent {
 	protected void onInit(AgentInitArgs args) {
 
 		// read arguments
-		dimension = Integer.parseInt(args.get("dimension"));
-		minX = Double.parseDouble(args.get("minx"));
-		maxX = Double.parseDouble(args.get("maxx"));
+		dimension = args.getInt("dimension", 0);
+		minX = Double.parseDouble(args.get("minx", "0"));
+		maxX = Double.parseDouble(args.get("maxx", "0"));
 
 		// initialize variables
 		minV = -1.0 * maxX;

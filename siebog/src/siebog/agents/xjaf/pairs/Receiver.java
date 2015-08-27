@@ -29,8 +29,8 @@ import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
 
 /**
- * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers in the
- * [1..primeLimit] interval.
+ * Upon receiving a request, the agent uses a brute-force algorithm for counting all prime numbers
+ * in the [1..primeLimit] interval.
  *
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -43,8 +43,8 @@ public class Receiver extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		primeLimit = Integer.parseInt(args.get("primeLimit"));
-		numIterations = Integer.parseInt(args.get("numIterations"));
+		primeLimit = args.getInt("primeLimit", 0);
+		numIterations = args.getInt("numIterations", 0);
 	}
 
 	@Override

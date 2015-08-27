@@ -113,9 +113,6 @@ public class AgentManagerBean implements AgentManager {
 	@Path("/running/{aid}")
 	@Override
 	public void stopAgent(@PathParam("aid") AID aid) {
-		if (System.currentTimeMillis() > 0) {
-			throw new IllegalStateException("Here!");
-		}
 		Agent agent = getCache().get(aid);
 		if (agent != null) {
 			getCache().remove(aid);

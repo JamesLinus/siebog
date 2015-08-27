@@ -125,7 +125,7 @@ function WebClientSocket(radigost) {
 function Radigost(host, autoCreateStubs) {
 	this.host = host;
 	this.running = {};
-	this.autoCreateStubs = autoCreateStubs ? autoCreateSubs : false;
+	this.autoCreateStubs = autoCreateStubs ? autoCreateStubs : false;
 	this.socket = new WebClientSocket(this);
 
 	var self = this;

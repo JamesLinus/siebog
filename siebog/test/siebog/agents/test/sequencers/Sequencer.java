@@ -17,7 +17,7 @@ public class Sequencer extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		next = new AID(args.get("next"));
+		next = new AID(args.get("next", null));
 	}
 
 	@Override

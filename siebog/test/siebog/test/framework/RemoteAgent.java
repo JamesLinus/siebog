@@ -46,7 +46,7 @@ public class RemoteAgent extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		remoteHost = args.get("remoteHost");
+		remoteHost = args.get("remoteHost", null);
 	}
 
 	@Override

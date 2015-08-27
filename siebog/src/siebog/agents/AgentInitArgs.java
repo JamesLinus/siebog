@@ -49,16 +49,14 @@ public class AgentInitArgs implements Serializable {
 		args.put(key, arg);
 	}
 
-	public String get(String key) {
+	public String get(String key, String def) {
 		StringWrapper arg = args.get(key);
 		String str = arg != null ? arg.value : null;
-		if (str == null)
-			throw new IllegalArgumentException("No such argument: " + key);
-		return str;
+		return str != null ? str : def;
 	}
 
-	public int getInt(String key) {
-		return Integer.parseInt(get(key));
+	public int getInt(String key, int def) {
+		return Integer.parseInt(get(key, String.valueOf(def)));
 	}
 
 	public Map<String, String> toStringMap() {

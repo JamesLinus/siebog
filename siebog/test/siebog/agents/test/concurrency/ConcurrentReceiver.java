@@ -71,7 +71,7 @@ public class ConcurrentReceiver extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		int buffSize = Integer.parseInt(args.get("buffSize"));
+		int buffSize = args.getInt("buffSize", 0);
 		buff = new Buffer(buffSize);
 	}
 

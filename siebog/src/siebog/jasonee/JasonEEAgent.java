@@ -78,8 +78,8 @@ public class JasonEEAgent extends XjafAgent {
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		this.args = args;
-		execCtrlName = args.get("execCtrlName");
-		envName = args.get("envName");
+		execCtrlName = args.get("execCtrlName", null);
+		envName = args.get("envName", null);
 		arch = new JasonEEAgArch();
 		initArch();
 		syncMode = arch.getTS().getSettings().isSync();
@@ -89,16 +89,16 @@ public class JasonEEAgent extends XjafAgent {
 	private void initArch() {
 		AgentParameters agp = null;
 		try {
-			File mas2jFile = FileUtils.createTempFile(args.get("mas2jSource"));
-			agp = getAgentParams(args.get("agentName"), mas2jFile);
-			agp.asSource = FileUtils.createTempFile(args.get("agentSource"));
+			File mas2jFile = FileUtils.createTempFile(args.get("mas2jSource", null));
+			agp = getAgentParams(args.get("agentName", null), mas2jFile);
+			agp.asSource = FileUtils.createTempFile(args.get("agentSource", null));
 		} catch (IOException ex) {
 			throw new IllegalStateException("Cannot store agent source in a temporary file.", ex);
 		}
 
 		try {
 			arch.setAgent(this);
-			arch.init(args.get("remObjFactModule"), args.get("remObjFactEjb"), agp);
+			arch.init(args.get("remObjFactModule", null), args.get("remObjFactEjb", null), agp);
 		} catch (Exception ex) {
 			final String msg = "Error while initializing agent architecture.";
 			LOG.error(msg, ex);

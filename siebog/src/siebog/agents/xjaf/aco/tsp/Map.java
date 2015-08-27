@@ -65,7 +65,7 @@ public class Map extends XjafAgent {
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		logger.fine("Map opened.");
-		loadMap(args.get("fileName").toString());
+		loadMap(args.get("fileName", null).toString());
 	}
 
 	@Override
@@ -89,7 +89,8 @@ public class Map extends XjafAgent {
 				reply.content = pheromoneLevels.toString();
 			} else if (content.startsWith("EdgeWeight?")) {
 				String[] parts = content.split(" ");
-				reply.content = String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+				reply.content = String.valueOf(getEdgeWeight(Integer.parseInt(parts[1]),
+						Integer.parseInt(parts[2])));
 			}
 			msm().post(reply);
 		} else if (message.performative == Performative.INFORM) {
@@ -117,8 +118,8 @@ public class Map extends XjafAgent {
 				String[] parts = content.split(" ");
 				int i = Integer.parseInt(parts[1]);
 				int j = Integer.parseInt(parts[2]);
-				setPheromoneLevel(i, j,
-						Float.parseFloat(parts[3]) * getPheromoneLevel(i, j) + Float.parseFloat(parts[4]));
+				setPheromoneLevel(i, j, Float.parseFloat(parts[3]) * getPheromoneLevel(i, j)
+						+ Float.parseFloat(parts[4]));
 			} else if (content.startsWith("UpdateLocalPheromone")) {
 				String[] parts = content.split(" ");
 				int i = Integer.parseInt(parts[1]);
@@ -130,8 +131,8 @@ public class Map extends XjafAgent {
 	}
 
 	/**
-	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial pheromone level tau0
-	 * which is set for each edge in 'pheromone' matrix.
+	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial
+	 * pheromone level tau0 which is set for each edge in 'pheromone' matrix.
 	 */
 	private void loadMap(String fileName) {
 		nodes = new ArrayList<>();
@@ -207,7 +208,8 @@ public class Map extends XjafAgent {
 	public float getEdgeWeight(int i, int j) {
 		Node ni = nodes.get(i);
 		Node nj = nodes.get(j);
-		return (float) (Math.sqrt(Math.pow(ni.getX() - nj.getX(), 2) + Math.pow(ni.getY() - nj.getY(), 2)));
+		return (float) (Math.sqrt(Math.pow(ni.getX() - nj.getX(), 2)
+				+ Math.pow(ni.getY() - nj.getY(), 2)));
 	}
 
 	@Override

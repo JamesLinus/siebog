@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="war/radigost"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 9.x Siebog">
 		<attributes>
@@ -10,31 +9,31 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-commons-6.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/infinispan-core-6.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jaxrs-api-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-cli-client.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-client.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-ejb3-ext-api-2.1.0.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-msc-1.2.2.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/resteasy-client-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/resteasy-multipart-provider-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-cli-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/infinispan-commons-6.0.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/infinispan-core-6.0.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jaxrs-api-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-cli-client.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-client.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-ejb-client-2.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-ejb3-ext-api-2.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-logmanager-1.5.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-msc-1.2.2.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/jboss-websocket-api_1.0_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/resteasy-client-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/resteasy-multipart-provider-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-cli-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-clustering-singleton-9.0.0.Alpha1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-controller-client-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/starter/lib/module/cassandra-all-2.0.8.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/cassandra-thrift-2.0.8.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/javassist-3.18.0-GA.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/slf4j-api-1.7.6.jar"/>
-	<classpathentry kind="lib" path="/starter/lib/module/slf4j-log4j12-1.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/module/cassandra-all-2.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/module/cassandra-thrift-2.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/module/javassist-3.18.0-GA.jar"/>
+	<classpathentry kind="lib" path="lib/module/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/module/slf4j-log4j12-1.7.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/starter/lib/module/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="lib/module/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
