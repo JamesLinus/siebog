@@ -15,7 +15,7 @@
 		<war destfile="${siebog.path}" webxml="war/WEB-INF/web.xml" manifest="war/META-INF/MANIFEST.MF">
 			<fileset dir="war" includes="WEB-INF/classes/**,WEB-INF/*.xml,WEB-INF/lib/**" excludes="WEB-INF/classes/siebog/starter/**,WEB-INF/classes/org/**" />
 			<fileset dir="war/WEB-INF/classes" includes="siebog/starter/**,org/**" />
-			<fileset dir="war" includes="WEB-INF/*.xml,WEB-INF/lib/**,*.html,*.js,app/**,css/**,fonts/**,img/**,js/**,partials/**,radigost/**" />
+			<fileset dir="war" includes="*.html,*.js,app/**,css/**,fonts/**,img/**,js/**,partials/**,radigost/**" />
 			<fileset dir="war" includes="META-INF/**" />
 			<manifest>
 				<attribute name="Dependencies" value="org.infinispan export, org.jgroups export, javax.websocket.api export, dnars export, org.hornetq export, org.jboss.as.server export" />

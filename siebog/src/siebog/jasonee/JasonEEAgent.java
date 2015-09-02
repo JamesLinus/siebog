@@ -51,7 +51,7 @@ import siebog.jasonee.control.ReasoningCycleTimeout;
 import siebog.jasonee.environment.ActionFeedbackMessage;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentChangedMessage;
-import siebog.starter.FileUtils;
+import siebog.utils.FileUtils;
 import siebog.utils.GlobalCache;
 
 /**

@@ -24,10 +24,10 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import siebog.SiebogClient;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -52,12 +52,12 @@ public class ACOStarter {
 		SiebogClient.connect("localhost");
 
 		final AgentManager agm = ObjectFactory.getAgentManager();
-		AgentClass mapClass = new AgentClass(Global.SIEBOG_MODULE, "Map");
+		AgentClass mapClass = new AgentClass(Agent.SIEBOG_MODULE, "Map");
 		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + path);
 		agm.startServerAgent(mapClass, "Map", mapArgs);
 
 		for (int i = 1; i <= nAnts; ++i) {
-			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
+			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
 			agm.startServerAgent(agClass, "Ant" + i, null);
 		}
 	}

@@ -30,11 +30,11 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 
 /**
  * 
- * Implementation of an PSO starter agent. It initializes all the Particles, and keeps track of the results.
+ * Implementation of an PSO starter agent. It initializes all the Particles, and keeps track of the
+ * results.
  * 
  * @author <a href="mailto:simic.dragan@hotmail.com">Dragan Simic</a>
  */
@@ -83,8 +83,10 @@ public class Swarm extends XjafAgent {
 
 		logger.fine("Initializing swarm with random positions/solutions.");
 		for (int i = 0; i < numberParticles; ++i) {
-			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX, "maxx->" + maxX);
-			agm().startServerAgent(new AgentClass(Global.SIEBOG_MODULE, "Particle"), "Particle" + i, mapArgs);
+			AgentInitArgs mapArgs = new AgentInitArgs("dimension->" + dimension, "minx->" + minX,
+					"maxx->" + maxX);
+			agm().startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, "Particle"), "Particle" + i,
+					mapArgs);
 		}
 
 		logger.info("Entering main PSO processing loop");
@@ -110,8 +112,8 @@ public class Swarm extends XjafAgent {
 				ACLMessage message = new ACLMessage();
 				message.performative = Performative.REQUEST;
 
-				PsoMessage psoMessage = new PsoMessage(PsoMessage.ITERATE_PARTICLE, bestGlobalFitness,
-						bestGlobalPosition);
+				PsoMessage psoMessage = new PsoMessage(PsoMessage.ITERATE_PARTICLE,
+						bestGlobalFitness, bestGlobalPosition);
 				message.content = psoMessage.toString();
 				message.sender = myAid;
 				message.receivers.add(particleAID);

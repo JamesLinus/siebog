@@ -25,12 +25,12 @@ import static org.junit.Assert.assertTrue;
 import java.rmi.RemoteException;
 import org.junit.Test;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -80,7 +80,7 @@ public class ConcurrencyTest extends TestClientBase {
 	}
 
 	private AID createAgent() {
-		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE,
+		AgentClass cls = new AgentClass(Agent.SIEBOG_MODULE,
 				ConcurrentReceiver.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs("buffSize=" + BUFF_SIZE);
 		return agm.startServerAgent(cls, "CR" + System.currentTimeMillis(), args);

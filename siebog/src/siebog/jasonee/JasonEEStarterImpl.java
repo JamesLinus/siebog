@@ -26,6 +26,7 @@ import jason.mas2j.MAS2JProject;
 import java.util.List;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.jasonee.control.ExecutionControl;
@@ -34,7 +35,6 @@ import siebog.jasonee.control.UserExecutionControl;
 import siebog.jasonee.environment.Environment;
 import siebog.jasonee.environment.EnvironmentBean;
 import siebog.jasonee.environment.UserEnvironment;
-import siebog.starter.Global;
 import siebog.utils.GlobalCache;
 import siebog.utils.ObjectFactory;
 
@@ -78,7 +78,7 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createExecutionControl() {
-		final String JasonEEExecutionControlLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+		final String JasonEEExecutionControlLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 				+ ExecutionControlBean.class.getSimpleName() + "!"
 				+ ExecutionControl.class.getName() + "?stateful";
 		ExecutionControl ctrl = ObjectFactory.lookup(JasonEEExecutionControlLookup,
@@ -101,7 +101,7 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createEnvironment() {
-		final String JasonEEEnvironmentLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+		final String JasonEEEnvironmentLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 				+ EnvironmentBean.class.getSimpleName() + "!" + Environment.class.getName()
 				+ "?stateful";
 		Environment env = ObjectFactory.lookup(JasonEEEnvironmentLookup, Environment.class);
@@ -142,8 +142,7 @@ public class JasonEEStarterImpl implements JasonEEStarter {
 	}
 
 	private void createAgent(String agentName, String runtimeName) {
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE,
-				JasonEEAgent.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, JasonEEAgent.class.getSimpleName());
 		AgentInitArgs args = new AgentInitArgs();
 		args.put("mas2jSource", project.getMas2jSource());
 		args.put("agentName", agentName);

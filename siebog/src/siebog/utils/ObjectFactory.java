@@ -22,6 +22,7 @@ package siebog.utils;
 
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
+import siebog.agents.Agent;
 import siebog.agents.AgentManager;
 import siebog.agents.AgentManagerBean;
 import siebog.interaction.JMSFactory;
@@ -31,23 +32,22 @@ import siebog.jasonee.JasonEEStarter;
 import siebog.jasonee.JasonEEStarterImpl;
 import siebog.jasonee.RemoteObjectFactory;
 import siebog.radigost.WebClientManager;
-import siebog.starter.Global;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public abstract class ObjectFactory {
-	public static final String AgentManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+	public static final String AgentManagerLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 			+ AgentManagerBean.class.getSimpleName() + "!" + AgentManager.class.getName();
-	public static final String MessageManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+	public static final String MessageManagerLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 			+ MessageManagerBean.class.getSimpleName() + "!" + MessageManager.class.getName();
-	public static final String ExecutorServiceLookup = "java:global/" + Global.SIEBOG_MODULE + "/"
+	public static final String ExecutorServiceLookup = "java:global/" + Agent.SIEBOG_MODULE + "/"
 			+ ExecutorService.class.getSimpleName() + "!" + ExecutorService.class.getName();
-	public static final String WebClientManagerLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+	public static final String WebClientManagerLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 			+ WebClientManager.class.getSimpleName() + "!" + WebClientManager.class.getName()
 			+ "?stateful";
-	public static final String JMSFactoryLookup = "java:app/" + Global.SIEBOG_MODULE + "/"
+	public static final String JMSFactoryLookup = "java:app/" + Agent.SIEBOG_MODULE + "/"
 			+ JMSFactory.class.getSimpleName();
 
 	public static AgentManager getAgentManager() {
@@ -71,7 +71,7 @@ public abstract class ObjectFactory {
 	}
 
 	public static JasonEEStarter getJasonEEStarter() {
-		final String JasonEEStarterLookup = "ejb:/" + Global.SIEBOG_MODULE + "//"
+		final String JasonEEStarterLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 				+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
 		return lookup(JasonEEStarterLookup, JasonEEStarter.class);
 	}

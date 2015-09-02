@@ -35,7 +35,6 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 
 /**
  * Example of a ping agent.
@@ -60,7 +59,7 @@ public class Ping extends XjafAgent {
 		System.out.println("Message to Ping: " + msg);
 		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
-			AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Pong.class.getSimpleName());
+			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName());
 			AID pongAid = new AID(msg.content, agClass);
 			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
 			msgToPong.sender = myAid;

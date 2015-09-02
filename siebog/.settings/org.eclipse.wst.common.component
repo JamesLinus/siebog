@@ -3,6 +3,7 @@
         <wb-resource deploy-path="/" source-path="/war" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/war/radigost"/>
         <property name="context-root" value="siebog"/>
         <property name="java-output-path" value="/siebog/build/classes"/>
     </wb-module>

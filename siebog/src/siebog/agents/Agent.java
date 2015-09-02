@@ -30,6 +30,8 @@ import siebog.interaction.ACLMessage;
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public interface Agent extends Serializable {
+	String SIEBOG_MODULE = "siebog";
+
 	void init(AID aid, AgentInitArgs args);
 
 	void stop();

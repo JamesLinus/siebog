@@ -22,10 +22,10 @@ package siebog.agents.test.hacontractnet;
 
 import siebog.SiebogClient;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -44,14 +44,14 @@ public class HAContractNet {
 
 	private static AID[] createParticipants() {
 		AID[] aids = new AID[NUM_PARTICIPANTS];
-		AgentClass pcls = new AgentClass(Global.SIEBOG_MODULE, Participant.class.getSimpleName());
+		AgentClass pcls = new AgentClass(Agent.SIEBOG_MODULE, Participant.class.getSimpleName());
 		for (int i = 0; i < NUM_PARTICIPANTS; i++)
 			aids[i] = ObjectFactory.getAgentManager().startServerAgent(pcls, "P" + i, null);
 		return aids;
 	}
 
 	private static AID createInitiator() {
-		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, Initiator.class.getSimpleName());
+		AgentClass icls = new AgentClass(Agent.SIEBOG_MODULE, Initiator.class.getSimpleName());
 		return ObjectFactory.getAgentManager().startServerAgent(icls, "I", null);
 	}
 

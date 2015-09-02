@@ -34,7 +34,6 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 
 /**
  * Implementation of an ant.
@@ -186,7 +185,8 @@ public class Ant extends XjafAgent {
 			// initiate local pheromone update
 			ACLMessage localUpdate = new ACLMessage(Performative.INFORM);
 			localUpdate.receivers.add(mapAID);
-			localUpdate.content = "UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex + " " + ksi;
+			localUpdate.content = "UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex
+					+ " " + ksi;
 
 			// advance the phase as required (if tour complete, continue with phase 3, otherwise,
 			// repeat phase 1)
@@ -196,7 +196,8 @@ public class Ant extends XjafAgent {
 
 				ACLMessage edgeWeightReq = new ACLMessage(Performative.REQUEST);
 				edgeWeightReq.receivers.add(mapAID);
-				edgeWeightReq.content = "EdgeWeight? " + currentMapPosIndex + " " + firstMapPosIndex;
+				edgeWeightReq.content = "EdgeWeight? " + currentMapPosIndex + " "
+						+ firstMapPosIndex;
 				edgeWeightReq.sender = myAid;
 				msm().post(edgeWeightReq);
 
@@ -242,7 +243,7 @@ public class Ant extends XjafAgent {
 				phase = 6;
 				// when this ant is done, create another one
 				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
-				AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, "Ant");
+				AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
 				agm().startServerAgent(agClass, name, null);
 				agm().stopAgent(myAid);
 				return;
@@ -254,8 +255,8 @@ public class Ant extends XjafAgent {
 			updatePheromone.receivers.add(mapAID);
 			// float val = (1 - ro) * oldValue + ro * delta; // final formula is constructed in Map
 			// agent (for simplicity of oldValue retrieval)
-			updatePheromone.content = "UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex + " " + (1 - ro)
-					+ " " + ro * delta;
+			updatePheromone.content = "UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex
+					+ " " + (1 - ro) + " " + ro * delta;
 			updatePheromone.sender = myAid;
 			msm().post(updatePheromone);
 
@@ -321,7 +322,8 @@ public class Ant extends XjafAgent {
 	}
 
 	/**
-	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is already empty.
+	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is
+	 *         already empty.
 	 */
 	public int removeLastNode() {
 
@@ -332,8 +334,8 @@ public class Ant extends XjafAgent {
 	}
 
 	/**
-	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1, if the list is
-	 *         already empty;
+	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1,
+	 *         if the list is already empty;
 	 */
 	public float removeLastWeight() {
 		if (tourSoFarWeights.size() != 0)

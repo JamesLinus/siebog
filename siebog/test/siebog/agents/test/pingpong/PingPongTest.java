@@ -26,13 +26,13 @@ import java.rmi.RemoteException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentManager;
 import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -54,10 +54,12 @@ public class PingPongTest extends TestClientBase {
 	private void runPingPong() {
 		AgentManager agm = ObjectFactory.getAgentManager();
 
-		AID pingAid = agm.startServerAgent(new AgentClass(Global.SIEBOG_MODULE, Ping.class.getSimpleName()), "Ping", null);
+		AID pingAid = agm.startServerAgent(
+				new AgentClass(Agent.SIEBOG_MODULE, Ping.class.getSimpleName()), "Ping", null);
 
 		String pongName = "Pong";
-		agm.startServerAgent(new AgentClass(Global.SIEBOG_MODULE, Pong.class.getSimpleName()), pongName, null);
+		agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName()),
+				pongName, null);
 
 		MessageManager msm = ObjectFactory.getMessageManager();
 		ACLMessage message = new ACLMessage(Performative.REQUEST);

@@ -28,7 +28,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import siebog.starter.Global;
 
 /**
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
@@ -37,7 +36,7 @@ public class ScriptLoader {
 	private String radigostSource;
 
 	public ScriptLoader() {
-		radigostSource = getJSSource("radigost.js");
+		radigostSource = getJSSource("/radigost.js");
 	}
 
 	public Invocable load(String url, String state) throws ScriptException, NoSuchMethodException {
@@ -48,7 +47,7 @@ public class ScriptLoader {
 		Object jsAgent = invocable.invokeFunction("getAgentInstance");
 		// inject state and signal arrival
 		invocable.invokeMethod(jsAgent, "setState", state);
-		invocable.invokeMethod(jsAgent, "onArrived", Global.getNodeName(), true);
+		invocable.invokeMethod(jsAgent, "onArrived", System.getProperty("jboss.node.name"), true);
 		return invocable;
 	}
 

@@ -2,11 +2,11 @@ package siebog.interaction.contractnet.example;
 
 import siebog.SiebogClient;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentBuilder;
 import siebog.agents.AgentClass;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -24,15 +24,14 @@ public class Test {
 	}
 
 	private static AID[] createParticipants() {
-		return AgentBuilder
-			.siebog()
-			.ejb(ParticipantExample.class)
-			.startNInstances(NUM_PARTICIPANTS).toArray(new AID[0]);
+		return AgentBuilder.siebog().ejb(ParticipantExample.class)
+				.startNInstances(NUM_PARTICIPANTS).toArray(new AID[0]);
 	}
 
 	private static AID createInitiator() {
-		//return AgentBuilder.siebog().ejb(InitiatorExample.class).start();
-		AgentClass icls = new AgentClass(Global.SIEBOG_MODULE, InitiatorExample.class.getSimpleName());
+		// return AgentBuilder.siebog().ejb(InitiatorExample.class).start();
+		AgentClass icls = new AgentClass(Agent.SIEBOG_MODULE,
+				InitiatorExample.class.getSimpleName());
 		return ObjectFactory.getAgentManager().startServerAgent(icls, "I1", null);
 	}
 
@@ -40,6 +39,6 @@ public class Test {
 		ACLMessage msg = new ACLMessage(Performative.REQUEST);
 		msg.receivers.add(initiator);
 		ObjectFactory.getMessageManager().post(msg);
-		
+
 	}
 }

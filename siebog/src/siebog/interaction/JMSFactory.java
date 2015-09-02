@@ -14,7 +14,7 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import siebog.starter.Global;
+import siebog.agents.Agent;
 
 @Singleton
 @LocalBean
@@ -32,7 +32,7 @@ public class JMSFactory {
 	public void postConstruct() {
 		try {
 			connection = connectionFactory.createConnection();
-			connection.setClientID(Global.SIEBOG_MODULE);
+			connection.setClientID(Agent.SIEBOG_MODULE);
 			connection.start();
 		} catch (JMSException ex) {
 			throw new IllegalStateException(ex);

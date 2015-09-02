@@ -22,7 +22,6 @@ package siebog.agents.jasonee.ha;
 
 import java.util.logging.Logger;
 import siebog.jasonee.control.UserExecutionControl;
-import siebog.starter.Global;
 
 /**
  * 
@@ -34,7 +33,8 @@ public class HAExecutionControl extends UserExecutionControl {
 
 	@Override
 	public void allAgsFinished(int cycleNum) {
-		logger.info("Cycle " + cycleNum + " finished on node " + Global.getNodeName());
+		logger.info("Cycle " + cycleNum + " finished on node "
+				+ System.getProperty("jboss.node.name"));
 		super.allAgsFinished(cycleNum);
 	}
 }

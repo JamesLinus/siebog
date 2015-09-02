@@ -27,12 +27,12 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.test.TestClientBase;
 import siebog.agents.test.TestProps;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 
 /**
  * Tests if agents are properly distributed over all cluster nodes.
@@ -63,7 +63,7 @@ public class LoadBalancingTest extends TestClientBase {
 	}
 
 	private AID createAgent() {
-		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, LoadBalanced.class.getSimpleName());
+		AgentClass cls = new AgentClass(Agent.SIEBOG_MODULE, LoadBalanced.class.getSimpleName());
 		return agm.startServerAgent(cls, "LB" + System.currentTimeMillis(), null);
 	}
 

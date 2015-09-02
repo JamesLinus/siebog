@@ -1,0 +1,6 @@
+Don't use this 'starter' package from other packages, or vice versa!
+
+This package is here for end-users' convenience only and should not 
+share reference or be referenced by other parts of the project.
+
+Runtime exceptions may happen otherwise! 

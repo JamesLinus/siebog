@@ -29,12 +29,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import siebog.SiebogClient;
 import siebog.agents.AID;
-import siebog.agents.AgentClass;
-import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**

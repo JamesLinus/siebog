@@ -26,12 +26,12 @@ import java.rmi.RemoteException;
 import org.junit.Before;
 import org.junit.Test;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentManager;
 import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -53,7 +53,7 @@ public class ClientServerTest extends TestClientBase {
 	@Test
 	public void testClientServerMessaging() throws InterruptedException {
 		// server-side agent
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE,
+		AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE,
 				ClientServerAgent.class.getSimpleName());
 		AgentManager agm = ObjectFactory.getAgentManager();
 		AID csAgent = agm.startServerAgent(agClass, "CSServer" + System.currentTimeMillis(), null);

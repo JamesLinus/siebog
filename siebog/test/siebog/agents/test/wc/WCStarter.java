@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 import siebog.SiebogClient;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentManager;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 public class WCStarter {
@@ -18,7 +18,7 @@ public class WCStarter {
 		AgentManager agm = ObjectFactory.getAgentManager();
 		MessageManager msm = ObjectFactory.getMessageManager();
 
-		AgentClass cls = new AgentClass(Global.SIEBOG_MODULE, WordCounter.class.getSimpleName());
+		AgentClass cls = new AgentClass(Agent.SIEBOG_MODULE, WordCounter.class.getSimpleName());
 
 		final int numAgents = 4;
 		Set<AID> aids = new HashSet<>();

@@ -22,7 +22,6 @@ package siebog.agents;
 
 import java.util.HashSet;
 import java.util.Set;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -41,7 +40,7 @@ public class AgentBuilder {
 	}
 
 	public static AgentBuilder siebog() {
-		return module(Global.SIEBOG_MODULE);
+		return module(Agent.SIEBOG_MODULE);
 	}
 
 	public static AgentBuilder module(String name) {

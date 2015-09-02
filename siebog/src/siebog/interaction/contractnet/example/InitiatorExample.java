@@ -40,6 +40,7 @@ import siebog.interaction.contractnet.Result;
 public class InitiatorExample extends Initiator {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(InitiatorExample.class);
+	@SuppressWarnings("unused")
 	private long needsToBeFinished;
 
 	@Override

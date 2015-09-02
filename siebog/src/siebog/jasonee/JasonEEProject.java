@@ -31,11 +31,11 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import siebog.starter.FileUtils;
+import siebog.utils.FileUtils;
 
 /**
- * Description of a Jason EE project that can be sent to remote nodes. Includes the full source of mas2j and of all the
- * referenced agents.
+ * Description of a Jason EE project that can be sent to remote nodes. Includes the full source of
+ * mas2j and of all the referenced agents.
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
@@ -71,7 +71,8 @@ public class JasonEEProject implements Serializable {
 		} catch (IllegalStateException ex) {
 			throw ex;
 		} catch (IOException ex) {
-			throw new IllegalArgumentException("There was a problem with reading the file " + file, ex);
+			throw new IllegalArgumentException("There was a problem with reading the file " + file,
+					ex);
 		}
 	}
 
@@ -98,12 +99,14 @@ public class JasonEEProject implements Serializable {
 	public MAS2JProject getMas2j() {
 		try {
 			if (mas2j == null) {
-				jason.mas2j.parser.mas2j parser = new jason.mas2j.parser.mas2j(new StringReader(mas2jSource));
+				jason.mas2j.parser.mas2j parser = new jason.mas2j.parser.mas2j(new StringReader(
+						mas2jSource));
 				mas2j = parser.mas();
 
 				mas2j.setupDefault();
 				mas2j.registerDirectives();
-				((Include) DirectiveProcessor.getDirective("include")).setSourcePath(mas2j.getSourcePaths());
+				((Include) DirectiveProcessor.getDirective("include")).setSourcePath(mas2j
+						.getSourcePaths());
 			}
 			return mas2j;
 		} catch (ParseException ex) {

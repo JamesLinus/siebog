@@ -26,8 +26,6 @@ import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import siebog.starter.Global;
-import siebog.starter.config.NodeConfig;
 
 /**
  * Helper class for client initialization.
@@ -35,10 +33,13 @@ import siebog.starter.config.NodeConfig;
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
 public class SiebogClient {
+	private static final String USERNAME = "xjaf2xadmin";
+	private static final String PASSWORD = "xjaf2xpass~";
 	private static boolean connected;
 
 	/**
-	 * Connect to a running Siebog cluster. This method should be called before any other interaction with the server.
+	 * Connect to a running Siebog cluster. This method should be called before any other
+	 * interaction with the server.
 	 * 
 	 * @param masterAddress Address of the master node.
 	 * @param slaves Address of at least one slave node (if any).
@@ -46,17 +47,14 @@ public class SiebogClient {
 	public static void connect(String masterAddress, String... slaves) {
 		if (connected)
 			return;
-		if (masterAddress == null)
-			masterAddress = NodeConfig.get().getAddress();
-
 		Properties p = new Properties();
 		p.put("endpoint.name", "client-endpoint");
 		p.put("deployment.node.selector", RRDeploymentNodeSelector.class.getName());
 
 		p.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
 		p.put("remote.clusters", "ejb");
-		p.put("remote.cluster.ejb.username", Global.USERNAME);
-		p.put("remote.cluster.ejb.password", Global.PASSWORD);
+		p.put("remote.cluster.ejb.username", USERNAME);
+		p.put("remote.cluster.ejb.password", PASSWORD);
 		// p.put("remote.cluster.ejb.clusternode.selector", RRClusterNodeSelector.class.getName());
 
 		addConnection(p, "master", masterAddress, 8080);
@@ -79,7 +77,7 @@ public class SiebogClient {
 		p.put(prefix + ".host", address);
 		p.put(prefix + ".port", port + "");
 		p.put(prefix + ".connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
-		p.put(prefix + ".username", Global.USERNAME);
-		p.put(prefix + ".password", Global.PASSWORD);
+		p.put(prefix + ".username", USERNAME);
+		p.put(prefix + ".password", PASSWORD);
 	}
 }

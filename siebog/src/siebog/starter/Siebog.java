@@ -32,7 +32,7 @@ public class Siebog {
 	}
 
 	private static void printUsage() {
-		out.println("USAGE: java -jar siebog-start.jar NodeDescription");
+		out.println("USAGE: java -jar siebog.war NodeDescription");
 		out.println("NodeDescription describes this Siebog node. If the node is master, use --node=address.");
 		out.println("Otherwise, use --node=name@address-master where name is the cluster-wide unique name of the slave node,");
 		out.println("address is its network address, and master is the network address of a running master node.");

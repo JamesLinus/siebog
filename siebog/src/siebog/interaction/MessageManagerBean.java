@@ -42,7 +42,6 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siebog.agents.AID;
-import siebog.starter.Global;
 
 /**
  * Default message manager implementation.
@@ -110,7 +109,7 @@ public class MessageManagerBean implements MessageManager {
 
 	@Override
 	public String ping() {
-		return "Pong from " + Global.getNodeName();
+		return "Pong from " + System.getProperty("jboss.node.name");
 	}
 
 	private void postToReceiver(ACLMessage msg, int index, long delayMillisec) {

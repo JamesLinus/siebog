@@ -41,7 +41,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import org.w3c.dom.Document;
 import siebog.agents.AID;
-import siebog.starter.Global;
+import siebog.agents.Agent;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -53,7 +53,7 @@ import siebog.utils.ObjectFactory;
 @Lock(LockType.WRITE)
 @AccessTimeout(value = 60000, unit = TimeUnit.MILLISECONDS)
 public class ExecutionControlBean implements ExecutionControl {
-	//private static final Logger logger = Logger.getLogger(ExecutionControlBean.class.getName());
+	// private static final Logger logger = Logger.getLogger(ExecutionControlBean.class.getName());
 	private static final long serialVersionUID = 1L;
 	private int cycleNum;
 	private Set<AID> registered;
@@ -75,10 +75,11 @@ public class ExecutionControlBean implements ExecutionControl {
 	}
 
 	private void registerTimeout() {
-		final String name = "ejb:/" + Global.SIEBOG_MODULE + "//" + ECTimerServiceImpl.class.getSimpleName() + "!"
-				+ ECTimerService.class.getName();
+		final String name = "ejb:/" + Agent.SIEBOG_MODULE + "//"
+				+ ECTimerServiceImpl.class.getSimpleName() + "!" + ECTimerService.class.getName();
 		ECTimerService timer = ObjectFactory.lookup(name, ECTimerService.class);
-		int time = userExecCtrl != null ? userExecCtrl.getCycleTimeout() : UserExecutionControl.DEFAULT_TIMEOUT;
+		int time = userExecCtrl != null ? userExecCtrl.getCycleTimeout()
+				: UserExecutionControl.DEFAULT_TIMEOUT;
 		timer.schedule(time, myName, cycleNum);
 	}
 
@@ -168,20 +169,20 @@ public class ExecutionControlBean implements ExecutionControl {
 
 	private void filterUnavailableAgents() {
 		// TODO : Implement filterUnavailableAgents
-//		final MessageManager msm = ObjectFactory.getMessageManager();
-//		Iterator<AID> i = registered.iterator();
-//		while (i.hasNext()) {
-//			AID aid = i.next();
-//			ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
-//			try {
-//				int successful = msm.post(tm);
-//				if (successful != 1)
-//					throw new Exception(); // get() can also throw an exception
-//			} catch (Exception ex) {
-//				logger.info("Agent " + aid + " no longer available.");
-//				i.remove();
-//				running.remove(aid);
-//			}
-//		}
+		// final MessageManager msm = ObjectFactory.getMessageManager();
+		// Iterator<AID> i = registered.iterator();
+		// while (i.hasNext()) {
+		// AID aid = i.next();
+		// ReasoningCycleTimeout tm = new ReasoningCycleTimeout(aid, cycleNum);
+		// try {
+		// int successful = msm.post(tm);
+		// if (successful != 1)
+		// throw new Exception(); // get() can also throw an exception
+		// } catch (Exception ex) {
+		// logger.info("Agent " + aid + " no longer available.");
+		// i.remove();
+		// running.remove(aid);
+		// }
+		// }
 	}
 }

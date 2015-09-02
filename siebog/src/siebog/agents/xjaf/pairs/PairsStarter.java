@@ -30,13 +30,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import siebog.SiebogClient;
 import siebog.agents.AID;
+import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -46,11 +46,12 @@ import siebog.utils.ObjectFactory;
  */
 public class PairsStarter {
 
-	public static void main(String[] args) throws NamingException, IOException, ParserConfigurationException,
-			SAXException {
+	public static void main(String[] args) throws NamingException, IOException,
+			ParserConfigurationException, SAXException {
 		String addr = System.getProperty("java.rmi.server.hostname");
 		if (args.length != 4 || addr == null) {
-			System.out.println("I need 4 arguments: NumOfPairs NumIterations " + "PrimeLimit MsgContentLen");
+			System.out.println("I need 4 arguments: NumOfPairs NumIterations "
+					+ "PrimeLimit MsgContentLen");
 			System.out.println("In addition, set the property java.rmi.server.hostname "
 					+ "to the address of this computer.");
 			return;
@@ -67,13 +68,15 @@ public class PairsStarter {
 		AgentManager agm = ObjectFactory.getAgentManager();
 		for (int i = 0; i < numPairs; i++) {
 			// receiver
-			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit, "numIterations->" + numIterations);
-			AgentClass rcAgClass = new AgentClass(Global.SIEBOG_MODULE, "Receiver");
+			AgentInitArgs rcArgs = new AgentInitArgs("primeLimit->" + primeLimit, "numIterations->"
+					+ numIterations);
+			AgentClass rcAgClass = new AgentClass(Agent.SIEBOG_MODULE, "Receiver");
 			AID rcAid = agm.startServerAgent(rcAgClass, "R" + i, rcArgs);
 			// sender
-			AgentInitArgs snArgs = new AgentInitArgs("numIterations->" + numIterations, "contentLength->"
-					+ contentLength, "rcvrAid->" + rcAid.toString(), "resultsServiceAddr->" + addr);
-			AgentClass snAgClass = new AgentClass(Global.SIEBOG_MODULE, "Sender");
+			AgentInitArgs snArgs = new AgentInitArgs("numIterations->" + numIterations,
+					"contentLength->" + contentLength, "rcvrAid->" + rcAid.toString(),
+					"resultsServiceAddr->" + addr);
+			AgentClass snAgClass = new AgentClass(Agent.SIEBOG_MODULE, "Sender");
 			AID snAid = agm.startServerAgent(snAgClass, "S" + i, snArgs);
 			senders.add(snAid);
 		}

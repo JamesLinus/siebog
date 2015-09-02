@@ -35,7 +35,6 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
-import siebog.starter.Global;
 
 /**
  * Sends a request to the Receiver agent and calculates the message round-trip time (RTT). A number
@@ -58,7 +57,7 @@ public class Sender extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		AgentClass agClass = new AgentClass(Global.SIEBOG_MODULE, Receiver.class.getSimpleName());
+		AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, Receiver.class.getSimpleName());
 		receiver = new AID(args.get("rcvrAid", null), agClass);
 		numIterations = args.getInt("numIterations", 0);
 		// create message content
