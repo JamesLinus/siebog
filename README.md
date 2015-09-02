@@ -28,14 +28,14 @@ The archive includes the [WildFly](http://wildfly.org) enterprise application se
 Please note that Siebog requires Java SE Development Kit (JDK) version 8 to run. The Java Runtime Environment (JRE) will not suffice. You may [download the latest JDK here](http://www.oracle.com/technetwork/java/javase/downloads/index.html). To make sure the correct Java version is used, you should set an environment variable named JAVA\_HOME to point to the JDK installation folder
 (e.g. *C:\Program Files\Java\jdk1.8.0_20* on Windows, or */usr/lib/jvm/java-8-oracle* on Linux).
 
-Finally, to start Siebog, go to the unpacked folder, and execute `java -jar start.jar`. Once you see the message *INFO: Siebog node ready.* visit the client application at [http://localhost:8080/siebog](http://localhost:8080/siebog). From there, you may explore the framework's functionalities and run some of the bundled example agents. For more information about writing your own agents, please consult the source code.
+Finally, to start Siebog, go to the unpacked folder, and execute `java -jar siebog.war`. Once you see the message *INFO: Siebog node ready.* visit the client application at [http://localhost:8080/siebog](http://localhost:8080/siebog). From there, you may explore the framework's functionalities and run some of the bundled example agents. For more information about writing your own agents, please consult the source code.
 
 Running Siebog in a cluster
 -------
 
 Siebog operates in a symmetric cluster: each node is connected to every other node. A single node is recognized as the *master* and can be used to remotely control the cluster. Other nodes are called *slaves*.
 
-By default, the `start` utility runs a single master node on localhost. This behavior can be changed using the program argument "--node":
+By default, Siebog is started as a single master node on localhost. This behavior can be changed using the program argument "--node":
 
  * If the node is master, use *--node=address*, where *address* is the node's network address.
  * Otherwise, use *--node=name@address-master\_address*, where *name* is the cluster-wide unique name of the slave node, *address* is its network address, and *master\_address* is the network address of a running master node.
