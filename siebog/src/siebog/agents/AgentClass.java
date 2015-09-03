@@ -33,7 +33,6 @@ public class AgentClass implements Serializable {
 	private final String module;
 	private final String ejbName;
 	private final String path;
-	private final String path = "/siebog/agents/xjaf";
 
 	public AgentClass() {
 		this("", "");
