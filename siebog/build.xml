@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE project>
 <project default="package" name="start" basedir="." xmlns:sonar="antlib:org.sonar.ant">
-	<property environment="env" />
-	<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
 	<property name="dist.dir" value="${basedir}/../dist" />
 	<property name="bin.dir" value="bin" />
 	<property file="build.properties" />
 
 	<property name="wildfly.modules" value="./${server.name}/modules/system/layers/base" />
 	<property name="starter.modules" value="${wildfly.modules}/org/jboss" />
+	<property name="wildfly.base" value="../wildfly-base" />
 
 	<target name="package">
 		<delete file="${siebog.path}" />
@@ -33,19 +32,20 @@
 		<antcall target="package" />
 		<!-- Starting WildFly -->
 		<copy todir="${dist.dir}/${server.name}">
-			<fileset dir="../wildfly-base" includes="**" />
+			<fileset dir="${wildfly.base}" includes="**" />
 		</copy>
 		<!-- Configuration Files -->
 		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/starter/standalone-full-ha.xml" overwrite="true" verbose="true" />
 		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/starter/domain.xml" overwrite="true" verbose="true" />
 		<!-- DNARS Module -->
-		<ant antfile="../dnars/build.xml" target="module" inheritall="false" useNativeBasedir="true" />
+		<ant antfile="../dnars/build.xml" target="module" inheritall="true" useNativeBasedir="true" />
 		<!-- Auxiliary Files -->
 		<copy todir="${dist.dir}" file="../LICENSE" />
 		<copy todir="${dist.dir}" file="../NOTICE" />
 		<copy todir="${dist.dir}" file="../README.md" />
 		<copy todir="${dist.dir}" file="siebog.properties" />
 		<copy todir="${dist.dir}" file="siebog.sh" />
+		<copy todir="${dist.dir}" file="siebog.bat" />
 	</target>
 
 	<target name="undeploy">

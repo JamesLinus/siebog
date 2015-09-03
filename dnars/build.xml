@@ -38,9 +38,7 @@
 
 	<target name="module" depends="package">
 		<!-- Init -->
-		<property environment="env" />
-		<fail unless="env.JBOSS_HOME" message="Environment variable JBOSS_HOME not set." />
-		<property name="module.dir" value="${env.JBOSS_HOME}/modules/system/layers/base/dnars/main" />
+		<property name="module.dir" value="${dist.dir}/${server.name}/modules/system/layers/base/dnars/main" />
 		<!-- Clean -->
 		<delete dir="${module.dir}" />
 		<mkdir dir="${module.dir}" />
