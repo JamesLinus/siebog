@@ -85,7 +85,8 @@ public class JndiTreeParser {
 	private AgentClass parseEjbName(String module, String ejbName) {
 		ejbName = extractAgentName(ejbName);
 		if (!ignored.contains(ejbName)) {
-			return new AgentClass(module, ejbName);
+			String path = String.format("/%s/agents/xjaf", module);
+			return new AgentClass(module, ejbName, path);
 		}
 		return null;
 	}
