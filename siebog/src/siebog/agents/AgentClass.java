@@ -32,19 +32,20 @@ public class AgentClass implements Serializable {
 	public static final char SEPARATOR = '$';
 	private final String module;
 	private final String ejbName;
+	private final String path;
 
 	public AgentClass() {
-		module = "";
-		ejbName = "";
+		this("", "");
 	}
 
 	public AgentClass(String module, String ejbName) {
-		this.module = module;
-		this.ejbName = ejbName;
+		this(module, ejbName, "");
 	}
 
-	public static <T extends XjafAgent> AgentClass forSiebogEjb(Class<T> clazz) {
-		return new AgentClass(Agent.SIEBOG_MODULE, clazz.getSimpleName());
+	public AgentClass(String module, String ejbName, String path) {
+		this.module = module;
+		this.ejbName = ejbName;
+		this.path = path;
 	}
 
 	/**
@@ -55,10 +56,16 @@ public class AgentClass implements Serializable {
 	 */
 	public AgentClass(String moduleAndEjbName) {
 		int n = moduleAndEjbName.indexOf(SEPARATOR);
-		if (n <= 0 || n >= moduleAndEjbName.length() - 1)
+		if (n <= 0 || n >= moduleAndEjbName.length() - 1) {
 			throw new IllegalArgumentException("Expected module" + SEPARATOR + "ejbName.");
-		module = moduleAndEjbName.substring(0, n);
-		ejbName = moduleAndEjbName.substring(n + 1);
+		}
+		this.module = moduleAndEjbName.substring(0, n);
+		this.ejbName = moduleAndEjbName.substring(n + 1);
+		this.path = "";
+	}
+
+	public static <T extends XjafAgent> AgentClass forSiebogEjb(Class<T> clazz) {
+		return new AgentClass(Agent.SIEBOG_MODULE, clazz.getSimpleName());
 	}
 
 	public String getModule() {
@@ -98,5 +105,9 @@ public class AgentClass implements Serializable {
 			return false;
 		AgentClass other = (AgentClass) obj;
 		return module.equals(other.module) && ejbName.equals(other.ejbName);
+	}
+
+	public String getPath() {
+		return path;
 	}
 }
