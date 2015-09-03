@@ -32,6 +32,7 @@ public class AgentClass implements Serializable {
 	public static final char SEPARATOR = '$';
 	private final String module;
 	private final String ejbName;
+	private final String path = "/siebog/agents/xjaf";
 
 	public AgentClass() {
 		module = "";
@@ -98,5 +99,9 @@ public class AgentClass implements Serializable {
 			return false;
 		AgentClass other = (AgentClass) obj;
 		return module.equals(other.module) && ejbName.equals(other.ejbName);
+	}
+
+	public String getPath() {
+		return path;
 	}
 }
