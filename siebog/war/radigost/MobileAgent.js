@@ -23,4 +23,4 @@ MobileAgent.prototype.onMessage = function(msg) {
 	}
 }
 
-self.agentInstance = new MobileAgent();
+setAgentInstance(new MobileAgent());
