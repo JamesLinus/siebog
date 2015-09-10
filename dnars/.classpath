@@ -36,6 +36,7 @@
 	<classpathentry kind="lib" path="lib/spatial4j-0.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/titan-cassandra-0.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/titan-core-0.5.3.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl-2.9.1-jbossas-2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 9.x Siebog">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.utility"/>

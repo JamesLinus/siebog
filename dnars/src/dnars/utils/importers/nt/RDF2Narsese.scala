@@ -15,11 +15,15 @@ object RDF2Narsese {
 		println(s"Reading from $input...")
 		val out = new PrintWriter(output)
 		try {
-			val total = NTReader.read(input, (line, st, counter) => {
-				/*val str = s"<(*,${st.subj.id},${st.pred.id})-->${st.copula}>. %1.0;0.9%"
+			val total = NTReader.read(input, (line, ntStat, counter) => {
+				val st = DNarsConvert.toDNarsStatement(ntStat)
+				val pattern = "[#\\[\\]%{}\\-*|,<>]"
+				val subj = st.subj.id.replaceAll(pattern, "_").replace("(x", "<(*").replace(' ', ',')
+				val pred = st.pred.id.replaceAll(pattern, "_")
+				val str = s"${subj} --> ${pred}>. %1.0;0.9%"
 				out.println(str)
-				if (counter % 4096 == 0)
-					println(s"Converted $counter statements...")*/
+				if (counter % 10000 == 0)
+					println(s"Converted $counter statements...")
 				true
 			})
 

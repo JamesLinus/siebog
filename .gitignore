@@ -19,3 +19,4 @@ benchmarks/MTPs-Main-Container.txt
 /build/
 /dist/
 /wildfly-base/
+/dnars/.tmpBin/
