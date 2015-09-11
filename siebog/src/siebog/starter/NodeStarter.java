@@ -62,7 +62,8 @@ public class NodeStarter {
 
 	public void start() {
 		try {
-			copyProfile();
+			setupDomain();
+			setupLogging();
 			if (config.isSlave()) {
 				startSlave();
 			} else {
@@ -75,7 +76,7 @@ public class NodeStarter {
 		}
 	}
 
-	public void copyProfile() throws IOException {
+	public void setupDomain() throws IOException {
 		String resDomain = FileUtils.read(NodeStarter.class.getResourceAsStream("profile.xml"));
 		File domainFile = new File(config.getJBossHome(), "domain/configuration/domain.xml");
 		String domain = FileUtils.read(domainFile);
@@ -83,7 +84,28 @@ public class NodeStarter {
 		int end = domain.indexOf("</profile>", start + 1) + "</profile>".length();
 		StringBuilder str = new StringBuilder(domain);
 		str.replace(start, end, resDomain);
+		removeDeployments(str);
 		FileUtils.write(domainFile, str.toString());
+	}
+
+	private void removeDeployments(StringBuilder str) {
+		int a = str.lastIndexOf("<deployments>");
+		if (a > 0) {
+			String end = "</deployments>";
+			int b = str.lastIndexOf(end);
+			str.delete(a, b + end.length());
+		}
+		File dataDir = new File(config.getJBossHome(), "domain/data/content");
+		if (dataDir.exists()) {
+			dataDir.delete();
+		}
+	}
+
+	private void setupLogging() throws IOException {
+		String logProps = FileUtils.read(NodeStarter.class
+				.getResourceAsStream("logging.properties"));
+		File logFile = new File(config.getJBossHome(), "domain/configuration/logging.properties");
+		FileUtils.write(logFile, logProps);
 	}
 
 	private void startMaster() throws IOException {

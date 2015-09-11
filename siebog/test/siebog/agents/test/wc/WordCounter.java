@@ -18,7 +18,6 @@ import siebog.interaction.Performative;
 
 @Stateful
 @Remote(Agent.class)
-@Clustered
 public class WordCounter extends XjafAgent {
 	private static final Logger LOG = LoggerFactory.getLogger(WordCounter.class);
 	private static final long serialVersionUID = 1L;

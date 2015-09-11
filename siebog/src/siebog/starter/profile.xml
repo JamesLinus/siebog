@@ -1,7 +1,7 @@
 <profile name="full-ha">
 	<subsystem xmlns="urn:jboss:domain:logging:3.0">
 		<console-handler name="CONSOLE">
-			<level name="INFO" />
+			<level name="WARN" />
 			<formatter>
 				<named-formatter name="COLOR-PATTERN" />
 			</formatter>
@@ -33,8 +33,17 @@
 		<logger category="jacorb.config">
 			<level name="ERROR" />
 		</logger>
+		<logger category="org.jboss.as.server.deployment">
+			<level name="ERROR" />
+		</logger>
+		<logger category="org.jboss.as.dependency.private">
+			<level name="ERROR" />
+		</logger>
+		<logger category="org.hibernate.dialect.H2Dialect">
+			<level name="ERROR" />
+		</logger>
 		<root-logger>
-			<level name="INFO" />
+			<level name="WARN" />
 			<handlers>
 				<handler name="CONSOLE" />
 				<handler name="FILE" />
@@ -475,7 +484,7 @@
 		</security-domains>
 	</subsystem>
 	<subsystem xmlns="urn:jboss:domain:transactions:3.0">
-		<core-environment>
+		<core-environment node-identifier="xjaf2x">
 			<process-id>
 				<uuid />
 			</process-id>
