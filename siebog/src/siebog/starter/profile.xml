@@ -1,7 +1,7 @@
 <profile name="full-ha">
 	<subsystem xmlns="urn:jboss:domain:logging:3.0">
 		<console-handler name="CONSOLE">
-			<level name="WARN" />
+			<level name="${loglevel}" />
 			<formatter>
 				<named-formatter name="COLOR-PATTERN" />
 			</formatter>
@@ -43,7 +43,7 @@
 			<level name="ERROR" />
 		</logger>
 		<root-logger>
-			<level name="WARN" />
+			<level name="${loglevel}" />
 			<handlers>
 				<handler name="CONSOLE" />
 				<handler name="FILE" />

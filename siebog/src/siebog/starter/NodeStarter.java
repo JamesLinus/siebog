@@ -78,16 +78,18 @@ public class NodeStarter {
 
 	public void setupDomain() throws IOException {
 		String resDomain = FileUtils.read(NodeStarter.class.getResourceAsStream("profile.xml"));
+		resDomain = resDomain.replace("${loglevel}", "INFO");
 		File domainFile = new File(config.getJBossHome(), "domain/configuration/domain.xml");
 		String domain = FileUtils.read(domainFile);
 		int start = domain.indexOf("<profile name=\"full-ha\">");
 		int end = domain.indexOf("</profile>", start + 1) + "</profile>".length();
 		StringBuilder str = new StringBuilder(domain);
 		str.replace(start, end, resDomain);
-		removeDeployments(str);
+		// removeDeployments(str);
 		FileUtils.write(domainFile, str.toString());
 	}
 
+	@SuppressWarnings("unused")
 	private void removeDeployments(StringBuilder str) {
 		int a = str.lastIndexOf("<deployments>");
 		if (a > 0) {
@@ -104,6 +106,7 @@ public class NodeStarter {
 	private void setupLogging() throws IOException {
 		String logProps = FileUtils.read(NodeStarter.class
 				.getResourceAsStream("logging.properties"));
+		logProps = logProps.replace("${loglevel}", "INFO");
 		File logFile = new File(config.getJBossHome(), "domain/configuration/logging.properties");
 		FileUtils.write(logFile, logProps);
 	}
