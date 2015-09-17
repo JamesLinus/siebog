@@ -183,7 +183,7 @@ public class ACLMessage implements Serializable {
 	public String toString() {
 		JSONObject obj = new JSONObject();
 		try {
-			// TODO Right now, JSONObject will contain only strings, which will need to be parse
+			// TODO Right now, JSONObject will contain only strings, which will need to be parsed
 			// manually later on. Implement a better JSON builder.
 			obj.put("performative", performative);
 			obj.put("sender", sender);

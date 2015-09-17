@@ -99,7 +99,8 @@ public class AgentManagerBean implements AgentManager {
 	public AID startServerAgent(@PathParam("agClass") AgentClass agClass,
 			@PathParam("name") String name, @Form AgentInitArgs args,
 			@QueryParam("replace") @DefaultValue("true") boolean replace) {
-		AID aid = new AID(name, agClass);
+		String host = args.get("host", null);
+		AID aid = new AID(name, host, agClass);
 		startServerAgent(aid, args);
 		return aid;
 	}

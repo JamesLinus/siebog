@@ -34,6 +34,7 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -89,9 +90,9 @@ public class MessageManagerBean implements MessageManager {
 
 	@POST
 	@Path("/")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public void post(ACLMessage msg) {
+	public void post(@FormParam("acl") ACLMessage msg) {
 		post(msg, 0);
 	}
 

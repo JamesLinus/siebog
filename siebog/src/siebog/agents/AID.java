@@ -54,7 +54,7 @@ public final class AID implements Serializable {
 
 	public AID(String name, String host, AgentClass agClass) {
 		this.name = name;
-		this.host = host;
+		this.host = host != null ? host : HOST_NAME;
 		this.agClass = agClass;
 		str = name + "@" + host;
 	}

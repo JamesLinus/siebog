@@ -41,10 +41,12 @@ XJAF.getPerformatives = function(onSuccess, onError) {
 };
 
 XJAF.post = function(msg, onSuccess, onError) {
-	$.ajax(XJAF.msm, {
-		type : "POST",
-		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
-		data : "acl=" + JSON.stringify(msg),
+	$.ajax({
+		url: XJAF.msm, 
+		type: "POST",
+		data: "acl=" + JSON.stringify(msg),
+		contentType: "application/x-www-form-urlencoded",
+		processData: false,
 		success : onSuccess,
 		error : onError
 	});
@@ -101,14 +103,18 @@ function WebClientSocket(radigost) {
 	var self = this;
 	this.socket.onmessage = function(e) {
 		var msg = JSON.parse(e.data);
-		if (typeof msg.sender === "string")
+		if (typeof msg.sender === "string") {
 			msg.sender = JSON.parse(msg.sender);
-		if (typeof msg.replyTo === "string")
+		}
+		if (typeof msg.replyTo === "string") {
 			msg.replyTo = JSON.parse(msg.replyTo);
-		for (var i = 0, len = msg.receivers.length; i < len; i++)
-			if (typeof msg.receivers[i] === "string")
+		}
+		for (var i = 0, len = msg.receivers.length; i < len; i++) {
+			if (typeof msg.receivers[i] === "string") {
 				msg.receivers[i] = JSON.parse(msg.receivers[i]);
-		self.radigost.post(msg);
+			}
+		}
+		self.radigost.postToClient(msg);
 	};
 	this.socket.onopen = function(e) {
 		self.socket.send(WebClientOpCode.REGISTER + self.radigost.host);
@@ -182,7 +188,22 @@ function Radigost(host, autoCreateStubs) {
 		}
 		return newAid;
 	};
+	
+	this.postToServer = function(msg) {
+		XJAF.post(msg);
+	};
+	
+	this.postToClient = function(msg) {
+		for (var i = 0, len = msg.receivers.length; i < len; i++) {
+			var ag = this.getAgent(msg.receivers[i]);
+			if (ag != null && ag.worker != null) {
+				ag.worker.postMessage(msg);
+			}
+		}
+	};
 
+	// uses the 'radigost' field of each receiver aid to determine if the agent
+	// is on the client (true) or on the server (false)
 	this.post = function(msg) {
 		var server = [];
 		for (var i = 0, j = 0, len = msg.receivers.length; i < len; i++) {
