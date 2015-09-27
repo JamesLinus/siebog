@@ -42,6 +42,9 @@
 		<logger category="org.hibernate.dialect.H2Dialect">
 			<level name="ERROR" />
 		</logger>
+		<logger category="siebog">
+			<level name="INFO" />
+		</logger>
 		<root-logger>
 			<level name="${loglevel}" />
 			<handlers>

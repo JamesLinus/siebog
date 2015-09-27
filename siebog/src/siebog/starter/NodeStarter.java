@@ -78,7 +78,7 @@ public class NodeStarter {
 
 	public void setupDomain() throws IOException {
 		String resDomain = FileUtils.read(NodeStarter.class.getResourceAsStream("profile.xml"));
-		resDomain = resDomain.replace("${loglevel}", "INFO");
+		resDomain = resDomain.replace("${loglevel}", config.getLogLevel());
 		File domainFile = new File(config.getJBossHome(), "domain/configuration/domain.xml");
 		String domain = FileUtils.read(domainFile);
 		int start = domain.indexOf("<profile name=\"full-ha\">");
@@ -106,7 +106,7 @@ public class NodeStarter {
 	private void setupLogging() throws IOException {
 		String logProps = FileUtils.read(NodeStarter.class
 				.getResourceAsStream("logging.properties"));
-		logProps = logProps.replace("${loglevel}", "INFO");
+		logProps = logProps.replace("${loglevel}", config.getLogLevel());
 		File logFile = new File(config.getJBossHome(), "domain/configuration/logging.properties");
 		FileUtils.write(logFile, logProps);
 	}

@@ -16,8 +16,9 @@ public class NodeConfig {
 	private File jbossHome;
 	private File rootFolder;
 	private File configFile;
-	private NodeInfo node;
+	private NodeInfo node = new NodeInfo("localhost");
 	private String cassandraHost;
+	private String logLevel = "INFO";
 	private static NodeConfig instance;
 
 	public static synchronized NodeConfig get() {
@@ -120,6 +121,16 @@ public class NodeConfig {
 			case "cassandra.host":
 				cassandraHost = value;
 				break;
+			case "--loglevel":
+			case "-loglevel":
+			case "loglevel":
+				logLevel = value.toUpperCase();
+				if (!logLevel.equals("DEBUG") && !logLevel.equals("INFO")
+						&& !logLevel.equals("WARN") && !logLevel.equals("ERROR")) {
+					throw new IllegalArgumentException("loglevel should be one of the following: "
+							+ "debug, info, warn, error");
+				}
+				break;
 			case "--help":
 			case "-help":
 			case "help":
@@ -148,5 +159,9 @@ public class NodeConfig {
 		} catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	public String getLogLevel() {
+		return logLevel;
 	}
 }
