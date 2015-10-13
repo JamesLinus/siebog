@@ -6,6 +6,7 @@ import siebog.SiebogClient;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
+import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.MessageManager;
@@ -23,7 +24,7 @@ public class WCStarter {
 		final int numAgents = 4;
 		Set<AID> aids = new HashSet<>();
 		for (int i = 0; i < numAgents; i++) {
-			AID aid = agm.startServerAgent(cls, "WC-" + i, null);
+			AID aid = agm.startServerAgent(cls, "WC-" + i, new AgentInitArgs("host=localhost"));
 			aids.add(aid);
 		}
 
@@ -31,7 +32,7 @@ public class WCStarter {
 		for (AID aid : aids) {
 			ACLMessage msg = new ACLMessage(Performative.REQUEST);
 			msg.receivers.add(aid);
-			msg.content = "/home/dejan/paper.tex";
+			msg.content = "standalone.bat";
 			msm.post(msg);
 		}
 		// Thread.sleep(1000);

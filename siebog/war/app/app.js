@@ -4,8 +4,17 @@ var siebog = angular.module('siebog', [
 ]);
 
 siebog.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/home', {
+        $routeProvider.when('/', {
             templateUrl:'partials/body.tpl.html',
             controller:'BodyCtrl'
-        }).otherwise({redirectTo:'/home'});
+        }).when('/Examples',
+        		{
+    		templateUrl: 'partials/Examples.html'
+    	}).when('/xjafExamples',
+        		{
+    		templateUrl: 'xjaf/Examples.html'
+    	}).when('/radigostExamples',
+        		{
+    		templateUrl: 'radigost/Examples.html'
+    	}).otherwise({redirectTo:'/'});
 }]);

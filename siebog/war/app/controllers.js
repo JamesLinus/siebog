@@ -67,9 +67,9 @@ siebog.controller('AppCtrl', [function() {
        			 method: 'POST',
        			 url: '/siebog/rest/messages',
        			 headers: {
-       			   'Content-Type': 'application/json'
+       			   'Content-Type': 'application/x-www-form-urlencoded'//'application/json'
        			 },
-       			 data: $scope.request
+       			 data: "acl=" + JSON.stringify($scope.request)
        			}
         	$http(req).success(function(data, status) {
         		console.log("USPEH");

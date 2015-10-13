@@ -22,6 +22,9 @@ package siebog.agents;
 
 import java.io.Serializable;
 
+import org.hornetq.utils.json.JSONException;
+import org.hornetq.utils.json.JSONObject;
+
 /**
  * Description of a deployed agent.
  *
@@ -49,19 +52,32 @@ public class AgentClass implements Serializable {
 	}
 
 	/**
-	 * Receives module and ejbName as a single string, separated by the SEPARATOR constant.
+	 * Receives module and ejbName as a single string, separated by the
+	 * SEPARATOR constant.
 	 *
 	 * @param moduleAndEjbName
 	 * @throws IllegalArgumentException
 	 */
 	public AgentClass(String moduleAndEjbName) {
-		int n = moduleAndEjbName.indexOf(SEPARATOR);
-		if (n <= 0 || n >= moduleAndEjbName.length() - 1) {
-			throw new IllegalArgumentException("Expected module" + SEPARATOR + "ejbName.");
+		if (moduleAndEjbName.startsWith("{")) {
+			try {
+				JSONObject json = new JSONObject(moduleAndEjbName);
+				// {"module":"TestAgent","ejbName":"TestAgent","path":""}
+				this.module = json.getString("module");
+				this.ejbName = json.getString("ejbName");
+				this.path = json.has("path") ? json.getString("path") : "";
+			} catch (JSONException ex) {
+				throw new IllegalArgumentException(ex);
+			}
+		} else {
+			int n = moduleAndEjbName.indexOf(SEPARATOR);
+			if (n <= 0 || n >= moduleAndEjbName.length() - 1) {
+				throw new IllegalArgumentException("Expected module" + SEPARATOR + "ejbName.");
+			}
+			this.module = moduleAndEjbName.substring(0, n);
+			this.ejbName = moduleAndEjbName.substring(n + 1);
+			this.path = "";
 		}
-		this.module = moduleAndEjbName.substring(0, n);
-		this.ejbName = moduleAndEjbName.substring(n + 1);
-		this.path = "";
 	}
 
 	public static <T extends XjafAgent> AgentClass forSiebogEjb(Class<T> clazz) {

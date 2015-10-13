@@ -85,7 +85,7 @@ public class AgentManagerBean implements AgentManager {
 			agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), false), Agent.class);
 		}
 		initAgent(agent, aid, args);
-		LOG.info("Agent {} started.", aid.getStr());
+		LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
 	}
 
 	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
@@ -99,7 +99,10 @@ public class AgentManagerBean implements AgentManager {
 	public AID startServerAgent(@PathParam("agClass") AgentClass agClass,
 			@PathParam("name") String name, @Form AgentInitArgs args,
 			@QueryParam("replace") @DefaultValue("true") boolean replace) {
-		String host = args.get("host", null);
+		String host = AID.HOST_NAME;
+		if (args != null) {
+			host = args.get("host", AID.HOST_NAME);
+		}
 		AID aid = new AID(name, host, agClass);
 		startServerAgent(aid, args);
 		return aid;

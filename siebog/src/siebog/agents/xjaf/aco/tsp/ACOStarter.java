@@ -58,7 +58,7 @@ public class ACOStarter {
 
 		for (int i = 1; i <= nAnts; ++i) {
 			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
-			agm.startServerAgent(agClass, "Ant" + i, null);
+			agm.startServerAgent(agClass, "Ant" + i, new AgentInitArgs("host=localhost"));
 		}
 	}
 

@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/main.css"/>
+
 <title>Remote Examples</title>
 <script type="text/javascript" src="/siebog/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="/siebog/radigost/radigost.js"></script>
@@ -57,9 +60,14 @@
 </script>
 </head>
 <body>
-	<h3>An example which demonstrates how agents located in physically
-		distributed, heterogeneous devices can communicate with each other.</h3>
+	<h1>Remote Communication</h1>
+	<p>This page is an example which demonstrates how agents located in physically
+		distributed, heterogeneous devices can communicate with each other.<br />
+		<b>Important: don't leave this page if you want to receive responses from agents.</b>
+	</p>
 	<div>
+		You can create an instance of the <a target="_blank" href="RemoteAgent.js">RemoteAgent</a> on this page. It will be able to receive messages from this page,
+		or from other agents.<br />
 		<label for="this-name">To run an agent on this device, please
 			specify its name:</label> <input id="this-name" type="text"> <a
 			href="#"
@@ -75,5 +83,8 @@
 		<p>Messages received from remote agents:</p>
 		<ul id="remote-messages"></ul>
 	</div>
+	
+	<p><a href="/siebog/radigost/Examples.html">Back</a></p>	
+	
 </body>
 </html>
