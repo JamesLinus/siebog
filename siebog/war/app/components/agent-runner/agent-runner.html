@@ -1,10 +1,10 @@
-<span>
+<span class="row">
 	<div class="col-sm-5">
-	    <accordion>
-	        <accordion-group is-open="status.open">
-	            <accordion-heading>
-	                <div class="hover">Available XJAF agents <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i></div>
-	            </accordion-heading>
+	    <uib-accordion>
+	        <uib-accordion-group is-open="arc.accordions.agents">
+	            <uib-accordion-heading>
+	                <div class="hover">Available XJAF agents <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': arc.accordions.agents, 'glyphicon-chevron-right': !arc.accordions.agents}"></i></div>
+	            </uib-accordion-heading>
 	            <div class="form-group">
 	                <table class="table table-condensed table-bordered table-hover table-striped row-clickable">
 	                    <thead>
@@ -13,28 +13,28 @@
 	                    </tr>
 	                    </thead>
 	                    <tbody>
-	                    <tr class="hover" ng-repeat="agent in agents" ng-click="newAgent(agent)">
+	                    <tr class="hover" ng-repeat="agent in arc.agents" ng-click="arc.newAgent(agent)">
 	                        <td>{{agent.ejbName}}</td>
 	                    </tr>
 	                    </tbody>
 	                </table>
 	            </div>
-	        </accordion-group>
-	    </accordion>
+	        </uib-accordion-group>
+	    </uib-accordion>
     </div>
     <div class="col-sm-5 col-sm-offset-1">
-	    <accordion>
-	        <accordion-group is-open="status.open2">
-	            <accordion-heading>
-	                <div class="hover">Messages <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open2, 'glyphicon-chevron-right': !status.open2}"></i></div>
-	            </accordion-heading>
+	    <uib-accordion>
+	        <uib-accordion-group is-open="arc.accordions.messages">
+	            <uib-accordion-heading>
+	                <div class="hover">Messages <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': arc.accordions.messages, 'glyphicon-chevron-right': !arc.accordions.messages}"></i></div>
+	            </uib-accordion-heading>
 	            <form>
 	                <div class="form-group">
 	                    <label for="performative" class="control-label">
 	                        Performative:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="performative" ng-options="performative for performative in performatives" ng-model="request.performative" class="form-control">
+	                        <select id="performative" ng-options="performative for performative in arc.performatives" ng-model="arc.request.performative" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -44,7 +44,7 @@
 	                        Sender:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="sender" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.sender" class="form-control">
+	                        <select id="sender" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.sender" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -54,7 +54,7 @@
 	                        Receiver:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="receiver" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.receivers[0]" class="form-control">
+	                        <select id="receiver" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.receivers[0]" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -64,7 +64,7 @@
 	                        Reply to:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="replyTo" ng-options="agent.name for agent in createdAgents track by agent.str" ng-model="request.replyTo" class="form-control">
+	                        <select id="replyTo" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.replyTo" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -74,7 +74,7 @@
 	                        Content:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.content" class="form-control">
+	                        <input type="text" ng-model="arc.request.content" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -82,7 +82,7 @@
 	                        Language:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.language" class="form-control">
+	                        <input type="text" ng-model="arc.request.language" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -90,7 +90,7 @@
 	                        Encoding:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.encoding" class="form-control">
+	                        <input type="text" ng-model="arc.request.encoding" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -98,7 +98,7 @@
 	                        Ontology:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.ontology" class="form-control">
+	                        <input type="text" ng-model="arc.request.ontology" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -106,7 +106,7 @@
 	                        Protocol:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.protocol" class="form-control">
+	                        <input type="text" ng-model="arc.request.protocol" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -114,7 +114,7 @@
 	                        Conversation ID:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.conversationId" class="form-control">
+	                        <input type="text" ng-model="arc.request.conversationId" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -122,7 +122,7 @@
 	                        Reply with:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.replyWith" class="form-control">
+	                        <input type="text" ng-model="arc.request.replyWith" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -130,14 +130,14 @@
 	                        Reply by:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <input type="text" ng-model="request.replyBy" class="form-control">
+	                        <input type="text" ng-model="arc.request.replyBy" class="form-control">
 	                    </div>
 	                </div>
 	                <div class="form-group">
-	                    <button type="button" class="btn btn-primary save" ng-click="sendMessage()">Send ACL message</button>
+	                    <button type="button" class="btn btn-primary save" ng-click="arc.sendMessage()">Send ACL message</button>
 	                </div>
 	            </form>
-	        </accordion-group>
-	    </accordion>
+	        </uib-accordion-group>
+	    </uib-accordion>
     </div>
 </span>

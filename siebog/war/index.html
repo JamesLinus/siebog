@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="siebog" ng-controller="AppCtrl" lang="sr">
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <title>Siebog</title>
@@ -8,19 +8,27 @@
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="css/main.css"/>
     </head>
-  <body>
-      <header ng-include="'partials/header.tpl.html'"></header>  
+  <body ng-app="siebog">
       <div class="container-fluid">
-          <div class="row">
-              <div class="main" ng-view id="pagecontent"></div>
-          </div>
+          <div ui-view="header"></div>
+          <div ui-view="content"></div>
       </div>
       
-      <script type="text/javascript" src="js/angular.js"></script>
-      <script type="text/javascript" src="js/angular-route.js"></script>
-      <script type="text/javascript" src="js/ui-bootstrap.js"></script>
-      <script type="text/javascript" src="js/ui-bootstrap-tpls.js"></script>
-      <script type="text/javascript" src="app/app.js"></script>
-      <script type="text/javascript" src="app/controllers.js"></script>
+      <script type="text/javascript" src="js/angular.min.js"></script>
+      <script type="text/javascript" src="js/angular-ui-router.min.js"></script>
+      <script type="text/javascript" src="js/ui-bootstrap-custom-0.14.2.min.js"></script>
+      <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.14.2.min.js"></script>
+      <script type="text/javascript" src="app/app.module.js"></script>
+      <script type="text/javascript" src="app/components/layout/layout.module.js"></script>
+      <script type="text/javascript" src="app/components/layout/layout.route.js"></script>
+      <script type="text/javascript" src="app/components/agent-runner/agent-runner.module.js"></script>
+      <script type="text/javascript" src="app/components/agent-runner/agent-runner.route.js"></script>
+      <script type="text/javascript" src="app/components/agent-runner/agent-runner.controller.js"></script>
+      <script type="text/javascript" src="app/components/agent-runner/agent-runner-modal/agent-runner-modal.controller.js"></script>
+      <script type="text/javascript" src="app/components/agent-runner/agent-runner-modal/agent-runner-modal.service.js"></script>
+      <script type="text/javascript" src="app/components/agent-examples/agent-examples.module.js"></script>
+      <script type="text/javascript" src="app/components/agent-examples/agent-examples.route.js"></script>
+      <script type="text/javascript" src="app/components/agent-examples/agent-examples-server/agent-examples-server.controller.js"></script>
+      <!--<script type="text/javascript" src="app/components/agent-examples/agent-examples-client/agent-examples-client.controller.js"></script>-->
   </body>
 </html>
