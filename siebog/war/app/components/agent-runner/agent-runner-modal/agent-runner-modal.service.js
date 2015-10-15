@@ -11,8 +11,8 @@
 			open: openAgentRunnerModal
 		};
 
-		function openAgentRunnerModal() {
-			var modalInstance = $modal.open({
+		function openAgentRunnerModal(agent) {
+			var modalInstance = $uibModal.open({
                 templateUrl: 'app/components/agent-runner/agent-runner-modal/agent-runner-modal.html',
                 controller: 'AgentRunnerModalController',
                 controllerAs: 'armc',

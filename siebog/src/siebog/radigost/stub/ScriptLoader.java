@@ -36,7 +36,7 @@ public class ScriptLoader {
 	private String radigostSource;
 
 	public ScriptLoader() {
-		radigostSource = getJSSource("/radigost.js");
+		radigostSource = getJSSource("siebog/js/agents/agent.js");
 	}
 
 	public Invocable load(String url, String state) throws ScriptException, NoSuchMethodException {

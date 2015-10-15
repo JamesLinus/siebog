@@ -1,4 +1,4 @@
-importScripts("/siebog/radigost/radigost.js");
+importScripts("/siebog/js/agents/agent.js");
 
 function MobileAgent() {
 	this.num = 42;

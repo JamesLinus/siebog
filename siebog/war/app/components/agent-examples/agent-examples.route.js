@@ -20,7 +20,9 @@
 				url: '/agent-examples/client',
 				views: {
 					'example@main.agent-examples': {
-						templateUrl: 'app/components/agent-examples/agent-examples-client/agent-examples-client.html'
+						templateUrl: 'app/components/agent-examples/agent-examples-client/agent-examples-client.html',
+						controller: 'AgentExamplesClientController',
+						controllerAs: 'aecc'
 					}
 				}
 			})

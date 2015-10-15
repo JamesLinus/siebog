@@ -1,4 +1,4 @@
-importScripts("/siebog/radigost/radigost.js");
+importScripts("agent.js");
 
 function HelloWorld() {
 	this.messageProcessed = false;

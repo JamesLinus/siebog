@@ -1,0 +1,33 @@
+(function() {
+	'use strict';
+
+	var aclPerformative = {
+		ACCEPT_PROPOSALL: "ACCEPT_PROPOSAL",
+		AGREE: "AGREE",
+		CANCEL: "CANCEL",
+		CFP: "CFP",
+		CONFIRM: "CONFIRM",
+		DISCONFIRM: "DISCONFIRM",
+		FAILURE: "FAILURE",
+		INFORM: "INFORM",
+		INFORM_IF: "INFORM_IF",
+		INFORM_REF: "INFORM_REF",
+		NOT_UNDERSTOOD: "NOT_UNDERSTOOD",
+		PROPOSE: "PROPOSE",
+		QUERY_IF: "QUERY_IF",
+		QUERY_REF: "QUERY_REF",
+		REFUSE: "REFUSE",
+		REJECT_PROPOSAL: "REJECT_PROPOSAL",
+		REQUEST: "REQUEST",
+		REQUEST_WHEN: "REQUEST_WHEN",
+		REQUEST_WHENEVER: "REQUEST_WHENEVER",
+		SUBSCRIBE: "SUBSCRIBE",
+		PROXY: "PROXY",
+		PROPAGATE: "PROPAGATE",
+		UNKNOWN: "UNKNOWN"
+	};
+
+	angular
+		.module('siebog.radigost')
+		.constant('aclPerformative', aclPerformative);
+})();
