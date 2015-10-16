@@ -9,16 +9,19 @@
     function AgentExamplesClientRemoteController(radigost, agentObserver, aclMessage, aclPerformative, xjaf, $window) {
         var aecc = this;
 
-        aecc.radigost = radigost.createRadigost("ExamplesRemote", true);
+        aecc.radigost = radigost.createRadigost("xjaf", true);
 
         aecc.remoteAgents = [];
         aecc.remoteMessageList = [];
         aecc.runRemoteAgent = runRemoteAgent;
         aecc.sendMessage = sendMessage;
 
-        xjaf.getRunning().then(function(response) {
+        /*xjaf.getRunning().then(function(response) {
             aecc.remoteAgents = response.data;
-        });
+            angular.forEach(aecc.remoteAgents, function(agent) {
+
+            });
+        });*/
 
         function createNewRemoteObserver() {
             return agentObserver.createAgentObserver(function(aid, message) {
@@ -37,7 +40,7 @@
                 host: targetHost,
                 radigost: true
             }];
-            message.content = "Radigost@" + radigost.host + " says: HI";// + content;
+            message.content = "Radigost@" + aecc.radigost.host + " says: HI";// + content;
             aecc.radigost.postToServer(message);
         }
     }

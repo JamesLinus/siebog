@@ -27,7 +27,7 @@
 			};
 
 			radigost.socket.onMessage(function(message) {
-				var msg = JSON.parse(e.data);
+				var msg = JSON.parse(message.data);
 				if (typeof msg.sender === "string") {
 					msg.sender = JSON.parse(msg.sender);
 				}
