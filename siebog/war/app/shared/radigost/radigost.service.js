@@ -119,7 +119,7 @@
 			};
 
 			function postToServer(message) {
-				xjaf.post(message);
+				xjaf.sendMessage(message);
 			};
 
 			function postToClient(message) {
