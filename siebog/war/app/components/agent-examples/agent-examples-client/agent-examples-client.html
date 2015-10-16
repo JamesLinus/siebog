@@ -25,19 +25,20 @@ Look at the <a target="_blank" href="/siebog/js/agents/mobileAgent.js">source</a
 		specify its name:</label><input id="remoteAgent" ng-model="aecrc.newAgent" type="text"> <button class="btn btn-primary" ng-click="aecrc.runRemoteAgent()">Start</button>
 	</div>
 	<div>
-		<p>The following is a list of available agents. Click on any agent to sent it a message.</p>
+		<label for="content">The following is a list of available agents. Type in the content of the message and click on any agent to sent it a message:</label>
+		<input type="text" ng-model="aecrc.content" id="content">
 		<div ng-repeat="aid in aecrc.remoteAgents track by aid.str">
-			<button class ="btn btn-default" ng-click="aecrc.sendMessage(aid.name, aid.host)">
-				{{aid.str}}
-			</button>
+			<button class ="btn btn-default" ng-click="aecrc.sendMessage(aid.name, aid.host)">{{aid.str}}</button>
 		</div>
 	</div>
 	<div id="received">
 		<p>Messages received from remote agents:</p>
 		<ul>
-			<li ng-repeat="message in aecrc.remoteMessageList">
+			<li ng-repeat="message in aecrc.remoteMessageList track by $index">
 				{{message}}
 			</li>
 		</ul>
+		<br/>
+		<br/>
 	</div>
 </div>

@@ -19,6 +19,7 @@
 				socket: $websocket("ws://" + window.location.host + "/siebog/webclient"),
 				onWorkerMessage: onWorkerMessage,
 				start: start,
+				recreateAgent: recreateAgent,
 				postToServer: postToServer,
 				postToClient: postToClient,
 				post: post,
@@ -113,6 +114,39 @@
 			                host: radigost.host
 			            };
 						xjaf.startAgent(radigostStubAgent);
+					}
+				}
+				return newAid;
+			};
+			
+			function recreateAgent(url, name, agentObserver, agentInitArgs) {
+				var newAid = aid.createAid(name, radigost.host);
+				if (getAgent(newAid) == null) {
+					var agent = {};
+					agent.url = url;
+					agent.observer = agentObserver;
+					
+					agent.worker = new Worker(url);
+					agent.worker.onmessage = onWorkerMessage;
+					
+					putAgent(newAid, agent);
+					var msg = {
+						opcode: opCode.INIT,
+						aid: newAid,
+						args: agentInitArgs
+					};
+					agent.worker.postMessage(msg);
+					if (radigost.autoCreateStubs) {
+						// create the server-side stub
+						var radigostStubAgent = {
+			                agClass: {
+			                    ejbName: "RadigostStub",
+			                    module: "siebog",
+			                    path: "/siebog/agents/xjaf"
+			                },
+			                name: name,
+			                host: radigost.host
+			            };
 					}
 				}
 				return newAid;
