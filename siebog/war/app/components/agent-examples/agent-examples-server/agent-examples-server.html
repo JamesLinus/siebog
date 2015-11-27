@@ -1,0 +1,27 @@
+<h1>Examples of server-side agents</h1>
+	
+This page contains the list of server-side agents with short descriptions and instructions for testing. 
+This list is not final, and will be modified in time.
+
+<h2>1. <a target="_blank" href="https://github.com/gcvt/siebog/blob/master/TestAgent/src/agent/TestAgent.java">TestAgent</a></h2>
+<p>
+This is a simple example of agent which dumps the content of the received message. 
+This is a template for creating new agents.	All new agents should be created in separate EJB projects. 
+Please pay attention to the META-INF/manifest.mf file, since it contains one line that defines the dependancy on the siebog framework.
+</p>
+<h3>Create test agent</h3>	
+To create the TestAgent, please <button class="btn btn-default" ng-click="aesc.createTestAgent()">click here</button>. 
+This will create one agent with the name <code>test</code>. Do this only once.
+<h3>Send message to the test agent</h3>	
+To send the message to the TestAgent, please <button class="btn btn-primary" ng-click="aesc.sendMessageToTestAgent()">click here</button>.
+
+<h2>2. <a target="_blank" href="https://github.com/gcvt/siebog/blob/master/siebog/test/siebog/agents/test/pingpong/Ping.java">Ping</a> and <a target="_blank" href="https://github.com/gcvt/siebog/blob/master/siebog/test/siebog/agents/test/pingpong/Pong.java">Pong</a> agents</h2>
+This example gives an overview of inter-agent communications (how to send message, how to reply, etc.).
+<h3>Create ping and pong agents</h3>	
+Two agents need to be created: <code>ping</code> and <code>pong</code>. To do so, please <button class="btn btn-default" ng-click="aesc.createPingAndPongAgents()">click here</button>. Do this only once.
+<h3>Initiate communication</h3>	
+The communication will be initiated by sending the REQUEST performative to the <code>ping</code> agent.
+The content of the message will be the name of the pong agent: <code>pong</code>.
+The <code>pong</code> agent will reply to the <code>ping</code> agent by sending the INFORM performative.
+The message exchange can be observed on the wildfly console.
+To initiate communication, please <button class="btn btn-primary" ng-click="aesc.sendMessageToPingAgent()">click here</button>.

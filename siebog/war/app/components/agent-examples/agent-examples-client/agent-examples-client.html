@@ -1,0 +1,44 @@
+<h1>Examples of client-side agents</h1>
+This page contains the list of client-side agents with short descriptions and instructions for testing. 
+This list is not final, and will be modified in time.
+<h2>1. HelloWorld agent</h2>	
+This is a simple <a target="_blank" href="/siebog/js/agents/helloWorld.js">Hello World</a> agent written in JavaScript. 
+It is based on the <a target="_blank" href="/siebog/js/agents/agent.js">Agent</a> base agent. 
+<div>
+	<button class="btn btn-primary" ng-click="aecc.runHelloWorld()">Click here to run the Hello World agent</button>. 
+</div>
+<h2>2. Mobile agent</h2>
+This is an example of having JavaScript agent being moved to the server (into the Java runtime).
+Look at the <a target="_blank" href="/siebog/js/agents/mobileAgent.js">source</a>.		
+<div>
+	<button class="btn btn-primary" ng-click="aecc.runMobileAgent()">Click here to run the Mobile Agent</button>. Look at the console when you click on this link.
+</div>
+<div ng-controller="AgentExamplesClientRemoteController as aecrc">
+	<h2>3. Remote communication</h2>
+	<p>
+		This is an example which demonstrates how agents located in physically distributed, heterogeneous devices can communicate with each other.<br/>
+		<b>Important: don't leave this page if you want to receive responses from agents.</b>
+	<p>
+	<div>
+		You can create an instance of the <a target="_blank" href="/siebog/js/agents/remoteAgent.js">RemoteAgent</a> on this page. It will be able to receive messages from this page, or from other agents.<br/>
+		<label for="remoteAgent">To run an agent on this device, please
+		specify its name:</label><input id="remoteAgent" ng-model="aecrc.newAgent" type="text"> <button class="btn btn-primary" ng-click="aecrc.runRemoteAgent()">Start</button>
+	</div>
+	<div>
+		<label for="content">The following is a list of available agents. Type in the content of the message and click on any agent to sent it a message:</label>
+		<input type="text" ng-model="aecrc.content" id="content">
+		<div ng-repeat="aid in aecrc.remoteAgents track by aid.str">
+			<button class ="btn btn-default" ng-click="aecrc.sendMessage(aid.name, aid.host)">{{aid.str}}</button>
+		</div>
+	</div>
+	<div id="received">
+		<p>Messages received from remote agents:</p>
+		<ul>
+			<li ng-repeat="message in aecrc.remoteMessageList track by $index">
+				{{message}}
+			</li>
+		</ul>
+		<br/>
+		<br/>
+	</div>
+</div>
