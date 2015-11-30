@@ -6,6 +6,10 @@ body {
 /*
  * Global add-ons
  */
+ .console-box {
+     overflow: auto;
+     height: 400px;
+ }
 
 .sub-header {
   padding-bottom: 10px;

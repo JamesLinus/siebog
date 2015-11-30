@@ -18,6 +18,13 @@
 		XJAF.getPerformatives = getPerformatives;
 		XJAF.sendMessage = sendMessage;
 		XJAF.accept = accept;
+		getRunning().then(function(response) {
+			if(response.data != '') {
+				XJAF.agents = response.data;
+			} else {
+				XJAF.agents = [];
+			}
+		});
 
 		return XJAF;
 
@@ -43,7 +50,9 @@
 				data: {}
         	}
 
-        	return $http(req);
+        	return $http(req).then(function(response) {
+				XJAF.agents.push(response.data);
+			});
 		};
 
 		function sendMessage(request) {

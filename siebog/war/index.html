@@ -10,15 +10,19 @@
     </head>
   <body ng-app="siebog">
       <div class="container-fluid">
-          <div ui-view="header"></div>
-          <div ui-view="content"></div>
+          <div class="row" ui-view="header"></div>
+          <div class="row">
+              <div ui-view="content" class="col-sm-8"></div>
+              <div ui-view="sideBar" class="col-sm-4"></div>
+          </div>
       </div>
       
-      <script type="text/javascript" src="js/angular.min.js"></script>
+      <script type="text/javascript" src="js/angular.js"></script>
       <script type="text/javascript" src="js/angular-websocket.min.js"></script>
       <script type="text/javascript" src="js/angular-ui-router.min.js"></script>
       <script type="text/javascript" src="js/ui-bootstrap-custom-0.14.2.min.js"></script>
       <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.14.2.min.js"></script>
+      <script type="text/javascript" src="js/scrollglue.js"></script>
       <script type="text/javascript" src="app/app.module.js"></script>
       <script type="text/javascript" src="app/components/layout/layout.module.js"></script>
       <script type="text/javascript" src="app/components/layout/layout.route.js"></script>
@@ -32,6 +36,9 @@
       <script type="text/javascript" src="app/components/agent-examples/agent-examples-server/agent-examples-server.controller.js"></script>
       <script type="text/javascript" src="app/components/agent-examples/agent-examples-client/agent-examples-client.controller.js"></script>
       <script type="text/javascript" src="app/components/agent-examples/agent-examples-client/agent-examples-client-remote.controller.js"></script>
+      <script type="text/javascript" src="app/shared/console/siebog-console.module.js"></script>
+      <script type="text/javascript" src="app/shared/console/siebog-console.service.js"></script>
+      <script type="text/javascript" src="app/shared/console/siebog-console.controller.js"></script>
       <script type="text/javascript" src="app/shared/radigost/radigost.module.js"></script>
       <script type="text/javascript" src="app/shared/radigost/radigost.service.js"></script>
       <script type="text/javascript" src="app/shared/radigost/agent-observer.service.js"></script>

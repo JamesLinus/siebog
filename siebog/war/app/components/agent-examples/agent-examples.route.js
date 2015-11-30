@@ -13,6 +13,11 @@
 				views: {
 					'content@': {
 						templateUrl: 'app/components/agent-examples/agent-examples.html'
+					},
+					'sideBar@': {
+						templateUrl: 'app/shared/console/siebog-console.html',
+						controller: 'ConsoleController',
+						controllerAs: 'cc'
 					}
 				}
 			})

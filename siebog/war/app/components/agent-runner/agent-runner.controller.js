@@ -5,47 +5,27 @@
 		.module('siebog.agent-runner')
 		.controller('AgentRunnerController', AgentRunnerController);
 
-	AgentRunnerController.$inject = ['agentRunnerModal', 'xjaf', 'aid'];
-	function AgentRunnerController(agentRunnerModal, xjaf, aid) {
+	AgentRunnerController.$inject = ['agentRunnerModal', 'xjaf', 'performatives', 'agentClasses'];
+	function AgentRunnerController(agentRunnerModal, xjaf, performatives, agentClasses) {
 		var arc = this;
 
 		arc.accordian = {'agents':true, 'messages':true};
-		arc.agents = [];
-		arc.performatives = [];
-		arc.createdAgents = [];
+		arc.agentClasses = agentClasses;
+		arc.performatives = performatives;
+		arc.createdAgents = xjaf.agents;
 		arc.request = {receivers: []};
 
 		arc.newAgent = newAgent;
 		arc.sendMessage = sendMessage;
-
-        fetchData();
         
         function newAgent(agent) {
             agentRunnerModal.open(agent).result.then(function(selectedItem) {
-            	xjaf.startAgent(selectedItem).then(function(response) {
-            		arc.createdAgents.push(response.data);
-            	});
+            	xjaf.startAgent(selectedItem);
             });
         };
 
         function sendMessage() {
         	xjaf.sendMessage(arc.request);
         };
-
-        function fetchData() {
-			xjaf.getAgentClasses().then(function(response) {
-                arc.agents = response.data;
-            });
-	        
-	        xjaf.getPerformatives().then(function(response) {
-	        	arc.performatives = response.data;
-			});
-	        
-	        xjaf.getRunning().then(function(response) {
-	        	if (response.data != '') {
-	        		arc.createdAgents = response.data;
-	        	}
-	        });
-		};
 	}
 })();

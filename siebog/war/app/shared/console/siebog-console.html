@@ -1,0 +1,12 @@
+<div class="console-box" scroll-glue>
+	<h4>Console messages</h4>
+	<div ng-repeat="message in cc.messages track by $index">
+	    <small>{{message}}</small>
+    </div>
+</div>
+<div class="console-box" scroll-glue>
+	<h4>Running agents</h4>
+	<div ng-repeat="agent in cc.agents track by $index">
+	    <small>{{agent | json}}</small>
+    </div>
+</div>
