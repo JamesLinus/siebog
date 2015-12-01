@@ -25,9 +25,7 @@
                 name: "test",
                 host: "xjaf"
             };
-            xjaf.startAgent(testAgent).then(function(data) {
-                $window.alert("Agent test created. Check the wildfly console.");
-            });
+            xjaf.startAgent(testAgent);
         };
 
         function sendMessageToTestAgent() {
@@ -45,9 +43,7 @@
                 performative: "INFORM",
                 content: "hello"
             }
-            xjaf.sendMessage(request).then(function(data) {
-                $window.alert("Agent test created. Check the wildfly console.");
-            });
+            xjaf.sendMessage(request);
         };
 
         function createPingAndPongAgents() {
@@ -70,9 +66,8 @@
                 host: "xjaf"
             };
 
-            $q.all(xjaf.startAgent(pingAgent), xjaf.startAgent(pongAgent)).then(function(data) {
-                $window.alert("Ping and pong agents created. Check the wildfly console.");
-            });
+            xjaf.startAgent(pingAgent);
+            xjaf.startAgent(pongAgent);
         };
 
         function sendMessageToPingAgent() {
@@ -90,9 +85,7 @@
                 performative: "REQUEST",
                 content: "pong"
             };
-            xjaf.sendMessage(request).then(function(data) {
-                $window.alert('Message sent the the ping agent. Check the wildfly console.');
-            });
+            xjaf.sendMessage(request);
         };
     }
 })();

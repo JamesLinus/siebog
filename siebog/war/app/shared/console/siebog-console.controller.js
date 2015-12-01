@@ -18,7 +18,9 @@
 		var socket = $websocket("ws://" + window.location.host + "/siebog/console");
 
 		socket.onMessage(function(message) {
-			cc.messages.push(message.data);
+		    var d = new Date();
+		    var time = ("0" + d.getHours()).substr(-2) + ':' + ("0" + d.getMinutes()).substr(-2) + ':' + ("0" + d.getSeconds()).substr(-2);
+			cc.messages.push(time + " - " + message.data);
 		});
 
 		socket.onOpen(function() {
