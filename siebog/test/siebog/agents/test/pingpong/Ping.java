@@ -24,10 +24,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
@@ -35,6 +35,7 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.utils.LoggerUtil;
 
 /**
  * Example of a ping agent.
@@ -45,18 +46,20 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Ping extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 	private String nodeName;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
-		LOG.info("Ping created on {}.", nodeName);
+		//LOG.info("Ping created on {}.", nodeName);
+		LoggerUtil.log("Ping created on " + nodeName, true);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		System.out.println("Message to Ping: " + msg);
+		//System.out.println("Message to Ping: " + msg);
+		LoggerUtil.log("Message to Ping: " + msg, true);
 		if (msg.performative == Performative.REQUEST) { // inital request
 			// send a request to the Pong agent
 			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName());
@@ -74,9 +77,11 @@ public class Ping extends XjafAgent {
 			args.put("pingWorkingOn", getNodeName());
 
 			// print info
-			LOG.info("Ping-Pong interaction details:");
+			//LOG.info("Ping-Pong interaction details:");
+			LoggerUtil.log("Ping-Pong interaction details: ", true);
 			for (Entry<String, Serializable> e : args.entrySet())
-				LOG.info("{} {}", e.getKey(), e.getValue());
+				LoggerUtil.log(e.getKey() + " " + e.getValue(), true);
+				//LOG.info("{} {}", e.getKey(), e.getValue());
 
 			// reply to the original sender (if any)
 			if (msg.canReplyTo()) {

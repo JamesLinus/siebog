@@ -1,12 +1,28 @@
-<div class="console-box" scroll-glue>
-	<h4>Console messages</h4>
-	<div ng-repeat="message in cc.messages track by $index">
-	    <small>{{message}}</small>
-    </div>
+<span class="row">
+<div class="col-xs-12">
+<uib-accordion>
+    <uib-accordion-group is-open="cc.accordion.messages">
+        <uib-accordion-heading>
+            <div class="hover">Console messages</div>
+        </uib-accordion-heading>
+        <div class="console-box" scroll-glue>
+	        <div ng-repeat="message in cc.messages track by $index">
+	            <small>{{message}}</small>
+            </div>
+        </div>
+    </uib-accordion-group>
+</uib-accordion>
+<uib-accordion>
+    <uib-accordion-group is-open="cc.accordion.agents">
+        <uib-accordion-heading>
+            <div class="hover">Running agents</div>
+        </uib-accordion-heading>
+        <div class="console-box" scroll-glue>
+	        <div ng-repeat="agent in cc.agents.array track by $index">
+	            <small>{{agent | json}}</small>
+            </div>
+        </div>
+    </uib-accordion-group>
+</uib-accordion>
 </div>
-<div class="console-box" scroll-glue>
-	<h4>Running agents</h4>
-	<div ng-repeat="agent in cc.agents track by $index">
-	    <small>{{agent | json}}</small>
-    </div>
-</div>
+</span>

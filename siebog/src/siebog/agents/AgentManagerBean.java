@@ -23,6 +23,7 @@ package siebog.agents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -38,11 +39,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.infinispan.Cache;
 import org.jboss.resteasy.annotations.Form;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import siebog.utils.GlobalCache;
+import siebog.utils.LoggerUtil;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -60,7 +62,7 @@ import siebog.utils.ObjectFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class AgentManagerBean implements AgentManager {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(AgentManagerBean.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(AgentManagerBean.class);
 	private Cache<AID, Agent> agents;
 	@Inject
 	private JndiTreeParser jndiTreeParser;
@@ -85,7 +87,8 @@ public class AgentManagerBean implements AgentManager {
 			agent = ObjectFactory.lookup(getAgentLookup(aid.getAgClass(), false), Agent.class);
 		}
 		initAgent(agent, aid, args);
-		LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
+		LoggerUtil.log("Agent " + aid.getStr() + " started. AID: " + aid.toString(), true);
+		//LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
 	}
 
 	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
@@ -121,7 +124,8 @@ public class AgentManagerBean implements AgentManager {
 		if (agent != null) {
 			getCache().remove(aid);
 			// agent.stop();
-			LOG.info("Stopped agent: {}", aid);
+			LoggerUtil.log("Stopped agent: " + aid, true);
+			//LOG.info("Stopped agent: {}", aid);
 		}
 	}
 

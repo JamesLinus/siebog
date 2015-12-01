@@ -13,7 +13,7 @@
 	                    </tr>
 	                    </thead>
 	                    <tbody>
-	                    <tr class="hover" ng-repeat="agent in arc.agents" ng-click="arc.newAgent(agent)">
+	                    <tr class="hover" ng-repeat="agent in arc.agentClasses" ng-click="arc.newAgent(agent)">
 	                        <td>{{agent.ejbName}}</td>
 	                    </tr>
 	                    </tbody>
@@ -44,7 +44,7 @@
 	                        Sender:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="sender" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.sender" class="form-control">
+	                        <select id="sender" ng-options="agent.name for agent in arc.createdAgents.array track by agent.str" ng-model="arc.request.sender" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -54,7 +54,7 @@
 	                        Receiver:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="receiver" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.receivers[0]" class="form-control">
+	                        <select id="receiver" ng-options="agent.name for agent in arc.createdAgents.array track by agent.str" ng-model="arc.request.receivers[0]" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>
@@ -64,7 +64,7 @@
 	                        Reply to:
 	                    </label>
 	                    <div class="input-wrap">
-	                        <select id="replyTo" ng-options="agent.name for agent in arc.createdAgents track by agent.str" ng-model="arc.request.replyTo" class="form-control">
+	                        <select id="replyTo" ng-options="agent.name for agent in arc.createdAgents.array track by agent.str" ng-model="arc.request.replyTo" class="form-control">
 	                            <option value="">---</option>
 	                        </select>
 	                    </div>

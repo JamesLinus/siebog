@@ -6,6 +6,7 @@ import javax.ejb.Stateless;
 import siebog.agents.Agent;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
+import siebog.utils.LoggerUtil;
 
 @Stateless
 @Remote(Agent.class)
@@ -14,7 +15,9 @@ public class TestAgent extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		System.out.println("2Message to TestAgent: " + msg);
-		System.out.println("2Message content: " + msg.content);
+		//System.out.println("2Message to TestAgent: " + msg);
+		//System.out.println("2Message content: " + msg.content);
+		LoggerUtil.log("2Message to TestAgent: " + msg, true);
+		LoggerUtil.log("2Message content: " + msg.content, true);
 	}
 }

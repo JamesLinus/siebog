@@ -9,7 +9,10 @@
 	function xjaf($http) {
 		var XJAF = {
 			agentManagerUrl: "/siebog/rest/agents",
-			messageManagerUrl: "/siebog/rest/messages"
+			messageManagerUrl: "/siebog/rest/messages",
+			agents: {
+				array: []
+			}
 		};
 
 		XJAF.getAgentClasses = getAgentClasses;
@@ -20,9 +23,9 @@
 		XJAF.accept = accept;
 		getRunning().then(function(response) {
 			if(response.data != '') {
-				XJAF.agents = response.data;
+				XJAF.agents.array = response.data;
 			} else {
-				XJAF.agents = [];
+				XJAF.agents.array = [];
 			}
 		});
 
@@ -51,7 +54,13 @@
         	}
 
         	return $http(req).then(function(response) {
-				XJAF.agents.push(response.data);
+        		getRunning().then(function(response) {
+        			if(response.data != '') {
+        				XJAF.agents.array = response.data;
+        			} else {
+        				XJAF.agents.array = [];
+        			}
+        		});
 			});
 		};
 

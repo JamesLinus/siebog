@@ -22,13 +22,13 @@ package siebog.agents.test.pingpong;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.utils.LoggerUtil;
 
 /**
  * Example of a pong agent.
@@ -39,19 +39,21 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Pong extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(Pong.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(Pong.class);
 	private String nodeName;
 	private int counter;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
-		LOG.info("Pong created on {}.", nodeName);
+		LoggerUtil.log("Pong created on " + nodeName, true);
+		//LOG.info("Pong created on {}.", nodeName);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		System.out.println("Message to Pong: " + msg);
+		//System.out.println("Message to Pong: " + msg);
+		LoggerUtil.log("Message to Pong: " + msg, true);
 		ACLMessage reply = msg.makeReply(Performative.INFORM);
 		reply.userArgs.put("pongCreatedOn", nodeName);
 		reply.userArgs.put("pongWorkingOn", getNodeName());
