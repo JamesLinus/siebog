@@ -46,6 +46,7 @@ import org.jboss.resteasy.annotations.Form;
 import siebog.utils.GlobalCache;
 import siebog.utils.LoggerUtil;
 import siebog.utils.ObjectFactory;
+import siebog.utils.LoggerUtil.SocketMessageType;
 
 /**
  * Default agent manager implementation.
@@ -79,6 +80,9 @@ public class AgentManagerBean implements AgentManager {
 				throw new IllegalStateException("Agent already running: " + aid);
 			}
 			stopAgent(aid);
+			if(args.get("noUIUpdate", "").equals("")) {
+				LoggerUtil.logAgent(aid, SocketMessageType.REMOVE);
+			}
 		}
 		Agent agent = null;
 		try {
@@ -88,6 +92,9 @@ public class AgentManagerBean implements AgentManager {
 		}
 		initAgent(agent, aid, args);
 		LoggerUtil.log("Agent " + aid.getStr() + " started. AID: " + aid.toString(), true);
+		if(args.get("noUIUpdate", "").equals("")) {
+			LoggerUtil.logAgent(aid, SocketMessageType.ADD);
+		}
 		//LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
 	}
 

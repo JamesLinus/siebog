@@ -53,15 +53,7 @@
 				data: {}
         	}
 
-        	return $http(req).then(function(response) {
-        		getRunning().then(function(response) {
-        			if(response.data != '') {
-        				XJAF.agents.array = response.data;
-        			} else {
-        				XJAF.agents.array = [];
-        			}
-        		});
-			});
+        	return $http(req);
 		};
 
 		function sendMessage(request) {
@@ -86,6 +78,6 @@
        			data: "url="+ url + "&aid=" + JSON.stringify(aid) + "&state=" + state
        		}
        		return $http(req);
-		}
+		};
 	}
 })();

@@ -10,7 +10,7 @@
         var aecc = this;
 
         aecc.radigost = radigost.createRadigost("xjaf", true);
-
+        aecc.content = "";
         aecc.remoteAgents = [];
         aecc.remoteMessageList = [];
         aecc.runRemoteAgent = runRemoteAgent;
@@ -18,8 +18,8 @@
 
         xjaf.getRunning().then(function(response) {
             angular.forEach(response.data, function(agent) {
-            	if(agent.agClass.ejbName === "RadigostStub") {
-            		aecc.remoteAgents.push(aecc.radigost.recreateAgent("/siebog/js/agents/remoteAgent.js", agent.name, createNewRemoteObserver()));
+            	if(agent.agClass.ejbName === "RadigostStub" && agent.name !== "MobileAgent") {
+            		aecc.remoteAgents.push(aecc.radigost.start("/siebog/js/agents/remoteAgent.js", agent.name, createNewRemoteObserver(), null, true));
             	}
             });
         });

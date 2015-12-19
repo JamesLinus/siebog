@@ -19,11 +19,6 @@
 							performatives: getPerformatives,
 							agentClasses: getAgentClasses
 						}
-					},
-					'sideBar@': {
-						templateUrl: 'app/shared/console/siebog-console.html',
-						controller: 'ConsoleController',
-						controllerAs: 'cc'
 					}
 				}
 			});

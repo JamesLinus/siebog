@@ -15,6 +15,11 @@
 				views: {
 					'header': {
 						templateUrl: 'app/components/layout/header.html'
+					},
+					'sideBar': {
+						templateUrl: 'app/shared/console/siebog-console.html',
+						controller: 'ConsoleController',
+						controllerAs: 'cc'
 					}
 				}
 			})
@@ -23,7 +28,7 @@
 				views: {
 					'content@': {
 						templateUrl: 'app/components/layout/home.html'
-					}
+					},
 				}
 			});
 	}

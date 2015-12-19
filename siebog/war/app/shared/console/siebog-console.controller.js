@@ -18,9 +18,22 @@
 		var socket = $websocket("ws://" + window.location.host + "/siebog/console");
 
 		socket.onMessage(function(message) {
-		    var d = new Date();
-		    var time = ("0" + d.getHours()).substr(-2) + ':' + ("0" + d.getMinutes()).substr(-2) + ':' + ("0" + d.getSeconds()).substr(-2);
-			cc.messages.push(time + " - " + message.data);
+			var msg = JSON.parse(message.data);
+			if(msg.type === "LOG") {
+				var d = new Date();
+			    var time = ("0" + d.getHours()).substr(-2) + ':' + ("0" + d.getMinutes()).substr(-2) + ':' + ("0" + d.getSeconds()).substr(-2);
+				cc.messages.push(time + " - " + msg.data);
+			} else if(msg.type === "ADD") {
+				xjaf.agents.array.push(JSON.parse(msg.data));
+			} else if(msg.type === "REMOVE") {
+				var agent = JSON.parse(msg.data);
+				for(var i = 0, n = xjaf.agents.array.length; i < n; i++) {
+					if(agent.str === xjaf.agents.array[i].str) {
+						xjaf.agents.array.splice(i, 1);
+						break;
+					}
+				}
+			}
 		});
 
 		socket.onOpen(function() {
