@@ -22,17 +22,19 @@ package siebog.agents.xjaf.aco.tsp;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.utils.LoggerUtil;
 
 /**
  * Implementation of a map, in form of an agent.
@@ -44,7 +46,6 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Map extends XjafAgent {
 	private static final long serialVersionUID = 4998652517108886246L;
-	private static final Logger logger = Logger.getLogger(Map.class.getName());
 	// TSP graph (given by a set of (x,y)-points).
 	private List<Node> nodes;
 	// Initial pheromone value.
@@ -61,20 +62,26 @@ public class Map extends XjafAgent {
 	private int nIterationsBestTourNotUpdated = 0;
 	// Heuristic boundary value for program termination.
 	private static final int MAX_STATIONARY_ITERATIONS = 500;
+	
+	private boolean done = false;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		logger.fine("Map opened.");
+		LoggerUtil.log("Map opened.", true);
 		loadMap(args.get("fileName", null).toString());
 	}
 
 	@Override
 	protected void onMessage(ACLMessage message) {
 		final String content = message.content;
-		ACLMessage reply = message.makeReply(Performative.INFORM);
 		if (message.performative == Performative.REQUEST) {
+			ACLMessage reply = message.makeReply(Performative.INFORM);
 			if (content.equals("MapSize?")) {
-				reply.content = getMapSize() + "";
+				if (!done) {
+					reply.content = getMapSize() + "";
+				} else {
+					reply.content = "DONE";
+				}
 			} else if (content.startsWith("PheromoneLevels?")) {
 				String[] parts = content.split(" ");
 				StringBuilder pheromoneLevels = new StringBuilder();
@@ -98,6 +105,12 @@ public class Map extends XjafAgent {
 				String[] parts = content.split(" ");
 				float newTourWeight = Float.parseFloat(parts[1]);
 
+				LoggerUtil.log("No. of iterations for the best tour not being updated: " + nIterationsBestTourNotUpdated, true);
+				if (nIterationsBestTourNotUpdated >= MAX_STATIONARY_ITERATIONS) {
+					LoggerUtil.log("Done.", true);
+					done = true;
+					return;
+				}
 				nIterationsBestTourNotUpdated++;
 
 				if (bestTourWeight > newTourWeight) {
@@ -109,11 +122,9 @@ public class Map extends XjafAgent {
 					for (int i = 2; i < parts.length; ++i)
 						bestTour.add(Integer.parseInt(parts[i]) + 1);
 
-					logger.warning("Best tour so far has weight: " + bestTourWeight);
-					logger.warning("Best tour so far: " + bestTour);
+					LoggerUtil.log("Best tour so far has weight: " + bestTourWeight, true);
+					LoggerUtil.log("Best tour so far: " + bestTour, true);
 				}
-				if (nIterationsBestTourNotUpdated == MAX_STATIONARY_ITERATIONS)
-					logger.warning("Done.");
 			} else if (content.startsWith("UpdatePheromone")) {
 				String[] parts = content.split(" ");
 				int i = Integer.parseInt(parts[1]);
@@ -127,6 +138,9 @@ public class Map extends XjafAgent {
 				float ksi = Float.parseFloat(parts[3]);
 				setPheromoneLevel(i, j, (1 - ksi) * getPheromoneLevel(i, j) + ksi * tau0);
 			}
+		} else if (message.performative == Performative.CANCEL) {
+			LoggerUtil.log("############# Canceled ###############.", true);
+			done = true;
 		}
 	}
 
@@ -136,7 +150,12 @@ public class Map extends XjafAgent {
 	 */
 	private void loadMap(String fileName) {
 		nodes = new ArrayList<>();
-
+		URL url = Map.class.getResource(fileName); 
+		if (url != null) {
+			if (url.toString().startsWith("vfs:/")) {
+				fileName = url.toString().substring(4);
+			}
+		}
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			// skip preliminary info
 			for (int i = 0; i < 6; ++i)
@@ -151,13 +170,11 @@ public class Map extends XjafAgent {
 			}
 
 			// print the map
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Map: ");
-				StringBuilder sb = new StringBuilder();
-				for (Node n : nodes)
-					sb.append(n).append(" ");
-				logger.fine(sb.toString());
-			}
+			LoggerUtil.log("Map: ", true);
+			StringBuilder sb = new StringBuilder();
+			for (Node n : nodes)
+				sb.append(n).append(" ");
+			LoggerUtil.log(sb.toString(), true);
 
 			// initialize pheromone levels
 			int n = nodes.size();
@@ -168,7 +185,7 @@ public class Map extends XjafAgent {
 				for (int j = 0; j < n; ++j)
 					pheromone[i][j] = tau0;
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "", ex);
+			LoggerUtil.log(ex.getMessage(), true);
 		}
 	}
 
@@ -214,6 +231,6 @@ public class Map extends XjafAgent {
 
 	@Override
 	public void onTerminate() {
-		logger.fine("Map closed.");
+		LoggerUtil.log("Map terminated.", true);
 	}
 }

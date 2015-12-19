@@ -24,9 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
+
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
@@ -34,6 +35,7 @@ import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.utils.LoggerUtil;
 
 /**
  * Implementation of an ant.
@@ -45,7 +47,6 @@ import siebog.interaction.Performative;
 @Remote(Agent.class)
 public class Ant extends XjafAgent {
 	private static final long serialVersionUID = 8886978416763257091L;
-	private static final Logger logger = Logger.getLogger(Ant.class.getName());
 	// AID of the agent maintaining the world graph.
 	private AID mapAID;
 	// Number of nodes on the map (provided by map agent).
@@ -103,6 +104,10 @@ public class Ant extends XjafAgent {
 	@Override
 	protected void onMessage(ACLMessage message) {
 		if ("MapSize".equals(message.inReplyTo)) {
+			if (message.content.equals("DONE")) {
+				return;
+			}
+
 			mapSize = Integer.parseInt(message.content);
 			// choose starting map node randomly
 			currentMapPosIndex = new Random().nextInt(mapSize);
@@ -356,6 +361,6 @@ public class Ant extends XjafAgent {
 	 */
 	@Override
 	public void onTerminate() {
-		logger.fine("Ant terminated.");
+		LoggerUtil.log("Ant terminated.", true);
 	}
 }

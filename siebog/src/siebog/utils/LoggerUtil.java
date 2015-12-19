@@ -1,6 +1,5 @@
 package siebog.utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.hornetq.utils.json.JSONException;
 import org.hornetq.utils.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +40,11 @@ public class LoggerUtil {
     		    for(Session s : sessions) {
     		    	try {
     		    		s.getBasicRemote().sendText(obj.toString());
-    		    	} catch(IOException e) {
+    		    	} catch(Exception e) {
     		    		LOG.error(e.getMessage());
     		    	}
     		    }
-    		} catch (Exception e) {
+    		} catch (JSONException e) {
     			LOG.error(e.getMessage());
 			}
     	}
@@ -65,11 +65,11 @@ public class LoggerUtil {
 		    for(Session s : sessions) {
 		    	try {
 		    		s.getBasicRemote().sendText(obj.toString());
-		    	} catch(IOException e) {
+		    	} catch(Exception e) {
 		    		LOG.error(e.getMessage());
 		    	}
 		    }
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			LOG.error(e.getMessage());
 		}
     }

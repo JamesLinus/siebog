@@ -1,5 +1,6 @@
 <span class="row">
 <div class="col-xs-12">
+<button class="btn btn-primary" ng-click="cc.clearConsole()">Clear console messages</button><br><br>
 <uib-accordion>
     <uib-accordion-group is-open="cc.accordion.messages">
         <uib-accordion-heading>
@@ -15,7 +16,7 @@
 <uib-accordion>
     <uib-accordion-group is-open="cc.accordion.agents">
         <uib-accordion-heading>
-            <div class="hover">Running agents</div>
+            <div class="hover">Running server-side agents</div>
         </uib-accordion-heading>
         <div class="console-box" scroll-glue>
 	        <div ng-repeat="agent in cc.agents.array track by $index">

@@ -14,6 +14,10 @@
 
         aesc.createPingAndPongAgents = createPingAndPongAgents;
         aesc.sendMessageToPingAgent = sendMessageToPingAgent;
+        
+        aesc.createMapAgent = createMapAgent;
+        aesc.createAntAgents = createAntAgents;
+        aesc.sendMessageToCancelAntSearch = sendMessageToCancelAntSearch;
 
         function createTestAgent() {
             var testAgent = {
@@ -84,6 +88,52 @@
                 }],
                 performative: "REQUEST",
                 content: "pong"
+            };
+            xjaf.sendMessage(request);
+        };
+        
+        function createMapAgent() {
+            var mapAgent = {
+                agClass: {
+                    ejbName: "Map",
+                    module: "siebog",
+                    path: "/siebog/agents/aco/map"
+                },
+                name: "Map",
+                host: "xjaf"
+            };
+            xjaf.startAgent(mapAgent, "arg[fileName].value=maps/ulysses16.tsp");
+        };
+        
+        function createAntAgents() {
+        	for (var i = 0; i < 10; i++) {
+	            var mapAgent = {
+	                agClass: {
+	                    ejbName: "Ant",
+	                    module: "siebog",
+	                    path: "/siebog/agents/aco/ant"
+	                },
+	                name: "Ant" + i,
+	                host: "xjaf"
+	            };
+	            xjaf.startAgent(mapAgent, "arg[host].value=localhost");
+        	}
+        };
+        
+        function sendMessageToCancelAntSearch() {
+            var request = {
+                receivers: [{
+                    name: "Map",
+                    host: "xjaf",
+                    str: "Map@xjaf",
+                    agClass: {
+                        ejbName: "Map",
+                        module: "siebog",
+                        path: ""
+                    }
+                }],
+                performative: "CANCEL",
+                content: ""
             };
             xjaf.sendMessage(request);
         };

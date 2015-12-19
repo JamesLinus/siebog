@@ -15,6 +15,10 @@
 		cc.agents = xjaf.agents;
 		cc.messages = [];
 		
+		cc.clearConsole = function() {
+			cc.messages = [];
+		}
+		
 		var socket = $websocket("ws://" + window.location.host + "/siebog/console");
 
 		socket.onMessage(function(message) {

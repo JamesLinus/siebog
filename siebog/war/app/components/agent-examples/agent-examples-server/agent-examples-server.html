@@ -25,3 +25,17 @@ The content of the message will be the name of the pong agent: <code>pong</code>
 The <code>pong</code> agent will reply to the <code>ping</code> agent by sending the INFORM performative.
 The message exchange can be observed on the wildfly console.
 To initiate communication, please <button class="btn btn-primary" ng-click="aesc.sendMessageToPingAgent()">click here</button>.
+
+<h2>3. <a target="_blank" href="https://github.com/gcvt/siebog/blob/master/siebog/src/siebog/agents/xjaf/aco/tsp/Map.java">Map</a> and <a target="_blank" href="https://github.com/gcvt/siebog/blob/master/siebog/src/siebog/agents/xjaf/aco/tsp/Ant.java">Ant</a> agents</h2>
+This example is an agent-based implementation of the Ant Colony Optimization technique for solving the Traveling Salesman Problem. 
+It includes two types of agents: Ant representing ants, and Map which represents the map they're exploring.
+<h3>Create the Map agent</h3>	
+This example starts with the creation of the Map agent. To do so, please <button class="btn btn-default" ng-click="aesc.createMapAgent()">click here</button>. 
+Do this only once.
+<h3>Create 10 Ant agents</h3>	
+After the Map agent has been created, create 10 Ant agents and let them explore the Map. To do so, please <button class="btn btn-primary" ng-click="aesc.createAntAgents()">click here</button>. 
+Do this only once, too.
+<h3>Stop the search</h3>	
+If you want to stop all ants, please <button class="btn btn-primary" ng-click="aesc.sendMessageToCancelAntSearch()">click here</button>. 
+If you stop ant agents, you have also stopped the Map agent. So, if you want to start the search again, click on the button for creation of 
+Map agent, and then click on the button for creation of Ant agents.

@@ -43,14 +43,14 @@
 			return $http.get(XJAF.messageManagerUrl);
 		};
 
-		function startAgent(agent) {
+		function startAgent(agent, initArgs) {
 			var req = {
 				method: 'PUT',
 				url: XJAF.agentManagerUrl + '/running/' + agent.agClass['module']+'$'+agent.agClass['ejbName']+'/'+agent['name'],
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				data: {}
+				data: (initArgs === undefined) ? {} : initArgs
         	}
 
         	return $http(req);
