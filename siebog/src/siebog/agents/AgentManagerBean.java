@@ -80,7 +80,7 @@ public class AgentManagerBean implements AgentManager {
 				throw new IllegalStateException("Agent already running: " + aid);
 			}
 			stopAgent(aid);
-			if(args.get("noUIUpdate", "").equals("")) {
+			if(args == null || args.get("noUIUpdate", "").equals("")) {
 				LoggerUtil.logAgent(aid, SocketMessageType.REMOVE);
 			}
 		}
@@ -92,7 +92,7 @@ public class AgentManagerBean implements AgentManager {
 		}
 		initAgent(agent, aid, args);
 		LoggerUtil.log("Agent " + aid.getStr() + " started. AID: " + aid.toString(), true);
-		if(args.get("noUIUpdate", "").equals("")) {
+		if(args == null || args.get("noUIUpdate", "").equals("")) {
 			LoggerUtil.logAgent(aid, SocketMessageType.ADD);
 		}
 		//LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
@@ -132,6 +132,7 @@ public class AgentManagerBean implements AgentManager {
 			getCache().remove(aid);
 			// agent.stop();
 			LoggerUtil.log("Stopped agent: " + aid, true);
+			LoggerUtil.logAgent(aid, SocketMessageType.REMOVE);
 			//LOG.info("Stopped agent: {}", aid);
 		}
 	}
