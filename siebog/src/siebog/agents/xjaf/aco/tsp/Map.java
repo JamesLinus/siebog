@@ -21,13 +21,18 @@
 package siebog.agents.xjaf.aco.tsp;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+
+import org.jboss.vfs.VirtualFile;
 
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
@@ -148,15 +153,34 @@ public class Map extends XjafAgent {
 	 * Loads the world graph from the specified file (into 'nodes' list) and calculates initial
 	 * pheromone level tau0 which is set for each edge in 'pheromone' matrix.
 	 */
-	private void loadMap(String fileName) {
+	private void loadMap(String mapName) {
+		File f = null;
 		nodes = new ArrayList<>();
-		URL url = Map.class.getResource(fileName); 
+		URL url = ACOStarter.class.getResource("maps/" + mapName);
+System.out.println(url);		
 		if (url != null) {
 			if (url.toString().startsWith("vfs:/")) {
-				fileName = url.toString().substring(4);
+				try {
+					URLConnection conn = new URL(url.toString()).openConnection();
+					VirtualFile vf = (VirtualFile)conn.getContent();
+					f = vf.getPhysicalFile();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					f = new File(".");
+				}
+			} else {
+				try {
+					f = new File(url.toURI());
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+					f = new File(".");
+				}
 			}
+		} else {
+			f = new File(mapName);
 		}
-		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+		LoggerUtil.log("Loading map from: " + f.getAbsolutePath());
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
 			// skip preliminary info
 			for (int i = 0; i < 6; ++i)
 				reader.readLine();

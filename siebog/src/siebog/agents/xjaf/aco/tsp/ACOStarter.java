@@ -41,9 +41,9 @@ public class ACOStarter {
 		int nAnts = 0;
 		String path = "";
 		if (args.length != 2) {
-			System.out.println("I need 2 arguments: NumberOfAnts PathToMapFile");
+			System.out.println("I need 2 arguments: NumberOfAnts MapFile");
 			nAnts = 5;
-			path = getMapFilePath("ulysses16.tsp");
+			path = "ulysses16.tsp";
 		} else {
 			nAnts = Integer.parseInt(args[0].toString());
 			path = args[1];

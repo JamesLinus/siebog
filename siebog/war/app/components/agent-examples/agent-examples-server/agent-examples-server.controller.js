@@ -102,7 +102,7 @@
                 name: "Map",
                 host: "xjaf"
             };
-            xjaf.startAgent(mapAgent, "arg[fileName].value=maps/ulysses16.tsp");
+            xjaf.startAgent(mapAgent, "arg[fileName].value=ulysses16.tsp");
         };
         
         function createAntAgents() {

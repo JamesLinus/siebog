@@ -3,7 +3,7 @@
 This page contains the list of server-side agents with short descriptions and instructions for testing. 
 This list is not final, and will be modified in time.
 
-<h2>1. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.0/TestAgent/src/agent/TestAgent.java">TestAgent</a></h2>
+<h2>1. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.1/TestAgent/src/agent/TestAgent.java">TestAgent</a></h2>
 <p>
 This is a simple example of agent which dumps the content of the received message. 
 This is a template for creating new agents.	All new agents should be created in separate EJB projects. 
@@ -16,7 +16,7 @@ This will create one agent with the name <code>test</code>. Do this only once.
 <h3>Send message to the test agent</h3>	
 To send the message to the TestAgent, please <button class="btn btn-primary" ng-click="aesc.sendMessageToTestAgent()">click here</button>.
 
-<h2>2. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.0/siebog/test/siebog/agents/test/pingpong/Ping.java">Ping</a> and <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.0/siebog/test/siebog/agents/test/pingpong/Pong.java">Pong</a> agents</h2>
+<h2>2. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.1/siebog/test/siebog/agents/test/pingpong/Ping.java">Ping</a> and <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.1/siebog/test/siebog/agents/test/pingpong/Pong.java">Pong</a> agents</h2>
 This example gives an overview of inter-agent communications (how to send message, how to reply, etc.).
 <h3>Create ping and pong agents</h3>	
 Two agents need to be created: <code>ping</code> and <code>pong</code>. To do so, please <button class="btn btn-default" ng-click="aesc.createPingAndPongAgents()">click here</button>. Do this only once.
@@ -27,7 +27,7 @@ The <code>pong</code> agent will reply to the <code>ping</code> agent by sending
 The message exchange can be observed on the wildfly console.
 To initiate communication, please <button class="btn btn-primary" ng-click="aesc.sendMessageToPingAgent()">click here</button>.
 
-<h2>3. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.0/siebog/src/siebog/agents/xjaf/aco/tsp/Map.java">Map</a> and <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.0/siebog/src/siebog/agents/xjaf/aco/tsp/Ant.java">Ant</a> agents</h2>
+<h2>3. <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.1/siebog/src/siebog/agents/xjaf/aco/tsp/Map.java">Map</a> and <a target="_blank" href="https://github.com/gcvt/siebog/tree/v1.3.1/siebog/src/siebog/agents/xjaf/aco/tsp/Ant.java">Ant</a> agents</h2>
 This example is an agent-based implementation of the Ant Colony Optimization technique for solving the Traveling Salesman Problem. 
 It includes two types of agents: Ant representing ants, and Map which represents the map they're exploring.
 <h3>Create the Map agent</h3>	
