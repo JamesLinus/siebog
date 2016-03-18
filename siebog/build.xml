@@ -26,7 +26,7 @@
 
 	<target name="dist">
 		<!-- Cleanup -->
-		<delete dir="${dist.dir}" />
+		<delete failonerror="false" dir="${dist.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<!-- Package Siebog -->
 		<antcall target="package" />
@@ -38,7 +38,7 @@
 		<copy todir="${dist.dir}/${server.name}/standalone/configuration" file="src/siebog/starter/standalone-full-ha.xml" overwrite="true" verbose="true" />
 		<copy todir="${dist.dir}/${server.name}/domain/configuration" file="src/siebog/starter/domain.xml" overwrite="true" verbose="true" />
 		<!-- DNARS Module -->
-		<ant antfile="../dnars/build.xml" target="module" inheritall="true" useNativeBasedir="true" />
+		<!--  <ant antfile="../dnars/build.xml" target="module" inheritall="true" useNativeBasedir="true" /> -->
 		<!-- Auxiliary Files -->
 		<copy todir="${dist.dir}" file="../LICENSE" />
 		<copy todir="${dist.dir}" file="../NOTICE" />
