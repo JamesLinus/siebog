@@ -7,6 +7,7 @@ siebog/war/WEB-INF/classes
 siebog/war/WEB-INF/deploy
 siebog/war/admin
 siebog/.cache
+siebog/.tern-project
 siebog/dnars-import.jar
 siebog/dnars-tools-lib
 siebog/dnars-convert.jar
