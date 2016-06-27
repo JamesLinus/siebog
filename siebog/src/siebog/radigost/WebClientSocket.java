@@ -5,17 +5,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import siebog.agents.AID;
 import siebog.interaction.ACLMessage;
 
@@ -31,8 +33,8 @@ public class WebClientSocket {
 	//@formatter:on
 	private static final Map<String, Session> sessions = Collections
 			.synchronizedMap(new HashMap<String, Session>());
-	@Inject
-	private Cassandra cassandra;
+	//@Inject
+	//private Cassandra cassandra;
 
 	@OnOpen
 	public void onOpen(Session session) {
@@ -59,10 +61,10 @@ public class WebClientSocket {
 			doUnregister(content, session);
 			break;
 		case MSG_GET_STATE:
-			doGetState(content, session);
+			//doGetState(content, session);
 			break;
 		case MSG_STORE_STATE:
-			doStoreState(content);
+			//doStoreState(content);
 			break;
 		}
 	}
@@ -86,7 +88,7 @@ public class WebClientSocket {
 		sessions.remove(platformId);
 	}
 
-	private void doGetState(String aid, Session session) {
+	/*private void doGetState(String aid, Session session) {
 		String state = cassandra.getState(aid);
 		session.getAsyncRemote().sendText(state);
 	}
@@ -107,5 +109,5 @@ public class WebClientSocket {
 
 	private String getState(String content, int delimiter) {
 		return delimiter == content.length() - 1 ? "" : content.substring(delimiter + 1);
-	}
+	}*/
 }
