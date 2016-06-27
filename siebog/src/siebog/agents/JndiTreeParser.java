@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -31,7 +32,7 @@ import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import siebog.agents.xjaf.GUIAgent;
+
 import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
 
@@ -51,7 +52,6 @@ public class JndiTreeParser {
 		context = ContextFactory.get();
 		ignored = new HashSet<>();
 		ignored.add(JasonEEAgent.class);
-		ignored.add(GUIAgent.class);
 	}
 
 	public List<AgentClass> parse() throws NamingException {
