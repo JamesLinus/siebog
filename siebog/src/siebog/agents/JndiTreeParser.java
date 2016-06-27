@@ -33,7 +33,6 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
-import siebog.jasonee.JasonEEAgent;
 import siebog.utils.ContextFactory;
 
 /**
@@ -51,7 +50,6 @@ public class JndiTreeParser {
 	public void postConstruct() {
 		context = ContextFactory.get();
 		ignored = new HashSet<>();
-		ignored.add(JasonEEAgent.class);
 	}
 
 	public List<AgentClass> parse() throws NamingException {

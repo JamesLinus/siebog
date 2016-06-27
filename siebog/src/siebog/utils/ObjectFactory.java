@@ -22,15 +22,13 @@ package siebog.utils;
 
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
+
 import siebog.agents.Agent;
 import siebog.agents.AgentManager;
 import siebog.agents.AgentManagerBean;
 import siebog.interaction.JMSFactory;
 import siebog.interaction.MessageManager;
 import siebog.interaction.MessageManagerBean;
-import siebog.jasonee.JasonEEStarter;
-import siebog.jasonee.JasonEEStarterImpl;
-import siebog.jasonee.RemoteObjectFactory;
 import siebog.radigost.WebClientManager;
 
 /**
@@ -70,7 +68,7 @@ public abstract class ObjectFactory {
 		return lookup("java:comp/EJBContext", SessionContext.class);
 	}
 
-	public static JasonEEStarter getJasonEEStarter() {
+	/*public static JasonEEStarter getJasonEEStarter() {
 		final String JasonEEStarterLookup = "ejb:/" + Agent.SIEBOG_MODULE + "//"
 				+ JasonEEStarterImpl.class.getSimpleName() + "!" + JasonEEStarter.class.getName();
 		return lookup(JasonEEStarterLookup, JasonEEStarter.class);
@@ -81,7 +79,7 @@ public abstract class ObjectFactory {
 		ejbName = ejbName.replace("\"", "");
 		String name = "ejb:/" + module + "//" + ejbName + "!" + RemoteObjectFactory.class.getName();
 		return lookup(name, RemoteObjectFactory.class);
-	}
+	}*/
 
 	public static JMSFactory getJMSFactory() {
 		return lookup(JMSFactoryLookup, JMSFactory.class);
