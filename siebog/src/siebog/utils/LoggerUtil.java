@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import siebog.agents.AID;
 import siebog.agents.AgentManagerBean;
+import siebog.interaction.ACLMessage;
 
 /**
  * @author Nikola
@@ -90,4 +91,8 @@ public class LoggerUtil {
     		}
     	}
     }
+
+	public static void logMessage(ACLMessage msg, AID myAid) {
+		log("PERFORMATIVE: " + msg.performative + "\tFROM: " + (msg.sender == null ? "unknown" : msg.sender.getStr()) + "\tTO: " + (myAid == null? "unknown" : myAid.getStr())+ "\tCONTENT: " + msg.content, true);
+	}
 }
