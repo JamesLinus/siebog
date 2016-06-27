@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.aco.tsp;
+package siebog.agents.test.aco;
 
 import java.io.Serializable;
 

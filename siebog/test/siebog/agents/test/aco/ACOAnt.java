@@ -18,7 +18,7 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.aco.tsp;
+package siebog.agents.test.aco;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ import siebog.utils.LoggerUtil;
  */
 @Stateful
 @Remote(Agent.class)
-public class Ant extends XjafAgent {
+public class ACOAnt extends XjafAgent {
 	private static final long serialVersionUID = 8886978416763257091L;
 	// AID of the agent maintaining the world graph.
 	private AID mapAID;

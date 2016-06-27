@@ -18,27 +18,23 @@
  * and limitations under the License.
  */
 
-package siebog.agents.xjaf.aco.tsp;
+package siebog.agents.test.aco;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
-import org.jboss.vfs.VirtualFile;
-
 import siebog.agents.Agent;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
 import siebog.interaction.Performative;
+import siebog.utils.FileUtils;
 import siebog.utils.LoggerUtil;
 
 /**
@@ -49,7 +45,7 @@ import siebog.utils.LoggerUtil;
  */
 @Stateful
 @Remote(Agent.class)
-public class Map extends XjafAgent {
+public class ACOMap extends XjafAgent {
 	private static final long serialVersionUID = 4998652517108886246L;
 	// TSP graph (given by a set of (x,y)-points).
 	private List<Node> nodes;
@@ -154,31 +150,9 @@ public class Map extends XjafAgent {
 	 * pheromone level tau0 which is set for each edge in 'pheromone' matrix.
 	 */
 	private void loadMap(String mapName) {
-		File f = null;
+		File f = FileUtils.getFile(ACOMap.class, "maps/", mapName);
 		nodes = new ArrayList<>();
-		URL url = ACOStarter.class.getResource("maps/" + mapName);
-System.out.println(url);		
-		if (url != null) {
-			if (url.toString().startsWith("vfs:/")) {
-				try {
-					URLConnection conn = new URL(url.toString()).openConnection();
-					VirtualFile vf = (VirtualFile)conn.getContent();
-					f = vf.getPhysicalFile();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					f = new File(".");
-				}
-			} else {
-				try {
-					f = new File(url.toURI());
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-					f = new File(".");
-				}
-			}
-		} else {
-			f = new File(mapName);
-		}
+		
 		LoggerUtil.log("Loading map from: " + f.getAbsolutePath());
 		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
 			// skip preliminary info
