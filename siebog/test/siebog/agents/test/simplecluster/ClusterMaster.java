@@ -45,16 +45,18 @@ public class ClusterMaster extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
+		LoggerUtil.logMessage(msg, myAid);
 		if (msg.performative == Performative.REQUEST) {
-			LoggerUtil.log("PERFORMATIVE: " + msg.performative + "\tFROM: testProgram\t\tTO: " + myAid.getStr());
 			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, ClusterSlave.class.getSimpleName());
-			AID slaveAid = new AID(msg.content, agClass);
+			String[] slaves = msg.content.split(",");
+			
 			ACLMessage msgToSlave = new ACLMessage(Performative.REQUEST);
 			msgToSlave.sender = myAid;
-			msgToSlave.receivers.add(slaveAid);
+			for(String slave : slaves) {
+				AID slaveAid = new AID(slave, agClass);
+				msgToSlave.receivers.add(slaveAid);
+			}
 			msm().post(msgToSlave);
-		} else if(msg.performative == Performative.INFORM) {
-			LoggerUtil.log("PERFORMATIVE: " + msg.performative + "\tFROM: " + (msg.sender == null ? "unknown" : msg.sender.getStr()) + "\tTO: " + (myAid == null? "unknown" : myAid.getStr()));
 		}
 	}
 }

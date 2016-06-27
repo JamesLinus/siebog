@@ -41,53 +41,42 @@ import siebog.utils.LoggerUtil;
  * Example of a ping agent.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="nikol.luburic@uns.ac.rs">Nikola Luburic</a>
  */
 @Stateful
 @Remote(Agent.class)
 public class Ping extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	//private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 	private String nodeName;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
-		//LOG.info("Ping created on {}.", nodeName);
 		LoggerUtil.log("Ping created on " + nodeName, true);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		//System.out.println("Message to Ping: " + msg);
-		LoggerUtil.log("Message to Ping: " + msg, true);
+		LoggerUtil.logMessage(msg, myAid);
 		if (msg.performative == Performative.REQUEST) { // inital request
-			// send a request to the Pong agent
-			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName());
-			AID pongAid = new AID(msg.content, agClass);
+			// send a request to the Pong agent, whose name is defined in the message content
+			AID pongAid = new AID(msg.content, new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName()));
 			ACLMessage msgToPong = new ACLMessage(Performative.REQUEST);
 			msgToPong.sender = myAid;
 			msgToPong.receivers.add(pongAid);
+			// use the message manager to publish the request
 			msm().post(msgToPong);
 		} else if (msg.performative == Performative.INFORM) {
 			// wait for the message
-			// ACLMessage msgFromPong = receiveWait(0);
 			ACLMessage msgFromPong = msg;
+			// we can put and retrieve custom user arguments using the userArgs field of the ACL message
 			Map<String, Serializable> args = new HashMap<>(msgFromPong.userArgs);
 			args.put("pingCreatedOn", nodeName);
 			args.put("pingWorkingOn", getNodeName());
 
-			// print info
-			//LOG.info("Ping-Pong interaction details:");
 			LoggerUtil.log("Ping-Pong interaction details: ", true);
-			for (Entry<String, Serializable> e : args.entrySet())
+			for (Entry<String, Serializable> e : args.entrySet()) {
 				LoggerUtil.log(e.getKey() + " " + e.getValue(), true);
-				//LOG.info("{} {}", e.getKey(), e.getValue());
-
-			// reply to the original sender (if any)
-			if (msg.canReplyTo()) {
-				ACLMessage reply = msg.makeReply(Performative.INFORM);
-				reply.userArgs = args;
-				msm().post(reply);
 			}
 		}
 	}

@@ -41,9 +41,11 @@ public class ClusterSlave extends XjafAgent {
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		LoggerUtil.log("PERFORMATIVE: " + msg.performative + "\tFROM: " + (msg.sender == null ? "unknown" : msg.sender.getStr()) + "\tTO: " + (myAid == null? "unknown" : myAid.getStr()));
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.sender = myAid;
-		msm().post(reply);
+		LoggerUtil.logMessage(msg, myAid);
+		if(msg.performative == Performative.REQUEST) {
+			ACLMessage reply = msg.makeReply(Performative.INFORM);
+			reply.sender = myAid;
+			msm().post(reply);
+		}
 	}
 }

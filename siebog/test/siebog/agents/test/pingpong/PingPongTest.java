@@ -20,48 +20,26 @@
 
 package siebog.agents.test.pingpong;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import java.rmi.RemoteException;
-import java.util.concurrent.TimeUnit;
-import org.junit.Test;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
-import siebog.agents.AgentManager;
 import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
-import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
-import siebog.utils.ObjectFactory;
 
 /**
  * 
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="nikola.luburic@uns.ac.rs">Nikola Luburic</a>
  */
 public class PingPongTest extends TestClientBase {
-	public PingPongTest() throws RemoteException {
-	}
-
-	@Test
-	public void testPingPong() throws InterruptedException {
-		runPingPong();
-		ACLMessage reply = msgQueue.poll(10, TimeUnit.SECONDS);
-		assertNotNull(reply);
-		assertEquals(Performative.INFORM, reply.performative);
-	}
-
-	private void runPingPong() {
-		AgentManager agm = ObjectFactory.getAgentManager();
-
-		AID pingAid = agm.startServerAgent(
-				new AgentClass(Agent.SIEBOG_MODULE, Ping.class.getSimpleName()), "Ping", null);
-
+	
+	@Override
+	public void test() {
+		AID pingAid = agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, Ping.class.getSimpleName()), "Ping", null);
 		String pongName = "Pong";
-		agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName()),
-				pongName, null);
+		agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, Pong.class.getSimpleName()), pongName, null);
 
-		MessageManager msm = ObjectFactory.getMessageManager();
 		ACLMessage message = new ACLMessage(Performative.REQUEST);
 		message.receivers.add(pingAid);
 		message.content = pongName;
@@ -70,13 +48,6 @@ public class PingPongTest extends TestClientBase {
 	}
 
 	public static void main(String[] args) {
-		try {
-			new PingPongTest().testPingPong();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			System.exit(0);
-		}
+		new PingPongTest().test();
 	}
-
 }

@@ -34,30 +34,32 @@ import siebog.utils.LoggerUtil;
  * Example of a pong agent.
  *
  * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="nikola.luburic@uns.ac.rs">Nikola Luburic</a>
  */
 @Stateful
 @Remote(Agent.class)
 public class Pong extends XjafAgent {
 	private static final long serialVersionUID = 1L;
-	//private static final Logger LOG = LoggerFactory.getLogger(Pong.class);
+
 	private String nodeName;
 	private int counter;
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		nodeName = getNodeName();
+		counter = 0;
 		LoggerUtil.log("Pong created on " + nodeName, true);
-		//LOG.info("Pong created on {}.", nodeName);
 	}
 
 	@Override
 	protected void onMessage(ACLMessage msg) {
-		//System.out.println("Message to Pong: " + msg);
-		LoggerUtil.log("Message to Pong: " + msg, true);
-		ACLMessage reply = msg.makeReply(Performative.INFORM);
-		reply.userArgs.put("pongCreatedOn", nodeName);
-		reply.userArgs.put("pongWorkingOn", getNodeName());
-		reply.userArgs.put("pongCounter", ++counter);
-		msm().post(reply);
+		LoggerUtil.logMessage(msg, myAid);
+		if(msg.performative == Performative.REQUEST) {
+			ACLMessage reply = msg.makeReply(Performative.INFORM);
+			reply.userArgs.put("pongCreatedOn", nodeName);
+			reply.userArgs.put("pongWorkingOn", getNodeName());
+			reply.userArgs.put("pongCounter", ++counter);
+			msm().post(reply);
+		}
 	}
 }

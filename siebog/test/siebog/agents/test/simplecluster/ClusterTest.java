@@ -20,15 +20,12 @@
 
 package siebog.agents.test.simplecluster;
 
-import siebog.SiebogClient;
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
-import siebog.agents.AgentManager;
+import siebog.agents.test.TestClientBase;
 import siebog.interaction.ACLMessage;
-import siebog.interaction.MessageManager;
 import siebog.interaction.Performative;
-import siebog.utils.ObjectFactory;
 
 /**
  * The purpose of this test is to demonstrate the high availability of JGroups and Infinispan clusters. 
@@ -38,44 +35,42 @@ import siebog.utils.ObjectFactory;
  * Agents (or rather the underlying EJBs) exist on the cluster, and not on a particular node.
  * @author <a href="nikola.luburic@uns.ac.rs">Nikola Luburic</a>
  */
-public class ClusterTest {
+public class ClusterTest extends TestClientBase {
 	private int NUMBER_OF_SLAVES = 6;
 	private int NUMBER_OF_MESSAGES = 3;
 
-	private void runCluster() throws InterruptedException {
-		//Change "localhost" to a set of strings which represent IP addresses, 
-		//where the first string is the master and the rest are slaves.
-		SiebogClient.connect("localhost");
-		
-		AgentManager agm = ObjectFactory.getAgentManager();
-
-		AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, ClusterMaster.class.getSimpleName());
-		AID pingAid = agm.startServerAgent(agClass, "ClusterMaster", null);
+	public void test() {
+		AID clusterMasterAid = agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, ClusterMaster.class.getSimpleName()), "ClusterMaster", null);
 
 		for(int i = 0; i < NUMBER_OF_SLAVES; i++) {
 			agm.startServerAgent(new AgentClass(Agent.SIEBOG_MODULE, ClusterSlave.class.getSimpleName()), "ClusterSlave" + i, null);
 		}
-
-		MessageManager msm = ObjectFactory.getMessageManager();
+		
 		ACLMessage message = new ACLMessage(Performative.REQUEST);
-		message.receivers.add(pingAid);
+		message.receivers.add(clusterMasterAid);
+		message.sender = testAgentAid;
 		for(int i = 0; i < NUMBER_OF_MESSAGES; i++) {
 			for(int j = 0; j < NUMBER_OF_SLAVES; j++) {
 				message.content = "ClusterSlave" + j;
 				msm.post(message);
 			}
-			Thread.sleep(4000);
+			//Alternatively:
+			//message.content = "";
+			//for(int j = 0; j < NUMBER_OF_SLAVES - 1; j++) {
+			//	message.content += "ClusterSlave" + j + ",";
+			//}
+			//message.content += "ClusterSlave" + (NUMBER_OF_SLAVES - 1);
+			//msm.post(message);
+			//End alternative
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public static void main(String[] args) {
-		try {
-			new ClusterTest().runCluster();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		} finally {
-			System.exit(0);
-		}
+		new ClusterTest().test();
 	}
-
 }
