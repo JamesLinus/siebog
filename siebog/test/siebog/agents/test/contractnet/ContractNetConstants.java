@@ -18,28 +18,18 @@
  * and limitations under the License.
  */
 
-package siebog.agents.test.hacontractnet;
+package siebog.agents.test.contractnet;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import siebog.agents.Agent;
-import siebog.agents.XjafAgent;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
+import javax.ejb.Singleton;
 
 /**
+ * Constants used to configure the contract net protocol.
  * 
- * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @author <a href="nikola.luburic@uns.ac.rs">Nikola Luburic</a>
  */
-@Stateful
-@Remote(Agent.class)
-public class Participant extends XjafAgent {
-	private static final long serialVersionUID = 1L;
 
-	@Override
-	protected void onMessage(ACLMessage msg) {
-		ACLMessage reply = msg.makeReply(Performative.ACCEPT_PROPOSAL);
-		msm().post(reply);
-		// agm().stopAgent(myAid);
-	}
+@Singleton
+public class ContractNetConstants {
+	public static int NUM_OF_RETRIES = 2;
+	public static int SECONDS_FOR_RETRY = 10;
 }
