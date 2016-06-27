@@ -21,6 +21,7 @@
 package siebog.radigost.stub;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +37,7 @@ public class ScriptLoader {
 	private String radigostSource;
 
 	public ScriptLoader() {
-		radigostSource = getJSSource("siebog/js/agents/agent.js");
+		radigostSource = getJSSource("siebog/agents/test/js/agent.js");
 	}
 
 	public Invocable load(String url, String state) throws ScriptException, NoSuchMethodException {
@@ -71,7 +72,9 @@ public class ScriptLoader {
 	}
 
 	private String getFullAgentSouce(String url) {
-		String js = getJSSource(url);
+		String jsFileName = url.split("/")[url.split("/").length - 1];
+		String clientToServerUrl = "siebog" + File.separator + "agents" + File.separator + "test" + File.separator + "js" + File.separator + jsFileName;
+		String js = getJSSource(clientToServerUrl);
 		StringBuilder sb = new StringBuilder(radigostSource);
 		sb.append("\nload(\"nashorn:mozilla_compat.js\");\n");
 		sb.append(js);
