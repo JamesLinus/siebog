@@ -8,11 +8,11 @@ import java.util.HashMap;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
-import siebog.agents.Agent;
-import siebog.agents.AgentInitArgs;
-import siebog.agents.XjafAgent;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.AgentInitArgs;
+import siebog.agentmanager.XjafAgent;
+import siebog.messagemanager.ACLMessage;
+import siebog.messagemanager.Performative;
 import siebog.utils.FileUtils;
 import siebog.utils.LoggerUtil;
 

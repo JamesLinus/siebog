@@ -26,12 +26,12 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
-import siebog.agents.AID;
-import siebog.agents.Agent;
-import siebog.agents.XjafAgent;
+import siebog.agentmanager.AID;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.XjafAgent;
 import siebog.agents.test.contractnet.ContractNetConstants;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
+import siebog.messagemanager.ACLMessage;
+import siebog.messagemanager.Performative;
 import siebog.utils.LoggerUtil;
 import siebog.utils.ObjectFactory;
 

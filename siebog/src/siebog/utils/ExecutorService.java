@@ -32,8 +32,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import siebog.agents.AID;
-import siebog.agents.HeartbeatMessage;
+
+import siebog.agentmanager.AID;
+import siebog.agentmanager.HeartbeatMessage;
 
 /**
  * Wrapper around (managed) executor services.

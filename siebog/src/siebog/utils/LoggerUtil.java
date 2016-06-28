@@ -13,9 +13,9 @@ import org.hornetq.utils.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import siebog.agents.AID;
-import siebog.agents.AgentManagerBean;
-import siebog.interaction.ACLMessage;
+import siebog.agentmanager.AID;
+import siebog.agentmanager.AgentManagerBean;
+import siebog.messagemanager.ACLMessage;
 
 /**
  * @author Nikola

@@ -20,9 +20,9 @@
 
 package siebog.agents.test.aco;
 
-import siebog.agents.Agent;
-import siebog.agents.AgentClass;
-import siebog.agents.AgentInitArgs;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.AgentClass;
+import siebog.agentmanager.AgentInitArgs;
 import siebog.agents.test.TestClientBase;
 
 /**

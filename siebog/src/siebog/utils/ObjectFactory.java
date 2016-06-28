@@ -23,13 +23,13 @@ package siebog.utils;
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 
-import siebog.agents.Agent;
-import siebog.agents.AgentManager;
-import siebog.agents.AgentManagerBean;
-import siebog.interaction.JMSFactory;
-import siebog.interaction.MessageManager;
-import siebog.interaction.MessageManagerBean;
-import siebog.radigost.WebClientManager;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.AgentManager;
+import siebog.agentmanager.AgentManagerBean;
+import siebog.clientmanager.WebClientManager;
+import siebog.messagemanager.JMSFactory;
+import siebog.messagemanager.MessageManager;
+import siebog.messagemanager.MessageManagerBean;
 
 /**
  * 

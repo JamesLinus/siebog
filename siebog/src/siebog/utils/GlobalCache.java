@@ -2,8 +2,9 @@ package siebog.utils;
 
 import org.infinispan.Cache;
 import org.infinispan.manager.CacheContainer;
-import siebog.agents.AID;
-import siebog.agents.Agent;
+
+import siebog.agentmanager.AID;
+import siebog.agentmanager.Agent;
 
 public class GlobalCache {
 	private static final String CACHE_CONTAINER = "java:jboss/infinispan/container/siebog-cache";

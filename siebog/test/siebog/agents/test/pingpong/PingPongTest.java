@@ -20,12 +20,12 @@
 
 package siebog.agents.test.pingpong;
 
-import siebog.agents.AID;
-import siebog.agents.Agent;
-import siebog.agents.AgentClass;
+import siebog.agentmanager.AID;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.AgentClass;
 import siebog.agents.test.TestClientBase;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
+import siebog.messagemanager.ACLMessage;
+import siebog.messagemanager.Performative;
 
 /**
  * 

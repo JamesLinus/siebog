@@ -3,9 +3,9 @@ package agent;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import siebog.agents.Agent;
-import siebog.agents.XjafAgent;
-import siebog.interaction.ACLMessage;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.XjafAgent;
+import siebog.messagemanager.ACLMessage;
 import siebog.utils.LoggerUtil;
 
 @Stateless

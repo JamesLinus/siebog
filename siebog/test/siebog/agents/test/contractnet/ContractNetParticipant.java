@@ -25,10 +25,10 @@ import java.security.SecureRandom;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
-import siebog.agents.Agent;
-import siebog.agents.XjafAgent;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.Performative;
+import siebog.agentmanager.Agent;
+import siebog.agentmanager.XjafAgent;
+import siebog.messagemanager.ACLMessage;
+import siebog.messagemanager.Performative;
 import siebog.utils.LoggerUtil;
 
 /**

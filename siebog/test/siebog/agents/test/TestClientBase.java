@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import siebog.SiebogClient;
-import siebog.agents.AID;
-import siebog.agents.AgentManager;
-import siebog.interaction.ACLMessage;
-import siebog.interaction.MessageManager;
+import siebog.agentmanager.AID;
+import siebog.agentmanager.AgentManager;
+import siebog.messagemanager.ACLMessage;
+import siebog.messagemanager.MessageManager;
 import siebog.utils.ObjectFactory;
 
 /**
