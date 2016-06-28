@@ -8,8 +8,7 @@
 	xjaf.$inject = ['$http'];
 	function xjaf($http) {
 		var XJAF = {
-			agentManagerUrl: "/siebog/rest/agents",
-			messageManagerUrl: "/siebog/rest/messages",
+			clientManagerUrl: "/siebog/rest/webclient",
 			agents: {
 				array: []
 			}
@@ -32,21 +31,21 @@
 		return XJAF;
 
 		function getAgentClasses() {
-			return $http.get(XJAF.agentManagerUrl + '/classes');
+			return $http.get(XJAF.clientManagerUrl + '/classes');
 		};
 
 		function getRunning() {
-			return $http.get(XJAF.agentManagerUrl + '/running');
+			return $http.get(XJAF.clientManagerUrl + '/running');
 		};
 
 		function getPerformatives() {
-			return $http.get(XJAF.messageManagerUrl);
+			return $http.get(XJAF.clientManagerUrl + "/messages");
 		};
 
 		function startAgent(agent, initArgs) {
 			var req = {
 				method: 'PUT',
-				url: XJAF.agentManagerUrl + '/running/' + agent.agClass['module']+'$'+agent.agClass['ejbName']+'/'+agent['name'],
+				url: XJAF.clientManagerUrl + '/running/' + agent.agClass['module']+'$'+agent.agClass['ejbName']+'/'+agent['name'],
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
@@ -59,7 +58,7 @@
 		function sendMessage(request) {
 			var req = {
        			 method: 'POST',
-       			 url: '/siebog/rest/messages',
+       			 url: XJAF.clientManagerUrl + '/messages',
        			 headers: {
        			   'Content-Type': 'application/x-www-form-urlencoded'//'application/json'
        			 },
@@ -71,7 +70,7 @@
 		function accept(url, aid, state) {
 			var req = {
    				method: 'PUT',
-       			url: '/siebog/rest/webclient',
+       			url: XJAF.clientManagerUrl,
        			headers: {
        				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
        			},

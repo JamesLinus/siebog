@@ -29,24 +29,13 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.infinispan.Cache;
-import org.jboss.resteasy.annotations.Form;
 
 import siebog.utils.GlobalCache;
 import siebog.utils.LoggerUtil;
-import siebog.utils.ObjectFactory;
 import siebog.utils.LoggerUtil.SocketMessageType;
+import siebog.utils.ObjectFactory;
 
 /**
  * Default agent manager implementation.
@@ -58,20 +47,11 @@ import siebog.utils.LoggerUtil.SocketMessageType;
 @Stateless
 @Remote(AgentManager.class)
 @LocalBean
-@Path("/agents")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class AgentManagerBean implements AgentManager {
 	private static final long serialVersionUID = 1L;
-	//private static final Logger LOG = LoggerFactory.getLogger(AgentManagerBean.class);
 	private Cache<AID, Agent> agents;
 	@Inject
 	private JndiTreeParser jndiTreeParser;
-
-	@Override
-	public void startServerAgent(AID aid, AgentInitArgs args) {
-		startServerAgent(aid, args, true);
-	}
 
 	@Override
 	public void startServerAgent(AID aid, AgentInitArgs args, boolean replace) {
@@ -95,26 +75,16 @@ public class AgentManagerBean implements AgentManager {
 		if(args == null || args.get("noUIUpdate", "").equals("")) {
 			LoggerUtil.logAgent(aid, SocketMessageType.ADD);
 		}
-		//LOG.info("Agent {} started. AID: {}", aid.getStr(), aid.toString());
 	}
 
-	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
-		return startServerAgent(agClass, runtimeName, args, true);
-	}
-
-	@PUT
-	@Path("/running/{agClass}/{name}")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
-	public AID startServerAgent(@PathParam("agClass") AgentClass agClass,
-			@PathParam("name") String name, @Form AgentInitArgs args,
-			@QueryParam("replace") @DefaultValue("true") boolean replace) {
+	public AID startServerAgent(AgentClass agClass, String runtimeName, AgentInitArgs args) {
 		String host = AID.HOST_NAME;
 		if (args != null) {
 			host = args.get("host", AID.HOST_NAME);
 		}
-		AID aid = new AID(name, host, agClass);
-		startServerAgent(aid, args);
+		AID aid = new AID(runtimeName, host, agClass);
+		startServerAgent(aid, args, true);
 		return aid;
 	}
 
@@ -123,22 +93,17 @@ public class AgentManagerBean implements AgentManager {
 		return null;
 	}
 
-	@DELETE
-	@Path("/running/{aid}")
 	@Override
-	public void stopAgent(@PathParam("aid") AID aid) {
+	public void stopAgent(AID aid) {
 		Agent agent = getCache().get(aid);
 		if (agent != null) {
 			getCache().remove(aid);
-			// agent.stop();
+
 			LoggerUtil.log("Stopped agent: " + aid, true);
 			LoggerUtil.logAgent(aid, SocketMessageType.REMOVE);
-			//LOG.info("Stopped agent: {}", aid);
 		}
 	}
 
-	@GET
-	@Path("/classes")
 	@Override
 	public List<AgentClass> getAvailableAgentClasses() {
 		try {
@@ -148,8 +113,6 @@ public class AgentManagerBean implements AgentManager {
 		}
 	}
 
-	@GET
-	@Path("/running")
 	@Override
 	public List<AID> getRunningAgents() {
 		Set<AID> set = getCache().keySet();

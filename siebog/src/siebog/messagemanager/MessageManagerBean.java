@@ -23,6 +23,7 @@ package siebog.messagemanager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.LocalBean;
@@ -33,13 +34,8 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +50,6 @@ import siebog.agentmanager.AID;
 @Stateless
 @Remote(MessageManager.class)
 @LocalBean
-@Path("/messages")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class MessageManagerBean implements MessageManager {
 	private static final Logger LOG = LoggerFactory.getLogger(MessageManagerBean.class);
 	@Inject
@@ -79,8 +72,7 @@ public class MessageManagerBean implements MessageManager {
 		}
 	}
 
-	@GET
-	@Path("/")
+	@Override
 	public List<String> getPerformatives() {
 		final Performative[] arr = Performative.values();
 		List<String> list = new ArrayList<>(arr.length);
@@ -89,9 +81,6 @@ public class MessageManagerBean implements MessageManager {
 		return list;
 	}
 
-	@POST
-	@Path("/")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Override
 	public void post(@FormParam("acl") ACLMessage msg) {
 		post(msg, 0);
