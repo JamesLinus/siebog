@@ -22,6 +22,8 @@ package siebog.agents.xjaf.aco.tsp;
 
 import java.io.Serializable;
 
+import siebog.agents.AID;
+
 /**
  * Represents a single graph vertex.
  *
@@ -29,30 +31,62 @@ import java.io.Serializable;
  */
 public class Node implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private float x;
-	private float y;
-
-	public Node(float x, float y) {
+	private double x;
+	private double y;
+	private AID mapAgent;
+	private String mapName;
+	
+	public Node(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
+	
+	public Node(double x, double y, AID mapAgent) {
+		this.x = x;
+		this.y = y;
+		this.mapAgent = mapAgent;
+	}
+	
+	public Node(double x, double y, String mapName) {
+		this.x = x;
+		this.y = y;
+		this.mapName = mapName;
+		this.mapAgent = null;
+	}
 
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 
+	public AID getMapAgent(){
+		return mapAgent;
+	}
+	
+	public void setMapAgent(AID mapAgent) {
+		this.mapAgent = mapAgent;
+	}
+	
+	public void setMapName(String mapName) {
+		this.mapName = mapName;
+	}
+	
+	public String getMapName() {
+		return mapName;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ")";

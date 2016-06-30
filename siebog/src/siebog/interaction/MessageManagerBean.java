@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -91,12 +92,14 @@ public class MessageManagerBean implements MessageManager {
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Asynchronous
 	@Override
 	public void post(@FormParam("acl") ACLMessage msg) {
 		post(msg, 0);
 	}
 
 	@Override
+	@Asynchronous
 	public void post(ACLMessage msg, long delayMillisec) {
 		// TODO : Check if the agent/subscriber exists
 		// http://hornetq.sourceforge.net/docs/hornetq-2.0.0.BETA5/user-manual/en/html/management.html#d0e5742
@@ -112,7 +115,7 @@ public class MessageManagerBean implements MessageManager {
 	public String ping() {
 		return "Pong from " + System.getProperty("jboss.node.name");
 	}
-
+	@Asynchronous
 	private void postToReceiver(ACLMessage msg, int index, long delayMillisec) {
 		AID aid = msg.receivers.get(index);
 		try {

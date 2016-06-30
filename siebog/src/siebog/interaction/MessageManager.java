@@ -20,6 +20,8 @@
 
 package siebog.interaction;
 
+import javax.ejb.Asynchronous;
+
 /**
  * Remote interface of the message manager.
  *
@@ -28,8 +30,9 @@ package siebog.interaction;
 public interface MessageManager {
 	public static final String REPLY_WITH_TEST = "siebog-test";
 
+	@Asynchronous
 	void post(ACLMessage message);
-
+	@Asynchronous
 	void post(ACLMessage message, long delayMillisec);
 
 	String ping();

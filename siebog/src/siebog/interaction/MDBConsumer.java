@@ -2,17 +2,22 @@ package siebog.interaction;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import siebog.agents.AID;
 import siebog.agents.Agent;
 import siebog.agents.AgentManagerBean;
 
+@TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(name = "MDBConsumer", activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/siebog"),
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),

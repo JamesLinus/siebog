@@ -22,15 +22,17 @@ package siebog.agents.xjaf.aco.tsp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import javax.persistence.criteria.CriteriaBuilder.In;
 
+import scala.collection.generic.BitOperations.Int;
 import siebog.agents.AID;
 import siebog.agents.Agent;
-import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.XjafAgent;
 import siebog.interaction.ACLMessage;
@@ -47,42 +49,57 @@ import siebog.utils.LoggerUtil;
 @Remote(Agent.class)
 public class Ant extends XjafAgent {
 	private static final long serialVersionUID = 8886978416763257091L;
-	// AID of the agent maintaining the world graph.
+	// AID of the master Map agent for this ant.
 	private AID mapAID;
+	// AID of the Map agent currently processing this ant.
+	private AID currentAID;
+	//List of all Map agents mantainig the world graph
+	private List<AID> maps;
+	//Flag true if ant knows all map agents
+	private boolean mapsFull = false;
+	
+	//Begin Node index of master Map
+	int beginIndex;
+	//End Node index of master Map
+	int endIndex;
+	
 	// Number of nodes on the map (provided by map agent).
 	private int mapSize;
 	// Index of the current (x,y) pair in the map nodes list.
 	private int currentMapPosIndex;
 	// Represents all nodes this ant has visited so far (in order of visit).
 	private List<Integer> tourSoFar;
-	// I-th element represents the weight between i-th and (i+1)-th node in the tourSoFar list.
-	private List<Float> tourSoFarWeights;
+	// I-th element represents the weight between i-th and (i+1)-th node in the
+	// tourSoFar list.
+	private List<Double> tourSoFarWeights;
 	// Represents total weight of tourSoFar.
-	private float totalWeightSoFar = 0f;
-
+	private double totalWeightSoFar = 0;
+	
+	
+	
 	// Local pheromone influence control parameter.
-	private final float alpha = 1f;
+	private final double alpha = 1;
 	// Edge weight influence control parameter.
-	private final float beta = 5f;
+	private final double beta = 5;
 	// Pheromone evaporation rate (0 <= ro < 1).
-	private final float ro = 0.1f;
+	//private final double ro = 0.1f;
 	// Pheromone local evaporation rate (0 <= ksi < 1).
-	private final float ksi = 0.1f;
+	//private final double ksi = 0.1f;
 
 	// @formatter:off
 	/**
-	 * 1 - initial tour creation by probabilistic movement (send request)
-	 * 2 - while waiting for a reply to the 'PheromoneLevels?' message (process paths) 
-	 * 3 - while waiting to obtain the weight of the last edge in the tour. 
-	 * 4 - preparing for backtrack: remove last node on the tourSoFar list (it is the same as the first) 
-	 * and update the best tour (in the Map agent) if necessary. 
-	 * 5 - backtrack and pheromone adjustment
+	 * 1 - initial tour creation by probabilistic movement (send request) 2 -
+	 * while waiting for a reply to the 'PheromoneLevels?' message (process
+	 * paths) 3 - while waiting to obtain the weight of the last edge in the
+	 * tour. 4 - preparing for backtrack: remove last node on the tourSoFar list
+	 * (it is the same as the first) and update the best tour (in the Map agent)
+	 * if necessary. 5 - backtrack and pheromone adjustment
 	 */
 	// @formatter:on
 	private int phase;
 
 	// Pheromone local evaporation rate (0 <= ksi < 1).
-	private float delta;
+	private double delta;
 	// Space-delimited potential node indices.
 	private String potentialNodeIndices;
 
@@ -90,8 +107,14 @@ public class Ant extends XjafAgent {
 
 	@Override
 	protected void onInit(AgentInitArgs args) {
-		mapAID = agm().getAIDByRuntimeName("Map");
-
+		String map = args.get("map", null);
+		if(map == null)
+			map = "Map1";
+		mapAID = agm().getAIDByRuntimeName(map);
+		currentAID = mapAID;
+		maps = new LinkedList<AID>();
+		maps.add(mapAID);
+		
 		ACLMessage message = new ACLMessage();
 		message.performative = Performative.REQUEST;
 		message.content = "MapSize?";
@@ -99,181 +122,141 @@ public class Ant extends XjafAgent {
 		message.receivers.add(mapAID);
 		message.replyWith = "MapSize";
 		msm().post(message);
+		// LoggerUtil.log(myAid.getName() + ": MapSize? sent.");
+
 	}
 
 	@Override
 	protected void onMessage(ACLMessage message) {
+
+		// LoggerUtil.log(myAid.getName() + ": received.",true);
+		
 		if ("MapSize".equals(message.inReplyTo)) {
+
+			// LoggerUtil.log(myAid.getName() + ": MapSize? received.",true);
+
 			if (message.content.equals("DONE")) {
+				agm().stopAgent(myAid);
 				return;
 			}
 
-			mapSize = Integer.parseInt(message.content);
-			// choose starting map node randomly
-			currentMapPosIndex = new Random().nextInt(mapSize);
+			String[] parts = message.content.split("&&");
+			String content = parts[0];
+			beginIndex = Integer.parseInt(parts[1]) - 1;
+			endIndex = Integer.parseInt(parts[2]) - 1;
+					
+			mapSize = Integer.parseInt(content);
+			
+			// choose starting map node, from master map, randomly
+			currentMapPosIndex = new Random().nextInt(endIndex - beginIndex + 1) + beginIndex;
 
 			tourSoFar = new ArrayList<>();
 			tourSoFar.add(currentMapPosIndex);
 
 			tourSoFarWeights = new ArrayList<>();
 
-			phase = 1;
-			ACLMessage start = new ACLMessage(Performative.REQUEST);
-			start.receivers.add(myAid);
-			msm().post(start);
-			return;
-		}
-
-		switch (phase) {
-		case 1: {
 			ACLMessage request = new ACLMessage(Performative.REQUEST);
 			potentialNodeIndices = getPotentialNodeIndices().trim();
-
-			currentMapPosIndex = getCurrentMapPosIndex();
-
-			request.content = "PheromoneLevels? " + currentMapPosIndex + " " + potentialNodeIndices;
+			request.content = "Move? " + currentMapPosIndex + " " + potentialNodeIndices;
 			request.receivers.add(mapAID);
 			request.sender = myAid;
 			msm().post(request);
+			// LoggerUtil.log(myAid.getName() + ": sent.",true);
 
-			phase = 2;
-			break;
-		}
-		case 2: {
+			return;
+		} else if (message.content.startsWith("Move:")) {
 			int newNodeIndex = 0;
-
-			// response contains a header and alternating numbers designating pheromone level and
-			// edge weight for every applicable edge
-			String[] parts = message.content.split(" ");
-
-			// set pheromone and weight hashmaps
-			java.util.Map<Integer, Float> pheromones = new HashMap<>();
-			java.util.Map<Integer, Float> weights = new HashMap<>();
-			float total = 0f;
-			for (int i = 1; i < parts.length; i += 2) {
-				float weight = Float.parseFloat(parts[i + 1]);
-				float pheromoneLevel = Float.parseFloat(parts[i]);
-				float val = (float) (Math.pow(pheromoneLevel, alpha) * Math.pow(1 / weight, beta));
-				total += val;
-				pheromones.put((i + 1) / 2, val);
-				weights.put((i + 1) / 2, weight);
-			}
-
-			// set probability distribution
-			java.util.Map<Integer, Float> probabilities = new HashMap<>();
-			for (int i = 1; i <= pheromones.size(); ++i)
-				probabilities.put(i, pheromones.get(i) / total);
-
-			// choose next pheromone index using probability distribution
-			double random = rnd.nextDouble();
-			int i = 1;
-			float val = probabilities.get(i);
-			while (i < probabilities.size()) {
-				if (random < val)
-					break;
-				else
-					val += probabilities.get(++i);
-			}
-
-			// update next node index (using chosen pheromone index i, and potentialNodeIndices
-			// string)
-			String[] segs = potentialNodeIndices.split(" ");
-			newNodeIndex = Integer.parseInt(segs[i - 1]);
+			String jsonAID = message.content.split("&&")[1];
+			AID newAID = new AID(jsonAID);
+			currentAID = newAID;
+			if(!mapsFull && !maps.contains(currentAID))
+				maps.add(currentAID);
+			
+			String[] parts = message.content.substring("Move: ".length()).split("&&")[0].split(" ");
+			newNodeIndex = Integer.parseInt(parts[0]);
 			setCurrentMapPosIndex(newNodeIndex);
 
 			// add new node to tourSoFar
 			addNodeToTour(newNodeIndex);
 
 			// add new weight to tourSoFarWeights
-			addWeightToTour(weights.get(i));
-
-			// initiate local pheromone update
-			ACLMessage localUpdate = new ACLMessage(Performative.INFORM);
-			localUpdate.receivers.add(mapAID);
-			localUpdate.content = "UpdateLocalPheromone " + currentMapPosIndex + " " + newNodeIndex
-					+ " " + ksi;
-
-			// advance the phase as required (if tour complete, continue with phase 3, otherwise,
-			// repeat phase 1)
-			if (getTourSoFarSize() == getMapSize()) {
-				int firstMapPosIndex = getFirstMapPosIndex();
-				addNodeToTour(firstMapPosIndex);
-
-				ACLMessage edgeWeightReq = new ACLMessage(Performative.REQUEST);
-				edgeWeightReq.receivers.add(mapAID);
-				edgeWeightReq.content = "EdgeWeight? " + currentMapPosIndex + " "
-						+ firstMapPosIndex;
-				edgeWeightReq.sender = myAid;
-				msm().post(edgeWeightReq);
-
-				currentMapPosIndex = firstMapPosIndex;
-
-				phase = 3;
-			} else {
-				phase = 1;
-				msm().post(message);
-			}
-			break;
-		}
-		case 3: {
-			addWeightToTour(Float.parseFloat(message.content));
-			phase = 4;
-			msm().post(message);
-			break;
-		}
-		case 4: {
-			ACLMessage updateBest = new ACLMessage(Performative.INFORM);
-			updateBest.receivers.add(mapAID);
-			StringBuilder tourSoFar = new StringBuilder();
-			for (int i = 0; i < getTourSoFarSize(); ++i)
-				tourSoFar.append(" ").append(getTourNode(i));
-			float tourWeight = getTotalWeightSoFar();
-			updateBest.content = "UpdateBestTour " + tourWeight + tourSoFar.toString();
-			updateBest.sender = myAid;
-			msm().post(updateBest);
-
-			delta = 1 / tourWeight;
-
-			removeLastNode(); // which is the same as the first
-
-			phase = 5;
-
-			msm().post(message);
-			break;
-		}
-		default: // phase == 5
-		{
-			int nextNodeIndex = removeLastNode();
-			if (nextNodeIndex == -1) {
-				phase = 6;
-				// when this ant is done, create another one
-				String name = "Ant" + myAid.hashCode() + System.currentTimeMillis();
-				AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
-				agm().startServerAgent(agClass, name, null);
-				agm().stopAgent(myAid);
-				return;
+			addWeightToTour(Double.parseDouble(parts[1]));
+			if(getTourSoFarSize() < getMapSize() + 1){
+				sendMoveMessage();
+			}else{
+				mapsFull = true;
+				sendReturnMessage();
 			}
 
-			currentMapPosIndex = getCurrentMapPosIndex();
+		} else if (message.content.startsWith("Restart")) {
+			
+			// choose starting map node, from master map, randomly
+			currentMapPosIndex = new Random().nextInt(endIndex - beginIndex + 1) + beginIndex;
+			
+			tourSoFar = new ArrayList<>();
+			tourSoFar.add(currentMapPosIndex);
 
-			ACLMessage updatePheromone = new ACLMessage(Performative.INFORM);
-			updatePheromone.receivers.add(mapAID);
-			// float val = (1 - ro) * oldValue + ro * delta; // final formula is constructed in Map
-			// agent (for simplicity of oldValue retrieval)
-			updatePheromone.content = "UpdatePheromone " + currentMapPosIndex + " " + nextNodeIndex
-					+ " " + (1 - ro) + " " + ro * delta;
-			updatePheromone.sender = myAid;
-			msm().post(updatePheromone);
+			tourSoFarWeights = new ArrayList<>();
+			totalWeightSoFar = 0;
 
-			setCurrentMapPosIndex(nextNodeIndex);
+			ACLMessage request = new ACLMessage(Performative.REQUEST);
+			potentialNodeIndices = getPotentialNodeIndices().trim();
+			request.content = "Move? " + currentMapPosIndex + " " + potentialNodeIndices;
+			request.receivers.add(mapAID);
+			request.sender = myAid;
+			msm().post(request);
+			// LoggerUtil.log(myAid.getName() + ": sent restartReply.",true);
 
-			msm().post(message);
+		} else if (message.content.startsWith("Stop")) {
+			agm().stopAgent(myAid);
 		}
+
+	}
+
+	public void sendReturnMessage(){
+		ACLMessage request = new ACLMessage(Performative.REQUEST);
+		StringBuilder tour = new StringBuilder();
+		for (int i = 0; i < getTourSoFarSize(); ++i)
+			tour.append(" ").append(getTourNode(i));
+
+		request.content = "Returning? " + tour.toString() + "&&" + getTotalWeightSoFar();
+		request.receivers.addAll(0, maps);
+		request.sender = myAid;
+			
+		msm().post(request);
+	}
+	
+	public void sendMoveMessage() {
+		ACLMessage request = new ACLMessage(Performative.REQUEST);
+		if(getTourSoFarSize() == getMapSize()){
+			potentialNodeIndices = "" + getFirstMapPosIndex();
+		}else{
+			potentialNodeIndices = getPotentialNodeIndices().trim();
 		}
+		
+
+		currentMapPosIndex = getCurrentMapPosIndex();
+        
+		request.content = "Move? " + currentMapPosIndex + " " + potentialNodeIndices;
+		request.receivers.add(currentAID);
+		request.sender = myAid;
+		
+		
+		
+		msm().post(request);
+
 	}
 
 	public int getTourSoFarSize() {
 		return tourSoFar.size();
+	}
+
+	public String getTour() {
+		String retVal = "";
+		for (int i = 0; i < tourSoFar.size(); i++) {
+			retVal += tourSoFar.get(i) + " ";
+		}
+		return retVal.trim();
 	}
 
 	public int getMapSize() {
@@ -284,7 +267,7 @@ public class Ant extends XjafAgent {
 		tourSoFar.add(nodeIndex);
 	}
 
-	public void addWeightToTour(float weight) {
+	public void addWeightToTour(double weight) {
 		tourSoFarWeights.add(weight);
 		totalWeightSoFar += weight;
 	}
@@ -294,15 +277,26 @@ public class Ant extends XjafAgent {
 	 */
 	public String getPotentialNodeIndices() {
 		StringBuilder result = new StringBuilder();
+
 		for (int i = 0; i < mapSize; ++i)
 			if (!tourSoFar.contains(i))
 				result.append(" ").append(i);
 
+		if (result.toString().trim().equals("")) {
+			LoggerUtil.log(" ", true);
+			LoggerUtil.log("No potential node indices", true);
+			LoggerUtil.log(getTourSoFarSize() + "", true);
+			String tour = "";
+			for (int s : tourSoFar)
+				tour += " " + s;
+			LoggerUtil.log(tour, true);
+		}
 		return result.toString();
 	}
 
 	/**
-	 * @return index of the map node (in map's 'nodes' list) this ant is currently at.
+	 * @return index of the map node (in map's 'nodes' list) this ant is
+	 *         currently at.
 	 */
 	public int getCurrentMapPosIndex() {
 		return currentMapPosIndex;
@@ -322,13 +316,13 @@ public class Ant extends XjafAgent {
 		return tourSoFar.get(0);
 	}
 
-	public float getTotalWeightSoFar() {
+	public double getTotalWeightSoFar() {
 		return totalWeightSoFar;
 	}
 
 	/**
-	 * @return Last node of the tourSoFar list, which is subsequently removed, or -1, if the list is
-	 *         already empty.
+	 * @return Last node of the tourSoFar list, which is subsequently removed,
+	 *         or -1, if the list is already empty.
 	 */
 	public int removeLastNode() {
 
@@ -339,14 +333,14 @@ public class Ant extends XjafAgent {
 	}
 
 	/**
-	 * @return Last edge weight of the tourSoFarWeights list, which is subsequently removed, or -1,
-	 *         if the list is already empty;
+	 * @return Last edge weight of the tourSoFarWeights list, which is
+	 *         subsequently removed, or -1, if the list is already empty;
 	 */
-	public float removeLastWeight() {
+	public double removeLastWeight() {
 		if (tourSoFarWeights.size() != 0)
 			return tourSoFarWeights.remove(tourSoFarWeights.size() - 1);
 		else
-			return -1f;
+			return -1;
 	}
 
 	/**

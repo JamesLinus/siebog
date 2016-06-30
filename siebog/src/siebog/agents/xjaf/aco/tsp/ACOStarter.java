@@ -23,11 +23,15 @@ package siebog.agents.xjaf.aco.tsp;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+
+import org.slf4j.Logger;
+
 import siebog.SiebogClient;
 import siebog.agents.Agent;
 import siebog.agents.AgentClass;
 import siebog.agents.AgentInitArgs;
 import siebog.agents.AgentManager;
+import siebog.utils.LoggerUtil;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -39,27 +43,52 @@ import siebog.utils.ObjectFactory;
 public class ACOStarter {
 	public static void main(String[] args) {
 		int nAnts = 0;
+		int nAntsPerMap = 0;
+		int nodesPerMap = 0;
+		int nMaps = 1;
 		String path = "";
+				
 		if (args.length != 2) {
 			System.out.println("I need 2 arguments: NumberOfAnts MapFile");
-			nAnts = 5;
+			nAnts = 10;
+			nAntsPerMap = 16;
+			nMaps = 4;
+			nodesPerMap = 4;
 			path = "ulysses16.tsp";
 		} else {
 			nAnts = Integer.parseInt(args[0].toString());
-			path = args[1];
+			
+			path = args[1].split(";")[0];
+			nMaps = Integer.parseInt(args[1].split(";")[1]);
+			nodesPerMap = Integer.parseInt(args[1].split(";")[2]);
+			nAntsPerMap = Integer.parseInt(args[1].split(";")[3]);
+			nAnts = nMaps * nAntsPerMap;
 		}
 
-		SiebogClient.connect("localhost");
-
+		SiebogClient.connect("192.168.0.12");
+		
 		final AgentManager agm = ObjectFactory.getAgentManager();
-		AgentClass mapClass = new AgentClass(Agent.SIEBOG_MODULE, "Map");
-		AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + path);
-		agm.startServerAgent(mapClass, "Map", mapArgs);
 
-		for (int i = 1; i <= nAnts; ++i) {
-			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
-			agm.startServerAgent(agClass, "Ant" + i, new AgentInitArgs("host=localhost"));
+		
+		for(int i = 1; i <= nMaps; i++){
+			AgentClass mapClass = new AgentClass(Agent.SIEBOG_MODULE, "Map");
+			
+			AgentInitArgs mapArgs = new AgentInitArgs("fileName=" + path + "&nMaps:" + nMaps + "&nodesPerMap:" + nodesPerMap + "&nodeStartIndex:" + (((i-1)*nodesPerMap)+1));
+			
+			System.out.println(mapArgs.get("fileName", null));
+			agm.startServerAgent(mapClass, "Map" + i, mapArgs);
+			
 		}
+		int mapIndex = 0;
+		for (int i = 1; i <= nAntsPerMap*nMaps; ++i) {
+			if((i-1)%nAntsPerMap == 0){
+				mapIndex++;
+			}
+			AgentClass agClass = new AgentClass(Agent.SIEBOG_MODULE, "Ant");
+			agm.startServerAgent(agClass, "Ant" + i, new AgentInitArgs("host=localhost", "map=Map" + mapIndex));
+		}
+
+		
 	}
 
 	private static String getMapFilePath(String mapName) {
