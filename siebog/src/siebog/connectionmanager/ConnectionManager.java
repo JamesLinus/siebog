@@ -54,8 +54,6 @@ import siebog.utils.FileUtils;
 @Singleton
 @Startup
 @Path("/connection")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class ConnectionManager {
 	private List<String> connections = new ArrayList<String>();
 	private String hostIp;
@@ -83,9 +81,9 @@ public class ConnectionManager {
 		}
 		if(masterIp != null && !"".equals(masterIp)) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
-			ResteasyWebTarget rtarget = client.target("http://"+masterIp+"/Siebog/connection");
+			ResteasyWebTarget rtarget = client.target("http://"+masterIp+"/siebog/rest/connection");
 			ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
-			connections = rest.newConnection(this.hostIp);
+			connections = rest.newConnection(masterIp);
 			connections.remove(this.hostIp);
 			connections.add(masterIp);
 		}
@@ -98,7 +96,7 @@ public class ConnectionManager {
 	public List<String> newConnection(String connection) {
 		for(String c : connections) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
-			ResteasyWebTarget rtarget = client.target("http://"+c+"/Siebog/connection/new");
+			ResteasyWebTarget rtarget = client.target("http://"+c+"/siebog/rest/connection");
 			ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
 			rest.addConnection(connection);
 		}

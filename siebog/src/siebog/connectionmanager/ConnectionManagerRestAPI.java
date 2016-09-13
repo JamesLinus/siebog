@@ -36,18 +36,18 @@ import siebog.agentmanager.Agent;
 public interface ConnectionManagerRestAPI {
 	
 	@POST
-	@Path("/connection")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> newConnection(String connection);
 	
 	@POST
-	@Path("/connection/new")
+	@Path("/new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void addConnection(String connection);
 	
 	@POST
-	@Path("/connection/move")
+	@Path("/move")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void moveAgent(Agent agent);
 }
