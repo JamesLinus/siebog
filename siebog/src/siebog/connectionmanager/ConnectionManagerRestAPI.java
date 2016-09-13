@@ -28,6 +28,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import siebog.agentmanager.Agent;
+
 /**
  * @author Nikola
  */
@@ -42,6 +44,10 @@ public interface ConnectionManagerRestAPI {
 	@POST
 	@Path("/connection/new")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	public void addConnection(String connection);
+	
+	@POST
+	@Path("/connection/move")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void moveAgent(Agent agent);
 }

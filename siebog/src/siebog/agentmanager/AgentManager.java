@@ -47,4 +47,10 @@ public interface AgentManager extends Serializable {
 	List<AgentClass> getAvailableAgentClasses();
 
 	void pingAgent(AID aid);
+
+	void reconstructAgent(Agent agent);
+
+	void move(AID aid, String host);
+	
+	void clone(AID aid, String host);
 }

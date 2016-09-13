@@ -31,7 +31,11 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 
 import org.infinispan.Cache;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import siebog.connectionmanager.ConnectionManagerRestAPI;
 import siebog.utils.GlobalCache;
 import siebog.utils.LoggerUtil;
 import siebog.utils.LoggerUtil.SocketMessageType;
@@ -183,5 +187,25 @@ public class AgentManagerBean implements AgentManager {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void move(AID aid, String host) {
+		clone(aid, host);
+		stopAgent(aid);
+	}
+	
+	@Override
+	public void clone(AID aid, String host) {
+		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyWebTarget rtarget = client.target("http://"+host+"/Siebog/connection");
+		ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
+		rest.moveAgent(getAgentReference(aid));
+	}
+
+	@Override
+	public void reconstructAgent(Agent agent) {
+		Agent localAgent = getAgentReference(startServerAgent(agent.getAid().getAgClass(), agent.getAid().getName(), null));
+		localAgent.reconstruct(agent);
 	}
 }

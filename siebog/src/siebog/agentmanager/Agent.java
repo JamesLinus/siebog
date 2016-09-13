@@ -40,4 +40,8 @@ public interface Agent extends Serializable {
 	void handleMessage(ACLMessage msg);
 
 	String ping();
+	
+	AID getAid();
+	
+	void reconstruct(Agent agent);
 }

@@ -20,15 +20,16 @@
 
 package siebog.agentmanager;
 
-import javax.ejb.EJB;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import siebog.connectionmanager.ConnectionManager;
 import siebog.messagemanager.ACLMessage;
 import siebog.messagemanager.MessageManager;
 import siebog.utils.ObjectFactory;
@@ -49,7 +50,6 @@ public abstract class XjafAgent implements Agent {
 	protected AID myAid;
 	private AgentManager agm;
 	private MessageManager msm;
-	@EJB private ConnectionManager cm;
 
 	// TODO : Restore support for heartbeats.
 	// private transient long hbHandle;
@@ -182,7 +182,13 @@ public abstract class XjafAgent implements Agent {
 		return msm;
 	}
 	
-	protected ConnectionManager cm() {
-		return cm;
+	public void reconstruct(Agent agent) {
+		try {
+			BeanUtils.copyProperties(this, agent);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 }

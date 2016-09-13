@@ -22,6 +22,7 @@
 	<classpathentry kind="lib" path="lib/compile/wildfly-naming-9.0.0.Alpha1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/compile/wildfly-process-controller-1.0.0.Alpha3.jar"/>
 	<classpathentry kind="lib" path="lib/compile/wildfly-server-1.0.0.Alpha3.jar"/>
+	<classpathentry kind="lib" path="lib/compile/commons-beanutils-1.9.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/module/slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/module/slf4j-log4j12-1.7.6.jar"/>
