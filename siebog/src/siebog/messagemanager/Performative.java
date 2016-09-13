@@ -48,6 +48,7 @@ public enum Performative {
 	REQUEST, 
 	REQUEST_WHEN, 
 	REQUEST_WHENEVER, 
-	SUBSCRIBE
+	SUBSCRIBE,
+	RESUME
 	//@formatter:on
 }

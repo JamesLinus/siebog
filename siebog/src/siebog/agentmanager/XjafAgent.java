@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import siebog.messagemanager.ACLMessage;
 import siebog.messagemanager.MessageManager;
+import siebog.messagemanager.Performative;
 import siebog.utils.ObjectFactory;
 
 /**
@@ -185,6 +186,10 @@ public abstract class XjafAgent implements Agent {
 	public void reconstruct(Agent agent) {
 		try {
 			BeanUtils.copyProperties(this, agent);
+
+			ACLMessage message = new ACLMessage(Performative.RESUME);
+			message.receivers.add(myAid);
+			msm.post(message);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
