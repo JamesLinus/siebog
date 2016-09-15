@@ -27,6 +27,7 @@ import javax.ejb.LockType;
 import javax.ejb.Remove;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import siebog.utils.ObjectFactory;
  * @author <a href="tntvteod@neobee.net">Teodor-Najdan Trifunov</a>
  */
 @Lock(LockType.READ)
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class XjafAgent implements Agent {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(XjafAgent.class);

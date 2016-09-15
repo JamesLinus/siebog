@@ -200,7 +200,7 @@ public class AgentManagerBean implements AgentManager {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget rtarget = client.target("http://"+host+"/siebog/rest/connection");
 		ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
-		rest.moveAgent(getAgentReference(aid));
+		rest.moveAgent((XjafAgent)getAgentReference(aid));
 	}
 
 	@Override

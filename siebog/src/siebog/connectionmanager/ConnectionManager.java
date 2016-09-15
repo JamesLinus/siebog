@@ -42,8 +42,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import siebog.agentmanager.Agent;
 import siebog.agentmanager.AgentManager;
+import siebog.agentmanager.XjafAgent;
 import siebog.utils.FileUtils;
 
 /**
@@ -114,7 +114,7 @@ public class ConnectionManager {
 	@POST
 	@Path("/move")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void moveAgent(Agent agent) {
+	public void moveAgent(XjafAgent agent) {
 		agm.reconstructAgent(agent);
 	}
 }

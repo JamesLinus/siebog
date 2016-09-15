@@ -28,7 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import siebog.agentmanager.Agent;
+import siebog.agentmanager.XjafAgent;
 
 /**
  * @author Nikola
@@ -49,5 +49,5 @@ public interface ConnectionManagerRestAPI {
 	@POST
 	@Path("/move")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void moveAgent(Agent agent);
+	public void moveAgent(XjafAgent agent);
 }
