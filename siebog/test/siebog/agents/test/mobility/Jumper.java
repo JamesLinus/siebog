@@ -53,8 +53,12 @@ public class Jumper extends XjafAgent {
 	protected void onMessage(ACLMessage msg) {
 		if(msg.performative == Performative.REQUEST) {
 			this.home = msg.content.split(" ")[1];
+			jumpCounter++;
+			LoggerUtil.log("Jumper REQUEST with counter " + jumpCounter, true);
 			agm().move(myAid, msg.content.split(" ")[0]);
 		} else if(msg.performative == Performative.RESUME) {
+			jumpCounter++;
+			LoggerUtil.log("Jumper RESUME with counter " + jumpCounter, true);
 			agm().move(myAid, home);
 		}
 	}
