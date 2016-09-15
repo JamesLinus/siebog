@@ -22,6 +22,8 @@ package siebog.agentmanager;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import siebog.messagemanager.ACLMessage;
 
 /**
@@ -30,6 +32,7 @@ import siebog.messagemanager.ACLMessage;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public interface Agent extends Serializable {
 	String SIEBOG_MODULE = "siebog";
 
