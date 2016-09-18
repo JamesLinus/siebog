@@ -22,8 +22,11 @@ package siebog.agentmanager;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+import siebog.agents.test.mobility.Jumper;
 import siebog.messagemanager.ACLMessage;
 
 /**
@@ -32,7 +35,10 @@ import siebog.messagemanager.ACLMessage;
  * 
  * @author <a href="mailto:mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+	@Type(value = Jumper.class, name="jumper")
+})
 public interface Agent extends Serializable {
 	String SIEBOG_MODULE = "siebog";
 
