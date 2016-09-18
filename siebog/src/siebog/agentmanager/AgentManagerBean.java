@@ -20,6 +20,7 @@
 
 package siebog.agentmanager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,9 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.infinispan.Cache;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -197,10 +201,20 @@ public class AgentManagerBean implements AgentManager {
 	
 	@Override
 	public void clone(AID aid, String host) {
+		ObjectMapper mapper = new ObjectMapper();
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget rtarget = client.target("http://"+host+"/siebog/rest/connection");
 		ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
-		rest.moveAgent(getAgentReference(aid));
+		try {
+			String agent = mapper.writeValueAsString(getAgentReference(aid));
+			rest.moveAgent(agent);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

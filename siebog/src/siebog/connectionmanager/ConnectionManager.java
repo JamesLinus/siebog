@@ -38,6 +38,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -114,7 +117,16 @@ public class ConnectionManager {
 	@POST
 	@Path("/move")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void moveAgent(Agent agent) {
-		agm.reconstructAgent(agent);
+	public void moveAgent(String agent) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			agm.reconstructAgent(mapper.readValue(agent, Agent.class));
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
