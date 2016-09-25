@@ -21,12 +21,14 @@
 package siebog.agentmanager;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Remove;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,7 @@ import siebog.messagemanager.ACLMessage;
 import siebog.messagemanager.MessageManager;
 import siebog.messagemanager.Performative;
 import siebog.utils.ObjectFactory;
+import siebog.utils.ObjectField;
 
 /**
  * Base class for all agents.
@@ -183,17 +186,46 @@ public abstract class XjafAgent implements Agent {
 		return msm;
 	}
 	
-	public void reconstruct(Agent agent) {
-		try {
-			BeanUtils.copyProperties(this, agent);
+	public void reconstruct(List<ObjectField> agentFields) {
+		Class<?> agentClass = this.getClass();
+		for (ObjectField field : agentFields) {
+	        try { 
+				agentClass.getMethod("set" + field.getName(), field.getType()).invoke(this, field.getValue());
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
+	    }
 
-			ACLMessage message = new ACLMessage(Performative.RESUME);
-			message.receivers.add(myAid);
-			msm.post(message);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		ACLMessage message = new ACLMessage(Performative.RESUME);
+		message.receivers.add(myAid);
+		msm.post(message);
+	}
+	
+	public List<ObjectField> deconstruct() {
+		List<ObjectField> retVal = new ArrayList<>();
+		Class<?> agentClass = this.getClass();
+		Method[] methods = agentClass.getMethods();
+		for (Method method : methods) {
+	        if (!method.getName().equals("getClass") && method.getName().startsWith("get")) {
+	        	try {
+	                retVal.add(new ObjectField(method.getName().substring(3), method.getReturnType(), method.invoke(this)));
+	            }
+                catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                catch (InvocationTargetException e) {
+                	e.printStackTrace();
+                }
+	        }
+	    }
+		return retVal;
 	}
 }

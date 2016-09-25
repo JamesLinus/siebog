@@ -20,7 +20,6 @@
 
 package siebog.agentmanager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,9 +30,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.infinispan.Cache;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -44,6 +40,7 @@ import siebog.utils.GlobalCache;
 import siebog.utils.LoggerUtil;
 import siebog.utils.LoggerUtil.SocketMessageType;
 import siebog.utils.ObjectFactory;
+import siebog.utils.ObjectField;
 
 /**
  * Default agent manager implementation.
@@ -201,25 +198,24 @@ public class AgentManagerBean implements AgentManager {
 	
 	@Override
 	public void clone(AID aid, String host) {
-		ObjectMapper mapper = new ObjectMapper();
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		ResteasyWebTarget rtarget = client.target("http://"+host+"/siebog/rest/connection");
 		ConnectionManagerRestAPI rest = rtarget.proxy(ConnectionManagerRestAPI.class);
-		try {
-			String agent = mapper.writeValueAsString(getAgentReference(aid));
-			rest.moveAgent(agent);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Agent a = getAgentReference(aid);
+		rest.moveAgent(a.deconstruct());
 	}
 
 	@Override
-	public void reconstructAgent(Agent agent) {
-		Agent localAgent = getAgentReference(startServerAgent(agent.getAid().getAgClass(), agent.getAid().getName(), null));
+	public void reconstructAgent(List<ObjectField> agent) {
+		Agent localAgent = null;
+		for(int i = 0; i < agent.size(); i++) {
+			if(agent.get(i).getName().equals("Aid")) {
+				AID aid = (AID) agent.get(i).getValue();
+				localAgent = getAgentReference(startServerAgent(aid.getAgClass(), aid.getName(), null));
+				agent.remove(i);
+				break;
+			}
+		}
 		localAgent.reconstruct(agent);
 	}
 }

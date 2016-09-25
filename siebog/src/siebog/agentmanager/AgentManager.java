@@ -23,6 +23,8 @@ package siebog.agentmanager;
 import java.io.Serializable;
 import java.util.List;
 
+import siebog.utils.ObjectField;
+
 /**
  * Remote interface of the agent manager.
  *
@@ -48,7 +50,7 @@ public interface AgentManager extends Serializable {
 
 	void pingAgent(AID aid);
 
-	void reconstructAgent(Agent agent);
+	void reconstructAgent(List<ObjectField> agent);
 
 	void move(AID aid, String host);
 	

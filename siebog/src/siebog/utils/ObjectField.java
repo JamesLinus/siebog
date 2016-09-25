@@ -18,36 +18,34 @@
  * and limitations under the License.
  */
 
-package siebog.connectionmanager;
+package siebog.utils;
 
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import siebog.utils.ObjectField;
+import java.io.Serializable;
 
 /**
  * @author Nikola
  */
-public interface ConnectionManagerRestAPI {
+@SuppressWarnings("serial")
+public class ObjectField implements Serializable{
+	private final String name;
+	private final Class<?> type;
+	private final Object value;
 	
-	@POST
-	@Path("/")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> newConnection(String connection);
-	
-	@POST
-	@Path("/new")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void addConnection(String connection);
-	
-	@POST
-	@Path("/move")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void moveAgent(List<ObjectField> agent);
+	public ObjectField(String name, Class<?> type, Object value) {
+		this.name = name;
+		this.type = type;
+		this.value = value;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public Object getValue() {
+		return value;
+	}
 }

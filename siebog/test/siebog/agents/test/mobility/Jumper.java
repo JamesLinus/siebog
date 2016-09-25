@@ -43,6 +43,22 @@ public class Jumper extends XjafAgent {
 	private int jumpCounter;
 	private String home;
 
+	public int getJumpCounter() {
+		return jumpCounter;
+	}
+
+	public void setJumpCounter(int jumpCounter) {
+		this.jumpCounter = jumpCounter;
+	}
+
+	public String getHome() {
+		return home;
+	}
+
+	public void setHome(String home) {
+		this.home = home;
+	}
+
 	@Override
 	protected void onInit(AgentInitArgs args) {
 		jumpCounter = 0;
