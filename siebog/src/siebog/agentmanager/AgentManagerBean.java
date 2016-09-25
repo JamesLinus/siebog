@@ -21,6 +21,7 @@
 package siebog.agentmanager;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -206,11 +207,15 @@ public class AgentManagerBean implements AgentManager {
 	}
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void reconstructAgent(List<ObjectField> agent) {
 		Agent localAgent = null;
 		for(int i = 0; i < agent.size(); i++) {
 			if(agent.get(i).getName().equals("Aid")) {
-				AID aid = (AID) agent.get(i).getValue();
+				LinkedHashMap<String, Object> aidMap = (LinkedHashMap) agent.get(i).getValue();
+				LinkedHashMap<String, Object> agClassMap = (LinkedHashMap) aidMap.get("agClass");
+				
+				AID aid = new AID((String)aidMap.get("name"), (String)aidMap.get("host"), new AgentClass((String)agClassMap.get("module"), (String)agClassMap.get("ejbName"), (String)agClassMap.get("path")));
 				localAgent = getAgentReference(startServerAgent(aid.getAgClass(), aid.getName(), null));
 				agent.remove(i);
 				break;

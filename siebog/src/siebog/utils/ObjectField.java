@@ -27,10 +27,14 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class ObjectField implements Serializable{
-	private final String name;
-	private final Class<?> type;
-	private final Object value;
+	private String name;
+	private Class<?> type;
+	private Object value;
 	
+	public ObjectField() {
+		super();
+	}
+
 	public ObjectField(String name, Class<?> type, Object value) {
 		this.name = name;
 		this.type = type;

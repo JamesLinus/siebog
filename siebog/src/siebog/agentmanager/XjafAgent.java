@@ -206,7 +206,7 @@ public abstract class XjafAgent implements Agent {
 
 		ACLMessage message = new ACLMessage(Performative.RESUME);
 		message.receivers.add(myAid);
-		msm.post(message);
+		msm().post(message);
 	}
 	
 	public List<ObjectField> deconstruct() {
